@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+
+<?xml-stylesheet type="text/css" src="chrome://ttb/content/overlay.css"?>
+
+<overlay id="syncOverlay"
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <script type="application/x-javascript" src="chrome://browser/content/places/utils.js"/>
+  <script type="application/x-javascript" src="chrome://sync/content/sync.js"/>
+
+  <toolbarpalette id="BrowserToolbarPalette">
+    <toolbarbutton id="SyncToolbarButton"
+                   class="toolbarbutton-1 chromeclass-toolbar-additional"
+                   label="Sync Now"
+                   tooltiptext="Sync Now"
+                   oncommand = "doPopup();"
+                   style="list-style-image: url('chrome://sync/content/icon.ico');"/>
+  </toolbarpalette>
+</overlay>

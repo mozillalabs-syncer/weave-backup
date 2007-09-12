@@ -1,0 +1,3 @@
+content sync chrome/content/
+overlay chrome://browser/content/browser.xul chrome://sync/content/overlay.xul
+
