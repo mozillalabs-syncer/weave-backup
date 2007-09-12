@@ -1,0 +1,5 @@
+overlay chrome://browser/content/browser.xul chrome://sync/content/sync.xul
+@unpacked@content sync chrome/content/
+@unpacked@skin sync class/1.0 chrome/skin/
+@jar@content sync jar:chrome/sync.jar!/content/
+@jar@skin sync class/1.0 jar:chrome/sync.jar!/skin/
