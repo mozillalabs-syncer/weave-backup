@@ -2234,12 +2234,6 @@ MochiKit.Iter.__new__ = function () {
 MochiKit.Iter.__new__();
 MochiKit.Base._exportSymbols(this, MochiKit.Iter);
 
-
-
-
-
-
-
 /**
  * This file contains a simple synchronization method for JSON objects
  * based on the file synchronization algorithm presented by Norman
@@ -2287,7 +2281,7 @@ var snapshotJSON =
   "i": [7, 8, 9],
   "j": 10,
   "k": { "m": 11 },
-  "n": 66
+  "n": 66,
 }
 
 /**
@@ -2312,16 +2306,16 @@ var currentJSON =
     "new2": 22,        /* created */
     "d":
     {
-      "e": 3
+      "e": 3,
       /*"f": 4*/       /* removed */
     },
-    "g": 55           /* edited  */
+    "g": 55,           /* edited  */
   },
   /* "h": 6.6, */      /* removed */   
   "i": [7, 8, 9, 99],  /* added array element */
   "j": 10,
   "k": 42,             /* replaced object with primitive */
-  "n": { "new3": 77 } /* replaced primitive with object */
+  "n": { "new3": 77 }, /* replaced primitive with object */
 }
 
 /**
@@ -2424,11 +2418,14 @@ Command.prototype = {
             (isObjectOrArray(other.value) && isObjectOrArray(this.value) ?
              other.value.constructor == this.value.constructor :
              other.value === this.value));
+  },
+  /**
+   * Check whether the other command's path starts with our path.
+   **/
+  isParentOf: function(other) {
+    return other.path.length > this.path.length &&
+           arrayEqual(other.path.slice(0, this.path.length), this.path);
   }
-}
-
-function makeCommand(action, path, value) {
-  return new Command(action, path, value);
 }
 
 /**
@@ -2513,22 +2510,22 @@ function _detectUpdates(stack, snapshot, current) {
        * update sequence, which complicates the algorithm, but it
        * seems worth it to avoid profiling JSON.
        *
-       * When an object's type changes at a path π, we want to reverse
+       * When an object's type changes at a path I, we want to reverse
        * the normal order of operations that Ramsey and Csirmaz give,
        * because we assume that a deletion of all of the array's
        * elements preceded the change from array to object. This
        * assumption does prevent key preservation across non-idiomatic
        * transformations between Object and Array types.
        *
-       *  remove(π/π')
-       *  removeObj(π, Array(m))
-       *  createObj(π, Object(m))
-       *  create(π/π')
+       *  remove(I/I')
+       *  removeObj(I, Array(m))
+       *  createObj(I, Object(m))
+       *  create(I/I')
        *
-       * In otherwords, when an Array at path π is changed to an
+       * In otherwords, when an Array at path I is changed to an
        * Object, that implies a recursive deletion of all its
-       * children, a removal of an Array at path π, a creation of an
-       * Object at path π, and recursive creation of the Object's
+       * children, a removal of an Array at path I, a creation of an
+       * Object at path I, and recursive creation of the Object's
        * members. This means we have to interleave creates and
        * removes, unlike Ramsey and Csirmaz.
        * 
@@ -2560,14 +2557,14 @@ var detectUpdates = partial(_detectUpdates, []);
  * @return An array of change operations in the canonical order.
  *
  * Once we have our updates, we'll need to order the records in the
- * canonical sequence described by Ramsey and Csirmaz for path π:
+ * canonical sequence described by Ramsey and Csirmaz for path I:
  *
- * (a) Commands of the form edit (π, Dir(m)), in any order determined
- *     by π.
- * (b) Commands of the form create (π, X), in preorder. 
- * (c) Commands of the form remove (π), in postorder. 
- * (d) Commands of the form edit (π, File(m, x)), in any order
- *     determined by π.
+ * (a) Commands of the form edit (I, Dir(m)), in any order determined
+ *     by I.
+ * (b) Commands of the form create (I, X), in preorder. 
+ * (c) Commands of the form remove (I), in postorder. 
+ * (d) Commands of the form edit (I, File(m, x)), in any order
+ *     determined by I.
  *
  **/
 function orderUpdates(updates) {
@@ -2600,12 +2597,12 @@ function orderUpdates(updates) {
  *
  *    The reconciler takes the sequences S1 , ... , Sn that are
  *    computed to have been performed at each replica. It com- putes
- *    sequences S ∗ 1 , ... , S ∗ n that make the filesystems as close
- *    as possible. The idea of the algorithm is that a command C ∈
- *    Si should be propagated to replica j (included ∗ in Sj ) iff
+ *    sequences S a? 1 , ... , S a? n that make the filesystems as close
+ *    as possible. The idea of the algorithm is that a command C a??
+ *    Si should be propagated to replica j (included a? in Sj ) iff
  *    three criteria are met:
  *
- *      * C ∈ Sj , i.e., C has not already been performed at
+ *      * C a?? Sj , i.e., C has not already been performed at
  *        replica j
  *
  *      * no commands at replicas other than i conflict with C
@@ -2655,24 +2652,41 @@ function commandInList(command, commands) {
  *           conflicts: [Command, Command, Command...]
  *           commandList: [Command, Command, Command...]
  *         }
- *    
+ *  
  **/
-function atSamePath(command, otherCommand) {
-  return arrayEqual(command.path, otherCommand.path);
+ 
+/**
+ * Check whether an edit or create operation has been attempted under
+ * a remove.
+ **/ 
+function isBreak(a, b) {
+  return a.isParentOf(b) && 
+         ((!isObjectOrArray(a.value) || a.action == "remove") &&
+          b.action != "remove");
+}
+ 
+/**
+ * Check whether the commands would result in a broken graph,
+ * or whether they are attempting to insert the different values
+ * at the same path.
+ **/
+function doesConflict(command, other) {
+  var broken = isBreak(command, other) || isBreak(other, command); 
+  return broken || (arrayEqual(command["path"], other.path)
+                    && !command.equals(other));
+}
+
+function conflictsFromReplica(command, commandList) {
+    return {
+      "command": command,
+      "conflicts": filter(partial(doesConflict, command), commandList),
+      "commandList": commandList
+    };
 }
 
 function conflictsFromReplicas(command, commandListsFromOtherReplicas) {
-  return map(
-    function (commandList) {
-      var applicableCommands = 
-        filter(compose(operator.not, partial(commandInList, command)),
-               commandList);
-      return {
-        "command": command,
-        "conflicts": filter(partial(atSamePath, command), applicableCommands),
-        "commandList": commandList
-      };
-    },  commandListsFromOtherReplicas);
+  return map(partial(conflictsFromReplica, command),
+             commandListsFromOtherReplicas);
 }
 
 /**
@@ -2680,25 +2694,20 @@ function conflictsFromReplicas(command, commandListsFromOtherReplicas) {
  * conflict list if an earlier command did conflict, and that command
  * is a precondition for the current command.
  **/
-//XXX needs work to detect edits of things that have been removed
-function mustPrecede(command, earlierCommand) {
-  /* edits always commute */
-  if (command.action == "edit")
+function mustPrecede(command, earlierCommand) {  
+  if (earlierCommand.action == "edit")
     return false;
 
-  if (earlierCommand.path.length == command.path.length - 1) {
-     return arrayEqual(earlierCommand.path.slice(0, earlierCommand.path.length),
-                       command.path);
-  }
-  return false; // ?
+  return earlierCommand.isParentOf(command);
 }
 
 function precedingCommandsConflict(command, conflictList) {
   if (isEmpty(conflictList))
     return false;
-
-  return some(map(itemgetter("command", conflictList)),
-              partial(mustPrecede, command));
+  if (some(conflictList, partial(mustPrecede, command))) {
+    return true;
+  }
+  return false;
 }
 
 function reconcile(commandLists) {
@@ -2710,21 +2719,23 @@ function reconcile(commandLists) {
     conflicts.push([]);
   });
 
-  for (var i=0; i < commandLists.length; ++i) {
-    for (var j=0; j < commandLists.length; ++j) {
+  for (var i = 0; i < commandLists.length; ++i) {
+    for (var j = 0; j < commandLists.length; ++j) {
       if (i != j) {
         forEach(commandLists[i],
           function (command) {
             if (!commandInList(command, commandLists[j])) {
-              var conflict = conflictsFromReplicas(command, commandLists);
-              if(every(conflict, isEmpty)) {
-                if (precedingCommandsConflict(command, conflicts[i])) {
-                  extend(conflicts[i], conflict);
+              var others = chain(commandLists.slice(0, i), 
+                                 commandLists.slice(i + 1));
+              var conflict = conflictsFromReplicas(command, others);
+              if (every(conflict, function(c) { return c.conflicts.length == 0 })) {
+                if (precedingCommandsConflict(command, conflicts[j])) {
+                  conflicts[j].push(command);
                 } else {
                   propagations[j].push(command);
                 }
               } else {
-                extend(conflicts[i], conflict);
+                conflicts[j].push(command);
               }
             }
           }
@@ -2732,8 +2743,8 @@ function reconcile(commandLists) {
       }
     }
   }
-    
-  return propagations;
+  return(propagations);
+  //return {"propagations":propagations, "conflicts":conflicts};
 }
 
 /**
@@ -2741,7 +2752,7 @@ function reconcile(commandLists) {
  * becomes a reference to the value at obj[foo][bar][baz].
  **/
 function pathToReference(obj, path) {
-  return reduce(function(reference, segment) {
+  return reduce(function (reference, segment) {
                   return reference ? reference[segment] : reference;
                 }, 
                 path, obj);
@@ -2754,8 +2765,14 @@ function applyCommand(target, command) {
   var container =
     pathToReference(target, command.path.slice(0, command.path.length - 1));
 
-  if (command.action == "remove")
-    delete container[command.path[command.path.length - 1]];
+  // XXX for some reason we sometimes get here without a container....
+  if(!container) {
+	return;
+  }
+
+  if (command.action == "remove") {
+      delete container[command.path[command.path.length - 1]];
+  }
   
   container[command.path[command.path.length - 1]] = command.value;
 }

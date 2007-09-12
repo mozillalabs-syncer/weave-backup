@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="chrome://sync/content/sync.css" type="text/css"?>
+
+<!DOCTYPE overlay SYSTEM "chrome://sync/locale/sync.dtd">
+<overlay id="sync-overlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+    <script type="application/x-javascript" src="chrome://browser/content/places/utils.js"/>
+    <script type="application/x-javascript" src="chrome://sync/content/sync.js"/>
+    <statusbar id="status-bar">
+        <statusbarpanel class="statusbarpanel-menu-iconic" insertbefore="security-button" id="sync-menu-button" hidden="false">
+            <label id="sync-menu-status"      hidden="false" control="sync-menu-button"/>
+	    <image id="sync-throbber-active"  hidden="true"  height="16" width="16" src="chrome://sync/skin/sync-throbber-16x16-active.apng"/>	
+	    <image id="sync-throbber-online"  hidden="true"  height="16" width="16" src="chrome://sync/skin/sync-throbber-16x16.png"/>	
+	    <image id="sync-throbber-offline" hidden="false" height="16" width="16" src="chrome://sync/skin/sync-throbber-16x16-inactive.png"/>	
+            <menupopup onpopupshowing="if(event.target == this) onPopup(event);" id="sync-menu">
+		<menuitem id="sync-loginitem" hidden="false" disabled="false" checked="false" autocheck="false" label="Sign In..." onclick="doLogin();"/>
+		<menuitem id="sync-logoutitem" hidden="true" disabled="false" checked="false" autocheck="false" label="Sign Out" onclick="doLogout();"/>
+                <menuseparator/>
+		<menuitem id="sync-syncnowitem" hidden="false" disabled="true" checked="false" autocheck="false" label="Sync Now" oncommand="doSync(event);"/>
+		<menuitem id="sync-cancelsyncitem" hidden="false" disabled="true" checked="false" autocheck="false" label="Cancel Sync" oncommand="doCancelSync(event);"/>
+                <menuseparator/>
+                <menuitem disabled="false" checked="false" autocheck="false" label="Open Sync Preferences" oncommand="sync.OnSelectOptions(event);"/>
+		<menuitem disabled="false" checked="false" autocheck="false" label="Open Activity Log" oncommand="openActivityLog();"/>
+                <menuseparator/>
+		<menuitem id="sync-lastsyncitem" disabled="false" hidden="true"/>
+            </menupopup>
+        </statusbarpanel>
+    </statusbar>
+</overlay>
