@@ -1,3 +1,5 @@
+.*~
+chrome.manifest
 chrome/sync.jar
 components/nsIBookmarksSyncService.xpt
 sync.xpi

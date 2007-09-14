@@ -2281,7 +2281,7 @@ var snapshotJSON =
   "i": [7, 8, 9],
   "j": 10,
   "k": { "m": 11 },
-  "n": 66,
+  "n": 66
 }
 
 /**
@@ -2306,16 +2306,16 @@ var currentJSON =
     "new2": 22,        /* created */
     "d":
     {
-      "e": 3,
+      "e": 3
       /*"f": 4*/       /* removed */
     },
-    "g": 55,           /* edited  */
+    "g": 55           /* edited  */
   },
   /* "h": 6.6, */      /* removed */   
   "i": [7, 8, 9, 99],  /* added array element */
   "j": 10,
   "k": 42,             /* replaced object with primitive */
-  "n": { "new3": 77 }, /* replaced primitive with object */
+  "n": { "new3": 77 } /* replaced primitive with object */
 }
 
 /**
