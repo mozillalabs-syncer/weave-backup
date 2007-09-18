@@ -2743,8 +2743,7 @@ function reconcile(commandLists) {
       }
     }
   }
-  return(propagations);
-  //return {"propagations":propagations, "conflicts":conflicts};
+  return {"propagations":propagations, "conflicts":conflicts};
 }
 
 /**

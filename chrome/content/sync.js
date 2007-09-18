@@ -152,7 +152,7 @@ function onPopup(event) {
   }
   var pref = Components.classes["@mozilla.org/preferences-service;1"].
     getService(Components.interfaces.nsIPrefBranch);
-  lastSync = pref.getCharPref("extensions.sync.lastsync");
+  var lastSync = pref.getCharPref("extensions.sync.lastsync");
   if(lastSync) {
     var lastsyncitem = document.getElementById("sync-lastsyncitem");
     if(lastsyncitem) {
