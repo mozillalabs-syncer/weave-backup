@@ -3,26 +3,70 @@
 
 <!DOCTYPE overlay SYSTEM "chrome://sync/locale/sync.dtd">
 <overlay id="sync-overlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
-    <script type="application/x-javascript" src="chrome://browser/content/places/utils.js"/>
-    <script type="application/x-javascript" src="chrome://sync/content/base64.js"/>
-    <script type="application/x-javascript" src="chrome://sync/content/sync.js"/>
+
+    <script type="application/x-javascript"
+            src="chrome://browser/content/places/utils.js"/>
+    <script type="application/x-javascript"
+            src="chrome://sync/content/sync.js"/>
+
     <statusbar id="status-bar">
-        <statusbarpanel class="statusbarpanel-menu-iconic" insertbefore="security-button" id="sync-menu-button" hidden="false">
-            <label id="sync-menu-status"      hidden="false" control="sync-menu-button"/>
-	    <image id="sync-throbber-active"  hidden="true"  height="16" width="16" src="chrome://sync/skin/sync-throbber-16x16-active.apng"/>	
-	    <image id="sync-throbber-online"  hidden="true"  height="16" width="16" src="chrome://sync/skin/sync-throbber-16x16.png"/>	
-	    <image id="sync-throbber-offline" hidden="false" height="16" width="16" src="chrome://sync/skin/sync-throbber-16x16-inactive.png"/>	
-            <menupopup onpopupshowing="if(event.target == this) onPopup(event);" id="sync-menu">
-		<menuitem id="sync-loginitem" hidden="false" disabled="false" checked="false" autocheck="false" label="Sign In..." onclick="doLogin();"/>
-		<menuitem id="sync-logoutitem" hidden="true" disabled="false" checked="false" autocheck="false" label="Sign Out" onclick="doLogout();"/>
+        <statusbarpanel id="sync-menu-button"
+                        class="statusbarpanel-menu-iconic"
+                        insertbefore="security-button"
+                        hidden="false">
+            <label id="sync-menu-status"
+                   hidden="false"
+                   control="sync-menu-button"/>
+	    <image id="sync-throbber-active"
+                   hidden="true"
+                   width="16" height="16"
+                   src="chrome://sync/skin/sync-throbber-16x16-active.apng"/>
+	    <image id="sync-throbber-online"
+                   hidden="true"
+                   width="16" height="16"
+                   src="chrome://sync/skin/sync-throbber-16x16.png"/>
+	    <image id="sync-throbber-offline"
+                   hidden="false"
+                   width="16" height="16"
+                   src="chrome://sync/skin/sync-throbber-16x16-inactive.png"/>
+
+            <menupopup id="sync-menu"
+                       onpopupshowing="if(event.target == this) gSync.doPopup(event);" >
+		<menuitem id="sync-loginitem"
+                          hidden="false" disabled="false"
+                          checked="false" autocheck="false"
+                          label="Sign In..."
+                          onclick="gSync.doLogin();"/>
+		<menuitem id="sync-logoutitem"
+                          hidden="true" disabled="false"
+                          checked="false" autocheck="false"
+                          label="Sign Out"
+                          onclick="gSync.doLogout();"/>
                 <menuseparator/>
-		<menuitem id="sync-syncnowitem" hidden="false" disabled="true" checked="false" autocheck="false" label="Sync Now" oncommand="doSync(event);"/>
-		<menuitem id="sync-cancelsyncitem" hidden="false" disabled="true" checked="false" autocheck="false" label="Cancel Sync" oncommand="doCancelSync(event);"/>
+		<menuitem id="sync-syncnowitem"
+                          hidden="false" disabled="true"
+                          checked="false" autocheck="false"
+                          label="Sync Now"
+                          oncommand="gSync.doSync(event);"/>
+		<menuitem id="sync-cancelsyncitem"
+                          hidden="false" disabled="true"
+                          checked="false" autocheck="false"
+                          label="Cancel Sync"
+                          oncommand="gSync.doCancelSync(event);"/>
                 <menuseparator/>
-                <menuitem disabled="false" checked="false" autocheck="false" label="Open Sync Preferences" oncommand="sync.OnSelectOptions(event);"/>
-		<menuitem disabled="false" checked="false" autocheck="false" label="Open Activity Log" oncommand="openActivityLog();"/>
+                <menuitem id="sync-openprefsitem"
+                          disabled="false"
+                          checked="false" autocheck="false"
+                          label="Open Sync Preferences"
+                          oncommand="gSync.doOpenPrefs(event);"/>
+		<menuitem id="sync-openlogitem"
+                          disabled="false"
+                          checked="false" autocheck="false"
+                          label="Open Activity Log"
+                          oncommand="gSync.doOpenActivityLog(event);"/>
                 <menuseparator/>
-		<menuitem id="sync-lastsyncitem" disabled="false" hidden="true"/>
+		<menuitem id="sync-lastsyncitem"
+                          disabled="false" hidden="true"/>
             </menupopup>
         </statusbarpanel>
     </statusbar>
