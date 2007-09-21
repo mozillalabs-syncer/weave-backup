@@ -4,6 +4,7 @@
 <!DOCTYPE overlay SYSTEM "chrome://sync/locale/sync.dtd">
 <overlay id="sync-overlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
     <script type="application/x-javascript" src="chrome://browser/content/places/utils.js"/>
+    <script type="application/x-javascript" src="chrome://sync/content/base64.js"/>
     <script type="application/x-javascript" src="chrome://sync/content/sync.js"/>
     <statusbar id="status-bar">
         <statusbarpanel class="statusbarpanel-menu-iconic" insertbefore="security-button" id="sync-menu-button" hidden="false">

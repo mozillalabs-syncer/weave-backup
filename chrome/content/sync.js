@@ -62,8 +62,11 @@ function doSync() {
 }
 
 function doLogin() {
+  var authString = "Basic " + Base64.encode("USERNAME:PASS");
   var req = new XMLHttpRequest();
+
   req.open('GET', 'http://dotmoz.mozilla.org/', false);
+  req.setRequestHeader("Authorization", authString, false);  
   req.send(null);
 
   if(req.status == 200) {
