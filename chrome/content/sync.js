@@ -84,10 +84,32 @@ Sync.prototype = {
     alert("You've been logged out.");
   },
 
+  _addUserLogin: function Sync__addUserLogin(username, password) {
+    let branch = Cc["@mozilla.org/preferences-service;1"].
+      getService(Ci.nsIPrefBranch);
+    branch.setCharPref("browser.places.sync.username", username);
+
+    let serverURL = branch.getCharPref("browser.places.sync.serverURL");
+    let ioservice = Cc["@mozilla.org/network/io-service;1"].
+                    getService(Ci.nsIIOService);
+    let uri = ioservice.newURI(serverURL, null, null);
+
+    // fixme: make a request and get the realm
+    let nsLoginInfo = new Components.Constructor(
+      "@mozilla.org/login-manager/loginInfo;1", Ci.nsILoginInfo, "init");
+    let login = new nsLoginInfo(uri.hostPort, null,
+                                'Use your ldap username/password - dotmoz',
+                                username, password, null, null);
+    let pm = Cc["@mozilla.org/login-manager;1"]. getService(Ci.nsILoginManager);
+    pm.addLogin(login);
+  },
+
   startUp: function Sync_startUp(event) {
   },
 
   doLogin: function Sync_doLogin(event) {
+    // xxx hack: uncomment and edit once to set your password - need ui
+    //this._addUserLogin('nobody@mozilla.com', 'password');
     this._ss.login();
   },
 
@@ -112,14 +134,14 @@ Sync.prototype = {
                       'chrome, dialog, modal, resizable=yes', null).focus();
   },
 
-  doOpenPopup: function Sync_doPopup(event) { 
-    var pref = Components.classes["@mozilla.org/preferences-service;1"].
-    getService(Components.interfaces.nsIPrefBranch);
-    var lastSync = pref.getCharPref("extensions.sync.lastsync");
+  doPopup: function Sync_doPopup(event) {
+    let pref = Cc["@mozilla.org/preferences-service;1"].
+      getService(Ci.nsIPrefBranch);
+    let lastSync = pref.getCharPref("extensions.sync.lastsync");
     if(lastSync) {
-      var lastsyncitem = document.getElementById("sync-lastsyncitem");
+      let lastsyncitem = document.getElementById("sync-lastsyncitem");
       if(lastsyncitem) {
-        var syncDate = new Date(parseInt(lastSync));
+        let syncDate = new Date(parseInt(lastSync));
         lastsyncitem.setAttribute("label", "Last Sync: " +
                                   syncDate.toLocaleString());
         lastsyncitem.setAttribute("hidden", "false");
