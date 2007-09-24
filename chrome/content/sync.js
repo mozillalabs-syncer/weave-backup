@@ -109,7 +109,7 @@ Sync.prototype = {
 
   doLogin: function Sync_doLogin(event) {
     // xxx hack: uncomment and edit once to set your password - need ui
-    //this._addUserLogin('nobody@mozilla.com', 'password');
+    // this._addUserLogin('username@mozilla.com', 'password');
     this._ss.login();
   },
 
