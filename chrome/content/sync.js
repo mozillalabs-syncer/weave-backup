@@ -20,6 +20,9 @@ Sync.prototype = {
 
   _init: function Sync__init() {
     this._os.addObserver(this, "bookmarks-sync:login", false);
+    this._os.addObserver(this, "bookmarks-sync:logout", false);
+	this._os.addObserver(this, "bookmarks-sync:start", false);
+	this._os.addObserver(this, "bookmarks-sync:end", false);
   },
 
   _onLogin: function Sync__onLogin() {
@@ -27,7 +30,7 @@ Sync.prototype = {
 
     let status1 = document.getElementById("sync-menu-status");
     if(status1) {
-      status1.setAttribute("value",  this._ss.currentUser + " signed in");
+      status1.setAttribute("value",  this._ss.currentUser);
       status1.setAttribute("hidden", "false");
     }
 
@@ -43,8 +46,7 @@ Sync.prototype = {
     if(loginitem && logoutitem) {
       loginitem.setAttribute("hidden", "true");
       logoutitem.setAttribute("hidden", "false");
-      logoutitem.setAttribute("label", "Sign Out (" +
-                              this._ss.currentUser + ")");
+      logoutitem.setAttribute("label", "Sign Out");
     }
 
     let syncnowitem = document.getElementById("sync-syncnowitem");
@@ -55,10 +57,13 @@ Sync.prototype = {
   _onLogout: function Sync__onLogout() {
     let throbber1 = document.getElementById("sync-throbber-online");
     let throbber2 = document.getElementById("sync-throbber-offline");
+    let throbber3 = document.getElementById("sync-trhobber-active");
     if (throbber1)
       throbber1.setAttribute("hidden","true");
     if (throbber2)
       throbber2.setAttribute("hidden", "false");
+	if (throbber3)
+	  throbber3.setAttribute("hidden", "true");
 
     let status1 = document.getElementById("sync-menu-status");
     if (status1)
@@ -80,8 +85,6 @@ Sync.prototype = {
     let cancelsyncitem = document.getElementById("sync-cancelsyncitem");
     if (cancelsyncitem)
       cancelsyncitem.setAttribute("disabled", "true");
-
-    alert("You've been logged out.");
   },
 
   _addUserLogin: function Sync__addUserLogin(username, password) {
@@ -110,6 +113,8 @@ Sync.prototype = {
   doLogin: function Sync_doLogin(event) {
     // xxx hack: uncomment and edit once to set your password - need ui
     // this._addUserLogin('username@mozilla.com', 'password');
+    window.openDialog('chrome://sync/content/login.xul', '',
+                      'chrome, dialog, modal, resizable=yes', null).focus();
     this._ss.login();
   },
 
@@ -149,15 +154,42 @@ Sync.prototype = {
     }
   },
 
+  _onSyncStart: function Sync_onSyncStart() {
+    let throbber1 = document.getElementById("sync-throbber-online");
+    let throbber2 = document.getElementById("sync-throbber-active");
+    if(throbber1) 
+      throbber1.setAttribute("hidden","true");
+    if(throbber2) 
+      throbber2.setAttribute("hidden", "false");
+  },
+
+  _onSyncEnd: function Sync_onSyncEnd() {
+    let throbber1 = document.getElementById("sync-throbber-online");
+    let throbber2 = document.getElementById("sync-throbber-active");
+    if(throbber1) 
+      throbber1.setAttribute("hidden","false");
+    if(throbber2) 
+      throbber2.setAttribute("hidden", "true");
+  },
+  
   // nsIObserver
   observe: function(subject, topic, data) {
     switch(topic) {
     case "bookmarks-sync:login":
       this._onLogin();
       break;
+    case "bookmarks-sync:logout":
+      this._onLogout();
+      break;
     case "bookmarks-sync:login-error":
       this._onLoginError();
       break;
+	case "bookmarks-sync:start":
+	  this._onSyncStart();
+	  break;
+	case "bookmarks-sync:end":
+	  this._onSyncEnd();
+	  break;
     }
   }
 };
@@ -170,45 +202,5 @@ function LOG(aText) {
 }
 
 let gSync = new Sync();
-
-/*
-FIXME: needs cleanup/merging!
-
-var saved_status;
-function syncUISetup() {
-  var throbber1 = document.getElementById("sync-throbber-online");
-  if(throbber1) {
-    throbber1.setAttribute("hidden","true");
-  }
-  var throbber2 = document.getElementById("sync-throbber-active");
-  if(throbber2) {
-    throbber2.setAttribute("hidden", "false");
-  }
-  var status1 = document.getElementById("sync-menu-status");
-  if(status1) {
-    saved_status = status1.getAttribute("value");
-    status1.setAttribute("value", "Synchronizing...");
-  }	
-}
-
-function syncUICallback() {
- var pref = Components.classes["@mozilla.org/preferences-service;1"].
-   getService(Components.interfaces.nsIPrefBranch);
-  var endTime = new Date().getTime();
-  pref.setCharPref("extensions.sync.lastsync", endTime);
-  var status1 = document.getElementById("sync-menu-status");
-  if(status1) {
-	status1.setAttribute("value", saved_status);
-  }	
-  var throbber1 = document.getElementById("sync-throbber-online");
-  if(throbber1) {
-	  throbber1.setAttribute("hidden", "false");
-  }
-  var throbber2 = document.getElementById("sync-throbber-active");
-  if(throbber2) {
-	  throbber2.setAttribute("hidden", "true");
-  }
-}
-*/
 
 window.addEventListener("load", function(e) { gSync.startUp(e); }, false);
