@@ -110,6 +110,11 @@ Sync.prototype = {
   startUp: function Sync_startUp(event) {
   },
 
+  doLoginPopup : function Sync_doLoginPopup(event) {
+  	let branch = Cc["@mozilla.org/preferences-service;1"].
+	  getService(Ci.nsIPrefBranch);
+  },
+  
   doLogin: function Sync_doLogin(event) {
     // xxx hack: uncomment and edit once to set your password - need ui
     // this._addUserLogin('username@mozilla.com', 'password');
@@ -117,6 +122,7 @@ Sync.prototype = {
                       'chrome, dialog, modal, resizable=yes', null).focus();
     this._ss.login();
   },
+  
 
   doLogout: function Sync_doLogout(event) {
     this._ss.logout();
@@ -161,6 +167,14 @@ Sync.prototype = {
       throbber1.setAttribute("hidden","true");
     if(throbber2) 
       throbber2.setAttribute("hidden", "false");
+	  
+	let cancelitem = document.getElementById("sync-cancelsyncitem");
+	if(cancelitem)
+	  cancelitem.setAttribute("active", "true");
+	  
+	let syncitem = document.getElementById("sync-syncnowitem");
+	if(syncitem)
+	  syncitem.setAttribute("active", "false");
   },
 
   _onSyncEnd: function Sync_onSyncEnd() {
@@ -170,6 +184,14 @@ Sync.prototype = {
       throbber1.setAttribute("hidden","false");
     if(throbber2) 
       throbber2.setAttribute("hidden", "true");
+
+	let cancelitem = document.getElementById("sync-cancelsyncitem");
+	if(cancelitem)
+	  cancelitem.setAttribute("active", "false");
+	  
+	let syncitem = document.getElementById("sync-syncnowitem");
+	if(syncitem)
+	  syncitem.setAttribute("active", "true");
   },
   
   // nsIObserver
