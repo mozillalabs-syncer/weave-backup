@@ -148,6 +148,7 @@ Sync.prototype = {
   },
 
   onOpenPrefs : function Sync_onOpenPrefs(event) {
+    // XXX called when prefpane opens, setup password and login states
   },
 
   doOpenActivityLog: function Sync_doOpenActivityLog(event) {
@@ -178,13 +179,13 @@ Sync.prototype = {
     if(throbber2) 
       throbber2.setAttribute("hidden", "false");
 	  
-	let cancelitem = document.getElementById("sync-cancelsyncitem");
-	if(cancelitem)
-	  cancelitem.setAttribute("active", "true");
+    let cancelitem = document.getElementById("sync-cancelsyncitem");
+    if(cancelitem)
+      cancelitem.setAttribute("active", "true");
 	  
-	let syncitem = document.getElementById("sync-syncnowitem");
-	if(syncitem)
-	  syncitem.setAttribute("active", "false");
+    let syncitem = document.getElementById("sync-syncnowitem");
+    if(syncitem)
+      syncitem.setAttribute("active", "false");
   },
 
   _onSyncEnd: function Sync_onSyncEnd() {
@@ -195,13 +196,22 @@ Sync.prototype = {
     if(throbber2) 
       throbber2.setAttribute("hidden", "true");
 
-	let cancelitem = document.getElementById("sync-cancelsyncitem");
-	if(cancelitem)
-	  cancelitem.setAttribute("active", "false");
+    let cancelitem = document.getElementById("sync-cancelsyncitem");
+    if(cancelitem)
+      cancelitem.setAttribute("active", "false");
 	  
-	let syncitem = document.getElementById("sync-syncnowitem");
-	if(syncitem)
-	  syncitem.setAttribute("active", "true");
+    let syncitem = document.getElementById("sync-syncnowitem");
+    if(syncitem)
+      syncitem.setAttribute("active", "true");
+    
+    let branch = Cc["@mozilla.org/preferences-service;1"].
+      getService(Ci.nsIPrefBranch);
+    let lastSync = new Date(). getTime();
+    branch.setCharPref("extensions.sync.lastsync", lastSync);
+
+    let lastsyncitem = document.getElementById("sync-lastsyncitem");
+    if(lastsyncitem)
+      lastsyncitem.setAttribute("label", "Last Sync: " + lastSync.toLocaleString());
   },
   
   // nsIObserver
@@ -216,12 +226,12 @@ Sync.prototype = {
     case "bookmarks-sync:login-error":
       this._onLoginError();
       break;
-	case "bookmarks-sync:start":
-	  this._onSyncStart();
-	  break;
-	case "bookmarks-sync:end":
-	  this._onSyncEnd();
-	  break;
+    case "bookmarks-sync:start":
+      this._onSyncStart();
+      break;
+    case "bookmarks-sync:end":
+      this._onSyncEnd();
+      break;
     }
   }
 };
