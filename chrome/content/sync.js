@@ -108,6 +108,13 @@ Sync.prototype = {
   },
 
   startUp: function Sync_startUp(event) {
+    let branch = Cc["@mozilla.org/preferences-service;1"].
+      getService(Ci.nsIPrefBranch);
+    let autoconnect = branch.getBoolPref("extensions.sync.autoconnect");
+
+    // XXX need to make sure we have a username/password
+    if(autoconnect)
+      this._ss.login();
   },
 
   doLoginPopup : function Sync_doLoginPopup(event) {
@@ -137,7 +144,10 @@ Sync.prototype = {
   },
 
   doOpenPrefs: function Sync_doOpenPrefs(event) {
-    LOG("open prefs unimplemented");
+    openPreferences("sync-prefpane");
+  },
+
+  onOpenPrefs : function Sync_onOpenPrefs(event) {
   },
 
   doOpenActivityLog: function Sync_doOpenActivityLog(event) {

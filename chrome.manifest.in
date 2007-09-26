@@ -1,4 +1,5 @@
 overlay chrome://browser/content/browser.xul chrome://sync/content/sync.xul
+overlay chrome://browser/content/preferences/preferences.xul chrome://sync/content/preferences.xul
 @unpacked@content sync chrome/content/
 @unpacked@skin sync class/1.0 chrome/skin/
 @jar@content sync jar:chrome/sync.jar!/content/

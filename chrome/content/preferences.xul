@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+
+<overlay id="sync-preferences"
+	 xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+ <prefwindow id="BrowserPreferences">
+  <prefpane id="sync-prefpane" 
+    label="Secret Foo"
+    onpaneload="gSync.onOpenPrefs(event);"
+    image="chrome://sync/skin/sync-preferences-32x32.png">
+
+    <preferences>
+      <preference id="sync-username"
+        name="browser.places.sync.username"  
+        type="string" />
+      <preference id="sync-autoconnect"
+        name="extensions.sync.autoconnect"
+        type="bool" />
+      <preference id="sync-server"
+        name="browser.places.sync.serverURL"
+        type="string" />
+    </preferences>
+		
+    <groupbox id="sync-login-group">
+      <caption label="Account Information" />
+        <hbox align="center">
+          <label value="User Name:" control="sync-username-field"/>
+          <textbox id="sync-username-field" 
+             class="padded" flex="1" 
+             preference="sync-username"/>
+        </hbox>
+        <hbox align="center">
+          <label value="Password:" control="sync-password-field"/>
+          <textbox id="sync-password-field" 
+             class="padded" flex="1"
+             type="password"/>
+        </hbox>
+     </groupbox>
+
+     <groupbox id="sync-settings-group">
+       <caption label="Sync"/>
+       <checkbox id="sync-autoconnect-checkbox" 
+          label="Automatically connect each time I start Firefox."
+          class="indent"
+          preference="sync-autoconnect"/>
+     </groupbox>
+
+     <groupbox id="sync-advanced-group">
+        <caption label="Advanced" />
+        <hbox align="center">
+          <label value="Server:" control="sync-server-field"/>
+          <textbox id="sync-server-field"
+            class="padding" flex="1"
+            preference="sync-server"/>
+        </hbox>
+     </groupbox>
+
+  </prefpane>
+ </prefwindow>
+</overlay>
