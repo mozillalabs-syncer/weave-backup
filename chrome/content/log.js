@@ -12,38 +12,20 @@ const PERMS_FILE      = 0644;
 const PERMS_DIRECTORY = 0755;
 
 function onLoad() {
-  loadLog();
-}
-
-function loadLog() {
   let dirSvc = Cc["@mozilla.org/file/directory_service;1"].
   getService(Ci.nsIProperties);
 
   let file = dirSvc.get("ProfD", Ci.nsIFile);
   file.append("bm-sync.log");
 
-  if (!file.exists())
+  if (!file.exists()) {
+    document.getElementById("sync-log-frame").
+      setAttribute("src", "chrome://sync/content/default-log.txt");
     return;
-
-  let fis = Cc["@mozilla.org/network/file-input-stream;1"].
-    createInstance(Ci.nsIFileInputStream);
-  fis.init(file, MODE_RDONLY, PERMS_FILE, 0);
-  fis.QueryInterface(Ci.nsILineInputStream);
-
-  let log = "";
-  let line = {value: ""};
-  let hasmore;
-  do {
-    hasmore = fis.readLine(line)
-    log += line.value + "\n";
-  } while (hasmore);
-
-  fis.close();
-
-  let textbox = document.getElementById("log-text");
-  if (textbox) {
-    textbox.value = log;
   }
+
+  document.getElementById("sync-log-frame").
+    setAttribute("src", "file://" + file.path);
 }
 
 function saveAs() {

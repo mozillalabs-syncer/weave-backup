@@ -12,9 +12,8 @@
   <script type="application/x-javascript"
           src="chrome://sync/content/log.js"/>
 
-  <textbox id="log-text"
-           multiline="true" readonly="true"
-           rows="40" cols="80" flex="1"
-           value="No log available"/>
+  <iframe id="sync-log-frame"
+          style="min-height : 25em; min-width: 80em; background-color:white;"
+          type="content" flex="1"/>
 
 </dialog>
