@@ -21,8 +21,8 @@ Sync.prototype = {
   _init: function Sync__init() {
     this._os.addObserver(this, "bookmarks-sync:login", false);
     this._os.addObserver(this, "bookmarks-sync:logout", false);
-	this._os.addObserver(this, "bookmarks-sync:start", false);
-	this._os.addObserver(this, "bookmarks-sync:end", false);
+    this._os.addObserver(this, "bookmarks-sync:start", false);
+    this._os.addObserver(this, "bookmarks-sync:end", false);
   },
 
   _onLogin: function Sync__onLogin() {
@@ -111,9 +111,8 @@ Sync.prototype = {
     let branch = Cc["@mozilla.org/preferences-service;1"].
       getService(Ci.nsIPrefBranch);
     let autoconnect = branch.getBoolPref("extensions.sync.autoconnect");
-
-    // XXX need to make sure we have a username/password
-    if(autoconnect)
+    let username = branch.getCharPref("browser.places.sync.username");
+    if(autoconnect && (!(username || username == 'nobody@mozilla.com'))) // XXX to ensure we have a valid login?
       this._ss.login();
   },
 
@@ -124,9 +123,17 @@ Sync.prototype = {
   
   doLogin: function Sync_doLogin(event) {
     // xxx hack: uncomment and edit once to set your password - need ui
-    // this._addUserLogin('username@mozilla.com', 'password');
-    window.openDialog('chrome://sync/content/login.xul', '',
-                      'chrome, dialog, modal, resizable=yes', null).focus();
+    //this._addUserLogin('nobody@mozilla.com', 'password');
+
+    let branch = Cc["@mozilla.org/preferences-service;1"].
+      getService(Ci.nsIPrefBranch);
+    let username = branch.getCharPref("browser.places.sync.username");
+    if(!username || username == 'nobody@mozilla.com') {
+      window.openDialog('chrome://sync/content/wizard.xul', '',
+        'chrome, dialog, modal, resizable=yes', null);
+      return;
+    }
+
     this._ss.login();
   },
   

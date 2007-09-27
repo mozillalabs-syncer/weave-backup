@@ -6,7 +6,6 @@
  <prefwindow id="BrowserPreferences">
   <prefpane id="sync-prefpane" 
     label="Secret Foo"
-    onpaneload="gSync.onOpenPrefs(event);"
     image="chrome://sync/skin/sync-preferences-32x32.png">
 
     <preferences>
