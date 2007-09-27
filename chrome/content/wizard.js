@@ -54,9 +54,7 @@ SyncWizard.prototype = {
         let username = document.getElementById('sync-username-field');
         let password = document.getElementById('sync-password-field');
 
-	LOG("got username="+username.value);
-	LOG("got password="+password.value);
-        
+        // XXX
         if((!username || !password) || (!username.value || !password.value) || username.value == "nobody@mozilla.com") {
           alert("You must provide a valid user name and password to continue.");
           return false;
@@ -75,10 +73,3 @@ SyncWizard.prototype = {
 };
 
 let gSyncWizard = new SyncWizard();
-
-function LOG(aText) {
-  dump(aText + "\n");
-  var consoleService = Cc["@mozilla.org/consoleservice;1"].
-                       getService(Ci.nsIConsoleService);
-  consoleService.logStringMessage(aText);
-}
