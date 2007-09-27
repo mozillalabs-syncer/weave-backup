@@ -40,9 +40,36 @@ function loadLog() {
 
   fis.close();
 
-  let textbox = document.getElementById("logText");
+  let textbox = document.getElementById("log-text");
   if (textbox) {
     textbox.value = log;
+  }
+}
+
+function saveAs() {
+  let dirSvc = Cc["@mozilla.org/file/directory_service;1"].
+  getService(Ci.nsIProperties);
+
+  let file = dirSvc.get("ProfD", Ci.nsIFile);
+  file.append("bm-sync.log");
+  file.QueryInterface(Ci.nsILocalFile);
+
+  if (!file.exists()) {
+    alert("No log available");
+    return;
+  }
+
+  let backupsDir = dirSvc.get("Desk", Ci.nsILocalFile);
+  let fp = Cc["@mozilla.org/filepicker;1"].createInstance(Ci.nsIFilePicker);
+  fp.init(window, "Choose Destination File", Ci.nsIFilePicker.modeSave);
+  fp.appendFilters(Ci.nsIFilePicker.filterAll);
+  fp.displayDirectory = backupsDir;
+  fp.defaultString = "Bookmarks Sync.log";
+
+  if (fp.show() != Ci.nsIFilePicker.returnCancel) {
+    if (fp.file.exists())
+      fp.file.remove(false);
+    file.copyTo(fp.file.parent, fp.file.leafName);
   }
 }
 

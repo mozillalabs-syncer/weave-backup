@@ -5,17 +5,16 @@
         id="syncLogWindow"
         windowtype="Sync:Log"
         title="Mozilla Sync - Activity Log"
-        buttons="accept">
+        buttons="extra1,accept"
+        buttonlabelextra1="Save As..."
+        ondialogextra1="saveAs();">
 
   <script type="application/x-javascript"
           src="chrome://sync/content/log.js"/>
 
-  <textbox id="logText"
-           multiline="true"
-           readonly="true"
-           cols="80"
-           rows="40"
-           flex="1"
-           value="No logfile available"/>
+  <textbox id="log-text"
+           multiline="true" readonly="true"
+           rows="40" cols="80" flex="1"
+           value="No log available"/>
 
 </dialog>
