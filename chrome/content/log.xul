@@ -10,6 +10,12 @@
   <script type="application/x-javascript"
           src="chrome://sync/content/log.js"/>
 
-  <textbox id="logText" multiline="true" value="{default text}"/>
+  <textbox id="logText"
+           multiline="true"
+           readonly="true"
+           cols="80"
+           rows="40"
+           flex="1"
+           value="No logfile available"/>
 
 </dialog>

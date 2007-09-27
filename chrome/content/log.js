@@ -31,11 +31,14 @@ function loadLog() {
   fis.QueryInterface(Ci.nsILineInputStream);
 
   let log = "";
-  while (fis.available()) {
-    let ret = {};
-    fis.readLine(ret);
-    log += ret.value;
-  }
+  let line = {value: ""};
+  let hasmore;
+  do {
+    hasmore = fis.readLine(line)
+    log += line.value + "\n";
+  } while (hasmore);
+
+  fis.close();
 
   let textbox = document.getElementById("logText");
   if (textbox) {
