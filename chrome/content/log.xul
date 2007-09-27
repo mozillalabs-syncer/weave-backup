@@ -2,7 +2,14 @@
 <?xml-stylesheet href="chrome://global/skin/global.css" type="text/css"?>
 
 <dialog xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-	id="sync-log" title="Mozilla Sync - Activity Log"
-	buttons="accept">
+        id="syncLogWindow"
+        windowtype="Sync:Log"
+        title="Mozilla Sync - Activity Log"
+        buttons="accept">
+
+  <script type="application/x-javascript"
+          src="chrome://sync/content/log.js"/>
+
+  <textbox id="logText" multiline="true" value="{default text}"/>
 
 </dialog>

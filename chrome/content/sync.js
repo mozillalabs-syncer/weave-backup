@@ -198,8 +198,17 @@ Sync.prototype = {
   },
 
   doOpenActivityLog: function Sync_doOpenActivityLog(event) {
-    window.openDialog('chrome://sync/content/log.xul', '',
-                      'chrome, dialog, modal, resizable=yes', null).focus();
+    let wm = Cc["@mozilla.org/appshell/window-mediator;1"].
+      getService(Ci.nsIWindowMediator);
+    let logWindow = wm.getMostRecentWindow('Sync:Log');
+    if (logWindow)
+      logWindow.focus();
+     else {
+       var ww = Cc["@mozilla.org/embedcomp/window-watcher;1"].
+         getService(Ci.nsIWindowWatcher);
+       ww.openWindow(null, 'chrome://sync/content/log.xul', '',
+                     'chrome,centerscreen,dialog,modal,resizable=yes', null);
+     }
   },
 
   doPopup: function Sync_doPopup(event) {
@@ -283,5 +292,4 @@ Sync.prototype = {
 };
 
 let gSync = new Sync();
-
 window.addEventListener("load", function(e) { gSync.startUp(e); }, false);
