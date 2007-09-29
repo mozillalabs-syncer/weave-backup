@@ -133,26 +133,6 @@ Sync.prototype = {
       cancelsyncitem.setAttribute("disabled", "true");
   },
 
-  _addUserLogin: function Sync__addUserLogin(username, password) {
-    let branch = Cc["@mozilla.org/preferences-service;1"].
-      getService(Ci.nsIPrefBranch);
-    branch.setCharPref("browser.places.sync.username", username);
-
-    let serverURL = branch.getCharPref("browser.places.sync.serverURL");
-    let ioservice = Cc["@mozilla.org/network/io-service;1"].
-                    getService(Ci.nsIIOService);
-    let uri = ioservice.newURI(serverURL, null, null);
-
-    // fixme: make a request and get the realm
-    let nsLoginInfo = new Components.Constructor(
-      "@mozilla.org/login-manager/loginInfo;1", Ci.nsILoginInfo, "init");
-    let login = new nsLoginInfo(uri.hostPort, null,
-                                'Use your ldap username/password - dotmoz',
-                                username, password, null, null);
-    let pm = Cc["@mozilla.org/login-manager;1"]. getService(Ci.nsILoginManager);
-    pm.addLogin(login);
-  },
-
   startUp: function Sync_startUp(event) {
     let branch = Cc["@mozilla.org/preferences-service;1"].
       getService(Ci.nsIPrefBranch);
@@ -163,14 +143,11 @@ Sync.prototype = {
   },
 
   doLoginPopup : function Sync_doLoginPopup(event) {
-  	let branch = Cc["@mozilla.org/preferences-service;1"].
-	  getService(Ci.nsIPrefBranch);
+    let branch = Cc["@mozilla.org/preferences-service;1"].
+      getService(Ci.nsIPrefBranch);
   },
   
   doLogin: function Sync_doLogin(event) {
-    // xxx hack: uncomment and edit once to set your password - need ui
-    //this._addUserLogin('nobody@mozilla.com', 'password');
-
     let branch = Cc["@mozilla.org/preferences-service;1"].
       getService(Ci.nsIPrefBranch);
     let username = branch.getCharPref("browser.places.sync.username");
