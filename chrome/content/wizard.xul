@@ -11,27 +11,35 @@
     src="chrome://sync/content/wizard.js"/>
 
   <wizardpage pageid="sync-wizard-welcome" onpageshow="gSyncWizard.onPageShow('sync-wizard-welcome');">
-
+    <description style="font-weight: bold; font-size: 12px;">
+    Step 1 of 6
+    </description>
+    <separator class="thin" />
     <description style="font-weight: bold; font-size: 14px;">
     Mozilla Services Setup
     </description>
-
+    <separator class="thin" />
     <description>
-    easy steps...
+    This Wizard will guide you through the steps necessary to backup your current bookmarks, login to the Mozilla Service, and start synchronizing your data between two or more computers.
     </description>
-
+    <separator class="thin" />
+    <separator class="thin" />
+    <separator class="thin" />
     <description style="font-weight: bold;">
-    WARNING: This is prototype software that has NOT been TESTED. If that sounds scary to you, you should click on "Cancel" now. This program is provided without any guarantees of stability, so please use it at your own risk.
+    WARNING: THIS IS PROTOTYPE SOFTWARE THAT HAS NOT BEEN TESTED. If that sounds scary you, you should click "Cancel" now.
     </description>
   </wizardpage>
  
   <wizardpage pageid="sync-wizard-privacy" onpageshow="gSyncWizard.onPageShow('sync-wizard-privacy');">
+    <description style="font-weight: bold; font-size: 12px;">
+    Step 2 of 6
+    </description>
+    <separator class="thin" />
     <description style="font-weight: bold; font-size: 14px;">
     Privacy Policy and Terms of Use
     </description>
-
+    <separator class="thin" />
     <description>
-        Here's where we tell you how this works and what we're doing with all your bar when you use foo.
     </description>
     <separator class="thin" />
     <iframe src="chrome://sync/content/EULA.xhtml" flex="1"/>
@@ -43,19 +51,34 @@
   </wizardpage>
 
   <wizardpage pageid="sync-wizard-backup" onpageshow="gSyncWizard.onPageShow('sync-wizard-backup');">
-    <description>
-       Backup your bookmarks, because you *will* lose them.
+    <description style="font-weight: bold; font-size: 12px;">
+    Step 3 of 6
     </description>
+    <separator class="thin" />
+    <description style="font-weight: bold; font-size: 14px;">
+    Backup Your Bookmarks
+    </description>
+    <separator class="thin" />
+    <description>
+    It is vital that you make a backup copy of your bookmarks now. This will allow you to recover from any data loss you may experience by using this prototype.
+    </description>
+    <button id="sync-wizard-backup-button" label="Backup Bookmarks..." oncommand="return gSyncWizard.onBookmarksBackup(event);"/>
 
-    <button id="sync-wizard-backup-button" label="Backup Bookmarks Now" oncommand="return gSyncWizard.onBookmarksBackup(event);"/>
   </wizardpage>
 
   <wizardpage pageid="sync-wizard-account" onpageshow="gSyncWizard.onPageShow('sync-wizard-account');">
+    <description style="font-weight: bold; font-size: 12px;">
+    Step 4 of 6
+    </description>
+    <separator class="thin" />
+    <description style="font-weight: bold; font-size: 14px;">
+    Login Details
+    </description>
+    <separator class="thin" />
     <description>
-      And here we're going to get the information needed to connect you to foo.
+    This prototype uses your Mozilla LDAP user name (e.g. chris@mozilla.com) and password to login.
     </description>
     <groupbox>
-      <caption label="Account Information"/>
       <vbox>
        <hbox align="center">
         <label value="User Name:" control="sync-username-field"/>
@@ -84,8 +107,21 @@
   </wizardpage>
 
   <wizardpage pageid="sync-wizard-initialization" onpageshow="gSyncWizard.onPageShow('sync-wizard-initialization');">
-    <description>
+    <description style="font-weight: bold; font-size: 12px;">
+    Step 5 of 6
     </description>
+    <separator class="thin" />
+    <description style="font-weight: bold; font-size: 14px;">
+    Initial Synchronization
+    </description>
+    <separator class="thin" />
+    <description>
+    You're now ready to synchronize this computer with your online bookmarks.  If this is your first time, we will simply upload a representation of your bookmarks over SSL to a secure remote server.
+    </description>
+    <description>
+    If you have previously setup another computer, we will merge your bookmarks and reconcile any conflicts for you.
+    </description>
+  
         <button id="sync-wizard-initialization-button" label="Perform Initial Sync" oncommand="return gSyncWizard.onSync(event);"/>
        <hbox align="center">
          <image id="sync-wizard-initialization-throbber-active" src="chrome://sync/skin/sync-throbber-16x16-active.apng" hidden="true"/>
@@ -95,8 +131,16 @@
   </wizardpage>
 
   <wizardpage id="sync-wizard-complete">
+    <description style="font-weight: bold; font-size: 12px;">
+    Step 6 of 6
+    </description>
+    <separator class="thin" />
+    <description style="font-weight: bold; font-size: 14px;">
+    Setup Complete
+    </description>
+    <separator class="thin" />
     <description>
-        That's it!
+    INSERT: information on how to report bugs, options to enable automatic sync
     </description>
   </wizardpage>
 
