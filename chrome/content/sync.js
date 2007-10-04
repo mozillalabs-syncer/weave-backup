@@ -152,14 +152,17 @@ Sync.prototype = {
       getService(Ci.nsIPrefBranch);
     let username = branch.getCharPref("browser.places.sync.username");
     if(!username || username == 'nobody@mozilla.com') {
-      window.openDialog('chrome://sync/content/wizard.xul', '',
-        'chrome, dialog, modal, resizable=yes', null);
-      return;
+		this.doOpenSetupWizard();
+        return;
     }
 
     this._ss.login();
   },
   
+  doOpenSetupWizard : function Sync_doOpenSetupWizard(event) {
+      window.openDialog('chrome://sync/content/wizard.xul', '',
+        'chrome, dialog, modal, resizable=yes', null);  	
+  },
 
   doLogout: function Sync_doLogout(event) {
     this._ss.logout();

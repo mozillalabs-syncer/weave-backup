@@ -3,56 +3,95 @@
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
 
 <wizard id="sync-wizard" title="Sync Foo"
-  onwizardnext = "return gSyncWizard.onNext(event);"
-  onwizardback = "return gSyncWizard.onBack();"
-  onwizardcancel = "return gSyncWizard.onCancel();"
-  onwizardfinish = "return gSyncWizard.onFinish();"
   xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
   <script type="application/x-javascript"
+            src="chrome://browser/content/places/utils.js"/>
+  <script type="application/x-javascript"
     src="chrome://sync/content/wizard.js"/>
 
-  <wizardpage pageid="sync-wizard-welcome">
+  <wizardpage pageid="sync-wizard-welcome" onpageshow="gSyncWizard.onPageShow('sync-wizard-welcome');">
+
+    <description style="font-weight: bold; font-size: 14px;">
+    Mozilla Services Setup
+    </description>
+
     <description>
-     This is where we tell you a little bit about foo and how amazingly wonderful it is.
+    easy steps...
+    </description>
+
+    <description style="font-weight: bold;">
+    WARNING: This is prototype software that has NOT been TESTED. If that sounds scary to you, you should click on "Cancel" now. This program is provided without any guarantees of stability, so please use it at your own risk.
     </description>
   </wizardpage>
  
-  <wizardpage pageid="sync-wizard-privacy">
+  <wizardpage pageid="sync-wizard-privacy" onpageshow="gSyncWizard.onPageShow('sync-wizard-privacy');">
+    <description style="font-weight: bold; font-size: 14px;">
+    Privacy Policy and Terms of Use
+    </description>
+
     <description>
         Here's where we tell you how this works and what we're doing with all your bar when you use foo.
     </description>
+    <separator class="thin" />
+    <iframe src="chrome://sync/content/EULA.xhtml" flex="1"/>
+    <separator class="thin" />
     <radiogroup>
-      <radio id="sync-privacy-accept" label="I accept the terms of the service"/>
-      <radio label="I DO NOT accept the terms of service" selected="true"/>
+      <radio oncommand="gSyncWizard.onAcceptTerms();" label="I accept the terms of the service"/>
+      <radio oncommand="gSyncWizard.onDeclineTerms();" label="I DO NOT accept the terms of service" selected="true"/>
     </radiogroup>
   </wizardpage>
 
-  <wizardpage pageid="sync-wizard-account">
+  <wizardpage pageid="sync-wizard-backup" onpageshow="gSyncWizard.onPageShow('sync-wizard-backup');">
+    <description>
+       Backup your bookmarks, because you *will* lose them.
+    </description>
+
+    <button id="sync-wizard-backup-button" label="Backup Bookmarks Now" oncommand="return gSyncWizard.onBookmarksBackup(event);"/>
+  </wizardpage>
+
+  <wizardpage pageid="sync-wizard-account" onpageshow="gSyncWizard.onPageShow('sync-wizard-account');">
     <description>
       And here we're going to get the information needed to connect you to foo.
     </description>
     <groupbox>
       <caption label="Account Information"/>
-      <hbox align="center">
+      <vbox>
+       <hbox align="center">
         <label value="User Name:" control="sync-username-field"/>
         <textbox id="sync-username-field"
            class="padded" flex="1"
            preference="sync-username"/>
-      </hbox>
-      <hbox align="center">
+       </hbox>
+       <hbox align="center">
         <label value="Password:" control="sync-password-field"/>
         <textbox id="sync-password-field"
            class="padded" flex="1"
            type="password"/>
         </hbox>
+
+        <button label="Verify Account" oncommand="return gSyncWizard.onVerify(event);"/>
+
+       <hbox align="center">
+         <image id="sync-wizard-verify-throbber-active" src="chrome://sync/skin/sync-throbber-16x16-active.apng" hidden="true"/>
+         <image id="sync-wizard-verify-throbber" src="chrome://sync/skin/sync-throbber-16x16.png"/>
+
+         <label id="sync-wizard-verify-status" value="Status: Unverified."/>
+       </hbox>
+
+      </vbox>
     </groupbox>
   </wizardpage>
 
-  <wizardpage pageid="sync-wizard-initialization">
+  <wizardpage pageid="sync-wizard-initialization" onpageshow="gSyncWizard.onPageShow('sync-wizard-initialization');">
     <description>
-	This is where we do the first synchronization.
     </description>
+        <button id="sync-wizard-initialization-button" label="Perform Initial Sync" oncommand="return gSyncWizard.onSync(event);"/>
+       <hbox align="center">
+         <image id="sync-wizard-initialization-throbber-active" src="chrome://sync/skin/sync-throbber-16x16-active.apng" hidden="true"/>
+         <image id="sync-wizard-initialization-throbber" src="chrome://sync/skin/sync-throbber-16x16.png"/>
+         <label id="sync-wizard-initialization-status" value="Status: Ready to Sync."/>
+       </hbox>
   </wizardpage>
 
   <wizardpage id="sync-wizard-complete">

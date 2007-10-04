@@ -59,6 +59,11 @@
                           checked="false" autocheck="false"
                           label="Open Sync Preferences"
                           oncommand="gSync.doOpenPrefs(event);"/>
+                <menuitem id="sync-opensetupitem"
+                          disabled="false"
+                          checked="false" autocheck="false"
+                          label="Run Setup Wizard"
+                          oncommand="gSync.doOpenSetupWizard(event);"/>
 		<menuitem id="sync-openlogitem"
                           disabled="false"
                           checked="false" autocheck="false"
