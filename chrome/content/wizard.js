@@ -151,17 +151,30 @@ SyncWizard.prototype = {
   },
    
   onVerify : function SyncWizard_onVerify() {
-   let username = document.getElementById('sync-username-field');
-   let password = document.getElementById('sync-password-field');
+    let username = document.getElementById('sync-username-field');
+    let password = document.getElementById('sync-password-field');
 
-   if((!username || !password) || (!username.value || !password.value) || username.value == "nobody@mozilla.com") {
+    if (!(username && password && username.value && password.value &&
+          username.value != 'nobody@mozilla.com')) {
       alert("You must provide a valid user name and password to continue.");
       return;
-   }
+    }
 
-	this._addUserLogin(username.value, password.value);
-	this._ss.logout();
-	this._ss.login();
+    this._addUserLogin(username.value, password.value);
+    this._ss.logout();
+
+    // FIXME: horrid hack to cause the server-side directory to be
+    // created during the account setup
+    let branch = Cc["@mozilla.org/preferences-service;1"].
+      getService(Ci.nsIPrefBranch);
+    let serverURL = branch.getCharPref("browser.places.sync.serverURL");
+    let m = /^(.*\/)user\/$/.exec(serverURL);
+    if (m) {
+      this._savedServerURL = serverURL;
+      branch.setCharPref("browser.places.sync.serverURL",
+                         m[0] + "createAcct.php");
+    }
+    this._ss.login();
   },
   
   onSync: function SyncWizard_onSync() {
@@ -169,41 +182,52 @@ SyncWizard.prototype = {
   },
 
   observe: function(subject, topic, data) {
+    let wizard = document.getElementById('sync-wizard');
+    let verifyStatus, initStatus, throbber1, throbber2;
+
     switch(topic) {
     case "bookmarks-sync:login":
-       var status1 = document.getElementById('sync-wizard-verify-status');
-	   status1.setAttribute("value", "Status: Login Verified");
-       var wizard = document.getElementById('sync-wizard');
-	   wizard.canAdvance = true;
-       break;
+      verifyStatus = document.getElementById('sync-wizard-verify-status');
+      if (this._savedServerURL) {
+        let branch = Cc["@mozilla.org/preferences-service;1"].
+          getService(Ci.nsIPrefBranch);
+        branch.setCharPref("browser.places.sync.serverURL", this._savedServerURL);
+        this._savedServerURL = null;
+      }
+      verifyStatus.setAttribute("value", "Status: Login Verified");
+      wizard.canAdvance = true;
       break;
     case "bookmarks-sync:logout":
       break;
     case "bookmarks-sync:login-error":
-       var status1 = document.getElementById('sync-wizard-verify-status');
-	   status1.setAttribute("value", "Status: Login Failed");
-       var wizard = document.getElementById('sync-wizard');
-	   wizard.canAdvance = false;
+      verifyStatus = document.getElementById('sync-wizard-verify-status');
+      if (this._savedServerURL) {
+        let branch = Cc["@mozilla.org/preferences-service;1"].
+          getService(Ci.nsIPrefBranch);
+        branch.setCharPref("browser.places.sync.serverURL", this._savedServerURL);
+        this._savedServerURL = null;
+      }
+      verifyStatus.setAttribute("value", "Status: Login Failed");
+      wizard.canAdvance = false;
       break;
     case "bookmarks-sync:start":
-	   var throbber1 = document.getElementById('sync-wizard-initialization-throbber-active');
-	   var throbber2 = document.getElementById('sync-wizard-initialization-throbber');
-	   var status1 = document.getElementById('sync-wizard-initialization-status');
-	   throbber1.setAttribute("hidden", false);
-	   throbber2.setAttribute("hidden", true);
-	   status1.setAttribute("value", "Status: Syncing...");
+      initStatus = document.getElementById('sync-wizard-initialization-status');
+      throbber1 = document.getElementById('sync-wizard-initialization-throbber-active');
+      throbber2 = document.getElementById('sync-wizard-initialization-throbber');
+      throbber1.setAttribute("hidden", false);
+      throbber2.setAttribute("hidden", true);
+      initStatus.setAttribute("value", "Status: Syncing...");
       break;
     case "bookmarks-sync:end":
-	   var throbber1 = document.getElementById('sync-wizard-initialization-throbber-active');
-	   var throbber2 = document.getElementById('sync-wizard-initialization-throbber');
-       var sync1 = document.getElementById('sync-wizard-initialization-button');
-	   var status1 = document.getElementById('sync-wizard-initialization-status');
-	   throbber1.setAttribute("hidden", true);
-	   throbber2.setAttribute("hidden", false);
-	   sync1.setAttribute("disabled", true);
-	   status1.setAttribute("value", "Status: Sync Complete");
-       var wizard = document.getElementById('sync-wizard');
-	   wizard.canAdvance = true;
+      initStatus = document.getElementById('sync-wizard-initialization-status');
+      throbber1 = document.getElementById('sync-wizard-initialization-throbber-active');
+      throbber2 = document.getElementById('sync-wizard-initialization-throbber');
+      let sync1 = document.getElementById('sync-wizard-initialization-button');
+      sync1.setAttribute("disabled", true);
+      throbber1.setAttribute("hidden", true);
+      throbber2.setAttribute("hidden", false);
+      initStatus.setAttribute("value", "Status: Sync Complete");
+      wizard.canAdvance = true;
       break;                                      
     }
   }
