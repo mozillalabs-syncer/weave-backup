@@ -13,7 +13,7 @@
         name="browser.places.sync.username"  
         type="string" />
       <preference id="sync-autoconnect"
-        name="extensions.sync.autoconnect"
+        name="browser.places.sync.autoconnect"
         type="bool" />
       <preference id="sync-server"
         name="browser.places.sync.serverURL"

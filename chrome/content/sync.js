@@ -136,9 +136,9 @@ Sync.prototype = {
   startUp: function Sync_startUp(event) {
     let branch = Cc["@mozilla.org/preferences-service;1"].
       getService(Ci.nsIPrefBranch);
-    let autoconnect = branch.getBoolPref("extensions.sync.autoconnect");
+    let autoconnect = branch.getBoolPref("browser.places.sync.autoconnect");
     let username = branch.getCharPref("browser.places.sync.username");
-    if(autoconnect && (!(username || username == 'nobody@mozilla.com'))) // XXX to ensure we have a valid login?
+    if(autoconnect && username && username != 'nobody@mozilla.com')
       this._ss.login();
   },
 
@@ -201,7 +201,7 @@ Sync.prototype = {
   doPopup: function Sync_doPopup(event) {
     let pref = Cc["@mozilla.org/preferences-service;1"].
       getService(Ci.nsIPrefBranch);
-    let lastSync = pref.getCharPref("extensions.sync.lastsync");
+    let lastSync = pref.getCharPref("browser.places.sync.lastsync");
     if(lastSync) {
       let lastsyncitem = document.getElementById("sync-lastsyncitem");
       if(lastsyncitem) {
@@ -249,7 +249,7 @@ Sync.prototype = {
     let branch = Cc["@mozilla.org/preferences-service;1"].
       getService(Ci.nsIPrefBranch);
     let lastSync = new Date(). getTime();
-    branch.setCharPref("extensions.sync.lastsync", lastSync);
+    branch.setCharPref("browser.places.sync.lastsync", lastSync);
 
     let lastsyncitem = document.getElementById("sync-lastsyncitem");
     if(lastsyncitem)
