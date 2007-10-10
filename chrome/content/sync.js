@@ -52,7 +52,7 @@ Sync.prototype = {
   get _ss() {
     if (!this.__ss)
       this.__ss = Cc["@mozilla.org/places/sync-service;1"].
-        getService(Ci.nsIBookmarksSyncService);
+        getService(Ci.IBookmarksSyncService);
     return this.__ss;
   },
 
@@ -64,15 +64,20 @@ Sync.prototype = {
     return this.__os;
   },
 
+  _log: null,
+
   _init: function Sync__init() {
     this._os.addObserver(this, "bookmarks-sync:login", false);
     this._os.addObserver(this, "bookmarks-sync:logout", false);
     this._os.addObserver(this, "bookmarks-sync:start", false);
     this._os.addObserver(this, "bookmarks-sync:end", false);
+    let logSvc = Cc["@mozilla.org/log4moz/service;1"].
+      getService(Ci.ILog4MozService);
+    this._log = logSvc.getLogger("chrome");
   },
 
   _onLogin: function Sync__onLogin() {
-    this._ss.notice("Login successful");
+    this._log.info("Login successful");
 
     let status1 = document.getElementById("sync-menu-status");
     if(status1) {
@@ -173,7 +178,7 @@ Sync.prototype = {
   },
 
   doCancelSync: function Sync_doCancelSync(event) {
-    this._ss.notice("cancel sync unimplemented");
+    this._log.error("cancel sync unimplemented");
   },
 
   doOpenPrefs: function Sync_doOpenPrefs(event) {
