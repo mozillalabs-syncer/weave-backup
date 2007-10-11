@@ -73,7 +73,7 @@ Sync.prototype = {
     this._os.addObserver(this, "bookmarks-sync:end", false);
     let logSvc = Cc["@mozilla.org/log4moz/service;1"].
       getService(Ci.ILog4MozService);
-    this._log = logSvc.getLogger("chrome");
+    this._log = logSvc.getLogger("Chrome.Window");
   },
 
   _onLogin: function Sync__onLogin() {
