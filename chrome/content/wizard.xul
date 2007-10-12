@@ -3,6 +3,8 @@
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
 
 <wizard id="sync-wizard" title="Sync Foo"
+  height="400"
+  width="600"
   xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
   <script type="application/x-javascript"
@@ -22,12 +24,6 @@
     <description>
     This Wizard will guide you through the steps necessary to backup your current bookmarks, login to the Mozilla Service, and start synchronizing your data between two or more computers.
     </description>
-    <separator class="thin" />
-    <separator class="thin" />
-    <separator class="thin" />
-    <description style="font-weight: bold;">
-    WARNING: THIS IS PROTOTYPE SOFTWARE THAT HAS NOT BEEN TESTED. If that sounds scary you, you should click "Cancel" now.
-    </description>
   </wizardpage>
  
   <wizardpage pageid="sync-wizard-privacy" onpageshow="gSyncWizard.onPageShow('sync-wizard-privacy');">
@@ -37,9 +33,6 @@
     <separator class="thin" />
     <description style="font-weight: bold; font-size: 14px;">
     Privacy Policy and Terms of Use
-    </description>
-    <separator class="thin" />
-    <description>
     </description>
     <separator class="thin" />
     <iframe src="chrome://sync/content/EULA.xhtml" flex="1"/>
@@ -62,8 +55,7 @@
     <description>
     It is vital that you make a backup copy of your bookmarks now. This will allow you to recover from any data loss you may experience by using this prototype.
     </description>
-    <button id="sync-wizard-backup-button" label="Backup Bookmarks..." oncommand="return gSyncWizard.onBookmarksBackup(event);"/>
-
+    <button class="dialog" id="sync-wizard-backup-button" label="Backup Bookmarks..." oncommand="return gSyncWizard.onBookmarksBackup(event);"/>
   </wizardpage>
 
   <wizardpage pageid="sync-wizard-account" onpageshow="gSyncWizard.onPageShow('sync-wizard-account');">
