@@ -13,14 +13,14 @@
     <em:targetApplication>
       <Description>
         <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
-        <em:minVersion>3.0.a9*</em:minVersion>
-        <em:maxVersion>3.0.*</em:maxVersion>
+        <em:minVersion>3.0a9pre</em:minVersion>
+        <em:maxVersion>3.0a9pre</em:maxVersion>
       </Description>
     </em:targetApplication>
    
     <!-- Front End MetaData -->
-    <em:name>Mozilla Synchotron 9000</em:name>
-    <em:description>The Synchotron 9000 keeps all your bookmarks in sync by using Mozilla Services with Synchotronic Pro Plus(tm) technology</em:description>
+    <em:name>Mozilla Synchotron 9000+</em:name>
+    <em:description>The Synchotron 9000+ keeps all your bookmarks in sync by using Mozilla Services with Synchotronic Pro Plus(tm) technology</em:description>
     <em:creator>Mozilla Labs Team</em:creator>
     <em:homepageURL>http://labs.mozilla.com/projects/synchotron/</em:homepageURL>
     <em:updateURL>https://labs.mozilla.com/projects/synchotron/dist/update.rdf</em:updateURL>
