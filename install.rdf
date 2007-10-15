@@ -4,7 +4,7 @@
      xmlns:em="http://www.mozilla.org/2004/em-rdf#">
 
   <Description about="urn:mozilla:install-manifest">
-    <em:id>sync@sandmill.org</em:id>
+    <em:id>synchotron@labs.mozilla.com</em:id>
     <em:version>1.0</em:version>
     <em:type>2</em:type>
    
@@ -13,15 +13,16 @@
     <em:targetApplication>
       <Description>
         <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
-        <em:minVersion>1.5</em:minVersion>
-        <em:maxVersion>3.0.a3*</em:maxVersion>
+        <em:minVersion>3.0.a9*</em:minVersion>
+        <em:maxVersion>3.0.*</em:maxVersion>
       </Description>
     </em:targetApplication>
    
     <!-- Front End MetaData -->
-    <em:name>Sync Foo</em:name>
-    <em:description>This extension adds some sync-foo to your browser!</em:description>
-    <em:creator>Dan Mills</em:creator>
-    <em:homepageURL>http://sandmill.org/</em:homepageURL>
+    <em:name>Mozilla Synchotron 9000</em:name>
+    <em:description>The Synchotron 9000 keeps all your bookmarks in sync by using Mozilla Services with Synchotronic Pro Plus(tm) technology</em:description>
+    <em:creator>Mozilla Labs Team</em:creator>
+    <em:homepageURL>http://labs.mozilla.com/projects/synchotron/</em:homepageURL>
+    <em:updateURL>https://labs.mozilla.com/projects/synchotron/dist/update.rdf</em:updateURL>
   </Description>      
 </RDF>
