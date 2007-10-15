@@ -12,8 +12,30 @@
   <script type="application/x-javascript"
           src="chrome://sync/content/log.js"/>
 
-  <iframe id="sync-log-frame"
-          style="min-height : 25em; min-width: 80em; background-color:white;"
-          type="content" flex="1"/>
+  <preferences id="syncLogPrefs">
+    <preference id="browser.places.sync.log.selectedTabIndex"
+                name="browser.places.sync.log.selectedTabIndex"
+                type="int"/>
+  </preferences>
+
+  <tabbox id="syncLogTabs" flex="1"
+          onselect="gSyncLog.onSelectionChanged();">
+    <tabs>
+        <tab id="syncLogTab" label="Brief Log"/>
+        <tab id="syncLogVerboseTab" label="Verbose Log"/>
+    </tabs>
+    <tabpanels flex="1">
+      <tabpanel id="syncLogPanel" flex="1">
+        <iframe id="sync-log-frame"
+                style="min-height : 25em; min-width: 80em; background-color:white;"
+                type="content" flex="1"/>
+      </tabpanel>
+      <tabpanel id="syncLogVerbosePanel" flex="1">
+        <iframe id="sync-log-verbose-frame"
+                style="min-height : 25em; min-width: 80em; background-color:white;"
+                type="content" flex="1"/>
+      </tabpanel>
+    </tabpanels>
+  </tabbox>
 
 </dialog>

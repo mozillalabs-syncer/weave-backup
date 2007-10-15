@@ -11,29 +11,59 @@ const MODE_TRUNCATE = 0x20;
 const PERMS_FILE      = 0644;
 const PERMS_DIRECTORY = 0755;
 
-function onLoad() {
-  let dirSvc = Cc["@mozilla.org/file/directory_service;1"].
-  getService(Ci.nsIProperties);
+gSyncLog = {
+  init: function() {
+    let tabbox = document.getElementById("syncLogTabs");
+    let index = document.getElementById("browser.places.sync.log.selectedTabIndex");
+    if (index.value != null)
+      tabbox.selectedIndex = index.value;
+    this.loadLogs();
+  },
 
-  let file = dirSvc.get("ProfD", Ci.nsIFile);
-  file.append("bm-sync.log");
+  onSelectionChanged: function() {
+    let tabbox = document.getElementById("syncLogTabs");
+    let index = document.getElementById("browser.places.sync.log.selectedTabIndex");
+    index.valueFromPreferences = tabbox.selectedIndex;
+  },
 
-  if (!file.exists()) {
-    document.getElementById("sync-log-frame").
-      setAttribute("src", "chrome://sync/content/default-log.txt");
-    return;
+  loadLogs: function() {
+    let dirSvc = Cc["@mozilla.org/file/directory_service;1"].
+    getService(Ci.nsIProperties);
+
+    let file = dirSvc.get("ProfD", Ci.nsIFile);
+    file.append("bm-sync.log");
+
+    if (file.exists())
+      document.getElementById("sync-log-frame").
+        setAttribute("src", "file://" + file.path);
+    else
+      document.getElementById("sync-log-frame").
+        setAttribute("src", "chrome://sync/content/default-log.txt");
+
+    let verboseFile = file.parent.clone();
+    verboseFile.append("bm-sync-verbose.log");
+
+    if (verboseFile.exists())
+      document.getElementById("sync-log-verbose-frame").
+        setAttribute("src", "file://" + verboseFile.path);
+    else
+      document.getElementById("sync-log-verbose-frame").
+        setAttribute("src", "chrome://sync/content/default-log.txt");
   }
-
-  document.getElementById("sync-log-frame").
-    setAttribute("src", "file://" + file.path);
 }
 
 function saveAs() {
+  let tabbox = document.getElementById("syncLogTabs");
+  let index = tabbox.selectedIndex;
+
   let dirSvc = Cc["@mozilla.org/file/directory_service;1"].
   getService(Ci.nsIProperties);
 
   let file = dirSvc.get("ProfD", Ci.nsIFile);
-  file.append("bm-sync.log");
+  if (index == 0)
+    file.append("bm-sync.log");
+  else
+    file.append("bm-sync-verbose.log");
   file.QueryInterface(Ci.nsILocalFile);
 
   if (!file.exists()) {
@@ -55,4 +85,4 @@ function saveAs() {
   }
 }
 
-window.addEventListener("load", function(e) { onLoad(e); }, false);
+window.addEventListener("load", function(e) { gSyncLog.init(e); }, false);
