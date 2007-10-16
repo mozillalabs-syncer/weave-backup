@@ -45,12 +45,12 @@ SyncWizard.prototype = {
     let nsLoginInfo = new Components.Constructor(
       "@mozilla.org/login-manager/loginInfo;1", Ci.nsILoginInfo, "init");
     let login = new nsLoginInfo(uri.hostPort, null,
-                                'Use your ldap username/password - dotmoz',
+                                'services.mozilla.com',
                                 username, password, null, null);
     let pm = Cc["@mozilla.org/login-manager;1"]. getService(Ci.nsILoginManager);
 	
 	let logins = pm.findLogins({}, uri.hostPort, null,
-                                 'Use your ldap username/password - dotmoz');
+                                 'services.mozilla.com');
     	   
     let found = 0;
     for(let i = 0; i < logins.length; i++) {
@@ -88,8 +88,7 @@ SyncWizard.prototype = {
         let serverURL = branch.getCharPref("browser.places.sync.serverURL");
  		let uri = makeURI(serverURL);
         let lm = Cc["@mozilla.org/login-manager;1"].getService(Ci.nsILoginManager);
-        let logins = lm.findLogins({}, uri.hostPort, null,
-                                 'Use your ldap username/password - dotmoz');
+        let logins = lm.findLogins({}, uri.hostPort, null, 'services.mozilla.com');
 	   var status1 = document.getElementById('sync-wizard-verify-status');
        status1.setAttribute("value", "Status: Unverified.");
         if(logins.length) {
