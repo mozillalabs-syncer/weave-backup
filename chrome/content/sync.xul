@@ -28,7 +28,7 @@
 	    <image id="sync-throbber-offline"
                    hidden="false"
                    width="16" height="16"
-                   src="chrome://sync/skin/sync-throbber-16x16-inactive.png"/>
+                   src="chrome://sync/skin/sync-throbber-16x16.png"/>
 
             <menupopup id="sync-menu"
                        onpopupshowing="if(event.target == this) gSync.doPopup(event);" >
