@@ -80,6 +80,8 @@ SyncPane.prototype = {
       logingroup.setAttribute("hidden", "false");
       resetgroup.setAttribute("hidden", "true");
     }
+
+    this.onPaneLoad();
   },
 
   resetServerLock: function SyncPane_resetServerLock()
@@ -101,6 +103,8 @@ SyncPane.prototype = {
         lm.removeLogin(logins[i]);
       }
     }
+
+    branch.clearUserPref("browser.places.sync.username");
     
     let logingroup = document.getElementById('sync-login-group');
     let resetgroup = document.getElementById('sync-reset-group');

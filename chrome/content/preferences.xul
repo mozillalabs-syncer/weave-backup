@@ -40,7 +40,7 @@
      <tabs>
         <tab id="accountTab" label="Account" helpTopic="prefs-sync-account"/>
         <tab id="syncTab" label="Sync" helpTopic="prefs-sync-sync"/>
-        <tab id="addonsTab" label="Add-ons" helpTopic="prefs-sync-addons"/>
+        <tab id="serviceaddonsTab" label="Add-ons" helpTopic="prefs-sync-serviceaddons"/>
         <tab id="advancedTab" label="Advanced" helpTopic="prefs-advanced-advanced"/>
      </tabs>
 
@@ -71,7 +71,7 @@
             <separator orient="vertical"/>
             <vbox>
               <checkbox id="sync-autoconnect-checkbox" class="indent" label="Automatically connect each time I start Firefox" preference="sync-autoconnect"/>        
-              <checkbox id="sync-rememberpassword-checkbox" class="indent" label="Remember my password" preference="sync-rememberpassword"/>
+              <checkbox disabled="true" id="sync-rememberpassword-checkbox" class="indent" label="Remember my password" preference="sync-rememberpassword"/>
             </vbox>
             <separator orient="vertical"/>
           </groupbox>
@@ -102,7 +102,7 @@
         </tabpanel>
 
         <tabpanel>
-          <groupbox>
+          <groupbox id="sync-addons-group" flex="1">
             <description>
               Local and server-side add-ons to Mozilla Services.
             </description>

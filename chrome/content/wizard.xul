@@ -18,11 +18,19 @@
     </description>
     <separator class="thin" />
     <description style="font-weight: bold; font-size: 14px;">
-    Mozilla Services Setup
+    Synchotron 9000+ Setup Wizard
     </description>
     <separator class="thin" />
     <description>
     This Wizard will guide you through the steps necessary to backup your current bookmarks, login to the Mozilla Service, and start synchronizing your data between two or more computers.
+    </description>
+    <separator orient="vertical"/>
+    <description>
+    Please note that the user interface is temporary and is solely intended to allow for testing of the underlying service framework.
+    </description>
+    <spacer flex="1"/>
+    <description>
+    PROCEED AT YOUR OWN RISK. THIS IS PROTOTYPE SOFTWARE.
     </description>
   </wizardpage>
  
@@ -34,9 +42,9 @@
     <description style="font-weight: bold; font-size: 14px;">
     Privacy Policy and Terms of Use
     </description>
-    <separator class="thin" />
-    <iframe src="chrome://sync/content/EULA.xhtml" flex="1"/>
-    <separator class="thin" />
+    <separator flex="1"/>
+    <iframe src="chrome://sync/content/EULA.xhtml" maxheight="300" flex="1"/>
+    <separator flex="1"/>
     <radiogroup>
       <radio oncommand="gSyncWizard.onAcceptTerms();" label="I accept the terms of the service"/>
       <radio oncommand="gSyncWizard.onDeclineTerms();" label="I DO NOT accept the terms of service" selected="true"/>
@@ -53,9 +61,16 @@
     </description>
     <separator class="thin" />
     <description>
-    It is vital that you make a backup copy of your bookmarks now. This will allow you to recover from any data loss you may experience by using this prototype.
+    It is vital that you make a backup copy of your bookmarks now.
     </description>
-    <button class="dialog" id="sync-wizard-backup-button" label="Backup Bookmarks..." oncommand="return gSyncWizard.onBookmarksBackup(event);"/>
+    <description>
+    Backing up now will allow you to recover from the data loss you may experience by using this service.
+    </description>
+    <hbox>
+      <spacer flex="1"/>
+      <button class="dialog" id="sync-wizard-backup-button" label="Backup Bookmarks..." oncommand="return gSyncWizard.onBookmarksBackup(event);"/>
+      <spacer flex="1"/>
+    </hbox>
   </wizardpage>
 
   <wizardpage pageid="sync-wizard-account" onpageshow="gSyncWizard.onPageShow('sync-wizard-account');">
@@ -64,19 +79,18 @@
     </description>
     <separator class="thin" />
     <description style="font-weight: bold; font-size: 14px;">
-    Login Details
+    Enter Login Details
     </description>
     <separator class="thin" />
     <description>
-    This prototype uses your Mozilla LDAP user name (e.g. chris@mozilla.com) and password to login.
+    This prototype uses your Mozilla LDAP user name (i.e. username@mozilla.com) and password to login to the Mozilla Service.
     </description>
-    <groupbox>
-      <vbox>
-       <hbox align="center">
+    <separator orient="vertical"/>
+    <vbox>
+      <hbox align="center">
         <label value="User Name:" control="sync-username-field"/>
         <textbox id="sync-username-field"
-           class="padded" flex="1"
-           preference="sync-username"/>
+           class="padded" flex="1"/>
        </hbox>
        <hbox align="center">
         <label value="Password:" control="sync-password-field"/>
@@ -84,18 +98,17 @@
            class="padded" flex="1"
            type="password"/>
         </hbox>
-
-        <button label="Verify Account" oncommand="return gSyncWizard.onVerify(event);"/>
-
+       <spacer flex="1"/>
        <hbox align="center">
+         <button label="Verify" oncommand="gSyncWizard.onVerify(event);"/>
+         <spacer flex="1"/>
          <image id="sync-wizard-verify-throbber-active" src="chrome://sync/skin/sync-throbber-16x16-active.apng" hidden="true"/>
          <image id="sync-wizard-verify-throbber" src="chrome://sync/skin/sync-throbber-16x16.png"/>
-
          <label id="sync-wizard-verify-status" value="Status: Unverified."/>
        </hbox>
-
+       <spacer flex="1"/>
       </vbox>
-    </groupbox>
+
   </wizardpage>
 
   <wizardpage pageid="sync-wizard-initialization" onpageshow="gSyncWizard.onPageShow('sync-wizard-initialization');">
@@ -110,16 +123,19 @@
     <description>
     You're now ready to synchronize this computer with your online bookmarks.  If this is your first time, we will simply upload a representation of your bookmarks over SSL to a secure remote server.
     </description>
+    <separator orient="vertical"/>
     <description>
     If you have previously setup another computer, we will merge your bookmarks and reconcile any conflicts for you.
     </description>
-  
-        <button id="sync-wizard-initialization-button" label="Perform Initial Sync" oncommand="return gSyncWizard.onSync(event);"/>
+    <spacer flex="1"/>  
        <hbox align="center">
+        <button id="sync-wizard-initialization-button" label="Perform Initial Sync" oncommand="return gSyncWizard.onSync(event);"/>
+        <spacer flex="1"/>
          <image id="sync-wizard-initialization-throbber-active" src="chrome://sync/skin/sync-throbber-16x16-active.apng" hidden="true"/>
          <image id="sync-wizard-initialization-throbber" src="chrome://sync/skin/sync-throbber-16x16.png"/>
          <label id="sync-wizard-initialization-status" value="Status: Ready to Sync."/>
        </hbox>
+     <spacer flex="1"/>
   </wizardpage>
 
   <wizardpage id="sync-wizard-complete">
@@ -132,8 +148,14 @@
     </description>
     <separator class="thin" />
     <description>
-    INSERT: information on how to report bugs, options to enable automatic sync
+    By default you will now connect to the Mozilla Service each time you start Firefox and your bookmarks will be synchronized automagically. 
     </description>
+    <separator orient="vertical"/>
+    <description>
+    For more information on this prototype and to report bugs, see:
+    </description>
+    <label href="https://intranet.mozilla.org/Labs/Synchrotron" class="text-link" value="https://intranet.mozilla.org/Labs/Synchrotron"/>
+    <spacer flex="1"/>
   </wizardpage>
 
 </wizard>
