@@ -45,10 +45,12 @@
     <separator flex="1"/>
     <iframe src="chrome://sync/content/EULA.xhtml" maxheight="300" flex="1"/>
     <separator flex="1"/>
-    <radiogroup>
-      <radio oncommand="gSyncWizard.onAcceptTerms();" label="I accept the terms of the service"/>
-      <radio oncommand="gSyncWizard.onDeclineTerms();" label="I DO NOT accept the terms of service" selected="true"/>
-    </radiogroup>
+    <groupbox>
+      <radiogroup>
+        <radio oncommand="gSyncWizard.onAcceptTerms();" label="I accept the terms of the service"/>
+        <radio oncommand="gSyncWizard.onDeclineTerms();" label="I DO NOT accept the terms of service" selected="true"/>
+      </radiogroup>
+    </groupbox>
   </wizardpage>
 
   <wizardpage pageid="sync-wizard-backup" onpageshow="gSyncWizard.onPageShow('sync-wizard-backup');">
