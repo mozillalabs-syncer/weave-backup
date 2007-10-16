@@ -68,9 +68,11 @@ Sync.prototype = {
 
   _init: function Sync__init() {
     this._os.addObserver(this, "bookmarks-sync:login", false);
+    this._os.addObserver(this, "bookmarks-sync:login-error", false);
     this._os.addObserver(this, "bookmarks-sync:logout", false);
-    this._os.addObserver(this, "bookmarks-sync:start", false);
-    this._os.addObserver(this, "bookmarks-sync:end", false);
+    this._os.addObserver(this, "bookmarks-sync:sync-start", false);
+    this._os.addObserver(this, "bookmarks-sync:sync-end", false);
+    this._os.addObserver(this, "bookmarks-sync:sync-error", false);
     let logSvc = Cc["@mozilla.org/log4moz/service;1"].
       getService(Ci.ILog4MozService);
     this._log = logSvc.getLogger("Chrome.Window");
@@ -267,17 +269,23 @@ Sync.prototype = {
     case "bookmarks-sync:login":
       this._onLogin();
       break;
+    case "bookmarks-sync:login-error":
+      this._onLogout();
+      break;
     case "bookmarks-sync:logout":
       this._onLogout();
       break;
-    case "bookmarks-sync:login-error":
-      this._onLoginError();
-      break;
-    case "bookmarks-sync:start":
+    case "bookmarks-sync:sync-start":
       this._onSyncStart();
       break;
-    case "bookmarks-sync:end":
+    case "bookmarks-sync:sync-end":
       this._onSyncEnd();
+      break;
+    case "bookmarks-sync:sync-error":
+      this._onSyncEnd();
+      break;
+    default:
+      this._log.warn("Unknown observer notification topic: " + topic);
       break;
     }
   }
