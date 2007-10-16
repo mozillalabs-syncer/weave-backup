@@ -161,18 +161,6 @@ SyncWizard.prototype = {
 
     this._addUserLogin(username.value, password.value);
     this._ss.logout();
-
-    // FIXME: horrid hack to cause the server-side directory to be
-    // created during the account setup
-    let branch = Cc["@mozilla.org/preferences-service;1"].
-      getService(Ci.nsIPrefBranch);
-    let serverURL = branch.getCharPref("browser.places.sync.serverURL");
-    let m = /^(.*\/)user\/$/.exec(serverURL);
-    if (m) {
-      this._savedServerURL = serverURL;
-      branch.setCharPref("browser.places.sync.serverURL",
-                         m[0] + "createAcct.php");
-    }
     this._ss.login();
   },
   
@@ -187,12 +175,6 @@ SyncWizard.prototype = {
     switch(topic) {
     case "bookmarks-sync:login":
       verifyStatus = document.getElementById('sync-wizard-verify-status');
-      if (this._savedServerURL) {
-        let branch = Cc["@mozilla.org/preferences-service;1"].
-          getService(Ci.nsIPrefBranch);
-        branch.setCharPref("browser.places.sync.serverURL", this._savedServerURL);
-        this._savedServerURL = null;
-      }
       verifyStatus.setAttribute("value", "Status: Login Verified");
       wizard.canAdvance = true;
       break;
@@ -200,12 +182,6 @@ SyncWizard.prototype = {
       break;
     case "bookmarks-sync:login-error":
       verifyStatus = document.getElementById('sync-wizard-verify-status');
-      if (this._savedServerURL) {
-        let branch = Cc["@mozilla.org/preferences-service;1"].
-          getService(Ci.nsIPrefBranch);
-        branch.setCharPref("browser.places.sync.serverURL", this._savedServerURL);
-        this._savedServerURL = null;
-      }
       verifyStatus.setAttribute("value", "Status: Login Failed");
       wizard.canAdvance = false;
       break;
