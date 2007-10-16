@@ -87,6 +87,11 @@ SyncPane.prototype = {
     this._ss.resetLock();
   },
 
+  resetServerLock: function SyncPane_resetServerLock()
+  {
+    this._ss.resetData();
+  },
+
   resetLoginCredentials: function SyncPane_resetLoginCredentials()
   {
     let branch = Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefBranch);

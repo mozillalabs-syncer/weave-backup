@@ -128,6 +128,7 @@
               <button label="View Activity Log..." oncommand="gSyncPane.openActivityLog();"/>
               <button label="Run Setup Wizard..." oncommand="gSyncPane.openSetupWizard();"/>
               <button label="Reset Server Lock" oncommand="gSyncPane.resetServerLock();"/>
+              <button label="Reset Server Data" oncommand="gSyncPane.resetServerData();"/>
               <spacer flex="1"/>
             </hbox>
             <separator orient="vertical"/>
