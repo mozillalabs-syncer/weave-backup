@@ -154,7 +154,7 @@
     <description>
     For more information on this prototype and to report bugs, see:
     </description>
-    <label href="https://intranet.mozilla.org/Labs/Synchrotron" class="text-link" value="https://intranet.mozilla.org/Labs/Synchrotron"/>
+    <label href="https://intranet.mozilla.org/Labs/Synchotron" class="text-link" value="https://intranet.mozilla.org/Labs/Synchotron"/>
     <spacer flex="1"/>
   </wizardpage>
 
