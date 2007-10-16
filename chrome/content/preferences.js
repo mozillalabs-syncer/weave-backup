@@ -91,7 +91,7 @@ SyncPane.prototype = {
 
   resetServerData: function SyncPane_resetServerData()
   {
-    this._ss.resetData();
+    this._ss.resetServer();
   },
 
   resetLoginCredentials: function SyncPane_resetLoginCredentials()
