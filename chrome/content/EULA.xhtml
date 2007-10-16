@@ -9,5 +9,36 @@
 </head>
 <body>
 
+<p><strong>PRIVACY IMPLICATIONS OF THIS PROTOTYPE</strong></p>
+
+<p>In this version of the <strong>Synchrotron 9000+<sup>TM</sup></strong> we unleash the awesome. However, to do so,
+we must take some liberties with your private data. This document outlines what data this service collects, how we
+protect it, and how it will be used.</p>
+
+<p><strong>Data being transmitted currently</strong></p>
+<ul>
+<li>all bookmarks (starred, tagged or in the heirarchy)</li>
+<li>microsummaries</li>
+<li>live bookmarks</li>
+<li>number of bookmarks</li>
+<li>user-agent strings, IP addresses, etc. transmitted as part of an authenticated session</li>
+</ul>
+
+<p><strong>Data protection</strong></p>
+<ul>
+<li>All processing happens client-side and the server is only passive storage</li>
+<li>All of your bookmarks data is trasmitted over SSL to https://services.mozilla.com/ and is stored on a WebDAV service in your own
+user directory. Only you and the Mozilla IT team have access to this user directory.</li>
+<li>This version does not encrypt your bookmark data. Future versions will include client-side on-by-default AES encryption as we do not need or want to access anyone's bookmark data.</li>
+<li>Regardless, we will not farm, mine or otherwise examine your personal bookmarks without your permission.</li>
+</ul>
+
+<p><strong>How do we use any information collected</strong></p>
+<ul>
+<li>Number of bookmarks on average and in aggregate, as well as Web server statistics will be collected and analysed in order to detect bottlenecks, better understand the scalability of the service, etc.</li>
+</ul>
+
+<p><strong>For more information on this prototype, please visit: <a href="https://intranet.mozilla.org/Labs/Synchotron">https://intranet.mozilla.org/Labs/Synchotron</a></strong>.</p>
+
 </body>
 </html>
