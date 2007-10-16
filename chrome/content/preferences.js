@@ -89,7 +89,7 @@ SyncPane.prototype = {
     this._ss.resetLock();
   },
 
-  resetServerLock: function SyncPane_resetServerLock()
+  resetServerData: function SyncPane_resetServerData()
   {
     this._ss.resetData();
   },
