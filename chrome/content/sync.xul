@@ -48,11 +48,13 @@
                           checked="false" autocheck="false"
                           label="Sync Now"
                           oncommand="gSync.doSync(event);"/>
-		<menuitem id="sync-cancelsyncitem"
+                <!--
+                <menuitem id="sync-cancelsyncitem"
                           hidden="false" disabled="true"
                           checked="false" autocheck="false"
                           label="Cancel Sync"
                           oncommand="gSync.doCancelSync(event);"/>
+                -->
                 <menuseparator/>
                 <menuitem id="sync-openprefsitem"
                           disabled="false"
