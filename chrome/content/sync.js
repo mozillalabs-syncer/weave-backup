@@ -120,7 +120,7 @@ Sync.prototype = {
     if (status1)
       status1.setAttribute("hidden", "true");
 
-    this.doCancelSync();
+    //this.doCancelSync();
 
     let loginitem = document.getElementById("sync-loginitem");
     let logoutitem = document.getElementById("sync-logoutitem");
@@ -133,9 +133,9 @@ Sync.prototype = {
     if (syncnowitem)
       syncnowitem.setAttribute("disabled", "true");
 
-    let cancelsyncitem = document.getElementById("sync-cancelsyncitem");
-    if (cancelsyncitem)
-      cancelsyncitem.setAttribute("disabled", "true");
+    //let cancelsyncitem = document.getElementById("sync-cancelsyncitem");
+    //if (cancelsyncitem)
+    //  cancelsyncitem.setAttribute("disabled", "true");
   },
 
   startUp: function Sync_startUp(event) {
@@ -226,9 +226,9 @@ Sync.prototype = {
     if(throbber2) 
       throbber2.setAttribute("hidden", "false");
 	  
-    let cancelitem = document.getElementById("sync-cancelsyncitem");
-    if(cancelitem)
-      cancelitem.setAttribute("active", "true");
+    //let cancelitem = document.getElementById("sync-cancelsyncitem");
+    //if(cancelitem)
+    //  cancelitem.setAttribute("active", "true");
 	  
     let syncitem = document.getElementById("sync-syncnowitem");
     if(syncitem)
@@ -243,9 +243,9 @@ Sync.prototype = {
     if(throbber2) 
       throbber2.setAttribute("hidden", "true");
 
-    let cancelitem = document.getElementById("sync-cancelsyncitem");
-    if(cancelitem)
-      cancelitem.setAttribute("active", "false");
+    //let cancelitem = document.getElementById("sync-cancelsyncitem");
+    //if(cancelitem)
+    //  cancelitem.setAttribute("active", "false");
 	  
     let syncitem = document.getElementById("sync-syncnowitem");
     if(syncitem)
