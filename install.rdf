@@ -23,7 +23,7 @@
     <em:description>The Synchotron keeps all your bookmarks in sync by using patent-pending Mozilla Services with Synchotronic Pro Plus(tm) technology</em:description>
     <em:creator>Mozilla Labs Team</em:creator>
     <em:homepageURL>http://labs.mozilla.com/projects/synchotron/</em:homepageURL>
-    <em:updateURL>https://labs.mozilla.com/projects/synchotron/dist/update.rdf</em:updateURL>
+    <em:updateURL>https://people.mozilla.com/~cbeard/sync/dist/update.rdf</em:updateURL>
     <em:iconURL>chrome://sync/skin/sync-32x32.png</em:iconURL>
   </Description>      
 </RDF>
