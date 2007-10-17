@@ -40,7 +40,7 @@
     Privacy Policy and Terms of Use
     </description>
     <separator flex="1"/>
-    <iframe id="sync-wizard-EULA" src="chrome://sync/content/EULA.xhtml" maxheight="300" flex="1"/>
+    <iframe onload="window.scrollTo(0,0);" src="chrome://sync/content/EULA.xhtml" flex="1"/>
     <separator flex="1"/>
     <groupbox>
       <radiogroup>
