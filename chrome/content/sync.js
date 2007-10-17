@@ -284,6 +284,7 @@ Sync.prototype = {
       break;
     case "bookmarks-sync:login-error":
       this._onLogout();
+      alert("Login error.  Please check logs and contact the labs team for help!");
       break;
     case "bookmarks-sync:logout":
       this._onLogout();
@@ -296,6 +297,7 @@ Sync.prototype = {
       break;
     case "bookmarks-sync:sync-error":
       this._onSyncEnd();
+      alert("Sync error.  Please check logs and contact the labs team for help!");
       break;
     default:
       this._log.warn("Unknown observer notification topic: " + topic);
