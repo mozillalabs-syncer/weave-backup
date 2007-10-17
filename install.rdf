@@ -24,5 +24,6 @@
     <em:creator>Mozilla Labs Team</em:creator>
     <em:homepageURL>http://labs.mozilla.com/projects/synchotron/</em:homepageURL>
     <em:updateURL>https://labs.mozilla.com/projects/synchotron/dist/update.rdf</em:updateURL>
+    <em:iconURL>chrome://sync/skin/sync-32x32.png</em:iconURL>
   </Description>      
 </RDF>
