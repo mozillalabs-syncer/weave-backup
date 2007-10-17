@@ -67,12 +67,6 @@ Sync.prototype = {
   _log: null,
 
   _init: function Sync__init() {
-    this._os.addObserver(this, "bookmarks-sync:login", false);
-    this._os.addObserver(this, "bookmarks-sync:login-error", false);
-    this._os.addObserver(this, "bookmarks-sync:logout", false);
-    this._os.addObserver(this, "bookmarks-sync:sync-start", false);
-    this._os.addObserver(this, "bookmarks-sync:sync-end", false);
-    this._os.addObserver(this, "bookmarks-sync:sync-error", false);
     let logSvc = Cc["@mozilla.org/log4moz/service;1"].
       getService(Ci.ILog4MozService);
     this._log = logSvc.getLogger("Chrome.Window");
@@ -141,12 +135,31 @@ Sync.prototype = {
   },
 
   startUp: function Sync_startUp(event) {
+    this._log.info("Sync window opened");
+
+    this._os.addObserver(this, "bookmarks-sync:login", false);
+    this._os.addObserver(this, "bookmarks-sync:login-error", false);
+    this._os.addObserver(this, "bookmarks-sync:logout", false);
+    this._os.addObserver(this, "bookmarks-sync:sync-start", false);
+    this._os.addObserver(this, "bookmarks-sync:sync-end", false);
+    this._os.addObserver(this, "bookmarks-sync:sync-error", false);
     let branch = Cc["@mozilla.org/preferences-service;1"].
       getService(Ci.nsIPrefBranch);
     let autoconnect = branch.getBoolPref("browser.places.sync.autoconnect");
     let username = branch.getCharPref("browser.places.sync.username");
     if(autoconnect && username && username != 'nobody@mozilla.com')
       this._ss.login();
+  },
+
+  shutDown: function Sync_shutDown(event) {
+    this._log.info("Sync window closed");
+
+    this._os.removeObserver(this, "bookmarks-sync:login");
+    this._os.removeObserver(this, "bookmarks-sync:login-error");
+    this._os.removeObserver(this, "bookmarks-sync:logout");
+    this._os.removeObserver(this, "bookmarks-sync:sync-start");
+    this._os.removeObserver(this, "bookmarks-sync:sync-end");
+    this._os.removeObserver(this, "bookmarks-sync:sync-error");
   },
 
   doLoginPopup : function Sync_doLoginPopup(event) {
@@ -292,4 +305,7 @@ Sync.prototype = {
 };
 
 let gSync = new Sync();
+
 window.addEventListener("load", function(e) { gSync.startUp(e); }, false);
+window.addEventListener("unload", function(e) { gSync.shutDown(e); }, false);
+

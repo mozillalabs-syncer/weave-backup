@@ -2,7 +2,8 @@
 
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
 
-<wizard id="sync-wizard" title="Sync Foo"
+<wizard id="sync-wizard" title="Synchotron Setup Wizard"
+  onunload="gSyncWizard.onWizardShutdown();"
   height="400"
   width="600"
   xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
@@ -18,19 +19,15 @@
     </description>
     <separator class="thin" />
     <description style="font-weight: bold; font-size: 14px;">
-    Synchotron 9000+ Setup Wizard
+    Synchotron Setup Wizard
     </description>
     <separator class="thin" />
     <description>
-    This Wizard will guide you through the steps necessary to backup your current bookmarks, login to the Mozilla Service, and start synchronizing your data between two or more computers.
+    This Wizard will guide you through the steps necessary to backup your current bookmarks, login to the Synchotron, and start synchronizing your data between two or more computers.
     </description>
-    <separator orient="vertical"/>
+    <separator class="thin"/>
     <description>
     Please note that the user interface is temporary and is solely intended to allow for testing of the underlying service framework.
-    </description>
-    <spacer flex="1"/>
-    <description>
-    PROCEED AT YOUR OWN RISK. THIS IS PROTOTYPE SOFTWARE.
     </description>
   </wizardpage>
  
@@ -43,7 +40,7 @@
     Privacy Policy and Terms of Use
     </description>
     <separator flex="1"/>
-    <iframe src="chrome://sync/content/EULA.xhtml" maxheight="300" flex="1"/>
+    <iframe id="sync-wizard-EULA" src="chrome://sync/content/EULA.xhtml" maxheight="300" flex="1"/>
     <separator flex="1"/>
     <groupbox>
       <radiogroup>
@@ -63,15 +60,16 @@
     </description>
     <separator class="thin" />
     <description>
-    It is vital that you make a backup copy of your bookmarks now.
+    Backing up now will allow you to recover from the data loss you may experience. We strongly recommend that you make a backup copy of your bookmarks now.
     </description>
+    <separator class="thin" />
     <description>
-    Backing up now will allow you to recover from the data loss you may experience by using this service.
+    To do so, simply click on the "Backup Bookmarks..." below and we will save a copy of your bookmarks to your desktop.
     </description>
+    <separator orient="vertical" />
     <hbox>
-      <spacer flex="1"/>
-      <button class="dialog" id="sync-wizard-backup-button" label="Backup Bookmarks..." oncommand="return gSyncWizard.onBookmarksBackup(event);"/>
-      <spacer flex="1"/>
+    <button class="dialog" id="sync-wizard-backup-button" label="Backup Bookmarks..." oncommand="return gSyncWizard.onBookmarksBackup(event);"/>
+    <spacer flex="1"/>
     </hbox>
   </wizardpage>
 
@@ -85,7 +83,7 @@
     </description>
     <separator class="thin" />
     <description>
-    This prototype uses your Mozilla LDAP user name (i.e. username@mozilla.com) and password to login to the Mozilla Service.
+    We're temporarily using the internal Mozilla LDAP server for authentication. Please enter your user name and password here and click the "Verify" button to validate before proceeding.
     </description>
     <separator orient="vertical"/>
     <vbox>
@@ -100,7 +98,7 @@
            class="padded" flex="1"
            type="password"/>
         </hbox>
-       <spacer flex="1"/>
+       <separator orient="vertical" />
        <hbox align="center">
          <button label="Verify" oncommand="gSyncWizard.onVerify(event);"/>
          <spacer flex="1"/>
@@ -125,11 +123,11 @@
     <description>
     You're now ready to synchronize this computer with your online bookmarks.  If this is your first time, we will simply upload a representation of your bookmarks over SSL to a secure remote server.
     </description>
-    <separator orient="vertical"/>
+    <separator orient="thin"/>
     <description>
-    If you have previously setup another computer, we will merge your bookmarks and reconcile any conflicts for you.
+    If you have previously setup Synchotron on another computer, we will merge your bookmarks and reconcile any conflicts for you.
     </description>
-    <spacer flex="1"/>  
+    <separator orient="vertical"/>  
        <hbox align="center">
         <button id="sync-wizard-initialization-button" label="Perform Initial Sync" oncommand="return gSyncWizard.onSync(event);"/>
         <spacer flex="1"/>
@@ -150,13 +148,8 @@
     </description>
     <separator class="thin" />
     <description>
-    By default you will now connect to the Mozilla Service each time you start Firefox and your bookmarks will be synchronized automagically. 
+    By default you will now connect to the Synchotron each time you start Firefox and your bookmarks will be synchronized automagically. 
     </description>
-    <separator orient="vertical"/>
-    <description>
-    For more information on this prototype and to report bugs, see:
-    </description>
-    <label href="https://intranet.mozilla.org/Labs/Synchotron" class="text-link" value="https://intranet.mozilla.org/Labs/Synchotron"/>
     <spacer flex="1"/>
   </wizardpage>
 

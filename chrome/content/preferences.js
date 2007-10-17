@@ -1,3 +1,7 @@
+var Ci = Components.interfaces;
+var Cc = Components.classes;
+var Cr = Components.results;
+
 function SyncPane() {
   this._init();
 }
