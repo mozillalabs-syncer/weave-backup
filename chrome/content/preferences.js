@@ -98,6 +98,11 @@ SyncPane.prototype = {
     this._ss.resetServer();
   },
 
+  resetClientData: function SyncPane_resetClientData()
+  {
+    this._ss.resetClient();
+  },
+
   resetLoginCredentials: function SyncPane_resetLoginCredentials()
   {
     let branch = Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefBranch);

@@ -133,6 +133,7 @@
               <spacer flex="1"/>
               <button label="Reset Server Lock" oncommand="gSyncPane.resetServerLock();"/>
               <button label="Reset Server Data" oncommand="gSyncPane.resetServerData();"/>
+              <button label="Reset Client Data" oncommand="gSyncPane.resetClientData();"/>
               <spacer flex="1"/>
             </hbox>
             <separator orient="vertical"/>
