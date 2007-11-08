@@ -72,6 +72,46 @@ Sync.prototype = {
     this._log = logSvc.getLogger("Chrome.Window");
   },
 
+  _setThrobber: function Sync__setThrobber(status) {
+    let throbberOff = document.getElementById("sync-throbber-offline");
+    let throbberIdle = document.getElementById("sync-throbber-online");
+    let throbberSync = document.getElementById("sync-throbber-active");
+    let throbberError = document.getElementById("sync-throbber-error");
+
+    function hide(elt, hidden) {
+      if (elt)
+        elt.setAttribute("hidden", hidden);
+    }
+
+    switch (status) {
+    case "offline":
+      hide(throbberOff, "false");
+      hide(throbberIdle, "true");
+      hide(throbberSync, "true");
+      hide(throbberError, "true");
+      break;
+    case "idle":
+      hide(throbberOff, "true");
+      hide(throbberIdle, "false");
+      hide(throbberSync, "true");
+      hide(throbberError, "true");
+      break;
+    case "active":
+      hide(throbberOff, "true");
+      hide(throbberIdle, "true");
+      hide(throbberSync, "false");
+      hide(throbberError, "true");
+      break;
+    case "error":
+    default:
+      hide(throbberOff, "true");
+      hide(throbberIdle, "true");
+      hide(throbberSync, "true");
+      hide(throbberError, "false");
+      break;
+    }
+  },
+
   _onLogin: function Sync__onLogin() {
     this._log.info("Login successful");
 
@@ -81,12 +121,7 @@ Sync.prototype = {
       status1.setAttribute("hidden", "false");
     }
 
-    let throbber1 = document.getElementById("sync-throbber-online");
-    let throbber2 = document.getElementById("sync-throbber-offline");
-    if (throbber1)
-      throbber1.setAttribute("hidden","false");
-    if (throbber2)
-      throbber2.setAttribute("hidden", "true");
+    this._setThrobber("idle");
 
     let loginitem = document.getElementById("sync-loginitem");
     let logoutitem = document.getElementById("sync-logoutitem");
@@ -101,22 +136,15 @@ Sync.prototype = {
       syncnowitem.setAttribute("disabled", "false");
   },
 
-  _onLogout: function Sync__onLogout() {
-    let throbber1 = document.getElementById("sync-throbber-online");
-    let throbber2 = document.getElementById("sync-throbber-offline");
-    let throbber3 = document.getElementById("sync-trhobber-active");
-    if (throbber1)
-      throbber1.setAttribute("hidden","true");
-    if (throbber2)
-      throbber2.setAttribute("hidden", "false");
-	if (throbber3)
-	  throbber3.setAttribute("hidden", "true");
+  _onLogout: function Sync__onLogout(status) {
+    if (status)
+      this._setThrobber("offline");
+    else
+      this._setThrobber("error");
 
     let status1 = document.getElementById("sync-menu-status");
     if (status1)
       status1.setAttribute("hidden", "true");
-
-    //this.doCancelSync();
 
     let loginitem = document.getElementById("sync-loginitem");
     let logoutitem = document.getElementById("sync-logoutitem");
@@ -128,10 +156,6 @@ Sync.prototype = {
     let syncnowitem = document.getElementById("sync-syncnowitem");
     if (syncnowitem)
       syncnowitem.setAttribute("disabled", "true");
-
-    //let cancelsyncitem = document.getElementById("sync-cancelsyncitem");
-    //if (cancelsyncitem)
-    //  cancelsyncitem.setAttribute("disabled", "true");
   },
 
   startUp: function Sync_startUp(event) {
@@ -234,33 +258,18 @@ Sync.prototype = {
   },
 
   _onSyncStart: function Sync_onSyncStart() {
-    let throbber1 = document.getElementById("sync-throbber-online");
-    let throbber2 = document.getElementById("sync-throbber-active");
-    if(throbber1) 
-      throbber1.setAttribute("hidden","true");
-    if(throbber2) 
-      throbber2.setAttribute("hidden", "false");
-	  
-    //let cancelitem = document.getElementById("sync-cancelsyncitem");
-    //if(cancelitem)
-    //  cancelitem.setAttribute("active", "true");
+    this._setThrobber("active");
 	  
     let syncitem = document.getElementById("sync-syncnowitem");
     if(syncitem)
       syncitem.setAttribute("active", "false");
   },
 
-  _onSyncEnd: function Sync_onSyncEnd() {
-    let throbber1 = document.getElementById("sync-throbber-online");
-    let throbber2 = document.getElementById("sync-throbber-active");
-    if(throbber1) 
-      throbber1.setAttribute("hidden","false");
-    if(throbber2) 
-      throbber2.setAttribute("hidden", "true");
-
-    //let cancelitem = document.getElementById("sync-cancelsyncitem");
-    //if(cancelitem)
-    //  cancelitem.setAttribute("active", "false");
+  _onSyncEnd: function Sync_onSyncEnd(status) {
+    if (status)
+      this._setThrobber("idle");
+    else
+      this._setThrobber("error");
 	  
     let syncitem = document.getElementById("sync-syncnowitem");
     if(syncitem)
@@ -283,21 +292,19 @@ Sync.prototype = {
       this._onLogin();
       break;
     case "bookmarks-sync:login-error":
-      this._onLogout();
-      alert("Login error.  Please check logs and contact the labs team for help!");
+      this._onLogout(false);
       break;
     case "bookmarks-sync:logout":
-      this._onLogout();
+      this._onLogout(true);
       break;
     case "bookmarks-sync:sync-start":
       this._onSyncStart();
       break;
     case "bookmarks-sync:sync-end":
-      this._onSyncEnd();
+      this._onSyncEnd(true);
       break;
     case "bookmarks-sync:sync-error":
-      this._onSyncEnd();
-      alert("Sync error.  Please check logs and contact the labs team for help!");
+      this._onSyncEnd(false);
       break;
     default:
       this._log.warn("Unknown observer notification topic: " + topic);
