@@ -72,6 +72,21 @@ Sync.prototype = {
     this._log = logSvc.getLogger("Chrome.Window");
   },
 
+  _openWindow: function Sync__openWindow(type, uri, options) {
+    let wm = Cc["@mozilla.org/appshell/window-mediator;1"].
+      getService(Ci.nsIWindowMediator);
+    let window = wm.getMostRecentWindow(type);
+    if (window)
+      window.focus();
+     else {
+       var ww = Cc["@mozilla.org/embedcomp/window-watcher;1"].
+         getService(Ci.nsIWindowWatcher);
+       if (options === null)
+         options = 'chrome,centerscreen,dialog,modal,resizable=yes';
+       ww.openWindow(null, uri, '', options, null);
+     }
+  },
+
   _setThrobber: function Sync__setThrobber(status) {
     let throbberOff = document.getElementById("sync-throbber-offline");
     let throbberIdle = document.getElementById("sync-throbber-online");
@@ -192,15 +207,20 @@ Sync.prototype = {
   },
   
   doLogin: function Sync_doLogin(event) {
+    if (this._ss.currentUser)
+      return; // already logged in
+
     let branch = Cc["@mozilla.org/preferences-service;1"].
       getService(Ci.nsIPrefBranch);
     let username = branch.getCharPref("browser.places.sync.username");
-    if(!username || username == 'nobody@mozilla.com') {
-		this.doOpenSetupWizard();
-        return;
+
+    if (!username || username == 'nobody@mozilla.com') {
+      this.doOpenSetupWizard();
+      return;
     }
 
-    this._ss.login();
+    this._openWindow('Sync:Login', 'chrome://sync/content/login.xul',
+                     'chrome,centerscreen,dialog,modal,resizable=no');
   },
   
   doOpenSetupWizard : function Sync_doOpenSetupWizard(event) {
@@ -229,17 +249,8 @@ Sync.prototype = {
   },
 
   doOpenActivityLog: function Sync_doOpenActivityLog(event) {
-    let wm = Cc["@mozilla.org/appshell/window-mediator;1"].
-      getService(Ci.nsIWindowMediator);
-    let logWindow = wm.getMostRecentWindow('Sync:Log');
-    if (logWindow)
-      logWindow.focus();
-     else {
-       var ww = Cc["@mozilla.org/embedcomp/window-watcher;1"].
-         getService(Ci.nsIWindowWatcher);
-       ww.openWindow(null, 'chrome://sync/content/log.xul', '',
-                     'chrome,centerscreen,dialog,modal,resizable=yes', null);
-     }
+    this._openWindow('Sync:Log', 'chrome://sync/content/log.xul',
+                     'chrome,centerscreen,dialog,modal,resizable=yes');
   },
 
   doPopup: function Sync_doPopup(event) {

@@ -88,46 +88,8 @@ SyncWizard.prototype = {
 
   _addUserLogin: function SyncWizard__addUserLogin(username, password) {
     this._log.info("Adding user login/password to password manager");
-
-    let branch = Cc["@mozilla.org/preferences-service;1"].
-      getService(Ci.nsIPrefBranch);
-    branch.setCharPref("browser.places.sync.username", username);
-    
-    let serverURL = branch.getCharPref("browser.places.sync.serverURL");
-    let ioservice = Cc["@mozilla.org/network/io-service;1"].
-                    getService(Ci.nsIIOService);
-    let uri = ioservice.newURI(serverURL, null, null);
-  
-    // fixme: make a request and get the realm
-    let nsLoginInfo = new Components.Constructor(
-      "@mozilla.org/login-manager/loginInfo;1", Ci.nsILoginInfo, "init");
-    let login = new nsLoginInfo(uri.hostPort, null, 'services.mozilla.com - proxy',
-                                username, password, null, null);
-
-    let pm = Cc["@mozilla.org/login-manager;1"]. getService(Ci.nsILoginManager);
-    let logins = pm.findLogins({}, uri.hostPort, null, 'services.mozilla.com - proxy');
-
-    let found = 0;
-    for(let i = 0; i < logins.length; i++) {
-      if(logins[i].username == username && logins[i].password == password) {
-	// nothing to do here, username/password already in the nsLoginInfo store
-        this._log.info("Saved password found");
-        found = 1;
-	continue;
-      }
-      if(logins[i].username == username) {
-	// password has changed, update it
-        this._log.info("Updating saved password");
-	pm.modifyLogin(logins[i], login);
-	found = 1;
-	continue;
-      }
-      // remove the cruft
-      this._log.info("Old saved passwords found, cleaning them up");
-      pm.removeLogin(logins[i]);
-    }
-    if(!found) 
-      pm.addLogin(login);
+    this._ss.username = username;
+    this._ss.password = password;
   },
 
   onPageShow: function SyncWizard_onPageShow(pageId) {
