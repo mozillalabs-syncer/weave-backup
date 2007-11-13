@@ -39,7 +39,7 @@ SyncPane.prototype = {
 
     let uri = makeURI(serverURL);
     let lm = Cc["@mozilla.org/login-manager;1"].getService(Ci.nsILoginManager);
-    let logins = lm.findLogins({}, uri.hostPort, null, 'services.mozilla.com');
+    let logins = lm.findLogins({}, uri.hostPort, null, 'services.mozilla.com - proxy');
     let username_field = document.getElementById('sync-username-field');
     let password_field = document.getElementById('sync-password-field');
     if(logins.length) {  
@@ -110,7 +110,7 @@ SyncPane.prototype = {
     let username = branch.getCharPref("browser.places.sync.username");
     let uri = makeURI(serverURL);
     let lm = Cc["@mozilla.org/login-manager;1"].getService(Ci.nsILoginManager);
-    let logins = lm.findLogins({}, uri.hostPort, null, 'services.mozilla.com');
+    let logins = lm.findLogins({}, uri.hostPort, null, 'services.mozilla.com - proxy');
 
     for(let i = 0; i < logins.length; i++) {
       if(logins[i].username == username) {
