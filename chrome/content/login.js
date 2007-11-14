@@ -34,10 +34,23 @@ Login.prototype = {
     this._log.info("Sync login window opened");
     this._os.addObserver(this, "bookmarks-sync:login", false);
     this._os.addObserver(this, "bookmarks-sync:login-error", false);
-    let user = document.getElementById("username");
-    let pass = document.getElementById("password");
-    user.value = this._ss.username;
-    pass.value = this._ss.password;
+
+    let username = document.getElementById("username");
+    let password = document.getElementById("password");
+    username.value = this._ss.username;
+    password.value = this._ss.password;
+
+    let branch = Cc["@mozilla.org/preferences-service;1"]
+      .getService(Ci.nsIPrefBranch);
+    let hbox = document.getElementById("passphrase-hbox");
+
+    if ("none" == branch.getCharPref("browser.places.sync.encryption"))
+      hbox.setAttribute("hidden", "true");
+    else {
+      hbox.setAttribute("hidden", "false");
+      let passphrase = document.getElementById("passphrase");
+      passphrase.value = this._ss.passphrase;
+    }
   },
 
   shutDown: function Login_shutDown() {
@@ -52,20 +65,23 @@ Login.prototype = {
       return;
     }
     this._loggingIn = true;
-    let user = document.getElementById("username");
-    this._ss.username = user.value;
-    let pass = document.getElementById("password");
+    let username = document.getElementById("username");
+    this._ss.username = username.value;
+    let password = document.getElementById("password");
+    let passphrase = document.getElementById("passphrase");
     let savePass = document.getElementById("save-password");
-    if (savePass.checked)
-      this._ss.password = pass.value;
-    else
+    if (savePass.checked) {
+      this._ss.password = password.value;
+      this._ss.passphrase = passphrase.value;
+    } else {
       this._ss.password = null;
-    this._ss.login(pass.value);
+      this._ss.passphrase = null;
+    }
+    this._ss.login(password.value, passphrase);
     return false; // don't close the dialog yet
   },
 
   _onLogin: function Login__onLogin() {
-    alert("Logged in!");
     let dialog = document.getElementById("login-dialog");
     this._loggingIn = false;
     dialog.cancelDialog();

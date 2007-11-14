@@ -130,6 +130,8 @@ Sync.prototype = {
   _onLogin: function Sync__onLogin() {
     this._log.info("Login successful");
 
+    this._userLogin = false;
+
     let status1 = document.getElementById("sync-menu-status");
     if(status1) {
       status1.setAttribute("value",  this._ss.currentUser);
@@ -171,6 +173,11 @@ Sync.prototype = {
     let syncnowitem = document.getElementById("sync-syncnowitem");
     if (syncnowitem)
       syncnowitem.setAttribute("disabled", "true");
+
+    if (this._userLogin)
+      this._openWindow('Sync:Login', 'chrome://sync/content/login.xul',
+                       'chrome,centerscreen,dialog,modal,resizable=no');
+    this._userLogin = false;
   },
 
   startUp: function Sync_startUp(event) {
@@ -187,7 +194,7 @@ Sync.prototype = {
     let autoconnect = branch.getBoolPref("browser.places.sync.autoconnect");
     let username = branch.getCharPref("browser.places.sync.username");
     if(autoconnect && username && username != 'nobody@mozilla.com')
-      this._ss.login();
+      this._ss.login(null, null);
   },
 
   shutDown: function Sync_shutDown(event) {
@@ -219,8 +226,8 @@ Sync.prototype = {
       return;
     }
 
-    this._openWindow('Sync:Login', 'chrome://sync/content/login.xul',
-                     'chrome,centerscreen,dialog,modal,resizable=no');
+    this._userLogin = true;
+    this._ss.login(null, null);
   },
   
   doOpenSetupWizard : function Sync_doOpenSetupWizard(event) {

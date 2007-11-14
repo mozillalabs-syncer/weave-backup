@@ -15,10 +15,30 @@
   <script type="application/x-javascript"
     src="chrome://sync/content/login.js"/>
 
+  <preferences>
+    <preference id="sync-username"
+      name="browser.places.sync.username"  
+      type="string" />
+    <preference id="sync-rememberpassword"
+      name="browser.places.sync.rememberpassword"  
+      type="bool" />
+  </preferences>
+
   <vbox>
-    <label value="Enter your username and password for your Mozilla Services account:"/>
-    <hbox><label value="Username"/><textbox id="username"/></hbox>
-    <hbox><label value="Password"/><textbox id="password" type="password"/></hbox>
-    <checkbox id="save-password" label="Save in password manager" checked="true"/>
+    <label value="Enter your login information for Mozilla Services:"/>
+    <hbox>
+      <label value="Username"/>
+      <textbox id="username" preference="sync-username"/>
+    </hbox>
+    <hbox>
+      <label value="Password"/>
+      <textbox id="password" type="password"/>
+    </hbox>
+    <hbox id="passphrase-hbox">
+      <label value="Encryption Passphrase"/>
+      <textbox id="passphrase" type="password"/>
+    </hbox>
+    <checkbox id="save-password" preference="sync-rememberpassword"
+              label="Save in password manager"/>
   </vbox>
 </dialog>
