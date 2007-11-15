@@ -12,33 +12,30 @@
       <script type="application/x-javascript" src="chrome://sync/content/preferences.js"/>
 
       <preferences>
-        <preference id="sync-username"
-                    name="browser.places.sync.username"  
-                    type="string" />
-        <preference id="sync-rememberpassword"
+        <preference id="browser.places.sync.username"
+                    name="browser.places.sync.username"
+                    type="string"/>
+        <preference id="browser.places.sync.rememberpassword"
                     name="browser.places.sync.rememberpassword"
-                    type="bool" />
-        <preference id="sync-autoconnect"
+                    type="bool"/>
+        <preference id="browser.places.sync.autoconnect"
                     name="browser.places.sync.autoconnect"
-                    type="bool" />
-        <preference id="sync-server"
+                    type="bool"/>
+        <preference id="browser.places.sync.serverURL"
                     name="browser.places.sync.serverURL"
-                    type="string" />
-        <preference id="sync-enabled"
+                    type="string"/>
+        <preference id="browser.places.sync.enabled"
                     name="browser.places.sync.enabled"
-                    type="bool" />
-        <prefernece id="sync-schedule"
+                    type="bool"/>
+        <preference id="browser.places.sync.schedule"
                     name="browser.places.sync.schedule"
-                    type="int" />
-        <preference id="sync-encryption-checkbox"
-                    name="browser.places.sync.encryption.enabled"
-                    type="string" />
-        <preference id="sync-encryption"
+                    type="int"/>
+        <preference id="browser.places.sync.encryption"
                     name="browser.places.sync.encryption"
-                    type="string" />
-        <preference id="sync-bookmarks"
+                    type="string"/>
+        <preference id="browser.places.sync.bookmarks"
                     name="browser.places.sync.bookmarks"
-                    type="bool" />
+                    type="bool"/>
       </preferences>
 
       <tabbox id="sync-tabbox" flex="1">
@@ -56,7 +53,8 @@
             <groupbox id="sync-reset-group" flex="1" hidden="true">
               <hbox>
                 <spacer flex="1"/>
-                <button label="Run Setup Wizard..." oncommand="gSyncPane.openSetupWizard();"/>
+                <button label="Run Setup Wizard..."
+                        oncommand="gSyncPane.openSetupWizard();"/>
                 <spacer flex="1"/>
               </hbox>
             </groupbox>
@@ -65,9 +63,13 @@
               <hbox>
                 <label value="User Name:" control="sync-username-field"/>
                 <separator orient="horizontal"/>
-                <label id="sync-username-field" preference="sync-username" flex="1"/>
+                <label id="sync-username-field"
+                       preference="browser.places.sync.username"
+                       flex="1"/>
                 <separator orient="horizontal"/>
-                <button id="sync-login-forget" label="Forget" oncommand="gSyncPane.resetLoginCredentials();"/> 
+                <button id="sync-login-forget"
+                        label="Forget"
+                        oncommand="gSyncPane.resetLoginCredentials();"/> 
               </hbox>
               <hbox>
                 <label value="Password:" control="sync-password-field"/>
@@ -76,8 +78,14 @@
               </hbox>           
               <separator orient="vertical"/>
               <vbox>
-                <checkbox id="sync-autoconnect-checkbox" class="indent" label="Automatically connect each time I start Firefox" preference="sync-autoconnect"/>        
-                <checkbox disabled="true" id="sync-rememberpassword-checkbox" class="indent" label="Remember my password" preference="sync-rememberpassword"/>
+                <checkbox id="sync-autoconnect-checkbox"
+                          class="indent"
+                          label="Automatically connect each time I start Firefox"
+                          preference="browser.places.sync.autoconnect"/>        
+                <checkbox id="sync-rememberpassword-checkbox"
+                          class="indent"
+                          label="Remember my password"
+                          preference="browser.places.sync.rememberpassword"/>
               </vbox>
               <separator orient="vertical"/>
             </groupbox>
@@ -86,10 +94,12 @@
           <tabpanel>
             <groupbox id="sync-settings-group" flex="1">
               <hbox>
-                <checkbox id="sync-autosync-checkbox" disabled="true" label="Synchronize with Mozilla:" preference="sync-enabled"/>
+                <checkbox id="sync-autosync-checkbox"
+                          label="Synchronize with Mozilla:"
+                          preference="browser.places.sync.enabled"/>
                 <separator orient="horizontal"/>
-                <menulist disabled="true">
-                  <menupopup preference="sync-schedule">
+                <menulist preference="browser.places.sync.schedule">
+                  <menupopup>
                     <menuitem label="Automagically" value="1"/>
                     <menuitem label="Manually" value="0"/>
                   </menupopup>
@@ -97,10 +107,10 @@
               </hbox>
               <separator orient="vertical"/>
               <hbox>
-                <checkbox id="sync-encryption-checkbox" disabled="true" label="Encrypt data:" preference="encryption-enabled"/>
+                <label value="Encrypt data:"/>
                 <separator orient="horizontal"/>
-              <menulist disabled="true">
-                <menupopup preference="sync-encryption">
+              <menulist preference="browser.places.sync.encryption">
+                <menupopup>
                   <menuitem label="Corrected Block TEA" value="XXXTEA"/>
                   <menuitem label="No encryption" value="none"/>
                 </menupopup>
@@ -110,7 +120,9 @@
               <richlistbox>
                 <richlistitem>
                   <hbox>
-                    <checkbox id="sync-bookmarks-checkbox" label="Bookmarks" preference="sync-bookmarks"/>
+                    <checkbox id="sync-bookmarks-checkbox"
+                              label="Bookmarks"
+                              preference="browser.places.sync.bookmarks"/>
                   </hbox>
                 </richlistitem>
               </richlistbox>
@@ -133,7 +145,10 @@
                 <hbox align="center">
                   <label value="Server URL:" control="sync-server-field"/>
                   <separator orient="horizontal"/>
-                  <textbox id="sync-server-field" class="padding" flex="1" preference="sync-server"/>
+                  <textbox id="sync-server-field"
+                           class="padding"
+                           flex="1"
+                           preference="browser.places.sync.serverURL"/>
                   <separator orient="horizontal"/>
                   <button label="Reset" oncommand="gSyncPane.resetServerURL();"/>
                 </hbox>
