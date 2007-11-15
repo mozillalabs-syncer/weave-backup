@@ -1,61 +1,67 @@
 <?xml version="1.0"?>
 
 <overlay id="sync-preferences"
-	 xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
- <prefwindow id="BrowserPreferences">
-  <prefpane id="sync-prefpane" onpaneload="gSyncPane.onPaneLoad();" 
-    helpURI="chrome://browser/locale/help/help.rdf"
-    label="Services"
-    image="chrome://sync/skin/sync-32x32.png">
+  <prefwindow id="BrowserPreferences">
+    <prefpane id="sync-prefpane" onpaneload="gSyncPane.onPaneLoad();" 
+              helpURI="chrome://browser/locale/help/help.rdf"
+              label="Services"
+              image="chrome://sync/skin/sync-32x32.png">
 
-    <script type="application/x-javascript" src="chrome://sync/content/preferences.js"/>
+      <script type="application/x-javascript" src="chrome://sync/content/preferences.js"/>
 
-    <preferences>
-      <preference id="sync-username"
-        name="browser.places.sync.username"  
-        type="string" />
-      <preference id="sync-rememberpassword"
-        name="browser.places.sync.rememberpassword"
-        type="bool" />
-      <preference id="sync-autoconnect"
-        name="browser.places.sync.autoconnect"
-        type="bool" />
-      <preference id="sync-server"
-        name="browser.places.sync.serverURL"
-        type="string" />
-      <preference id="sync-enabled"
-        name="browser.places.sync.enabled"
-        type="bool" />
-      <prefernece id="sync-schedule"
-        name="browser.places.sync.schedule"
-        type="int" />
-      <preference id="sync-bookmarks"
-        name="browser.places.sync.bookmarks"
-        type="bool" />
-    </preferences>
+      <preferences>
+        <preference id="sync-username"
+                    name="browser.places.sync.username"  
+                    type="string" />
+        <preference id="sync-rememberpassword"
+                    name="browser.places.sync.rememberpassword"
+                    type="bool" />
+        <preference id="sync-autoconnect"
+                    name="browser.places.sync.autoconnect"
+                    type="bool" />
+        <preference id="sync-server"
+                    name="browser.places.sync.serverURL"
+                    type="string" />
+        <preference id="sync-enabled"
+                    name="browser.places.sync.enabled"
+                    type="bool" />
+        <prefernece id="sync-schedule"
+                    name="browser.places.sync.schedule"
+                    type="int" />
+        <preference id="sync-encryption-checkbox"
+                    name="browser.places.sync.encryption.enabled"
+                    type="string" />
+        <preference id="sync-encryption"
+                    name="browser.places.sync.encryption"
+                    type="string" />
+        <preference id="sync-bookmarks"
+                    name="browser.places.sync.bookmarks"
+                    type="bool" />
+      </preferences>
 
-    <tabbox id="sync-tabbox" flex="1">
- 
-     <tabs>
-        <tab id="accountTab" label="Account" helpTopic="prefs-sync-account"/>
-        <tab id="syncTab" label="Sync" helpTopic="prefs-sync-sync"/>
-        <tab id="serviceaddonsTab" label="Add-ons" helpTopic="prefs-sync-serviceaddons"/>
-        <tab id="advancedTab" label="Advanced" helpTopic="prefs-advanced-advanced"/>
-     </tabs>
+      <tabbox id="sync-tabbox" flex="1">
+        
+        <tabs>
+          <tab id="accountTab" label="Account" helpTopic="prefs-sync-account"/>
+          <tab id="syncTab" label="Sync" helpTopic="prefs-sync-sync"/>
+          <tab id="serviceaddonsTab" label="Add-ons" helpTopic="prefs-sync-serviceaddons"/>
+          <tab id="advancedTab" label="Advanced" helpTopic="prefs-advanced-advanced"/>
+        </tabs>
 
-      <tabpanels flex="1">
+        <tabpanels flex="1">
 
-        <tabpanel>
-          <groupbox id="sync-reset-group" flex="1" hidden="true">
-            <hbox>
-              <spacer flex="1"/>
-              <button label="Run Setup Wizard..." oncommand="gSyncPane.openSetupWizard();"/>
-              <spacer flex="1"/>
-            </hbox>
-          </groupbox>
-          <groupbox id="sync-login-group" flex="1" hidden="true">
-            <caption label="Account Information"/>
+          <tabpanel>
+            <groupbox id="sync-reset-group" flex="1" hidden="true">
+              <hbox>
+                <spacer flex="1"/>
+                <button label="Run Setup Wizard..." oncommand="gSyncPane.openSetupWizard();"/>
+                <spacer flex="1"/>
+              </hbox>
+            </groupbox>
+            <groupbox id="sync-login-group" flex="1" hidden="true">
+              <caption label="Account Information"/>
               <hbox>
                 <label value="User Name:" control="sync-username-field"/>
                 <separator orient="horizontal"/>
@@ -68,83 +74,94 @@
                 <separator orient="horizontal"/>
                 <label id="sync-password-field" value="No password stored."/>
               </hbox>           
-            <separator orient="vertical"/>
-            <vbox>
-              <checkbox id="sync-autoconnect-checkbox" class="indent" label="Automatically connect each time I start Firefox" preference="sync-autoconnect"/>        
-              <checkbox disabled="true" id="sync-rememberpassword-checkbox" class="indent" label="Remember my password" preference="sync-rememberpassword"/>
-            </vbox>
-            <separator orient="vertical"/>
-          </groupbox>
-        </tabpanel>
+              <separator orient="vertical"/>
+              <vbox>
+                <checkbox id="sync-autoconnect-checkbox" class="indent" label="Automatically connect each time I start Firefox" preference="sync-autoconnect"/>        
+                <checkbox disabled="true" id="sync-rememberpassword-checkbox" class="indent" label="Remember my password" preference="sync-rememberpassword"/>
+              </vbox>
+              <separator orient="vertical"/>
+            </groupbox>
+          </tabpanel>
 
-        <tabpanel>
-          <groupbox id="sync-settings-group" flex="1">
-            <hbox>
-              <checkbox id="sync-autosync-checkbox" label="Synchronize with Mozilla:" preference="sync-enabled"/>
-              <separator orient="horizontal"/>
-              <menulist>
-                <menupopup preference="sync-schedule">
-                  <menuitem label="Automagically" value="1"/>
-                  <menuitem label="Manually" value="0"/>
+          <tabpanel>
+            <groupbox id="sync-settings-group" flex="1">
+              <hbox>
+                <checkbox id="sync-autosync-checkbox" disabled="true" label="Synchronize with Mozilla:" preference="sync-enabled"/>
+                <separator orient="horizontal"/>
+                <menulist disabled="true">
+                  <menupopup preference="sync-schedule">
+                    <menuitem label="Automagically" value="1"/>
+                    <menuitem label="Manually" value="0"/>
+                  </menupopup>
+                </menulist>
+              </hbox>
+              <separator orient="vertical"/>
+              <hbox>
+                <checkbox id="sync-encryption-checkbox" disabled="true" label="Encrypt data:" preference="encryption-enabled"/>
+                <separator orient="horizontal"/>
+              <menulist disabled="true">
+                <menupopup preference="sync-encryption">
+                  <menuitem label="Corrected Block TEA" value="XXXTEA"/>
+                  <menuitem label="No encryption" value="none"/>
                 </menupopup>
               </menulist>
-             </hbox>
-             <separator orient="vertical"/>
-             <richlistbox>
-              <richlistitem>
-                <hbox>
-                  <checkbox id="sync-bookmarks-checkbox" label="Bookmarks" preference="sync-bookmarks"/>
-                </hbox>
-              </richlistitem>
-             </richlistbox>
-             <separator orient="vertical"/>
+              </hbox>
+              <separator orient="vertical"/>
+              <richlistbox>
+                <richlistitem>
+                  <hbox>
+                    <checkbox id="sync-bookmarks-checkbox" label="Bookmarks" preference="sync-bookmarks"/>
+                  </hbox>
+                </richlistitem>
+              </richlistbox>
+              <separator orient="vertical"/>
             </groupbox>
-        </tabpanel>
+          </tabpanel>
 
-        <tabpanel>
-          <groupbox id="sync-addons-group" flex="1">
-            <description>
-              Local and server-side add-ons to Mozilla Services.
-            </description>
-          </groupbox>
-        </tabpanel>
+          <tabpanel>
+            <groupbox id="sync-addons-group" flex="1">
+              <description>
+                Local and server-side add-ons to Mozilla Services.
+              </description>
+            </groupbox>
+          </tabpanel>
 
-        <tabpanel>
-         <vbox flex="1">
-          <groupbox id="sync-advanced-group" flex="1">
-            <caption label="Server Settings"/>
-            <hbox align="center">
-              <label value="Server URL:" control="sync-server-field"/>
-              <separator orient="horizontal"/>
-              <textbox id="sync-server-field" class="padding" flex="1" preference="sync-server"/>
-              <separator orient="horizontal"/>
-              <button label="Reset" oncommand="gSyncPane.resetServerURL();"/>
-            </hbox>
-          </groupbox>
-          <groupbox id="sync-debug-group" flex="1">
-            <caption label="Debugging"/>
-            <hbox>
-              <spacer flex="1"/>
-              <button label="View Activity Log..." oncommand="gSyncPane.openActivityLog();"/>
-              <button label="Run Setup Wizard..." oncommand="gSyncPane.openSetupWizard();"/>
-              <spacer flex="1"/>
-            </hbox>
-            <hbox>
-              <spacer flex="1"/>
-              <button label="Reset Server Lock" oncommand="gSyncPane.resetServerLock();"/>
-              <button label="Reset Server Data" oncommand="gSyncPane.resetServerData();"/>
-              <button label="Reset Client Data" oncommand="gSyncPane.resetClientData();"/>
-              <spacer flex="1"/>
-            </hbox>
-            <separator orient="vertical"/>
-          </groupbox>
-         </vbox>
-        </tabpanel>
+          <tabpanel>
+            <vbox flex="1">
+              <groupbox id="sync-advanced-group" flex="1">
+                <caption label="Server Settings"/>
+                <hbox align="center">
+                  <label value="Server URL:" control="sync-server-field"/>
+                  <separator orient="horizontal"/>
+                  <textbox id="sync-server-field" class="padding" flex="1" preference="sync-server"/>
+                  <separator orient="horizontal"/>
+                  <button label="Reset" oncommand="gSyncPane.resetServerURL();"/>
+                </hbox>
+              </groupbox>
+              <groupbox id="sync-debug-group" flex="1">
+                <caption label="Debugging"/>
+                <hbox>
+                  <spacer flex="1"/>
+                  <button label="View Activity Log..." oncommand="gSyncPane.openActivityLog();"/>
+                  <button label="Run Setup Wizard..." oncommand="gSyncPane.openSetupWizard();"/>
+                  <spacer flex="1"/>
+                </hbox>
+                <hbox>
+                  <spacer flex="1"/>
+                  <button label="Reset Server Lock" oncommand="gSyncPane.resetServerLock();"/>
+                  <button label="Reset Server Data" oncommand="gSyncPane.resetServerData();"/>
+                  <button label="Reset Client Data" oncommand="gSyncPane.resetClientData();"/>
+                  <spacer flex="1"/>
+                </hbox>
+                <separator orient="vertical"/>
+              </groupbox>
+            </vbox>
+          </tabpanel>
 
-      </tabpanels>
-    
-    </tabbox>
+        </tabpanels>
+        
+      </tabbox>
 
-  </prefpane>
- </prefwindow>
+    </prefpane>
+  </prefwindow>
 </overlay>
