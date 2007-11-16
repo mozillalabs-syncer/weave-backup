@@ -86,12 +86,6 @@ SyncWizard.prototype = {
   },
 
 
-  _addUserLogin: function SyncWizard__addUserLogin(username, password) {
-    this._log.info("Adding user login/password to password manager");
-    this._ss.username = username;
-    this._ss.password = password;
-  },
-
   onPageShow: function SyncWizard_onPageShow(pageId) {
     let wizard = document.getElementById('sync-wizard');
     let status1, sync1;
@@ -181,6 +175,7 @@ SyncWizard.prototype = {
     this._log.info("Verifying login");
     let username = document.getElementById('sync-username-field');
     let password = document.getElementById('sync-password-field');
+    let passphrase = document.getElementById('sync-passphrase-field');
 
     if (!(username && password && username.value && password.value &&
           username.value != 'nobody@mozilla.com')) {
@@ -188,9 +183,13 @@ SyncWizard.prototype = {
       return;
     }
 
-    this._addUserLogin(username.value, password.value);
+    this._log.info("Adding user login/password to password manager");
+    this._ss.username = username.value;
+    this._ss.password = password.value;
+    this._ss.passphrase = passphrase.value;
+
     this._ss.logout();
-    this._ss.login();
+    this._ss.login(null, null);
   },
   
   onSync: function SyncWizard_onSync() {

@@ -90,20 +90,28 @@
       <hbox align="center">
         <label value="User Name:" control="sync-username-field"/>
         <textbox id="sync-username-field"
-           class="padded" flex="1"/>
+                 class="padded" flex="1"/>
        </hbox>
        <hbox align="center">
         <label value="Password:" control="sync-password-field"/>
         <textbox id="sync-password-field"
-           class="padded" flex="1"
-           type="password"/>
+                 class="padded" flex="1"
+                 type="password"/>
+        </hbox>
+       <hbox align="center">
+        <label value="Encryption Passphrase:" control="sync-passphrase-field"/>
+        <textbox id="sync-passphrase-field"
+                 class="padded" flex="1"
+                 type="password"/>
         </hbox>
        <separator orient="vertical" />
        <hbox align="center">
          <button label="Verify" oncommand="gSyncWizard.onVerify(event);"/>
          <spacer flex="1"/>
-         <image id="sync-wizard-verify-throbber-active" src="chrome://sync/skin/sync-throbber-16x16-active.apng" hidden="true"/>
-         <image id="sync-wizard-verify-throbber" src="chrome://sync/skin/sync-throbber-16x16.png"/>
+         <image id="sync-wizard-verify-throbber-active"
+                src="chrome://sync/skin/sync-throbber-16x16-active.apng" hidden="true"/>
+         <image id="sync-wizard-verify-throbber"
+                src="chrome://sync/skin/sync-throbber-16x16.png"/>
          <label id="sync-wizard-verify-status" value="Status: Unverified."/>
        </hbox>
        <spacer flex="1"/>
