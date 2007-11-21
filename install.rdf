@@ -5,7 +5,7 @@
 
   <Description about="urn:mozilla:install-manifest">
     <em:id>weave@labs.mozilla.com</em:id>
-    <em:version>0.1.10</em:version>
+    <em:version>0.1.11</em:version>
     <em:type>2</em:type>
    
     <!-- Target Application this extension can install into, 
