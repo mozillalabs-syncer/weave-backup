@@ -4,7 +4,7 @@
      xmlns:em="http://www.mozilla.org/2004/em-rdf#">
 
   <Description about="urn:mozilla:install-manifest">
-    <em:id>synchotron@labs.mozilla.com</em:id>
+    <em:id>weave@labs.mozilla.com</em:id>
     <em:version>0.1.10</em:version>
     <em:type>2</em:type>
    
@@ -13,16 +13,16 @@
     <em:targetApplication>
       <Description>
         <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
-        <em:minVersion>3.0a9pre</em:minVersion>
-        <em:maxVersion>3.0b2pre</em:maxVersion>
+        <em:minVersion>3.0b2pre</em:minVersion>
+        <em:maxVersion>3.0*</em:maxVersion>
       </Description>
     </em:targetApplication>
    
     <!-- Front End MetaData -->
-    <em:name>Synchotron</em:name>
-    <em:description>The Synchotron keeps all your bookmarks in sync by using patent-pending Mozilla Services with Synchotronic Pro Plus(tm) technology</em:description>
+    <em:name>Weave</em:name>
+    <em:description>Weave is the Mozilla Labs prototype for online services.</em:description>
     <em:creator>Mozilla Labs Team</em:creator>
-    <em:homepageURL>http://labs.mozilla.com/projects/synchotron/</em:homepageURL>
+    <em:homepageURL>http://labs.mozilla.com/projects/weave/</em:homepageURL>
     <em:updateURL>https://people.mozilla.com/~cbeard/sync/dist/update.rdf</em:updateURL>
     <em:iconURL>chrome://sync/skin/sync-32x32.png</em:iconURL>
   </Description>      
