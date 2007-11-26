@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?xml-stylesheet href="chrome://sync/content/sync.css" type="text/css"?>
+<?xml-stylesheet href="chrome://weave/content/sync.css" type="text/css"?>
 
-<!DOCTYPE overlay SYSTEM "chrome://sync/locale/sync.dtd">
+<!DOCTYPE overlay SYSTEM "chrome://weave/locale/sync.dtd">
 <overlay id="sync-overlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
     <script type="application/x-javascript"
             src="chrome://browser/content/places/utils.js"/>
     <script type="application/x-javascript"
-            src="chrome://sync/content/sync.js"/>
+            src="chrome://weave/content/sync.js"/>
 
     <statusbar id="status-bar">
         <statusbarpanel id="sync-menu-button"
@@ -20,19 +20,19 @@
 	    <image id="sync-throbber-active"
                    hidden="true"
                    width="16" height="16"
-                   src="chrome://sync/skin/sync-throbber-16x16-active.apng"/>
+                   src="chrome://weave/skin/sync-throbber-16x16-active.apng"/>
 	    <image id="sync-throbber-online"
                    hidden="true"
                    width="16" height="16"
-                   src="chrome://sync/skin/sync-throbber-16x16.png"/>
+                   src="chrome://weave/skin/sync-throbber-16x16.png"/>
 	    <image id="sync-throbber-offline"
                    hidden="false"
                    width="16" height="16"
-                   src="chrome://sync/skin/sync-throbber-16x16.png"/>
+                   src="chrome://weave/skin/sync-throbber-16x16.png"/>
 	    <image id="sync-throbber-error"
                    hidden="true"
                    width="16" height="16"
-                   src="chrome://sync/skin/sync-throbber-16x16-error.png"/>
+                   src="chrome://weave/skin/sync-throbber-16x16-error.png"/>
 
             <menupopup id="sync-menu"
                        onpopupshowing="if(event.target == this) gSync.doPopup(event);" >

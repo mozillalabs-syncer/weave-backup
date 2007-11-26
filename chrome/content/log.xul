@@ -10,7 +10,7 @@
         ondialogextra1="saveAs();">
 
   <script type="application/x-javascript"
-          src="chrome://sync/content/log.js"/>
+          src="chrome://weave/content/log.js"/>
 
   <preferences id="syncLogPrefs">
     <preference id="browser.places.sync.log.selectedTabIndex"

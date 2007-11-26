@@ -1,6 +1,6 @@
-overlay chrome://browser/content/browser.xul chrome://sync/content/sync.xul
-overlay chrome://browser/content/preferences/preferences.xul chrome://sync/content/preferences.xul
-@unpacked@content sync chrome/content/
-@unpacked@skin sync class/1.0 chrome/skin/
-@jar@content sync jar:chrome/sync.jar!/content/
-@jar@skin sync class/1.0 jar:chrome/sync.jar!/skin/
+overlay chrome://browser/content/browser.xul chrome://weave/content/sync.xul
+overlay chrome://browser/content/preferences/preferences.xul chrome://weave/content/preferences.xul
+@unpacked@content weave chrome/content/
+@unpacked@skin weave class/1.0 chrome/skin/
+@jar@content weave jar:chrome/sync.jar!/content/
+@jar@skin weave class/1.0 jar:chrome/sync.jar!/skin/

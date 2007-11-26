@@ -175,7 +175,7 @@ Sync.prototype = {
       syncnowitem.setAttribute("disabled", "true");
 
     if (this._userLogin)
-      this._openWindow('Sync:Login', 'chrome://sync/content/login.xul',
+      this._openWindow('Sync:Login', 'chrome://weave/content/login.xul',
                        'chrome,centerscreen,dialog,modal,resizable=no');
     this._userLogin = false;
   },
@@ -231,7 +231,7 @@ Sync.prototype = {
   },
   
   doOpenSetupWizard : function Sync_doOpenSetupWizard(event) {
-      window.openDialog('chrome://sync/content/wizard.xul', '',
+      window.openDialog('chrome://weave/content/wizard.xul', '',
         'chrome, dialog, modal, resizable=yes', null);  	
   },
 
@@ -256,7 +256,7 @@ Sync.prototype = {
   },
 
   doOpenActivityLog: function Sync_doOpenActivityLog(event) {
-    this._openWindow('Sync:Log', 'chrome://sync/content/log.xul',
+    this._openWindow('Sync:Log', 'chrome://weave/content/log.xul',
                      'chrome,centerscreen,dialog,modal,resizable=yes');
   },
 

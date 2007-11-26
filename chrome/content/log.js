@@ -38,7 +38,7 @@ gSyncLog = {
         setAttribute("src", "file://" + file.path);
     else
       document.getElementById("sync-log-frame").
-        setAttribute("src", "chrome://sync/content/default-log.txt");
+        setAttribute("src", "chrome://weave/content/default-log.txt");
 
     let verboseFile = file.parent.clone();
     verboseFile.append("bm-sync-verbose.log");
@@ -48,7 +48,7 @@ gSyncLog = {
         setAttribute("src", "file://" + verboseFile.path);
     else
       document.getElementById("sync-log-verbose-frame").
-        setAttribute("src", "chrome://sync/content/default-log.txt");
+        setAttribute("src", "chrome://weave/content/default-log.txt");
   }
 }
 

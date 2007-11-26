@@ -13,7 +13,7 @@
         ondialogcancel="return gLogin.doCancel();">
     
   <script type="application/x-javascript"
-    src="chrome://sync/content/login.js"/>
+    src="chrome://weave/content/login.js"/>
 
   <preferences>
     <preference id="sync-username"

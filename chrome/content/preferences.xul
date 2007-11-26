@@ -7,9 +7,9 @@
     <prefpane id="sync-prefpane" onpaneload="gSyncPane.onPaneLoad();" 
               helpURI="chrome://browser/locale/help/help.rdf"
               label="Services"
-              image="chrome://sync/skin/sync-32x32.png">
+              image="chrome://weave/skin/sync-32x32.png">
 
-      <script type="application/x-javascript" src="chrome://sync/content/preferences.js"/>
+      <script type="application/x-javascript" src="chrome://weave/content/preferences.js"/>
 
       <preferences>
         <preference id="browser.places.sync.username"

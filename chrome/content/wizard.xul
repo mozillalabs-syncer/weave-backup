@@ -11,7 +11,7 @@
   <script type="application/x-javascript"
             src="chrome://browser/content/places/utils.js"/>
   <script type="application/x-javascript"
-    src="chrome://sync/content/wizard.js"/>
+    src="chrome://weave/content/wizard.js"/>
 
   <wizardpage pageid="sync-wizard-welcome" onpageshow="gSyncWizard.onPageShow('sync-wizard-welcome');">
     <description style="font-weight: bold; font-size: 12px;">
@@ -40,7 +40,7 @@
     Privacy Policy and Terms of Use
     </description>
     <separator flex="1"/>
-    <iframe onload="window.scrollTo(0,0);" src="chrome://sync/content/EULA.xhtml" flex="1"/>
+    <iframe onload="window.scrollTo(0,0);" src="chrome://weave/content/EULA.xhtml" flex="1"/>
     <separator flex="1"/>
     <groupbox>
       <radiogroup>
@@ -109,9 +109,9 @@
          <button label="Verify" oncommand="gSyncWizard.onVerify(event);"/>
          <spacer flex="1"/>
          <image id="sync-wizard-verify-throbber-active"
-                src="chrome://sync/skin/sync-throbber-16x16-active.apng" hidden="true"/>
+                src="chrome://weave/skin/sync-throbber-16x16-active.apng" hidden="true"/>
          <image id="sync-wizard-verify-throbber"
-                src="chrome://sync/skin/sync-throbber-16x16.png"/>
+                src="chrome://weave/skin/sync-throbber-16x16.png"/>
          <label id="sync-wizard-verify-status" value="Status: Unverified."/>
        </hbox>
        <spacer flex="1"/>
@@ -139,8 +139,8 @@
        <hbox align="center">
         <button id="sync-wizard-initialization-button" label="Perform Initial Sync" oncommand="return gSyncWizard.onSync(event);"/>
         <spacer flex="1"/>
-         <image id="sync-wizard-initialization-throbber-active" src="chrome://sync/skin/sync-throbber-16x16-active.apng" hidden="true"/>
-         <image id="sync-wizard-initialization-throbber" src="chrome://sync/skin/sync-throbber-16x16.png"/>
+         <image id="sync-wizard-initialization-throbber-active" src="chrome://weave/skin/sync-throbber-16x16-active.apng" hidden="true"/>
+         <image id="sync-wizard-initialization-throbber" src="chrome://weave/skin/sync-throbber-16x16.png"/>
          <label id="sync-wizard-initialization-status" value="Status: Ready to Sync."/>
        </hbox>
      <spacer flex="1"/>

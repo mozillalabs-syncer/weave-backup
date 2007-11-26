@@ -62,14 +62,14 @@ SyncPane.prototype = {
      else {
        var ww = Cc["@mozilla.org/embedcomp/window-watcher;1"].
          getService(Ci.nsIWindowWatcher);
-       ww.openWindow(null, 'chrome://sync/content/log.xul', '',
+       ww.openWindow(null, 'chrome://weave/content/log.xul', '',
                      'chrome,centerscreen,dialog,modal,resizable=yes', null);
      }
   },
  
   openSetupWizard: function SyncPane_openSetupWizard()
   {
-    window.openDialog('chrome://sync/content/wizard.xul', '', 'chrome, dialog, modal, resizable=yes', null);          
+    window.openDialog('chrome://weave/content/wizard.xul', '', 'chrome, dialog, modal, resizable=yes', null);          
 
     let branch = Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefBranch);
     let username = branch.getCharPref("browser.places.sync.username");
