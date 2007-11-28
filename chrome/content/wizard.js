@@ -66,7 +66,7 @@ SyncWizard.prototype = {
 
     this._log.info("Initializing setup wizard");
 
-    this._os.addObserver(this, "bookmarks-sync:login", false);
+    this._os.addObserver(this, "bookmarks-sync:login-end", false);
     this._os.addObserver(this, "bookmarks-sync:login-error", false);
     this._os.addObserver(this, "bookmarks-sync:logout", false);
     this._os.addObserver(this, "bookmarks-sync:sync-start", false);
@@ -77,7 +77,7 @@ SyncWizard.prototype = {
   onWizardShutdown: function SyncWizard_onWizardshutdown() {
     this._log.info("Shutting down setup wizard");
 
-    this._os.removeObserver(this, "bookmarks-sync:login");
+    this._os.removeObserver(this, "bookmarks-sync:login-end");
     this._os.removeObserver(this, "bookmarks-sync:login-error");
     this._os.removeObserver(this, "bookmarks-sync:logout");
     this._os.removeObserver(this, "bookmarks-sync:sync-start");
@@ -205,7 +205,7 @@ SyncWizard.prototype = {
     let verifyStatus, initStatus, throbber1, throbber2, sync1;
 
     switch(topic) {
-    case "bookmarks-sync:login":
+    case "bookmarks-sync:login-end":
       this._log.info("Login verified");
       verifyStatus = document.getElementById('sync-wizard-verify-status');
       verifyStatus.setAttribute("value", "Status: Login Verified");

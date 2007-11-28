@@ -32,7 +32,7 @@ Login.prototype = {
 
   startUp: function Login_startUp() {
     this._log.info("Sync login window opened");
-    this._os.addObserver(this, "bookmarks-sync:login", false);
+    this._os.addObserver(this, "bookmarks-sync:login-end", false);
     this._os.addObserver(this, "bookmarks-sync:login-error", false);
 
     let username = document.getElementById("username");
@@ -55,7 +55,7 @@ Login.prototype = {
 
   shutDown: function Login_shutDown() {
     this._log.info("Sync login window closed");
-    this._os.removeObserver(this, "bookmarks-sync:login");
+    this._os.removeObserver(this, "bookmarks-sync:login-end");
     this._os.removeObserver(this, "bookmarks-sync:login-error");
   },
 
@@ -100,7 +100,7 @@ Login.prototype = {
   // nsIObserver
   observe: function(subject, topic, data) {
     switch(topic) {
-    case "bookmarks-sync:login":
+    case "bookmarks-sync:login-end":
       this._onLogin();
       break;
     case "bookmarks-sync:login-error":
