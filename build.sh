@@ -18,7 +18,7 @@ for in in `find . -type f -name \*.in`; do
     done
 done
 
-cd components
+cd public
 ./xptgen
 cd -
 
