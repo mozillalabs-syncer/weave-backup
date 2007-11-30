@@ -1,6 +1,10 @@
 overlay chrome://browser/content/browser.xul chrome://weave/content/sync.xul
 overlay chrome://browser/content/preferences/preferences.xul chrome://weave/content/preferences.xul
+
 @unpacked@content weave chrome/content/
 @unpacked@skin weave class/1.0 chrome/skin/
+@unpacked@locale playground en-US chrome/locale/en-US/
+
 @jar@content weave jar:chrome/sync.jar!/content/
 @jar@skin weave class/1.0 jar:chrome/sync.jar!/skin/
+@jar@locale playground en-US jar:chrome/sync.jar!/locale/en-US/
