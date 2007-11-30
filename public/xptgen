@@ -9,5 +9,5 @@ if [[ ! -d $MOZSRCDIR ]]; then
     exit 1
 fi
 
-$MOZOBJDIR/dist/bin/xpidl -m typelib -I $MOZSRCDIR/xpcom/base/ -o IBookmarksSyncService IBookmarksSyncService.idl
-$MOZOBJDIR/dist/bin/xpidl -m typelib -I $MOZSRCDIR/xpcom/base/ -o ILog4MozService ILog4MozService.idl
+$MOZOBJDIR/dist/bin/xpidl -m typelib -I $MOZSRCDIR/xpcom/base/ -o ../components/IBookmarksSyncService IBookmarksSyncService.idl
+$MOZOBJDIR/dist/bin/xpidl -m typelib -I $MOZSRCDIR/xpcom/base/ -o ../components/ILog4MozService ILog4MozService.idl
