@@ -22,9 +22,7 @@ Login.prototype = {
   _log: null,
 
   _init: function Login__init() {
-    let logSvc = Cc["@mozilla.org/log4moz/service;1"].
-      getService(Ci.ILog4MozService);
-    this._log = logSvc.getLogger("Chrome.Login");
+    this._log = Log4Moz.Service.getLogger("Chrome.Login");
   },
 
   startUp: function Login_startUp() {

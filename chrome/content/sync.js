@@ -51,10 +51,6 @@ Sync.prototype = {
   __ss: null,
   get _ss() {
     return Weave.Service;
-    if (!this.__ss)
-      this.__ss = Cc["@mozilla.org/places/sync-service;1"].
-        getService(Ci.IBookmarksSyncService);
-    return this.__ss;
   },
 
   __os: null,
@@ -68,9 +64,7 @@ Sync.prototype = {
   _log: null,
 
   _init: function Sync__init() {
-    let logSvc = Cc["@mozilla.org/log4moz/service;1"].
-      getService(Ci.ILog4MozService);
-    this._log = logSvc.getLogger("Chrome.Window");
+    this._log = Log4Moz.Service.getLogger("Chrome.Window");
   },
 
   _openWindow: function Sync__openWindow(type, uri, options) {

@@ -13,4 +13,5 @@ if (!resProt.hasSubstitution("weave")) {
 }
 
 Components.utils.import("resource://weave/weave.js");
+Components.utils.import("resource://weave/log4moz.js");
 

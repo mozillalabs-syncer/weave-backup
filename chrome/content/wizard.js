@@ -57,9 +57,7 @@ SyncWizard.prototype = {
   },    
 
   _init : function SyncWizard__init() {
-    let logSvc = Cc["@mozilla.org/log4moz/service;1"].
-      getService(Ci.ILog4MozService);
-    this._log = logSvc.getLogger("Chrome.Wizard");
+    this._log = Log4Moz.Service.getLogger("Chrome.Wizard");
 
     this._log.info("Initializing setup wizard");
 
