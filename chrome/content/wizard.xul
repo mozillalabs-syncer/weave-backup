@@ -9,6 +9,8 @@
   xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
   <script type="application/x-javascript"
+          src="chrome://weave/content/load-weave.js"/>
+  <script type="application/x-javascript"
             src="chrome://browser/content/places/utils.js"/>
   <script type="application/x-javascript"
     src="chrome://weave/content/wizard.js"/>

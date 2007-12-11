@@ -50,6 +50,7 @@ function Sync() {
 Sync.prototype = {
   __ss: null,
   get _ss() {
+    return Weave.Service;
     if (!this.__ss)
       this.__ss = Cc["@mozilla.org/places/sync-service;1"].
         getService(Ci.IBookmarksSyncService);

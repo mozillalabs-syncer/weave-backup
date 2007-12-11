@@ -45,10 +45,7 @@ SyncWizard.prototype = {
 
  __ss: null,
   get _ss() {
-    if (!this.__ss)
-      this.__ss = Cc["@mozilla.org/places/sync-service;1"].
-        getService(Ci.IBookmarksSyncService);
-    return this.__ss;
+    return Weave.Service;
   },
 
   __os: null,

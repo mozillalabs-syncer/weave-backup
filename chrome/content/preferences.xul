@@ -9,7 +9,10 @@
               label="Services"
               image="chrome://weave/skin/sync-32x32.png">
 
-      <script type="application/x-javascript" src="chrome://weave/content/preferences.js"/>
+      <script type="application/x-javascript"
+              src="chrome://weave/content/load-weave.js"/>
+      <script type="application/x-javascript"
+	      src="chrome://weave/content/preferences.js"/>
 
       <preferences>
         <preference id="browser.places.sync.username"

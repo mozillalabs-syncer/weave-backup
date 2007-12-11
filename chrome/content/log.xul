@@ -10,6 +10,8 @@
         ondialogextra1="saveAs();">
 
   <script type="application/x-javascript"
+          src="chrome://weave/content/load-weave.js"/>
+  <script type="application/x-javascript"
           src="chrome://weave/content/log.js"/>
 
   <preferences id="syncLogPrefs">
