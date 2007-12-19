@@ -18,10 +18,6 @@ for in in `find . -type f -name \*.in`; do
     done
 done
 
-cd public
-./xptgen
-cd -
-
 if [[ ! $1 == xpi ]]; then
     exit 0;
 fi
