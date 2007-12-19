@@ -29,6 +29,7 @@ Login.prototype = {
     this._log.info("Sync login window opened");
     this._os.addObserver(this, "bookmarks-sync:login-end", false);
     this._os.addObserver(this, "bookmarks-sync:login-error", false);
+    this._os.addObserver(this, "weave:service-unlock:success", false);
 
     let username = document.getElementById("username");
     let password = document.getElementById("password");
@@ -52,6 +53,18 @@ Login.prototype = {
     this._log.info("Sync login window closed");
     this._os.removeObserver(this, "bookmarks-sync:login-end");
     this._os.removeObserver(this, "bookmarks-sync:login-error");
+    this._os.removeObserver(this, "weave:service-unlock:success");
+  },
+
+  _onLogin: function Login__onLogin() {
+    let dialog = document.getElementById("login-dialog");
+    this._loggingIn = false;
+    dialog.cancelDialog();
+  },
+
+  _onLoginError: function Login__onLoginError() {
+    alert("Login failed");
+    this._loggingIn = false;
   },
 
   doOK: function Login_doOK() {
@@ -74,17 +87,6 @@ Login.prototype = {
     }
     this._ss.login(password.value, passphrase);
     return false; // don't close the dialog yet
-  },
-
-  _onLogin: function Login__onLogin() {
-    let dialog = document.getElementById("login-dialog");
-    this._loggingIn = false;
-    dialog.cancelDialog();
-  },
-
-  _onLoginError: function Login__onLoginError() {
-    alert("Login failed");
-    this._loggingIn = false;
   },
 
   doCancel: function Login_doCancel() {

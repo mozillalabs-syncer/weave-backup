@@ -168,16 +168,49 @@ Sync.prototype = {
     let syncnowitem = document.getElementById("sync-syncnowitem");
     if (syncnowitem)
       syncnowitem.setAttribute("disabled", "true");
+  },
 
+  _onSvcUnlock: function Sync__onSvcUnlock() {
     if (this._userLogin)
       this._openWindow('Sync:Login', 'chrome://weave/content/login.xul',
                        'chrome,centerscreen,dialog,modal,resizable=no');
     this._userLogin = false;
   },
 
+  _onSyncStart: function Sync_onSyncStart() {
+    this._setThrobber("active");
+	  
+    let syncitem = document.getElementById("sync-syncnowitem");
+    if(syncitem)
+      syncitem.setAttribute("active", "false");
+  },
+
+  _onSyncEnd: function Sync_onSyncEnd(status) {
+    if (status)
+      this._setThrobber("idle");
+    else
+      this._setThrobber("error");
+	  
+    let syncitem = document.getElementById("sync-syncnowitem");
+    if(syncitem)
+      syncitem.setAttribute("active", "true");
+    
+    let branch = Cc["@mozilla.org/preferences-service;1"].
+      getService(Ci.nsIPrefBranch);
+    let lastSync = new Date(). getTime();
+    branch.setCharPref("browser.places.sync.lastsync", lastSync);
+
+    let lastsyncitem = document.getElementById("sync-lastsyncitem");
+    if(lastsyncitem)
+      lastsyncitem.setAttribute("label", "Last Sync: " + lastSync.toLocaleString());
+  },
+
   startUp: function Sync_startUp(event) {
     this._log.info("Sync window opened");
 
+    this._os.addObserver(this, "weave:service-unlock:success", false);
+    this._os.addObserver(this, "weave:service-lock:success", false);
+    this._os.addObserver(this, "weave:service-lock:error", false);
     this._os.addObserver(this, "bookmarks-sync:login-end", false);
     this._os.addObserver(this, "bookmarks-sync:login-error", false);
     this._os.addObserver(this, "bookmarks-sync:logout", false);
@@ -195,6 +228,9 @@ Sync.prototype = {
   shutDown: function Sync_shutDown(event) {
     this._log.info("Sync window closed");
 
+    this._os.removeObserver(this, "weave:service-unlock:success");
+    this._os.removeObserver(this, "weave:service-lock:success");
+    this._os.removeObserver(this, "weave:service-lock:error");
     this._os.removeObserver(this, "bookmarks-sync:login-end");
     this._os.removeObserver(this, "bookmarks-sync:login-error");
     this._os.removeObserver(this, "bookmarks-sync:logout");
@@ -270,42 +306,21 @@ Sync.prototype = {
     }
   },
 
-  _onSyncStart: function Sync_onSyncStart() {
-    this._setThrobber("active");
-	  
-    let syncitem = document.getElementById("sync-syncnowitem");
-    if(syncitem)
-      syncitem.setAttribute("active", "false");
-  },
-
-  _onSyncEnd: function Sync_onSyncEnd(status) {
-    if (status)
-      this._setThrobber("idle");
-    else
-      this._setThrobber("error");
-	  
-    let syncitem = document.getElementById("sync-syncnowitem");
-    if(syncitem)
-      syncitem.setAttribute("active", "true");
-    
-    let branch = Cc["@mozilla.org/preferences-service;1"].
-      getService(Ci.nsIPrefBranch);
-    let lastSync = new Date(). getTime();
-    branch.setCharPref("browser.places.sync.lastsync", lastSync);
-
-    let lastsyncitem = document.getElementById("sync-lastsyncitem");
-    if(lastsyncitem)
-      lastsyncitem.setAttribute("label", "Last Sync: " + lastSync.toLocaleString());
-  },
-  
   // nsIObserver
   observe: function(subject, topic, data) {
     switch(topic) {
+    case "weave:service-unlock:success":
+      this._onSvcUnlock();
+      break;
+    case "weave:service-lock:success":
+      break;
+    case "weave:service-lock:error":
+      this._onLogout(false);
+      break;
     case "bookmarks-sync:login-end":
       this._onLogin();
       break;
     case "bookmarks-sync:login-error":
-      this._onLogout(false);
       break;
     case "bookmarks-sync:logout":
       this._onLogout(true);
