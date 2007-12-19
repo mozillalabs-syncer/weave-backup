@@ -32,9 +32,11 @@ Login.prototype = {
     this._os.addObserver(this, "weave:service-unlock:success", false);
 
     let username = document.getElementById("username");
-    let password = document.getElementById("password");
     username.value = this._ss.username;
-    password.value = this._ss.password;
+    if (this._ss.password) {
+      let password = document.getElementById("password");
+      password.value = this._ss.password;
+    }
 
     let branch = Cc["@mozilla.org/preferences-service;1"]
       .getService(Ci.nsIPrefBranch);
@@ -44,8 +46,10 @@ Login.prototype = {
       hbox.setAttribute("hidden", "true");
     else {
       hbox.setAttribute("hidden", "false");
-      let passphrase = document.getElementById("passphrase");
-      passphrase.value = this._ss.passphrase;
+      if (this._ss.passphrase) {
+	let passphrase = document.getElementById("passphrase");
+	passphrase.value = this._ss.passphrase;
+      }
     }
   },
 
