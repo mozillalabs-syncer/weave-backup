@@ -30,22 +30,26 @@ gSyncLog = {
     let dirSvc = Cc["@mozilla.org/file/directory_service;1"].
     getService(Ci.nsIProperties);
 
-    let file = dirSvc.get("ProfD", Ci.nsIFile);
-    file.append("bm-sync.log");
+    let brief = dirSvc.get("ProfD", Ci.nsIFile);
+    brief.QueryInterface(Ci.nsILocalFile);
 
-    if (file.exists())
+    brief.append("weave");
+    brief.append("logs");
+    brief.append("brief-log.txt");
+
+    if (brief.exists())
       document.getElementById("sync-log-frame").
-        setAttribute("src", "file://" + file.path);
+        setAttribute("src", "file://" + brief.path);
     else
       document.getElementById("sync-log-frame").
         setAttribute("src", "chrome://weave/content/default-log.txt");
 
-    let verboseFile = file.parent.clone();
-    verboseFile.append("bm-sync-verbose.log");
+    let verbose = brief.parent.clone();
+    verbose.append("verbose-log.txt");
 
-    if (verboseFile.exists())
+    if (verbose.exists())
       document.getElementById("sync-log-verbose-frame").
-        setAttribute("src", "file://" + verboseFile.path);
+        setAttribute("src", "file://" + verbose.path);
     else
       document.getElementById("sync-log-verbose-frame").
         setAttribute("src", "chrome://weave/content/default-log.txt");
@@ -60,11 +64,15 @@ function saveAs() {
   getService(Ci.nsIProperties);
 
   let file = dirSvc.get("ProfD", Ci.nsIFile);
-  if (index == 0)
-    file.append("bm-sync.log");
-  else
-    file.append("bm-sync-verbose.log");
   file.QueryInterface(Ci.nsILocalFile);
+
+  file.append("weave");
+  file.append("logs");
+
+  if (index == 0)
+    file.append("brief-log.txt");
+  else
+    file.append("verbose-log.txt");
 
   if (!file.exists()) {
     alert("No log available");
