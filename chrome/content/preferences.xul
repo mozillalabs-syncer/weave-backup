@@ -39,6 +39,9 @@
         <preference id="browser.places.sync.bookmarks"
                     name="browser.places.sync.bookmarks"
                     type="bool"/>
+        <preference id="browser.places.sync.history"
+                    name="browser.places.sync.history"
+                    type="bool"/>
       </preferences>
 
       <tabbox id="sync-tabbox" flex="1">
@@ -52,101 +55,47 @@
         <tabpanels flex="1">
 
           <tabpanel>
+
             <groupbox flex="1">
-              <hbox>
-                <spacer flex="1"/>
- 
+	     <vbox>
               <vbox id="sync-signon-button">
-              <description>
+                <description>
                  Already have a Weave account?
-              </description>
-              <separator class="thin" />
-              <description>
+                </description>
+                <description>
  	         Sign into your account to set up Weave on this computer.
-              </description>
-              <separator class="thin" />
-	      <button label="Sign In..."
-                      oncommand="gWeavePrefs.doSignOn();"/>
+                </description>
+	        <button label="Sign In..." oncommand="gWeavePrefs.doSignOn();"/>
               </vbox>
-
               <vbox id="sync-signout-button">
-	      <description>
-                Signed in to Weave as 
-              </description>
-              <label id="sync-username-field"
-                       preference="browser.places.sync.username"/>
-              <separator class="thin" />
-	      <button label="Sign Out"
-                      oncommand="gWeavePrefs.doSignOut();"/>
+	        <description>
+                  Signed in to Weave as 
+                </description>
+                <label id="sync-username-field" preference="browser.places.sync.username"/>
+	        <button label="Sign Out" oncommand="gWeavePrefs.doSignOut();"/>
 	      </vbox>
-
               <vbox>
-              <description>
-                 Create an account
-              </description>
-              <separator class="thin" />
-              <description>
-                 Sign up now for a Weave account.
-              </description>
-              <separator class="thin" />
-	      <button label="Learn More..." id="sync-learnmore-button"
-                      oncommand="gWeavePrefs.doLearnMore();"/>
-                <spacer flex="1"/>
+                <description>
+                  Create an account
+                </description>
+                <description>
+                  Sign up now for a Weave account.
+                </description>
+  	        <button label="Create Account..." id="sync-learnmore-button" oncommand="gWeavePrefs.doLearnMore();"/>
               </vbox>
-
-              </hbox>
-            </groupbox>
-            <groupbox id="sync-login-group" flex="1" hidden="true">
-              <hbox>
-		<label value="Not signed in."/>
-		<label value="Signed into Weave as "/>
-                <separator orient="horizontal"/>
-              </hbox>
-              <hbox>
-                <label value="Password:" control="sync-password-field"/>
-                <separator orient="horizontal"/>
-                <label id="sync-password-field" value="No password stored."/>
-              </hbox>           
-              <separator orient="vertical"/>
-              <vbox>
-                <checkbox id="sync-autoconnect-checkbox"
-                          class="indent"
-                          label="Automatically connect each time I start Firefox"
-                          preference="browser.places.sync.autoconnect"/>        
-                <checkbox id="sync-rememberpassword-checkbox"
-                          class="indent"
-                          label="Remember my password"
-                          preference="browser.places.sync.rememberpassword"/>
-              </vbox>
-              <separator orient="vertical"/>
+             </vbox>
             </groupbox>
           </tabpanel>
 
           <tabpanel>
             <groupbox id="sync-settings-group" flex="1">
-              <hbox>
+              <vbox>
                 <checkbox id="sync-autosync-checkbox"
-                          label="Synchronize with Mozilla:"
+                          label="Back up and synchronize my data to a Weave server"
                           preference="browser.places.sync.enabled"/>
-                <separator orient="horizontal"/>
-                <menulist preference="browser.places.sync.schedule">
-                  <menupopup>
-                    <menuitem label="Automagically" value="1"/>
-                    <menuitem label="Manually" value="0"/>
-                  </menupopup>
-                </menulist>
-              </hbox>
-              <separator orient="vertical"/>
-              <hbox>
-                <label value="Encrypt data:"/>
-                <separator orient="horizontal"/>
-              <menulist preference="browser.places.sync.encryption">
-                <menupopup>
-                  <menuitem label="Corrected Block TEA" value="XXXTEA"/>
-                  <menuitem label="No encryption" value="none"/>
-                </menupopup>
-              </menulist>
-              </hbox>
+	        <checkbox label="Encrypt my data on the server" disabled="true"
+                          checked="true"/>
+              </vbox>
               <separator orient="vertical"/>
               <richlistbox>
                 <richlistitem>
@@ -154,6 +103,13 @@
                     <checkbox id="sync-bookmarks-checkbox"
                               label="Bookmarks"
                               preference="browser.places.sync.bookmarks"/>
+                  </hbox>
+                </richlistitem>
+                <richlistitem>
+                  <hbox>
+                    <checkbox id="sync-bookmarks-checkbox"
+                              label="History"
+                              preference="browser.places.sync.history"/>
                   </hbox>
                 </richlistitem>
               </richlistbox>
@@ -172,37 +128,48 @@
           <tabpanel>
             <vbox flex="1">
               <groupbox id="sync-advanced-group" flex="1">
-                <caption label="Server Settings"/>
+               <vbox>
+                <caption label="Weave Server"/>
                 <hbox align="center">
-                  <label value="Server URL:" control="sync-server-field"/>
+                  <label value="Server Location:" control="sync-server-field"/>
                   <separator orient="horizontal"/>
                   <textbox id="sync-server-field"
                            class="padding"
                            flex="1"
                            preference="browser.places.sync.serverURL"/>
-                  <separator orient="horizontal"/>
-                  <button label="Reset" oncommand="gWeavePrefs.resetServerURL();"/>
                 </hbox>
+              <hbox>
+                <label value="Encryption:"/>
+               <menulist preference="browser.places.sync.encryption" disabled="true">
+                <menupopup>
+                  <menuitem label="Placeholder Algorithm (Corrected Block TEA)" value="XXXTEA"/>
+                  <menuitem label="No encryption" value="none"/>
+                </menupopup>
+               </menulist>
+               </hbox>
+	       <description>
+		  Note: Encryption is required for the default server.
+	       </description>
+               <button label="Reset to Default" oncommand="gWeavePrefs.resetServerURL();"/>
+              </vbox>
               </groupbox>
               <groupbox id="sync-debug-group" flex="1">
-                <caption label="Debugging"/>
-                <hbox>
-                  <spacer flex="1"/>
-                  <button label="View Activity Log..." oncommand="gWeavePrefs.openActivityLog();"/>
-                  <button label="Run Setup Wizard..." oncommand="gWeavePrefs.openSetupWizard();"/>
-                  <spacer flex="1"/>
-                </hbox>
-                <hbox>
-                  <spacer flex="1"/>
+                <vbox>
+                  <caption label="Debug"/>
+                  <description>
+  		    The following actions are for advanced debugging by developers only. 
+                  </description>                    
+                  <button label="Reset Username and Password" oncommand="gWeavePrefs.resetLoginCredentials();"/> 
                   <button label="Reset Server Lock" oncommand="gWeavePrefs.resetServerLock();"/>
                   <button label="Reset Server Data" oncommand="gWeavePrefs.resetServerData();"/>
                   <button label="Reset Client Data" oncommand="gWeavePrefs.resetClientData();"/>
-                  <spacer flex="1"/>
-                <button id="sync-login-forget"
-                        label="Reset Account Credentials"
-                        oncommand="gWeavePrefs.resetLoginCredentials();"/> 
-                </hbox>
-                <separator orient="vertical"/>
+                </vbox>
+              </groupbox>
+	      <groupbox flex="1">
+              <vbox>
+                <caption label="Logs"/>
+                <button label="Activity Log..." oncommand="gSyncPane.openActivityLog();"/>
+              </vbox>
               </groupbox>
             </vbox>
           </tabpanel>

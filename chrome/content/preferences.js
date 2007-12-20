@@ -20,7 +20,9 @@ WeavePrefs.prototype = {
     let signOnButton = document.getElementById('sync-signon-button');
     let signOutButton = document.getElementById('sync-signout-button'); 
 
-    if(!this._ss.username || this._ss.username == "nobody@mozilla.com") {
+//    if(!this._ss.username || this._ss.username == "nobody@mozilla.com") {
+    if (this._ss.currentUser) {
+
       signOnButton.setAttribute("hidden", "false");
       signOutButton.setAttribute("hidden", "true");
     } else {
@@ -62,6 +64,11 @@ WeavePrefs.prototype = {
     }
 
     this.onPaneLoad();
+  },
+
+  doSignOut: function WeavePrefs_doSignOut() {
+    this._ss.logout();
+    this._checkAccountInfo();
   },
 
   resetServerLock: function WeavePrefs_resetServerLock() {
