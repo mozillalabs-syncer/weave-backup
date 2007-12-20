@@ -17,32 +17,21 @@ WeavePrefs.prototype = {
   },
 
   _checkAccountInfo: function WeavePrefs__checkAccountInfo() {
-    let logingroup = document.getElementById('sync-login-group');
-    let resetgroup = document.getElementById('sync-reset-group');
+    let signOnButton = document.getElementById('sync-signon-button');
+    let signOutButton = document.getElementById('sync-signout-button'); 
+
     if(!this._ss.username || this._ss.username == "nobody@mozilla.com") {
-      logingroup.setAttribute("hidden", "true");
-      resetgroup.setAttribute("hidden", "false");
+      signOnButton.setAttribute("hidden", "false");
+      signOutButton.setAttribute("hidden", "true");
     } else {
-      logingroup.setAttribute("hidden", "false");
-      resetgroup.setAttribute("hidden", "true");
+      signOnButton.setAttribute("hidden", "true");
+      signOutButton.setAttribute("hidden", "false");
     }
   },
 
   onPaneLoad: function WeavePrefs_onPaneLoad() {
     this._checkAccountInfo();
-
-    let usernameField = document.getElementById('sync-username-field');
-    let passwordField = document.getElementById('sync-password-field');
-
-    if (this._ss.password) {
-      usernameField.setAttribute("value", this._ss.username);
-      passwordField.setAttribute("value", "Stored in password manager");
-    } else {
-      usernameField.setAttribute("value", this._ss.username);
-      passwordField.setAttribute("value", "None set");
-    }
   },
-
 
   openActivityLog: function WeavePrefs_openActivityLog() {
     let wm = Cc["@mozilla.org/appshell/window-mediator;1"].
@@ -58,9 +47,20 @@ WeavePrefs.prototype = {
      }
   },
  
-  openSetupWizard: function WeavePrefs_openSetupWizard() {
-    window.openDialog('chrome://weave/content/wizard.xul', '',
+  doSignOn: function WeavePrefs_doSignOn() {
+
+    let branch = Cc["@mozilla.org/preferences-service;1"].
+      getService(Ci.nsIPrefBranch);
+    let username = branch.getCharPref("browser.places.sync.username");
+  
+    if (!username || username == 'nobody@mozilla.com') { 
+         window.openDialog('chrome://weave/content/wizard.xul', '',
 		      'chrome, dialog, modal, resizable=yes', null);          
+    } else {
+         window.openDialog('chrome://weave/content/login.xul', '',
+                      'chrome, dialog, modal, resizable=yes', null);
+    }
+
     this.onPaneLoad();
   },
 

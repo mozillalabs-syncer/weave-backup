@@ -202,7 +202,7 @@ Sync.prototype = {
 
     let lastsyncitem = document.getElementById("sync-lastsyncitem");
     if(lastsyncitem)
-      lastsyncitem.setAttribute("label", "Last Sync: " + lastSync.toLocaleString());
+      lastsyncitem.setAttribute("label", "Last Update: " + lastSync.toLocaleString());
   },
 
   startUp: function Sync_startUp(event) {
@@ -299,7 +299,7 @@ Sync.prototype = {
       let lastsyncitem = document.getElementById("sync-lastsyncitem");
       if(lastsyncitem) {
         let syncDate = new Date(parseInt(lastSync));
-        lastsyncitem.setAttribute("label", "Last Sync: " +
+        lastsyncitem.setAttribute("label", "Last Update: " +
                                   syncDate.toLocaleString());
         lastsyncitem.setAttribute("hidden", "false");
       }

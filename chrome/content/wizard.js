@@ -90,10 +90,6 @@ SyncWizard.prototype = {
       this._log.info("Showing welcome page");
       wizard.canAdvance = true;
       break;
-    case "sync-wizard-privacy":
-      this._log.info("Showing privacy page");
-      wizard.canAdvance = false;
-      break;
     case "sync-wizard-backup":
       this._log.info("Showing backup page");
       wizard.canAdvance = true;
@@ -128,18 +124,6 @@ SyncWizard.prototype = {
       this._log.warn("Unknown wizard page requested: " + pageId);
       break;
     }
-  },
-
-  onAcceptTerms: function SyncWizard_onAcceptTerms() {
-    this._log.info("Terms accepted (yay!)");
-    let wizard = document.getElementById('sync-wizard');
-    wizard.canAdvance = true;
-  },
-
-  onDeclineTerms: function SyncWizard_onDeclineTerms() {
-    this._log.info("Terms declined :-(");
-    let wizard = document.getElementById('sync-wizard');
-    wizard.canAdvance = false;
   },
 
   onBookmarksBackup: function SyncWizard_onBookmarksBackup() {

@@ -50,27 +50,19 @@
                           onclick="gSync.doLogout();"/>
                 <menuseparator/>
 		<menuitem id="sync-syncnowitem"
-                          hidden="false" disabled="true"
+                          hidden="true" disabled="true"
                           checked="false" autocheck="false"
                           label="Sync Now"
                           oncommand="gSync.doSync(event);"/>
-                <!--
-                <menuitem id="sync-cancelsyncitem"
-                          hidden="false" disabled="true"
-                          checked="false" autocheck="false"
-                          label="Cancel Sync"
-                          oncommand="gSync.doCancelSync(event);"/>
-                -->
-                <menuseparator/>
                 <menuitem id="sync-openprefsitem"
                           disabled="false"
                           checked="false" autocheck="false"
-                          label="Open Sync Preferences"
+                          label="Weave Preferences..."
                           oncommand="gSync.doOpenPrefs(event);"/>
 		<menuitem id="sync-openlogitem"
                           disabled="false"
                           checked="false" autocheck="false"
-                          label="Open Activity Log"
+                          label="Activity Log..."
                           oncommand="gSync.doOpenActivityLog(event);"/>
                 <menuseparator/>
 		<menuitem id="sync-lastsyncitem"

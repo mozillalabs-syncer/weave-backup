@@ -4,9 +4,9 @@
          xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
   <prefwindow id="BrowserPreferences">
-    <prefpane id="sync-prefpane" onpaneload="gWeavePrefs.onPaneLoad();" 
+    <prefpane id="sync-prefpane-active" onpaneload="gWeavePrefs.onPaneLoad();" 
               helpURI="chrome://browser/locale/help/help.rdf"
-              label="Services"
+              label="Weave"
               image="chrome://weave/skin/sync-32x32.png">
 
       <script type="application/x-javascript"
@@ -42,10 +42,9 @@
       </preferences>
 
       <tabbox id="sync-tabbox" flex="1">
-        
         <tabs>
           <tab id="accountTab" label="Account" helpTopic="prefs-sync-account"/>
-          <tab id="syncTab" label="Sync" helpTopic="prefs-sync-sync"/>
+          <tab id="syncTab" label="Data" helpTopic="prefs-sync-sync"/>
           <tab id="serviceaddonsTab" label="Add-ons" helpTopic="prefs-sync-serviceaddons"/>
           <tab id="advancedTab" label="Advanced" helpTopic="prefs-advanced-advanced"/>
         </tabs>
@@ -53,26 +52,55 @@
         <tabpanels flex="1">
 
           <tabpanel>
-            <groupbox id="sync-reset-group" flex="1" hidden="true">
+            <groupbox flex="1">
               <hbox>
                 <spacer flex="1"/>
-                <button label="Run Setup Wizard..."
-                        oncommand="gWeavePrefs.openSetupWizard();"/>
+ 
+              <vbox id="sync-signon-button">
+              <description>
+                 Already have a Weave account?
+              </description>
+              <separator class="thin" />
+              <description>
+ 	         Sign into your account to set up Weave on this computer.
+              </description>
+              <separator class="thin" />
+	      <button label="Sign In..."
+                      oncommand="gWeavePrefs.doSignOn();"/>
+              </vbox>
+
+              <vbox id="sync-signout-button">
+	      <description>
+                Signed in to Weave as 
+              </description>
+              <label id="sync-username-field"
+                       preference="browser.places.sync.username"/>
+              <separator class="thin" />
+	      <button label="Sign Out"
+                      oncommand="gWeavePrefs.doSignOut();"/>
+	      </vbox>
+
+              <vbox>
+              <description>
+                 Create an account
+              </description>
+              <separator class="thin" />
+              <description>
+                 Sign up now for a Weave account.
+              </description>
+              <separator class="thin" />
+	      <button label="Learn More..." id="sync-learnmore-button"
+                      oncommand="gWeavePrefs.doLearnMore();"/>
                 <spacer flex="1"/>
+              </vbox>
+
               </hbox>
             </groupbox>
             <groupbox id="sync-login-group" flex="1" hidden="true">
-              <caption label="Account Information"/>
               <hbox>
-                <label value="User Name:" control="sync-username-field"/>
+		<label value="Not signed in."/>
+		<label value="Signed into Weave as "/>
                 <separator orient="horizontal"/>
-                <label id="sync-username-field"
-                       preference="browser.places.sync.username"
-                       flex="1"/>
-                <separator orient="horizontal"/>
-                <button id="sync-login-forget"
-                        label="Forget"
-                        oncommand="gWeavePrefs.resetLoginCredentials();"/> 
               </hbox>
               <hbox>
                 <label value="Password:" control="sync-password-field"/>
@@ -170,6 +198,9 @@
                   <button label="Reset Server Data" oncommand="gWeavePrefs.resetServerData();"/>
                   <button label="Reset Client Data" oncommand="gWeavePrefs.resetClientData();"/>
                   <spacer flex="1"/>
+                <button id="sync-login-forget"
+                        label="Reset Account Credentials"
+                        oncommand="gWeavePrefs.resetLoginCredentials();"/> 
                 </hbox>
                 <separator orient="vertical"/>
               </groupbox>
