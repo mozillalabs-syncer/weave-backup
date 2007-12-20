@@ -12,6 +12,7 @@ if (!resProt.hasSubstitution("weave")) {
   resProt.setSubstitution("weave", ioSvc.newFileURI(extD));
 }
 
+Components.utils.import("resource://weave/constants.js");
 Components.utils.import("resource://weave/weave.js");
 Components.utils.import("resource://weave/log4moz.js");
 

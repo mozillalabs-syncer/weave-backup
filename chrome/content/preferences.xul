@@ -15,32 +15,32 @@
 	      src="chrome://weave/content/preferences.js"/>
 
       <preferences>
-        <preference id="browser.places.sync.username"
-                    name="browser.places.sync.username"
+        <preference id="extensions.weave.username"
+                    name="extensions.weave.username"
                     type="string"/>
-        <preference id="browser.places.sync.rememberpassword"
-                    name="browser.places.sync.rememberpassword"
+        <preference id="extensions.weave.rememberpassword"
+                    name="extensions.weave.rememberpassword"
                     type="bool"/>
-        <preference id="browser.places.sync.autoconnect"
-                    name="browser.places.sync.autoconnect"
+        <preference id="extensions.weave.autoconnect"
+                    name="extensions.weave.autoconnect"
                     type="bool"/>
-        <preference id="browser.places.sync.serverURL"
-                    name="browser.places.sync.serverURL"
+        <preference id="extensions.weave.serverURL"
+                    name="extensions.weave.serverURL"
                     type="string"/>
-        <preference id="browser.places.sync.enabled"
-                    name="browser.places.sync.enabled"
+        <preference id="extensions.weave.enabled"
+                    name="extensions.weave.enabled"
                     type="bool"/>
-        <preference id="browser.places.sync.schedule"
-                    name="browser.places.sync.schedule"
+        <preference id="extensions.weave.schedule"
+                    name="extensions.weave.schedule"
                     type="int"/>
-        <preference id="browser.places.sync.encryption"
-                    name="browser.places.sync.encryption"
+        <preference id="extensions.weave.encryption"
+                    name="extensions.weave.encryption"
                     type="string"/>
-        <preference id="browser.places.sync.bookmarks"
-                    name="browser.places.sync.bookmarks"
+        <preference id="extensions.weave.bookmarks"
+                    name="extensions.weave.bookmarks"
                     type="bool"/>
-        <preference id="browser.places.sync.history"
-                    name="browser.places.sync.history"
+        <preference id="extensions.weave.history"
+                    name="extensions.weave.history"
                     type="bool"/>
       </preferences>
 
@@ -71,8 +71,12 @@
 	        <description>
                   Signed in to Weave as 
                 </description>
-                <label id="sync-username-field" preference="browser.places.sync.username"/>
+                <label id="sync-username-field" preference="extensions.weave.username"/>
 	        <button label="Sign Out" oncommand="gWeavePrefs.doSignOut();"/>
+		<checkbox id="sync-autoconnect-checkbox"
+                          class="indent"
+                          label="Automatically connect each time I start Firefox"
+                          preference="extensions.weave.autoconnect"/>
 	      </vbox>
               <vbox>
                 <description>
@@ -81,7 +85,7 @@
                 <description>
                   Sign up now for a Weave account.
                 </description>
-  	        <button label="Create Account..." id="sync-learnmore-button" oncommand="gWeavePrefs.doLearnMore();"/>
+  	        <button label="Create Account..." id="sync-learnmore-button" oncommand="gWeavePrefs.doCreateAccount();"/>
               </vbox>
              </vbox>
             </groupbox>
@@ -89,27 +93,32 @@
 
           <tabpanel>
             <groupbox id="sync-settings-group" flex="1">
+              <hbox>
               <vbox>
                 <checkbox id="sync-autosync-checkbox"
                           label="Back up and synchronize my data to a Weave server"
-                          preference="browser.places.sync.enabled"/>
+                          preference="extensions.weave.enabled"/>
 	        <checkbox label="Encrypt my data on the server" disabled="true"
                           checked="true"/>
               </vbox>
+              <vbox>
+                <button label="Sync Now" id="sync-syncnow-button" oncommand="gWeavePrefs.doSyncNow();"/>
+              </vbox>
+              </hbox>
               <separator orient="vertical"/>
               <richlistbox>
                 <richlistitem>
                   <hbox>
                     <checkbox id="sync-bookmarks-checkbox"
                               label="Bookmarks"
-                              preference="browser.places.sync.bookmarks"/>
+                              preference="extensions.weave.bookmarks"/>
                   </hbox>
                 </richlistitem>
                 <richlistitem>
                   <hbox>
                     <checkbox id="sync-bookmarks-checkbox"
                               label="History"
-                              preference="browser.places.sync.history"/>
+                              preference="extensions.weave.history"/>
                   </hbox>
                 </richlistitem>
               </richlistbox>
@@ -136,11 +145,11 @@
                   <textbox id="sync-server-field"
                            class="padding"
                            flex="1"
-                           preference="browser.places.sync.serverURL"/>
+                           preference="extensions.weave.serverURL"/>
                 </hbox>
               <hbox>
                 <label value="Encryption:"/>
-               <menulist preference="browser.places.sync.encryption" disabled="true">
+               <menulist preference="extensions.weave.encryption" disabled="true">
                 <menupopup>
                   <menuitem label="Placeholder Algorithm (Corrected Block TEA)" value="XXXTEA"/>
                   <menuitem label="No encryption" value="none"/>

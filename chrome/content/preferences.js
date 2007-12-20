@@ -19,15 +19,17 @@ WeavePrefs.prototype = {
   _checkAccountInfo: function WeavePrefs__checkAccountInfo() {
     let signOnButton = document.getElementById('sync-signon-button');
     let signOutButton = document.getElementById('sync-signout-button'); 
+    let syncNowButton = document.getElementById('sync-syncnow-button');
 
 //    if(!this._ss.username || this._ss.username == "nobody@mozilla.com") {
-    if (this._ss.currentUser) {
-
+    if (!this._ss.currentUser) {
       signOnButton.setAttribute("hidden", "false");
       signOutButton.setAttribute("hidden", "true");
+      syncNowButton.setAttribute("disabled", "true");
     } else {
       signOnButton.setAttribute("hidden", "true");
       signOutButton.setAttribute("hidden", "false");
+      syncNowButton.setAttribute("disabled", "false");
     }
   },
 
@@ -38,7 +40,7 @@ WeavePrefs.prototype = {
   openActivityLog: function WeavePrefs_openActivityLog() {
     let wm = Cc["@mozilla.org/appshell/window-mediator;1"].
       getService(Ci.nsIWindowMediator);
-    let logWindow = wm.getMostRecentWindow('Sync:Log');
+    let logWindow = wm.getMostRecentWindow('Weave:Log');
     if (logWindow)
       logWindow.focus();
      else {
@@ -53,7 +55,7 @@ WeavePrefs.prototype = {
 
     let branch = Cc["@mozilla.org/preferences-service;1"].
       getService(Ci.nsIPrefBranch);
-    let username = branch.getCharPref("browser.places.sync.username");
+    let username = branch.getCharPref("extensions.weave.username");
   
     if (!username || username == 'nobody@mozilla.com') { 
          window.openDialog('chrome://weave/content/wizard.xul', '',
@@ -69,6 +71,15 @@ WeavePrefs.prototype = {
   doSignOut: function WeavePrefs_doSignOut() {
     this._ss.logout();
     this._checkAccountInfo();
+  },
+
+  doCreateAccount: function WeavePrefs_doCreateAccount() {
+    // FIXME: should be based upon baseURL
+    setTimeout(function() { window.openUILinkIn("https://services.mozilla.com", "tab") }, 500);
+  },
+
+  doSyncNow: function WeavePrefs_doSyncNow() {
+    this._ss.sync();
   },
 
   resetServerLock: function WeavePrefs_resetServerLock() {
@@ -94,8 +105,8 @@ WeavePrefs.prototype = {
   resetServerURL: function WeavePrefs_resetServerURL() {
     let branch = Cc["@mozilla.org/preferences-service;1"].
       getService(Ci.nsIPrefBranch);
-    branch.clearUserPref("browser.places.sync.serverURL");
-    let serverURL = branch.getCharPref("browser.places.sync.serverURL");
+    branch.clearUserPref("extensions.weave.serverURL");
+    let serverURL = branch.getCharPref("extensions.weave.serverURL");
     let serverField = document.getElementById('sync-server-field');
     serverField.setAttribute("value", serverURL);
     this._ss.logout();

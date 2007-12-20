@@ -14,7 +14,7 @@ const PERMS_DIRECTORY = 0755;
 gSyncLog = {
   init: function() {
     let tabbox = document.getElementById("syncLogTabs");
-    let index = document.getElementById("browser.places.sync.log.selectedTabIndex");
+    let index = document.getElementById("extensions.weave.log.selectedTabIndex");
     if (index.value != null)
       tabbox.selectedIndex = index.value;
     this.loadLogs();
@@ -22,7 +22,7 @@ gSyncLog = {
 
   onSelectionChanged: function() {
     let tabbox = document.getElementById("syncLogTabs");
-    let index = document.getElementById("browser.places.sync.log.selectedTabIndex");
+    let index = document.getElementById("extensions.weave.log.selectedTabIndex");
     index.valueFromPreferences = tabbox.selectedIndex;
   },
 

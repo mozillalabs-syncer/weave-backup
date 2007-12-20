@@ -19,28 +19,34 @@
 
   <preferences>
     <preference id="sync-username"
-      name="browser.places.sync.username"  
+      name="extensions.weave.username"  
       type="string" />
     <preference id="sync-rememberpassword"
-      name="browser.places.sync.rememberpassword"  
+      name="extensions.weave.rememberpassword"  
+      type="bool" />
+    <preference id="extensions.weave.autoconnect"
+      name="extensions.weave.autoconnect"
       type="bool" />
   </preferences>
 
   <vbox>
-    <label value="Enter your login information for Mozilla Services:"/>
+    <label value="Sign in to Weave from this computer."/>
     <hbox>
-      <label value="Username"/>
+      <label value="Username:"/>
       <textbox id="username" preference="sync-username"/>
     </hbox>
     <hbox>
-      <label value="Password"/>
+      <label value="Password:"/>
       <textbox id="password" type="password"/>
     </hbox>
     <hbox id="passphrase-hbox">
-      <label value="Encryption Passphrase"/>
+      <label value="Encryption Passphrase:"/>
       <textbox id="passphrase" type="password"/>
     </hbox>
     <checkbox id="save-password" preference="sync-rememberpassword"
-              label="Save in password manager"/>
+              label="Save password on this computer"/>
+    <checkbox id="sync-autoconnect-checkbox"
+              label="Automatically connect each time I start Firefox"
+              preference="extensions.weave.autoconnect"/>
   </vbox>
 </dialog>
