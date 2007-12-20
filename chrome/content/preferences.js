@@ -87,8 +87,8 @@ WeavePrefs.prototype = {
   resetServerURL: function WeavePrefs_resetServerURL() {
     let branch = Cc["@mozilla.org/preferences-service;1"].
       getService(Ci.nsIPrefBranch);
-    branch.clearUserPref("browser.places.sync.serverURL");
-    let serverURL = branch.getCharPref("browser.places.sync.serverURL");
+    branch.clearUserPref("extensions.weave.serverURL");
+    let serverURL = branch.getCharPref("extensions.weave.serverURL");
     let serverField = document.getElementById('sync-server-field');
     serverField.setAttribute("value", serverURL);
     this._ss.logout();

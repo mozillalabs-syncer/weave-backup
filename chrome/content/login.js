@@ -42,7 +42,7 @@ Login.prototype = {
       .getService(Ci.nsIPrefBranch);
     let hbox = document.getElementById("passphrase-hbox");
 
-    if ("none" == branch.getCharPref("browser.places.sync.encryption"))
+    if ("none" == branch.getCharPref("extensions.weave.encryption"))
       hbox.setAttribute("hidden", "true");
     else {
       hbox.setAttribute("hidden", "false");

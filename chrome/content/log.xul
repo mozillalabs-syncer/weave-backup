@@ -15,8 +15,8 @@
           src="chrome://weave/content/log.js"/>
 
   <preferences id="syncLogPrefs">
-    <preference id="browser.places.sync.log.selectedTabIndex"
-                name="browser.places.sync.log.selectedTabIndex"
+    <preference id="extensions.weave.log.selectedTabIndex"
+                name="extensions.weave.log.selectedTabIndex"
                 type="int"/>
   </preferences>
 

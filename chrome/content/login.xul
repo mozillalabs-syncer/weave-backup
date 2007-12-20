@@ -19,10 +19,10 @@
 
   <preferences>
     <preference id="sync-username"
-      name="browser.places.sync.username"  
+      name="extensions.weave.username"  
       type="string" />
     <preference id="sync-rememberpassword"
-      name="browser.places.sync.rememberpassword"  
+      name="extensions.weave.rememberpassword"  
       type="bool" />
   </preferences>
 
