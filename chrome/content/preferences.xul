@@ -4,7 +4,7 @@
          xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
   <prefwindow id="BrowserPreferences">
-    <prefpane id="sync-prefpane" onpaneload="gSyncPane.onPaneLoad();" 
+    <prefpane id="sync-prefpane" onpaneload="gWeavePrefs.onPaneLoad();" 
               helpURI="chrome://browser/locale/help/help.rdf"
               label="Services"
               image="chrome://weave/skin/sync-32x32.png">
@@ -57,7 +57,7 @@
               <hbox>
                 <spacer flex="1"/>
                 <button label="Run Setup Wizard..."
-                        oncommand="gSyncPane.openSetupWizard();"/>
+                        oncommand="gWeavePrefs.openSetupWizard();"/>
                 <spacer flex="1"/>
               </hbox>
             </groupbox>
@@ -72,7 +72,7 @@
                 <separator orient="horizontal"/>
                 <button id="sync-login-forget"
                         label="Forget"
-                        oncommand="gSyncPane.resetLoginCredentials();"/> 
+                        oncommand="gWeavePrefs.resetLoginCredentials();"/> 
               </hbox>
               <hbox>
                 <label value="Password:" control="sync-password-field"/>
@@ -153,22 +153,22 @@
                            flex="1"
                            preference="browser.places.sync.serverURL"/>
                   <separator orient="horizontal"/>
-                  <button label="Reset" oncommand="gSyncPane.resetServerURL();"/>
+                  <button label="Reset" oncommand="gWeavePrefs.resetServerURL();"/>
                 </hbox>
               </groupbox>
               <groupbox id="sync-debug-group" flex="1">
                 <caption label="Debugging"/>
                 <hbox>
                   <spacer flex="1"/>
-                  <button label="View Activity Log..." oncommand="gSyncPane.openActivityLog();"/>
-                  <button label="Run Setup Wizard..." oncommand="gSyncPane.openSetupWizard();"/>
+                  <button label="View Activity Log..." oncommand="gWeavePrefs.openActivityLog();"/>
+                  <button label="Run Setup Wizard..." oncommand="gWeavePrefs.openSetupWizard();"/>
                   <spacer flex="1"/>
                 </hbox>
                 <hbox>
                   <spacer flex="1"/>
-                  <button label="Reset Server Lock" oncommand="gSyncPane.resetServerLock();"/>
-                  <button label="Reset Server Data" oncommand="gSyncPane.resetServerData();"/>
-                  <button label="Reset Client Data" oncommand="gSyncPane.resetClientData();"/>
+                  <button label="Reset Server Lock" oncommand="gWeavePrefs.resetServerLock();"/>
+                  <button label="Reset Server Data" oncommand="gWeavePrefs.resetServerData();"/>
+                  <button label="Reset Client Data" oncommand="gWeavePrefs.resetClientData();"/>
                   <spacer flex="1"/>
                 </hbox>
                 <separator orient="vertical"/>

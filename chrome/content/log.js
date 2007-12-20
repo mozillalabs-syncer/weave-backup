@@ -84,7 +84,7 @@ function saveAs() {
   fp.init(window, "Choose Destination File", Ci.nsIFilePicker.modeSave);
   fp.appendFilters(Ci.nsIFilePicker.filterAll);
   fp.displayDirectory = backupsDir;
-  fp.defaultString = "Bookmarks Sync.log";
+  fp.defaultString = "Weave Sync.log";
 
   if (fp.show() != Ci.nsIFilePicker.returnCancel) {
     if (fp.file.exists())

@@ -3,8 +3,8 @@
 
 <dialog xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         id="syncLogWindow"
-        windowtype="Sync:Log"
-        title="Mozilla Sync - Activity Log"
+        windowtype="Weave:Log"
+        title="Mozilla Weave Sync - Activity Log"
         buttons="extra1,accept"
         buttonlabelextra1="Save As..."
         ondialogextra1="saveAs();">
