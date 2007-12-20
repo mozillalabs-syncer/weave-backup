@@ -52,6 +52,16 @@ Sync.prototype = {
     return this.__os;
   },
 
+  __prefSvc: null,
+  get _prefSvc() {
+    if (!this.__prefSvc) {
+      this.__prefSvc = Cc["@mozilla.org/preferences-service;1"]
+        .getService(Ci.nsIPrefBranch);
+      this.__prefSvc.QueryInterface(Ci.nsIPrefBranch2);
+    }
+    return this.__prefSvc;
+  },
+
   _getPref: function(prefName, defaultValue) {
     let prefSvc = this._prefSvc;
 
@@ -244,10 +254,17 @@ Sync.prototype = {
     let branch = Cc["@mozilla.org/preferences-service;1"].
       getService(Ci.nsIPrefBranch);
 
-    let lastVersion = branch.getCharPref("extensions.weave.lastVersion");
-    if (lastVersion == "firstRun") {
+    if (branch.getCharPref("extensions.weave.lastversion") == "firstrun") {
       let url = this._baseURL +
-	"/foo/" + this._locale + "/firstrun?version=" + WEAVE_VERSION;
+	"addon/" + this._locale + "/firstrun/?version=" + WEAVE_VERSION;
+      setTimeout(function() { window.openUILinkIn(url, "tab") }, 500);
+      this._prefSvc.setCharPref("extensions.weave.lastversion", WEAVE_VERSION);
+      return;
+    }
+
+    if (branch.getCharPref("extensions.weave.lastversion") != WEAVE_VERSION) {
+      let url = this._baseURL +
+	"addon/" + this._locale + "/updated/?version=" + WEAVE_VERSION;
       setTimeout(function() { window.openUILinkIn(url, "tab") }, 500);
       this._prefSvc.setCharPref("extensions.weave.lastversion", WEAVE_VERSION);
       return;
