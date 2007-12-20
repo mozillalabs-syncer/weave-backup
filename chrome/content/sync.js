@@ -287,7 +287,7 @@ Sync.prototype = {
   },
 
   doOpenActivityLog: function Sync_doOpenActivityLog(event) {
-    this._openWindow('Sync:Log', 'chrome://weave/content/log.xul',
+    this._openWindow('Weave:Log', 'chrome://weave/content/log.xul',
                      'chrome,centerscreen,dialog,modal,resizable=yes');
   },
 

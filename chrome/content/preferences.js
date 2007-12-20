@@ -47,7 +47,7 @@ WeavePrefs.prototype = {
   openActivityLog: function WeavePrefs_openActivityLog() {
     let wm = Cc["@mozilla.org/appshell/window-mediator;1"].
       getService(Ci.nsIWindowMediator);
-    let logWindow = wm.getMostRecentWindow('Sync:Log');
+    let logWindow = wm.getMostRecentWindow('Weave:Log');
     if (logWindow)
       logWindow.focus();
      else {
