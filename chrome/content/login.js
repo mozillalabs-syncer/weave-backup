@@ -27,8 +27,8 @@ Login.prototype = {
 
   startUp: function Login_startUp() {
     this._log.info("Sync login window opened");
-    this._os.addObserver(this, "bookmarks-sync:login-end", false);
-    this._os.addObserver(this, "bookmarks-sync:login-error", false);
+    this._os.addObserver(this, "weave:service-login:success", false);
+    this._os.addObserver(this, "weave:service-login:error", false);
     this._os.addObserver(this, "weave:service-unlock:success", false);
 
     let username = document.getElementById("username");
@@ -55,8 +55,8 @@ Login.prototype = {
 
   shutDown: function Login_shutDown() {
     this._log.info("Sync login window closed");
-    this._os.removeObserver(this, "bookmarks-sync:login-end");
-    this._os.removeObserver(this, "bookmarks-sync:login-error");
+    this._os.removeObserver(this, "weave:service-login:success");
+    this._os.removeObserver(this, "weave:service-login:error");
     this._os.removeObserver(this, "weave:service-unlock:success");
   },
 
@@ -101,10 +101,10 @@ Login.prototype = {
   // nsIObserver
   observe: function(subject, topic, data) {
     switch(topic) {
-    case "bookmarks-sync:login-end":
+    case "weave:service-login:success":
       this._onLogin();
       break;
-    case "bookmarks-sync:login-error":
+    case "weave:service-login:error":
       this._onLoginError();
       break;
     default:

@@ -211,12 +211,12 @@ Sync.prototype = {
     this._os.addObserver(this, "weave:service-unlock:success", false);
     this._os.addObserver(this, "weave:service-lock:success", false);
     this._os.addObserver(this, "weave:service-lock:error", false);
-    this._os.addObserver(this, "bookmarks-sync:login-end", false);
-    this._os.addObserver(this, "bookmarks-sync:login-error", false);
-    this._os.addObserver(this, "bookmarks-sync:logout", false);
-    this._os.addObserver(this, "bookmarks-sync:sync-start", false);
-    this._os.addObserver(this, "bookmarks-sync:sync-end", false);
-    this._os.addObserver(this, "bookmarks-sync:sync-error", false);
+    this._os.addObserver(this, "weave:service-login:success", false);
+    this._os.addObserver(this, "weave:service-login:error", false);
+    this._os.addObserver(this, "weave:service-logout:success", false);
+    this._os.addObserver(this, "weave:service:sync:start", false);
+    this._os.addObserver(this, "weave:service:sync:success", false);
+    this._os.addObserver(this, "weave:service:sync:error", false);
     let branch = Cc["@mozilla.org/preferences-service;1"].
       getService(Ci.nsIPrefBranch);
     let autoconnect = branch.getBoolPref("browser.places.sync.autoconnect");
@@ -231,12 +231,12 @@ Sync.prototype = {
     this._os.removeObserver(this, "weave:service-unlock:success");
     this._os.removeObserver(this, "weave:service-lock:success");
     this._os.removeObserver(this, "weave:service-lock:error");
-    this._os.removeObserver(this, "bookmarks-sync:login-end");
-    this._os.removeObserver(this, "bookmarks-sync:login-error");
-    this._os.removeObserver(this, "bookmarks-sync:logout");
-    this._os.removeObserver(this, "bookmarks-sync:sync-start");
-    this._os.removeObserver(this, "bookmarks-sync:sync-end");
-    this._os.removeObserver(this, "bookmarks-sync:sync-error");
+    this._os.removeObserver(this, "weave:service-login:success");
+    this._os.removeObserver(this, "weave:service-login:error");
+    this._os.removeObserver(this, "weave:service-logout:success");
+    this._os.removeObserver(this, "weave:service:sync:start");
+    this._os.removeObserver(this, "weave:service:sync:success");
+    this._os.removeObserver(this, "weave:service:sync:error");
   },
 
   doLoginPopup : function Sync_doLoginPopup(event) {
@@ -317,21 +317,21 @@ Sync.prototype = {
     case "weave:service-lock:error":
       this._onLogout(false);
       break;
-    case "bookmarks-sync:login-end":
+    case "weave:service-login:success":
       this._onLogin();
       break;
-    case "bookmarks-sync:login-error":
+    case "weave:service-login:error":
       break;
-    case "bookmarks-sync:logout":
+    case "weave:service-logout:success":
       this._onLogout(true);
       break;
-    case "bookmarks-sync:sync-start":
+    case "weave:service:sync:start":
       this._onSyncStart();
       break;
-    case "bookmarks-sync:sync-end":
+    case "weave:service:sync:success":
       this._onSyncEnd(true);
       break;
-    case "bookmarks-sync:sync-error":
+    case "weave:service:sync:error":
       this._onSyncEnd(false);
       break;
     default:

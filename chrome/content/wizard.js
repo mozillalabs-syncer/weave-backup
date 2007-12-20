@@ -61,23 +61,23 @@ SyncWizard.prototype = {
 
     this._log.info("Initializing setup wizard");
 
-    this._os.addObserver(this, "bookmarks-sync:login-end", false);
-    this._os.addObserver(this, "bookmarks-sync:login-error", false);
-    this._os.addObserver(this, "bookmarks-sync:logout", false);
-    this._os.addObserver(this, "bookmarks-sync:sync-start", false);
-    this._os.addObserver(this, "bookmarks-sync:sync-end", false);
-    this._os.addObserver(this, "bookmarks-sync:sync-error", false);
+    this._os.addObserver(this, "weave:service-login:success", false);
+    this._os.addObserver(this, "weave:service-login:error", false);
+    this._os.addObserver(this, "weave:service-logout:success", false);
+    this._os.addObserver(this, "weave:service:sync:start", false);
+    this._os.addObserver(this, "weave:service:sync:success", false);
+    this._os.addObserver(this, "weave:service:sync:error", false);
   },
 
   onWizardShutdown: function SyncWizard_onWizardshutdown() {
     this._log.info("Shutting down setup wizard");
 
-    this._os.removeObserver(this, "bookmarks-sync:login-end");
-    this._os.removeObserver(this, "bookmarks-sync:login-error");
-    this._os.removeObserver(this, "bookmarks-sync:logout");
-    this._os.removeObserver(this, "bookmarks-sync:sync-start");
-    this._os.removeObserver(this, "bookmarks-sync:sync-end");
-    this._os.removeObserver(this, "bookmarks-sync:sync-error");
+    this._os.removeObserver(this, "weave:service-login:success");
+    this._os.removeObserver(this, "weave:service-login:error");
+    this._os.removeObserver(this, "weave:service-logout:success");
+    this._os.removeObserver(this, "weave:service:sync:start");
+    this._os.removeObserver(this, "weave:service:sync:success");
+    this._os.removeObserver(this, "weave:service:sync:error");
   },
 
 
@@ -200,22 +200,22 @@ SyncWizard.prototype = {
     let verifyStatus, initStatus, throbber1, throbber2, sync1;
 
     switch(topic) {
-    case "bookmarks-sync:login-end":
+    case "weave:service-login:success":
       this._log.info("Login verified");
       verifyStatus = document.getElementById('sync-wizard-verify-status');
       verifyStatus.setAttribute("value", "Status: Login Verified");
       wizard.canAdvance = true;
       break;
-    case "bookmarks-sync:login-error":
+    case "weave:service-login:error":
       this._log.info("Login failed");
       verifyStatus = document.getElementById('sync-wizard-verify-status');
       verifyStatus.setAttribute("value", "Status: Login Failed");
       wizard.canAdvance = false;
       break;
-    case "bookmarks-sync:logout":
+    case "weave:service-logout:success":
       this._log.info("Logged out");
       break;
-    case "bookmarks-sync:sync-start":
+    case "weave:service:sync:start":
       this._log.info("Sync started");
       initStatus = document.getElementById('sync-wizard-initialization-status');
       throbber1 = document.getElementById('sync-wizard-initialization-throbber-active');
@@ -224,7 +224,7 @@ SyncWizard.prototype = {
       throbber2.setAttribute("hidden", true);
       initStatus.setAttribute("value", "Status: Syncing...");
       break;
-    case "bookmarks-sync:sync-end":
+    case "weave:service:sync:success":
       this._log.info("Sync complete");
       initStatus = document.getElementById('sync-wizard-initialization-status');
       throbber1 = document.getElementById('sync-wizard-initialization-throbber-active');
@@ -236,7 +236,7 @@ SyncWizard.prototype = {
       initStatus.setAttribute("value", "Status: Sync Complete");
       wizard.canAdvance = true;
       break;
-    case "bookmarks-sync:sync-error":
+    case "weave:service:sync:error":
       this._log.info("Sync failed");
       initStatus = document.getElementById('sync-wizard-initialization-status');
       throbber1 = document.getElementById('sync-wizard-initialization-throbber-active');
