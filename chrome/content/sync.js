@@ -256,7 +256,7 @@ Sync.prototype = {
 
     if (branch.getCharPref("extensions.weave.lastversion") == "firstrun") {
       let url = this._baseURL +
-	"ext/" + this._locale + "/firstrun/?version=" + WEAVE_VERSION;
+	"addon/" + this._locale + "/firstrun/?version=" + WEAVE_VERSION;
       setTimeout(function() { window.openUILinkIn(url, "tab") }, 500);
       this._prefSvc.setCharPref("extensions.weave.lastversion", WEAVE_VERSION);
       return;
@@ -264,7 +264,7 @@ Sync.prototype = {
 
     if (branch.getCharPref("extensions.weave.lastversion") != WEAVE_VERSION) {
       let url = this._baseURL +
-	"ext/" + this._locale + "/updated/?version=" + WEAVE_VERSION;
+	"addon/" + this._locale + "/updated/?version=" + WEAVE_VERSION;
       setTimeout(function() { window.openUILinkIn(url, "tab") }, 500);
       this._prefSvc.setCharPref("extensions.weave.lastversion", WEAVE_VERSION);
       return;
