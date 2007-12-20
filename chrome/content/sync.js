@@ -35,15 +35,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-const MODE_RDONLY   = 0x01;
-const MODE_WRONLY   = 0x02;
-const MODE_CREATE   = 0x08;
-const MODE_APPEND   = 0x10;
-const MODE_TRUNCATE = 0x20;
-
-const PERMS_FILE      = 0644;
-const PERMS_DIRECTORY = 0755;
-
 function Sync() {
   this._init();
 }
@@ -59,6 +50,16 @@ Sync.prototype = {
       this.__os = Cc["@mozilla.org/observer-service;1"]
         .getService(Ci.nsIObserverService);
     return this.__os;
+  },
+
+  __prefSvc: null,
+  get _prefSvc() {
+    if (!this.__prefSvc) {
+      this.__prefSvc = Cc["@mozilla.org/preferences-service;1"]
+        .getService(Ci.nsIPrefBranch);
+      this.__prefSvc.QueryInterface(Ci.nsIPrefBranch2);
+    }
+    return this.__prefSvc;
   },
 
   _getPref: function(prefName, defaultValue) {
@@ -253,10 +254,17 @@ Sync.prototype = {
     let branch = Cc["@mozilla.org/preferences-service;1"].
       getService(Ci.nsIPrefBranch);
 
-    let lastVersion = branch.getCharPref("extensions.weave.lastVersion");
-    if (lastVersion == "firstRun") {
+    if (branch.getCharPref("extensions.weave.lastversion") == "firstrun") {
       let url = this._baseURL +
-	"/foo/" + this._locale + "/firstrun?version=" + WEAVE_VERSION;
+	"ext/" + this._locale + "/firstrun/?version=" + WEAVE_VERSION;
+      setTimeout(function() { window.openUILinkIn(url, "tab") }, 500);
+      this._prefSvc.setCharPref("extensions.weave.lastversion", WEAVE_VERSION);
+      return;
+    }
+
+    if (branch.getCharPref("extensions.weave.lastversion") != WEAVE_VERSION) {
+      let url = this._baseURL +
+	"ext/" + this._locale + "/updated/?version=" + WEAVE_VERSION;
       setTimeout(function() { window.openUILinkIn(url, "tab") }, 500);
       this._prefSvc.setCharPref("extensions.weave.lastversion", WEAVE_VERSION);
       return;
