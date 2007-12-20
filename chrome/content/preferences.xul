@@ -129,7 +129,7 @@
           <tabpanel>
             <groupbox id="sync-addons-group" flex="1">
               <description>
-                Local and server-side add-ons to Mozilla Services.
+		This is where you will find, install and manage Weave add-ons.		
               </description>
             </groupbox>
           </tabpanel>
