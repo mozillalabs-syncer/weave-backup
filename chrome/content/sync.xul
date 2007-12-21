@@ -37,7 +37,6 @@
 			  checked="false" autocheck="false"
 			  label="&syncNowItem.label;"
 			  oncommand="gSync.doSync(event);"/>
-		<menuseparator/>
 		<menuitem id="sync-openprefsitem"
 			  disabled="false"
 			  checked="false" autocheck="false"
