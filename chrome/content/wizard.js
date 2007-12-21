@@ -109,7 +109,8 @@ SyncWizard.prototype = {
       let lm = Cc["@mozilla.org/login-manager;1"].getService(Ci.nsILoginManager);
       let logins = lm.findLogins({}, uri.hostPort, null, 'services.mozilla.com - proxy');
       status1 = document.getElementById('sync-wizard-verify-status');
-      status1.setAttribute("value", this._stringBundle.getString("verifyStatusUnverified.label"));
+      status1.setAttribute("value",
+        this._stringBundle.getString("verifyStatusUnverified.label"));
       if(logins.length) {
         let username = document.getElementById('sync-username-field');
         let password = document.getElementById('sync-password-field');
@@ -122,7 +123,8 @@ SyncWizard.prototype = {
       this._log.info("Showing initialization page");
       status1 = document.getElementById('sync-wizard-initialization-status');
       sync1 = document.getElementById('sync-wizard-initialization-button');
-      status1.setAttribute("value", this._stringBundle.getString("initStatusReadyToSync.label"));
+      status1.setAttribute("value",
+        this._stringBundle.getString("initStatusReadyToSync.label"));
       sync1.setAttribute("disabled", false);
       wizard.canAdvance = false;
       break;	   
@@ -193,13 +195,15 @@ SyncWizard.prototype = {
     case "weave:service-login:success":
       this._log.info("Login verified");
       verifyStatus = document.getElementById('sync-wizard-verify-status');
-      verifyStatus.setAttribute("value", this._stringBundle.getString("verifyStatusLoginVerified.label"));
+      verifyStatus.setAttribute("value",
+        this._stringBundle.getString("verifyStatusLoginVerified.label"));
       wizard.canAdvance = true;
       break;
     case "weave:service-login:error":
       this._log.info("Login failed");
       verifyStatus = document.getElementById('sync-wizard-verify-status');
-      verifyStatus.setAttribute("value", this._stringBundle.getString("verifyStatusLoginFailed.label"));
+      verifyStatus.setAttribute("value",
+        this._stringBundle.getString("verifyStatusLoginFailed.label"));
       wizard.canAdvance = false;
       break;
     case "weave:service-logout:success":
@@ -212,7 +216,8 @@ SyncWizard.prototype = {
       throbber2 = document.getElementById('sync-wizard-initialization-throbber');
       throbber1.setAttribute("hidden", false);
       throbber2.setAttribute("hidden", true);
-      initStatus.setAttribute("value", this._stringBundle.getString("initStatusSyncing.label"));
+      initStatus.setAttribute("value",
+        this._stringBundle.getString("initStatusSyncing.label"));
       break;
     case "weave:service:sync:success":
       this._log.info("Sync complete");
@@ -223,7 +228,8 @@ SyncWizard.prototype = {
       sync1.setAttribute("disabled", true);
       throbber1.setAttribute("hidden", true);
       throbber2.setAttribute("hidden", false);
-      initStatus.setAttribute("value", this._stringBundle.getString("initStatusSyncComplete.label"));
+      initStatus.setAttribute("value",
+        this._stringBundle.getString("initStatusSyncComplete.label"));
       wizard.canAdvance = true;
       break;
     case "weave:service:sync:error":
@@ -235,7 +241,8 @@ SyncWizard.prototype = {
       sync1.setAttribute("disabled", true);
       throbber1.setAttribute("hidden", true);
       throbber2.setAttribute("hidden", false);
-      initStatus.setAttribute("value", this._stringBundle.getString("initStatusSyncFailed.label"));
+      initStatus.setAttribute("value",
+        this._stringBundle.getString("initStatusSyncFailed.label"));
       break;
     default:
       this._log.warn("Unknown observer notification topic: " + topic);
