@@ -1,3 +1,19 @@
 #sync-throbber-active, #sync-throbber-online, #sync-throbber-offline {
 	border: 0px !important;
 }
+
+#sync-menu, #sync-menu-button, #sync-menu-item[status="offline"], #sync-menu-button[status="offline"] {
+	list-style-image: url(chrome://weave/skin/sync-throbber-16x16.png);
+}
+
+#sync-menu[status="idle"], #sync-menu-button[status="idle"] {
+	list-style-image: url(chrome://weave/skin/sync-throbber-16x16.png);
+}
+
+#sync-menu[status="active"], #sync-menu-button[status="active"] {
+	list-style-image: url(chrome://weave/skin/sync-throbber-16x16-active.apng);
+}
+
+#sync-menu[status="error"], #sync-menu-button[status="error"] {
+	list-style-image: url(chrome://weave/skin/sync-throbber-16x16-error.png);
+}

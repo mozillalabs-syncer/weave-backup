@@ -116,43 +116,8 @@ Sync.prototype = {
   },
 
   _setThrobber: function Sync__setThrobber(status) {
-    let throbberOff = document.getElementById("sync-throbber-offline");
-    let throbberIdle = document.getElementById("sync-throbber-online");
-    let throbberSync = document.getElementById("sync-throbber-active");
-    let throbberError = document.getElementById("sync-throbber-error");
-
-    function hide(elt, hidden) {
-      if (elt)
-        elt.setAttribute("hidden", hidden);
-    }
-
-    switch (status) {
-    case "offline":
-      hide(throbberOff, "false");
-      hide(throbberIdle, "true");
-      hide(throbberSync, "true");
-      hide(throbberError, "true");
-      break;
-    case "idle":
-      hide(throbberOff, "true");
-      hide(throbberIdle, "false");
-      hide(throbberSync, "true");
-      hide(throbberError, "true");
-      break;
-    case "active":
-      hide(throbberOff, "true");
-      hide(throbberIdle, "true");
-      hide(throbberSync, "false");
-      hide(throbberError, "true");
-      break;
-    case "error":
-    default:
-      hide(throbberOff, "true");
-      hide(throbberIdle, "true");
-      hide(throbberSync, "true");
-      hide(throbberError, "false");
-      break;
-    }
+    document.getElementById("sync-menu-button").setAttribute("status", status);
+    document.getElementById("sync-menu").setAttribute("status", status);
   },
 
   _onLogin: function Sync__onLogin() {
@@ -355,6 +320,29 @@ Sync.prototype = {
         lastsyncitem.setAttribute("hidden", "false");
       }
     }
+  },
+
+  onMenuPopupHiding: function Sync_onMenuPopupHiding() {
+    var menuPopup = document.getElementById('sync-menu-popup');
+    var menu = document.getElementById('sync-menu');
+
+    // If the menu popup isn't on the Tools > Sync menu, then move the popup
+    // back onto that menu so the popup appears when the user selects the menu.
+    // We'll move the popup back to the menu button when the user clicks on
+    // the menu button.
+    if (menuPopup.parentNode != menu)
+      menu.appendChild(menuPopup);
+  },
+
+  onMenuButtonMouseDown: function Sync_onMenuButtonMouseDown() {
+    var menuPopup = document.getElementById('sync-menu-popup');
+    var menuButton = document.getElementById("sync-menu-button");
+
+    // If the menu popup isn't on the menu button, then move the popup onto
+    // the button so the popup appears when the user clicks the button.  We'll
+    // move the popup back to the Tools > Sync menu when the popup hides.
+    if (menuPopup.parentNode != menuButton)
+      menuButton.appendChild(menuPopup);
   },
 
   // nsIObserver
