@@ -33,7 +33,7 @@
 			  oncommand="gSync.doLogout();"/>
 		<menuseparator/>
 		<menuitem id="sync-syncnowitem"
-			  hidden="false" disabled="true"
+			  hidden="true" disabled="true"
 			  checked="false" autocheck="false"
 			  label="&syncNowItem.label;"
 			  oncommand="gSync.doSync(event);"/>
