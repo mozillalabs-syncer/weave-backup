@@ -17,3 +17,7 @@
 #sync-menu[status="error"], #sync-menu-button[status="error"] {
 	list-style-image: url(chrome://weave/skin/sync-throbber-16x16-error.png);
 }
+
+#sync-menu-button {
+	-moz-box-direction: reverse;
+}
