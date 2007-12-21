@@ -31,7 +31,6 @@
 			  checked="false" autocheck="false"
 			  label="&logOutItem.label;"
 			  oncommand="gSync.doLogout();"/>
-		<menuseparator/>
 		<menuitem id="sync-syncnowitem"
 			  hidden="true" disabled="true"
 			  checked="false" autocheck="false"
