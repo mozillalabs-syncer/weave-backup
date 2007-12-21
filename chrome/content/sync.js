@@ -117,7 +117,7 @@ Sync.prototype = {
          getService(Ci.nsIWindowWatcher);
        if (options === null)
          options = 'chrome,centerscreen,dialog,modal,resizable=yes';
-       ww.openWindow(null, uri, '', options, null);
+       ww.activeWindow.openDialog(uri, '', options, null);
      }
   },
 
@@ -176,7 +176,7 @@ Sync.prototype = {
   _onSvcUnlock: function Sync__onSvcUnlock() {
     if (this._userLogin)
       this._openWindow('Sync:Login', 'chrome://weave/content/login.xul',
-                       'chrome,centerscreen,dialog,modal,resizable=no');
+                      'chrome, dialog, modal, resizable=yes');
     this._userLogin = false;
   },
 
@@ -257,8 +257,8 @@ Sync.prototype = {
   },
 
   doLoginPopup : function Sync_doLoginPopup(event) {
-    let branch = Cc["@mozilla.org/preferences-service;1"].
-      getService(Ci.nsIPrefBranch);
+      this._openWindow('Sync:Login', 'chrome://weave/content/login.xul',
+                      'chrome, dialog, modal, resizable=yes');
   },
   
   doLogin: function Sync_doLogin(event) {
@@ -274,8 +274,9 @@ Sync.prototype = {
       return;
     }
 
-    this._userLogin = true;
-    this._ss.login(null, null);
+//    this._userLogin = true;
+//    this._ss.login(null, null);
+    this.doLoginPopup();
   },
   
   doOpenSetupWizard : function Sync_doOpenSetupWizard(event) {

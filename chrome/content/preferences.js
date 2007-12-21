@@ -20,17 +20,22 @@ WeavePrefs.prototype = {
     let signOnButton = document.getElementById('sync-signon-button');
     let signOutButton = document.getElementById('sync-signout-button'); 
     let syncNowButton = document.getElementById('sync-syncnow-button');
+    let createButton = document.getElementById('sync-create-button');
+    let syncUserName = document.getElementById('sync-username-field');
 
-//    if(!this._ss.username || this._ss.username == "nobody@mozilla.com") {
     if (!this._ss.currentUser) {
       signOnButton.setAttribute("hidden", "false");
       signOutButton.setAttribute("hidden", "true");
+      createButton.setAttribute("hidden", "false");
       syncNowButton.setAttribute("disabled", "true");
+      syncUserName.setAttribute("value", "");
     } else {
       signOnButton.setAttribute("hidden", "true");
       signOutButton.setAttribute("hidden", "false");
+      createButton.setAttribute("hidden", "true");
       syncNowButton.setAttribute("disabled", "false");
-    }
+      syncUserName.setAttribute("value", this._ss.currentUser); 
+   }
   },
 
   onPaneLoad: function WeavePrefs_onPaneLoad() {
