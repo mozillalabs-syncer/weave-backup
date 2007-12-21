@@ -6,7 +6,7 @@
 
 <wizard xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         id="sync-wizard" title="&wizard.title;"
-        height="400" width="600"
+        height="500" width="600"
         onunload="gSyncWizard.onWizardShutdown();">
 
   <script type="application/x-javascript"
@@ -36,6 +36,11 @@
     <description>
       &step1.note;
     </description>
+    <separator class="thin"/>
+    <separator class="thin"/>
+    <description style="font-weight: bold;">
+      &step1.warning;
+    </description>  
   </wizardpage>
  
   <wizardpage pageid="sync-wizard-backup" onpageshow="gSyncWizard.onPageShow('sync-wizard-backup');">
@@ -85,7 +90,10 @@
         <textbox id="sync-password-field"
                  class="padded" flex="1"
                  type="password"/>
-        </hbox>
+        </hbox>   
+       <separator class="thin" />
+       <description class="indent">&encryptionPassphrase.description;</description>
+       <separator class="thin" />
        <hbox align="center">
         <label value="&encryptionPassphrase.label;" control="sync-passphrase-field"/>
         <textbox id="sync-passphrase-field"

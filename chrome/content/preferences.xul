@@ -6,7 +6,7 @@
          xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
   <prefwindow id="BrowserPreferences">
-    <prefpane id="sync-prefpane-active" onpaneload="gWeavePrefs.onPaneLoad();" 
+    <prefpane id="sync-prefpane" onpaneload="gWeavePrefs.onPaneLoad();" 
               helpURI="chrome://browser/locale/help/help.rdf"
               label="&prefpane.label;"
               image="chrome://weave/skin/sync-32x32.png">
