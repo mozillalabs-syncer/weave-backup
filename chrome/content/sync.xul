@@ -11,44 +11,42 @@
     <script type="application/x-javascript"
             src="chrome://weave/content/sync.js"/>
 
+    <stringbundleset id="stringbundleset">
+      <stringbundle id="weaveStringBundle" src="chrome://weave/locale/sync.properties"/>
+    </stringbundleset>
+
     <menupopup id="menu_ToolsPopup">
-	<menu id="sync-menu" class="menu-iconic" label="Weave" insertafter="menu_openAddons">
+	<menu id="sync-menu" class="menu-iconic" label="&syncMenu.label;"
+	      insertafter="menu_openAddons">
 	    <menupopup id="sync-menu-popup"
 		       onpopupshowing="if (event.target == this) gSync.doPopup(event);"
 		       onpopuphiding="gSync.onMenuPopupHiding()">
 		<menuitem id="sync-loginitem"
 			  hidden="false" disabled="false"
 			  checked="false" autocheck="false"
-			  label="Sign In..."
+			  label="&logInItem.label;"
 			  onclick="gSync.doLogin();"/>
 		<menuitem id="sync-logoutitem"
 			  hidden="true" disabled="false"
 			  checked="false" autocheck="false"
-			  label="Sign Out"
+			  label="&logOutItem.label;"
 			  onclick="gSync.doLogout();"/>
 		<menuseparator/>
 		<menuitem id="sync-syncnowitem"
 			  hidden="false" disabled="true"
 			  checked="false" autocheck="false"
-			  label="Sync Now"
+			  label="&syncNowItem.label;"
 			  oncommand="gSync.doSync(event);"/>
-		<!--
-		<menuitem id="sync-cancelsyncitem"
-			  hidden="false" disabled="true"
-			  checked="false" autocheck="false"
-			  label="Cancel Sync"
-			  oncommand="gSync.doCancelSync(event);"/>
-		-->
 		<menuseparator/>
 		<menuitem id="sync-openprefsitem"
 			  disabled="false"
 			  checked="false" autocheck="false"
-			  label="Weave Preferences..."
+			  label="&openPrefsItem.label;"
 			  oncommand="gSync.doOpenPrefs(event);"/>
 		<menuitem id="sync-openlogitem"
 			  disabled="false"
 			  checked="false" autocheck="false"
-			  label="Activity Log..."
+			  label="&openLogItem.label;"
 			  oncommand="gSync.doOpenActivityLog(event);"/>
 		<menuseparator/>
 		<menuitem id="sync-lastsyncitem"

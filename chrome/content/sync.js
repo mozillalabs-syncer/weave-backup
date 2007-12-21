@@ -94,6 +94,12 @@ Sync.prototype = {
     return "en-US";
   },
 
+  get _stringBundle() {
+    let stringBundle = document.getElementById("weaveStringBundle");
+    this.__defineGetter__("_stringBundle", function() { return stringBundle });
+    return this._stringBundle;
+  },
+
   _log: null,
 
   _init: function Sync__init() {
@@ -138,7 +144,6 @@ Sync.prototype = {
     if(loginitem && logoutitem) {
       loginitem.setAttribute("hidden", "true");
       logoutitem.setAttribute("hidden", "false");
-      logoutitem.setAttribute("label", "Sign Out");
     }
 
     let syncnowitem = document.getElementById("sync-syncnowitem");
@@ -195,12 +200,8 @@ Sync.prototype = {
     
     let branch = Cc["@mozilla.org/preferences-service;1"].
       getService(Ci.nsIPrefBranch);
-    let lastSync = new Date(). getTime();
-    branch.setCharPref("extensions.weave.lastsync", lastSync);
-
-    let lastsyncitem = document.getElementById("sync-lastsyncitem");
-    if(lastsyncitem)
-      lastsyncitem.setAttribute("label", "Last Update: " + lastSync.toLocaleString());
+    branch.setCharPref("extensions.weave.lastsync", new Date().getTime());
+    this._updateLastSyncItem();
   },
 
   startUp: function Sync_startUp(event) {
@@ -308,18 +309,26 @@ Sync.prototype = {
   },
 
   doPopup: function Sync_doPopup(event) {
+    this._updateLastSyncItem();
+  },
+
+  _updateLastSyncItem: function Sync__updateLastSyncItem() {
     let pref = Cc["@mozilla.org/preferences-service;1"].
       getService(Ci.nsIPrefBranch);
+
     let lastSync = pref.getCharPref("extensions.weave.lastsync");
-    if(lastSync) {
-      let lastsyncitem = document.getElementById("sync-lastsyncitem");
-      if(lastsyncitem) {
-        let syncDate = new Date(parseInt(lastSync));
-        lastsyncitem.setAttribute("label", "Last Update: " +
-                                  syncDate.toLocaleString());
-        lastsyncitem.setAttribute("hidden", "false");
-      }
-    }
+    if (!lastSync)
+      return;
+
+    let lastSyncItem = document.getElementById("sync-lastsyncitem");
+    if (!lastSyncItem)
+      return;
+
+    let lastSyncDate = new Date(parseInt(lastSync)).toLocaleString();
+    let lastSyncLabel =
+      this._stringBundle.getFormattedString("lastSync.label", [lastSyncDate]);
+    lastSyncItem.setAttribute("label", lastSyncLabel);
+    lastSyncItem.setAttribute("hidden", "false");
   },
 
   onMenuPopupHiding: function Sync_onMenuPopupHiding() {
