@@ -1,12 +1,14 @@
 <?xml version="1.0"?>
 
+<!DOCTYPE overlay SYSTEM "chrome://weave/locale/preferences.dtd">
+
 <overlay id="sync-preferences"
          xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
   <prefwindow id="BrowserPreferences">
     <prefpane id="sync-prefpane-active" onpaneload="gWeavePrefs.onPaneLoad();" 
               helpURI="chrome://browser/locale/help/help.rdf"
-              label="Weave"
+              label="&prefpane.label;"
               image="chrome://weave/skin/sync-32x32.png">
 
       <script type="application/x-javascript"
@@ -46,10 +48,10 @@
 
       <tabbox id="sync-tabbox" flex="1">
         <tabs>
-          <tab id="accountTab" label="Account" helpTopic="prefs-sync-account"/>
-          <tab id="syncTab" label="Data" helpTopic="prefs-sync-sync"/>
-          <tab id="serviceaddonsTab" label="Add-ons" helpTopic="prefs-sync-serviceaddons"/>
-          <tab id="advancedTab" label="Advanced" helpTopic="prefs-advanced-advanced"/>
+          <tab id="accountTab" label="&accountTab.label;" helpTopic="prefs-sync-account"/>
+          <tab id="syncTab" label="&syncTab.label;" helpTopic="prefs-sync-sync"/>
+          <tab id="serviceaddonsTab" label="&addonsTab.label;" helpTopic="prefs-sync-serviceaddons"/>
+          <tab id="advancedTab" label="&advancedTab.label;" helpTopic="prefs-advanced-advanced"/>
         </tabs>
 
         <tabpanels flex="1">
@@ -60,32 +62,32 @@
 	     <vbox>
               <vbox id="sync-signon-button">
                 <description>
-                 Already have a Weave account?
+                 &alreadyHaveAccount.description;
                 </description>
                 <description>
- 	         Sign into your account to set up Weave on this computer.
+ 	         &signIntoAccount.description;
                 </description>
-	        <button label="Sign In..." oncommand="gWeavePrefs.doSignOn();"/>
+	        <button label="&signInButton.label;" oncommand="gWeavePrefs.doSignOn();"/>
               </vbox>
               <vbox id="sync-signout-button">
 	        <description>
-                  Signed in to Weave as 
+                  &signedIn.description;
                 </description>
                 <label id="sync-username-field" preference="extensions.weave.username"/>
-	        <button label="Sign Out" oncommand="gWeavePrefs.doSignOut();"/>
+	        <button label="&signOutButton.label;" oncommand="gWeavePrefs.doSignOut();"/>
 		<checkbox id="sync-autoconnect-checkbox"
                           class="indent"
-                          label="Automatically connect each time I start Firefox"
+                          label="&autoconnectCheckbox.label;"
                           preference="extensions.weave.autoconnect"/>
 	      </vbox>
               <vbox>
                 <description>
-                  Create an account
+                  &createAccount.description;
                 </description>
                 <description>
-                  Sign up now for a Weave account.
+                  &signUpForAccount.description;
                 </description>
-  	        <button label="Create Account..." id="sync-learnmore-button" oncommand="gWeavePrefs.doCreateAccount();"/>
+  	        <button label="&createAccountButton.label;" id="sync-learnmore-button" oncommand="gWeavePrefs.doCreateAccount();"/>
               </vbox>
              </vbox>
             </groupbox>
@@ -96,13 +98,13 @@
               <hbox>
               <vbox>
                 <checkbox id="sync-autosync-checkbox"
-                          label="Back up and synchronize my data to a Weave server"
+                          label="&backUpCheckbox.label;"
                           preference="extensions.weave.enabled"/>
-	        <checkbox label="Encrypt my data on the server" disabled="true"
+	        <checkbox label="&encryptOnServerCheckbox.label;" disabled="true"
                           checked="true"/>
               </vbox>
               <vbox>
-                <button label="Sync Now" id="sync-syncnow-button" oncommand="gWeavePrefs.doSyncNow();"/>
+                <button label="&syncNowButton.label;" id="sync-syncnow-button" oncommand="gWeavePrefs.doSyncNow();"/>
               </vbox>
               </hbox>
               <separator orient="vertical"/>
@@ -110,14 +112,14 @@
                 <richlistitem>
                   <hbox>
                     <checkbox id="sync-bookmarks-checkbox"
-                              label="Bookmarks"
+                              label="&bookmarksCheckbox.label;"
                               preference="extensions.weave.bookmarks"/>
                   </hbox>
                 </richlistitem>
                 <richlistitem>
                   <hbox>
                     <checkbox id="sync-bookmarks-checkbox"
-                              label="History"
+                              label="&historyCheckbox.label;"
                               preference="extensions.weave.history"/>
                   </hbox>
                 </richlistitem>
@@ -129,7 +131,7 @@
           <tabpanel>
             <groupbox id="sync-addons-group" flex="1">
               <description>
-		This is where you will find, install and manage Weave add-ons.		
+		&addonsGroupbox.description;
               </description>
             </groupbox>
           </tabpanel>
@@ -138,9 +140,9 @@
             <vbox flex="1">
               <groupbox id="sync-advanced-group" flex="1">
                <vbox>
-                <caption label="Weave Server"/>
+                <caption label="&advancedCaption.label;"/>
                 <hbox align="center">
-                  <label value="Server Location:" control="sync-server-field"/>
+                  <label value="&serverLocation.label;" control="sync-server-field"/>
                   <separator orient="horizontal"/>
                   <textbox id="sync-server-field"
                            class="padding"
@@ -148,36 +150,36 @@
                            preference="extensions.weave.serverURL"/>
                 </hbox>
               <hbox>
-                <label value="Encryption:"/>
+                <label value="&encryption.label;"/>
                <menulist preference="extensions.weave.encryption" disabled="true">
                 <menupopup>
-                  <menuitem label="Placeholder Algorithm (Corrected Block TEA)" value="XXXTEA"/>
-                  <menuitem label="No encryption" value="none"/>
+                  <menuitem label="&teaAlgorithmItem.label;" value="XXXTEA"/>
+                  <menuitem label="&noEncryptionItem.label;" value="none"/>
                 </menupopup>
                </menulist>
                </hbox>
 	       <description>
-		  Note: Encryption is required for the default server.
+		  &defaultServerRequiresEncryption.description;
 	       </description>
-               <button label="Reset to Default" oncommand="gWeavePrefs.resetServerURL();"/>
+               <button label="&resetServerURLButton.label;" oncommand="gWeavePrefs.resetServerURL();"/>
               </vbox>
               </groupbox>
               <groupbox id="sync-debug-group" flex="1">
                 <vbox>
-                  <caption label="Debug"/>
+                  <caption label="&debugCaption.label;"/>
                   <description>
-  		    The following actions are for advanced debugging by developers only. 
+  		    &debugGroupbox.description;
                   </description>                    
-                  <button label="Reset Username and Password" oncommand="gWeavePrefs.resetLoginCredentials();"/> 
-                  <button label="Reset Server Lock" oncommand="gWeavePrefs.resetServerLock();"/>
-                  <button label="Reset Server Data" oncommand="gWeavePrefs.resetServerData();"/>
-                  <button label="Reset Client Data" oncommand="gWeavePrefs.resetClientData();"/>
+                  <button label="&resetCredentialsButton.label;" oncommand="gWeavePrefs.resetLoginCredentials();"/> 
+                  <button label="&resetServerLockButton.label;" oncommand="gWeavePrefs.resetServerLock();"/>
+                  <button label="&resetServerDataButton.label;" oncommand="gWeavePrefs.resetServerData();"/>
+                  <button label="&resetClientDataButton.label;" oncommand="gWeavePrefs.resetClientData();"/>
                 </vbox>
               </groupbox>
 	      <groupbox flex="1">
               <vbox>
-                <caption label="Logs"/>
-                <button label="Activity Log..." oncommand="gSyncPane.openActivityLog();"/>
+                <caption label="&logsCaption.label;"/>
+                <button label="&openActivityLogButton.label;" oncommand="gSyncPane.openActivityLog();"/>
               </vbox>
               </groupbox>
             </vbox>
