@@ -25,12 +25,12 @@
 			  hidden="false" disabled="false"
 			  checked="false" autocheck="false"
 			  label="&logInItem.label;"
-			  onclick="gSync.doLogin();"/>
+			  oncommand="gSync.doLogin();"/>
 		<menuitem id="sync-logoutitem"
 			  hidden="true" disabled="false"
 			  checked="false" autocheck="false"
 			  label="&logOutItem.label;"
-			  onclick="gSync.doLogout();"/>
+			  oncommand="gSync.doLogout();"/>
 		<menuseparator/>
 		<menuitem id="sync-syncnowitem"
 			  hidden="false" disabled="true"
