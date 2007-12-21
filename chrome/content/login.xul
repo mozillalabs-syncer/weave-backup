@@ -2,13 +2,13 @@
 
 <?xml-stylesheet href="chrome://global/skin/global.css" type="text/css"?>
 
+<!DOCTYPE overlay SYSTEM "chrome://weave/locale/login.dtd">
+
 <dialog xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         id="login-dialog" 
         windowtype="Sync:Login"
-        title="Mozilla Services Login"
+        title="&dialog.title;"
         buttons="accept,cancel"
-        buttonlabelcancel="Cancel"
-        buttonlabelaccept="Ok"
         ondialogaccept="return gLogin.doOK();"
         ondialogcancel="return gLogin.doCancel();">
     
@@ -16,6 +16,10 @@
           src="chrome://weave/content/load-weave.js"/>
   <script type="application/x-javascript"
 	  src="chrome://weave/content/login.js"/>
+
+  <stringbundleset id="stringbundleset">
+    <stringbundle id="weaveStringBundle" src="chrome://weave/locale/login.properties"/>
+  </stringbundleset>
 
   <preferences>
     <preference id="sync-username"
@@ -30,23 +34,23 @@
   </preferences>
 
   <vbox>
-    <label value="Sign in to Weave from this computer."/>
+    <label value="&dialog.label;"/>
     <hbox>
-      <label value="Username:"/>
+      <label value="&username.label;"/>
       <textbox id="username" preference="sync-username"/>
     </hbox>
     <hbox>
-      <label value="Password:"/>
+      <label value="&password.label;"/>
       <textbox id="password" type="password"/>
     </hbox>
     <hbox id="passphrase-hbox">
-      <label value="Encryption Passphrase:"/>
+      <label value="&encryptionPassphrase.label;"/>
       <textbox id="passphrase" type="password"/>
     </hbox>
     <checkbox id="save-password" preference="sync-rememberpassword"
-              label="Save password on this computer"/>
+              label="&savePassword.label;"/>
     <checkbox id="sync-autoconnect-checkbox"
-              label="Automatically connect each time I start Firefox"
+              label="&autoconnect.label;"
               preference="extensions.weave.autoconnect"/>
   </vbox>
 </dialog>

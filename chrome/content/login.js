@@ -19,6 +19,12 @@ Login.prototype = {
     return this.__os;
   },
 
+  get _stringBundle() {
+    let stringBundle = document.getElementById("weaveStringBundle");
+    this.__defineGetter__("_stringBundle", function() { return stringBundle });
+    return this._stringBundle;
+  },
+
   _log: null,
 
   _init: function Login__init() {
@@ -67,7 +73,7 @@ Login.prototype = {
   },
 
   _onLoginError: function Login__onLoginError() {
-    alert("Login failed");
+    alert(this._stringBundle.getString("loginFailed.alert"));
     this._loggingIn = false;
   },
 
