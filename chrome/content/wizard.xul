@@ -2,100 +2,105 @@
 
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
 
-<wizard id="sync-wizard" title="Weave Sync Setup Wizard"
-  onunload="gSyncWizard.onWizardShutdown();"
-  height="400"
-  width="600"
-  xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+<!DOCTYPE overlay SYSTEM "chrome://weave/locale/wizard.dtd">
+
+<wizard xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        id="sync-wizard" title="&wizard.title;"
+        height="400" width="600"
+        onunload="gSyncWizard.onWizardShutdown();">
 
   <script type="application/x-javascript"
           src="chrome://weave/content/load-weave.js"/>
   <script type="application/x-javascript"
-            src="chrome://browser/content/places/utils.js"/>
+          src="chrome://browser/content/places/utils.js"/>
   <script type="application/x-javascript"
-    src="chrome://weave/content/wizard.js"/>
+          src="chrome://weave/content/wizard.js"/>
+
+  <stringbundleset id="stringbundleset">
+    <stringbundle id="weaveStringBundle" src="chrome://weave/locale/wizard.properties"/>
+  </stringbundleset>
 
   <wizardpage pageid="sync-wizard-welcome" onpageshow="gSyncWizard.onPageShow('sync-wizard-welcome');">
     <description style="font-weight: bold; font-size: 12px;">
-    Step 1 of 5
+      &step1.counter;
     </description>
     <separator class="thin" />
     <description style="font-weight: bold; font-size: 14px;">
-    Weave Setup Wizard
+      &step1.title;
     </description>
     <separator class="thin" />
     <description>
-    This Wizard will guide you through the steps necessary to backup your current bookmarks, login to Weave, and backup and synchronize your data to the Internet and your other browsers. 
+      &step1.description;
     </description>
     <separator class="thin"/>
     <description>
-    Please note that the user interface is temporary and is solely intended to allow for testing of the underlying service framework.
+      &step1.note;
     </description>
   </wizardpage>
  
   <wizardpage pageid="sync-wizard-backup" onpageshow="gSyncWizard.onPageShow('sync-wizard-backup');">
     <description style="font-weight: bold; font-size: 12px;">
-    Step 2 of 5
+      &step2.counter;
     </description>
     <separator class="thin" />
     <description style="font-weight: bold; font-size: 14px;">
-    Backup Your Bookmarks
+      &step2.title;
     </description>
     <separator class="thin" />
     <description>
-    Backing up now will allow you to recover from the data loss you may experience. We strongly recommend that you make a backup copy of your bookmarks now.
+      &step2.description;
     </description>
     <separator class="thin" />
     <description>
-    To do so, simply click on the "Backup Bookmarks..." below and we will save a copy of your bookmarks to your desktop.
+      &step2.note;
     </description>
     <separator orient="vertical" />
     <hbox>
-    <button class="dialog" id="sync-wizard-backup-button" label="Backup Bookmarks..." oncommand="return gSyncWizard.onBookmarksBackup(event);"/>
+    <button class="dialog" id="sync-wizard-backup-button" label="&backUpBookmarks.label;" oncommand="return gSyncWizard.onBookmarksBackup(event);"/>
     <spacer flex="1"/>
     </hbox>
   </wizardpage>
 
   <wizardpage pageid="sync-wizard-account" onpageshow="gSyncWizard.onPageShow('sync-wizard-account');">
     <description style="font-weight: bold; font-size: 12px;">
-    Step 3 of 5
+      &step3.counter;
     </description>
     <separator class="thin" />
     <description style="font-weight: bold; font-size: 14px;">
-    Enter Login Details
+      &step3.title;
     </description>
     <separator class="thin" />
     <description>
-    We're temporarily using the internal Mozilla LDAP server for authentication. Please enter your user name and password here and click the "Verify" button to validate before proceeding.
+      &step3.description;
     </description>
     <separator orient="vertical"/>
     <vbox>
       <hbox align="center">
-        <label value="User Name:" control="sync-username-field"/>
+        <label value="&username.label;" control="sync-username-field"/>
         <textbox id="sync-username-field"
                  class="padded" flex="1"/>
        </hbox>
        <hbox align="center">
-        <label value="Password:" control="sync-password-field"/>
+        <label value="&password.label;" control="sync-password-field"/>
         <textbox id="sync-password-field"
                  class="padded" flex="1"
                  type="password"/>
         </hbox>
        <hbox align="center">
-        <label value="Encryption Passphrase:" control="sync-passphrase-field"/>
+        <label value="&encryptionPassphrase.label;" control="sync-passphrase-field"/>
         <textbox id="sync-passphrase-field"
                  class="padded" flex="1"
                  type="password"/>
         </hbox>
        <separator orient="vertical" />
        <hbox align="center">
-         <button label="Verify" oncommand="gSyncWizard.onVerify(event);"/>
+         <button label="&verify.label;" oncommand="gSyncWizard.onVerify(event);"/>
          <spacer flex="1"/>
          <image id="sync-wizard-verify-throbber-active"
                 src="chrome://weave/skin/sync-throbber-16x16-active.apng" hidden="true"/>
          <image id="sync-wizard-verify-throbber"
                 src="chrome://weave/skin/sync-throbber-16x16.png"/>
-         <label id="sync-wizard-verify-status" value="Status: Unverified."/>
+         <label id="sync-wizard-verify-status" value="&verifyStatusUnverified.label;"/>
        </hbox>
        <spacer flex="1"/>
       </vbox>
@@ -104,42 +109,42 @@
 
   <wizardpage pageid="sync-wizard-initialization" onpageshow="gSyncWizard.onPageShow('sync-wizard-initialization');">
     <description style="font-weight: bold; font-size: 12px;">
-    Step 4 of 5
+      &step4.counter;
     </description>
     <separator class="thin" />
     <description style="font-weight: bold; font-size: 14px;">
-    Initial Synchronization
+      &step4.title;
     </description>
     <separator class="thin" />
     <description>
-    You're now ready to synchronize your computer with Weave.  If this is your first time, we will encrypt and upload a representation of your bookmarks and history over SSL to a secure remote server.
+      &step4.description;
     </description>
     <separator orient="thin"/>
     <description>
-    If you have previously setup Weave on another computer, we will merge your data and reconcile any conflicts for you.
+      &step4.note;
     </description>
     <separator orient="vertical"/>  
        <hbox align="center">
-        <button id="sync-wizard-initialization-button" label="Perform Initial Synchronization" oncommand="return gSyncWizard.onSync(event);"/>
+        <button id="sync-wizard-initialization-button" label="&performInitialSync.label;" oncommand="return gSyncWizard.onSync(event);"/>
         <spacer flex="1"/>
          <image id="sync-wizard-initialization-throbber-active" src="chrome://weave/skin/sync-throbber-16x16-active.apng" hidden="true"/>
          <image id="sync-wizard-initialization-throbber" src="chrome://weave/skin/sync-throbber-16x16.png"/>
-         <label id="sync-wizard-initialization-status" value="Status: Ready."/>
+         <label id="sync-wizard-initialization-status" value="&initStatusReady.label;"/>
        </hbox>
      <spacer flex="1"/>
   </wizardpage>
 
   <wizardpage id="sync-wizard-complete">
     <description style="font-weight: bold; font-size: 12px;">
-    Step 5 of 5
+      &step5.counter;
     </description>
     <separator class="thin" />
     <description style="font-weight: bold; font-size: 14px;">
-    Setup Complete
+      &step5.title;
     </description>
     <separator class="thin" />
     <description>
-    By default you will now connect to the Weave each time you start Firefox.
+      &step5.description;
     </description>
     <spacer flex="1"/>
   </wizardpage>
