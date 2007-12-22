@@ -222,7 +222,7 @@ Sync.prototype = {
 
     if (branch.getCharPref("extensions.weave.lastversion") == "firstrun") {
       let url = this._baseURL +
-	"addon/" + this._locale + "/firstrun/?version=" + WEAVE_VERSION;
+        "addon/" + this._locale + "/firstrun/?version=" + WEAVE_VERSION;
       setTimeout(function() { window.openUILinkIn(url, "tab") }, 500);
       this._prefSvc.setCharPref("extensions.weave.lastversion", WEAVE_VERSION);
       return;
