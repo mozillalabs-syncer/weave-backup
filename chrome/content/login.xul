@@ -35,18 +35,34 @@
 
   <vbox>
     <label value="&dialog.label;"/>
-    <hbox align="center">
-      <label value="&username.label;"/>
-      <textbox id="username" preference="sync-username"/>
-    </hbox>
-    <hbox align="center">
-      <label value="&password.label;"/>
-      <textbox id="password" type="password"/>
-    </hbox>
-    <hbox id="passphrase-hbox" align="center">
-      <label value="&encryptionPassphrase.label;"/>
-      <textbox id="passphrase" type="password"/>
-    </hbox>
+
+    <grid>
+      <columns>
+        <column pack="left" align="right"/>
+        <column/>
+      </columns>
+      <rows>
+        <row align="center">
+          <hbox flex="1" align="right">
+	    <label value="&username.label;"/>
+	  </hbox>
+          <textbox id="username" preference="sync-username"/>
+        </row>
+        <row align="center">
+          <hbox flex="1" align="right">
+            <label value="&password.label;"/>
+	  </hbox>
+          <textbox id="password" type="password"/>
+        </row>
+        <row id="passphrase-hbox" align="center">
+          <hbox flex="1" align="right">
+            <label value="&encryptionPassphrase.label;"/>
+	  </hbox>
+          <textbox id="passphrase" type="password"/>
+        </row>
+      </rows>
+    </grid>
+
     <checkbox id="save-password" preference="sync-rememberpassword"
               label="&savePassword.label;"/>
     <checkbox id="sync-autoconnect-checkbox"
