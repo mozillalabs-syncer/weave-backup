@@ -170,6 +170,15 @@ SyncWizard.prototype = {
       return;
     }
 
+    if (!passphrase.value) {
+      alert(this._stringBundle.getString("noPassphrase.alert"));
+      return false;
+    }
+    if (password.value == passphrase.value) {
+      alert(this._stringBundle.getString("samePasswordAndPassphrase.alert"));
+      return false;
+    }
+
     this._log.info("Adding user login/password to password manager");
     this._ss.username = username.value;
     this._ss.password = password.value;

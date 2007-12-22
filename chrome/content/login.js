@@ -88,6 +88,20 @@ Login.prototype = {
     let password = document.getElementById("password");
     let passphrase = document.getElementById("passphrase");
     let savePass = document.getElementById("save-password");
+
+    if (!password.value) {
+      alert(this._stringBundle.getString("noPassword.alert"));
+      return false;
+    }
+    if (!passphrase.value) {
+      alert(this._stringBundle.getString("noPassphrase.alert"));
+      return false;
+    }
+    if (password.value == passphrase.value) {
+      alert(this._stringBundle.getString("samePasswordAndPassphrase.alert"));
+      return false;
+    }
+
     if (savePass.checked) {
       this._ss.password = password.value;
       this._ss.passphrase = passphrase.value;
