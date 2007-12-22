@@ -35,15 +35,15 @@
 
   <vbox>
     <label value="&dialog.label;"/>
-    <hbox>
+    <hbox align="center">
       <label value="&username.label;"/>
       <textbox id="username" preference="sync-username"/>
     </hbox>
-    <hbox>
+    <hbox align="center">
       <label value="&password.label;"/>
       <textbox id="password" type="password"/>
     </hbox>
-    <hbox id="passphrase-hbox">
+    <hbox id="passphrase-hbox" align="center">
       <label value="&encryptionPassphrase.label;"/>
       <textbox id="passphrase" type="password"/>
     </hbox>
