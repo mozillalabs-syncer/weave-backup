@@ -7,6 +7,11 @@ function WeavePrefs() {
 }
 
 WeavePrefs.prototype = {
+  get _stringBundle() {
+    let stringBundle = document.getElementById("weaveStringBundle");
+    this.__defineGetter__("_stringBundle", function() { return stringBundle });
+    return this._stringBundle;
+  },
 
  __ss: null,
   get _ss() {
@@ -30,11 +35,14 @@ WeavePrefs.prototype = {
       syncNowButton.setAttribute("disabled", "true");
       syncUserName.setAttribute("value", "");
     } else {
+      let signedInDescription =
+        this._stringBundle.getFormattedString("signedIn.description",
+                                              [this._ss.currentUser]);
       signOnButton.setAttribute("hidden", "true");
       signOutButton.setAttribute("hidden", "false");
       createButton.setAttribute("hidden", "true");
       syncNowButton.setAttribute("disabled", "false");
-      syncUserName.setAttribute("value", this._ss.currentUser); 
+      syncUserName.setAttribute("value", signedInDescription);
    }
   },
 
@@ -79,8 +87,15 @@ WeavePrefs.prototype = {
   },
 
   doCreateAccount: function WeavePrefs_doCreateAccount() {
+    let wm = Cc["@mozilla.org/appshell/window-mediator;1"].
+             getService(Ci.nsIWindowMediator);
+    let recentWindow = wm.getMostRecentWindow("navigator:browser");
     // FIXME: should be based upon baseURL
-    setTimeout(function() { window.openUILinkIn("https://services.mozilla.com", "tab") }, 500);
+    var url = "https://services.mozilla.com";
+    if (recentWindow)
+      recentWindow.delayedOpenTab(url, null, null, null, null);
+    else
+      window.open(url);
   },
 
   doSyncNow: function WeavePrefs_doSyncNow() {
