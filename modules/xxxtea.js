@@ -41,6 +41,8 @@
 // Javascript version by Chris Veness
 // http://www.movable-type.co.uk/scripts/tea.html
 
+const EXPORTED_SYMBOLS = ['encrypt', 'decrypt'];
+
 // use (16 chars of) 'password' to encrypt 'plaintext'
 
 function encrypt(plaintext, password) {

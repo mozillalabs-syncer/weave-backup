@@ -109,7 +109,7 @@ Login.prototype = {
       this._ss.password = null;
       this._ss.passphrase = null;
     }
-    this._ss.login(password.value, passphrase);
+    this._ss.login(password.value, passphrase.value);
     return false; // don't close the dialog yet
   },
 
