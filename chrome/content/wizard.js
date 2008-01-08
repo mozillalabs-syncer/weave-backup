@@ -100,7 +100,7 @@ SyncWizard.prototype = {
       this._log.info("Showing backup page");
       wizard.canAdvance = true;
       break;
-    case "sync-wizard-account":
+    case "sync-wizard-account": {
       this._log.info("Showing account page");
       let branch = Cc["@mozilla.org/preferences-service;1"].
         getService(Ci.nsIPrefBranch);
@@ -118,7 +118,7 @@ SyncWizard.prototype = {
 	password.setAttribute("value", logins[0].password);
       }
       wizard.canAdvance = false;
-      break;
+    } break;
     case "sync-wizard-initialization":
       this._log.info("Showing initialization page");
       status1 = document.getElementById('sync-wizard-initialization-status');
