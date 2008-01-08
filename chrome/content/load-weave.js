@@ -12,7 +12,22 @@ if (!resProt.hasSubstitution("weave")) {
   resProt.setSubstitution("weave", ioSvc.newFileURI(extD));
 }
 
+// These are here because of bug 408412
+// Note: they are here depth-first so that it is *this* import() which
+// triggers the first exception, otherwise it'll be obscured (see the bug)
+Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
+Components.utils.import("resource://weave/constants.js");
+Components.utils.import("resource://weave/log4moz.js");
+Components.utils.import("resource://weave/util.js");
+Components.utils.import("resource://weave/crypto.js");
+Components.utils.import("resource://weave/identity.js");
+Components.utils.import("resource://weave/dav.js");
+Components.utils.import("resource://weave/stores.js");
+Components.utils.import("resource://weave/syncCores.js");
+Components.utils.import("resource://weave/engines.js");
+Components.utils.import("resource://weave/service.js");
+
+// these are the only ones we *really* need in this file
 Components.utils.import("resource://weave/constants.js");
 Components.utils.import("resource://weave/weave.js");
 Components.utils.import("resource://weave/log4moz.js");
-
