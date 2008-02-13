@@ -105,7 +105,7 @@ SyncWizard.prototype = {
       let branch = Cc["@mozilla.org/preferences-service;1"].
         getService(Ci.nsIPrefBranch);
       let serverURL = branch.getCharPref("extensions.weave.serverURL");
-      let uri = makeURI(serverURL);
+      let uri = Utils.makeURI(serverURL);
       let lm = Cc["@mozilla.org/login-manager;1"].getService(Ci.nsILoginManager);
       let logins = lm.findLogins({}, uri.hostPort, null, 'services.mozilla.com - proxy');
       status1 = document.getElementById('sync-wizard-verify-status');
@@ -261,9 +261,3 @@ SyncWizard.prototype = {
 };
 
 let gSyncWizard = new SyncWizard();
-
-function makeURI(uriString) {
-  var ioservice = Cc["@mozilla.org/network/io-service;1"].
-                  getService(Ci.nsIIOService);
-  return ioservice.newURI(uriString, null, null);
-}
