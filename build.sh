@@ -18,7 +18,7 @@ for in in `find . -type f -name \*.in`; do
     done
 done
 
-if [[ ! $1 == xpi ]]; then
+if [[ ! "x$1" == xxpi ]]; then
     exit 0;
 fi
 
