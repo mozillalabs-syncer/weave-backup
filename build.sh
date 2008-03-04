@@ -4,7 +4,7 @@ substitutions="unpacked jar"
 unpacked=
 jar="# "
 
-if [[ $1 == xpi ]]; then
+if [[ "x$1" == xxpi ]]; then
     unpacked="# "
     jar=
 fi
