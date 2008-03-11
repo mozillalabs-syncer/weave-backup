@@ -48,6 +48,9 @@
         <preference id="extensions.weave.history"
                     name="extensions.weave.history"
                     type="bool"/>
+	<preference id="extensions.weave.cookies"
+		    name="extensions.weave.cookies"
+		    type="bool"/>
       </preferences>
 
       <tabbox id="sync-tabbox" flex="1">
@@ -141,6 +144,12 @@
                               label="&historyCheckbox.label;"
                               preference="extensions.weave.history"/>
                 </richlistitem>
+                <richlistitem>
+                    <checkbox id="sync-cookies-checkbox"
+                              label="&cookiesCheckbox.label;"
+                              preference="extensions.weave.cookies"/>
+                </richlistitem>
+
               </richlistbox>
             </groupbox>
           </tabpanel>
