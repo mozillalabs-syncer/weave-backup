@@ -29,6 +29,5 @@ Components.utils.import("resource://weave/engines.js");
 Components.utils.import("resource://weave/service.js");
 
 // these are the only ones we *really* need in this file
-Components.utils.import("resource://weave/constants.js");
-Components.utils.import("resource://weave/weave.js");
-Components.utils.import("resource://weave/log4moz.js");
+// Components.utils.import("resource://weave/log4moz.js");
+// Components.utils.import("resource://weave/service.js");
