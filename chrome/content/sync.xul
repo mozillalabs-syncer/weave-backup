@@ -36,6 +36,11 @@
 			  checked="false" autocheck="false"
 			  label="&syncNowItem.label;"
 			  oncommand="gSync.doSync(event);"/>
+		<menuitem id="sync-shareitem"
+			  hidden="false" disabled="true"
+			  checked="false" autocheck="false"
+			  label="&shareItem.label;"
+			  oncommand="gSync.doShare(event);"/>
 		<menuseparator/>
 		<menuitem id="sync-openprefsitem"
 			  disabled="false"

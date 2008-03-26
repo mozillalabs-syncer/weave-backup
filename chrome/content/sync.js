@@ -146,6 +146,10 @@ Sync.prototype = {
       logoutitem.setAttribute("hidden", "false");
     }
 
+    let shareitem = document.getElementById("sync-shareitem");
+    if (shareitem)
+      shareitem.setAttribute("disabled", "false");
+
     let syncnowitem = document.getElementById("sync-syncnowitem");
     if (syncnowitem)
       syncnowitem.setAttribute("disabled", "false");
@@ -167,6 +171,10 @@ Sync.prototype = {
       loginitem.setAttribute("hidden", "false");
       logoutitem.setAttribute("hidden", "true");
     }
+
+    let shareitem = document.getElementById("sync-shareitem");
+    if (shareitem)
+      shareitem.setAttribute("disabled", "true");
 
     let syncnowitem = document.getElementById("sync-syncnowitem");
     if (syncnowitem)
@@ -290,6 +298,11 @@ Sync.prototype = {
 
   doSync: function Sync_doSync(event) {
     this._ss.sync();
+  },
+
+  doShare: function Sync_doShare(event) {
+    this._openWindow('Sync:Share', 'chrome://weave/content/share.xul',
+                     'chrome, dialog, modal, resizable=yes');
   },
 
   doCancelSync: function Sync_doCancelSync(event) {
