@@ -39,11 +39,6 @@ function Sync() {
   this._init();
 }
 Sync.prototype = {
-  __ss: null,
-  get _ss() {
-    return Weave.Service;
-  },
-
   __os: null,
   get _os() {
     if (!this.__os)
@@ -133,7 +128,7 @@ Sync.prototype = {
 
     let status1 = document.getElementById("sync-menu-status");
     if(status1) {
-      status1.setAttribute("value",  this._ss.currentUser);
+      status1.setAttribute("value",  Weave.Service.currentUser);
       status1.setAttribute("hidden", "false");
     }
 
@@ -206,9 +201,7 @@ Sync.prototype = {
     if(syncitem)
       syncitem.setAttribute("active", "true");
     
-    let branch = Cc["@mozilla.org/preferences-service;1"].
-      getService(Ci.nsIPrefBranch);
-    branch.setCharPref("extensions.weave.lastsync", new Date().getTime());
+    this._prefSvc.setCharPref("extensions.weave.lastsync", new Date().getTime());
     this._updateLastSyncItem();
   },
 
@@ -225,10 +218,7 @@ Sync.prototype = {
     this._os.addObserver(this, "weave:service:sync:success", false);
     this._os.addObserver(this, "weave:service:sync:error", false);
 
-    let branch = Cc["@mozilla.org/preferences-service;1"].
-      getService(Ci.nsIPrefBranch);
-
-    if (branch.getCharPref("extensions.weave.lastversion") == "firstrun") {
+    if (this._prefSvc.getCharPref("extensions.weave.lastversion") == "firstrun") {
       let url = this._baseURL +
         "addon/" + this._locale + "/firstrun/?version=" + WEAVE_VERSION;
       setTimeout(function() { window.openUILinkIn(url, "tab") }, 500);
@@ -236,7 +226,7 @@ Sync.prototype = {
       return;
     }
 
-    if (branch.getCharPref("extensions.weave.lastversion") != WEAVE_VERSION) {
+    if (this._prefSvc.getCharPref("extensions.weave.lastversion") != WEAVE_VERSION) {
       let url = this._baseURL +
 	"addon/" + this._locale + "/updated/?version=" + WEAVE_VERSION;
       setTimeout(function() { window.openUILinkIn(url, "tab") }, 500);
@@ -244,10 +234,14 @@ Sync.prototype = {
       return;
     }
 
-    let autoconnect = branch.getBoolPref("extensions.weave.autoconnect");
+    let syncnowitem = document.getElementById("sync-syncnowitem");
+    if (syncnowitem && this._prefSvc.getBoolPref("extensions.weave.ui.syncnow"))
+      syncnowitem.setAttribute("hidden", "false");
+
+    let autoconnect = this._prefSvc.getBoolPref("extensions.weave.autoconnect");
     if(autoconnect &&
-       this._ss.username && this._ss.username != 'nobody@mozilla.com')
-      this._ss.login(null, null);
+       Weave.Service.username && Weave.Service.username != 'nobody@mozilla.com')
+      Weave.Service.login(null, null);
   },
 
   shutDown: function Sync_shutDown(event) {
@@ -270,12 +264,10 @@ Sync.prototype = {
   },
   
   doLogin: function Sync_doLogin(event) {
-    if (this._ss.currentUser)
+    if (Weave.Service.currentUser)
       return; // already logged in
 
-    let branch = Cc["@mozilla.org/preferences-service;1"].
-      getService(Ci.nsIPrefBranch);
-    let username = branch.getCharPref("extensions.weave.username");
+    let username = this._prefSvc.getCharPref("extensions.weave.username");
 
     if (!username || username == 'nobody@mozilla.com') {
       this.doOpenSetupWizard();
@@ -283,7 +275,7 @@ Sync.prototype = {
     }
 
 //    this._userLogin = true;
-//    this._ss.login(null, null);
+//    Weave.Service.login(null, null);
     this.doLoginPopup();
   },
   
@@ -293,11 +285,11 @@ Sync.prototype = {
   },
 
   doLogout: function Sync_doLogout(event) {
-    this._ss.logout();
+    Weave.Service.logout();
   },
 
   doSync: function Sync_doSync(event) {
-    this._ss.sync();
+    Weave.Service.sync();
   },
 
   doShare: function Sync_doShare(event) {
@@ -327,10 +319,7 @@ Sync.prototype = {
   },
 
   _updateLastSyncItem: function Sync__updateLastSyncItem() {
-    let pref = Cc["@mozilla.org/preferences-service;1"].
-      getService(Ci.nsIPrefBranch);
-
-    let lastSync = pref.getCharPref("extensions.weave.lastsync");
+    let lastSync = this._prefSvc.getCharPref("extensions.weave.lastsync");
     if (!lastSync)
       return;
 
