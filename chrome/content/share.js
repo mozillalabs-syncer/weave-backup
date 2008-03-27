@@ -35,20 +35,15 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-function Share() {
-}
+function Share() {}
 Share.prototype = {
-  doOK: function Share_doOK(event) {
+  doShare: function Share_doShare(event) {
     let user = document.getElementById("username");
     if (user)
       Weave.Service.shareBookmarks(user.value);
-    return true;
   },
-  doCancel: function Share_doCancel(event) {
-    return true;
-  },
-  shutDown: function Share_shutDown(event) {
-  }
+  doCancel: function Share_doCancel(event) { return true; },
+  shutDown: function Share_shutDown(event) {}
 };
 
 let gShare;
