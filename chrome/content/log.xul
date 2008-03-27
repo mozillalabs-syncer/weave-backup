@@ -7,9 +7,11 @@
         id="syncLogWindow"
         windowtype="Weave:Log"
         title="&dialog.title;"
-        buttons="extra1,accept"
+        buttons="extra1,extra2,accept"
         buttonlabelextra1="&saveAsButton.label;"
-        ondialogextra1="gSyncLog.saveAs();">
+        buttonlabelextra2="&clearButton.label;"
+        ondialogextra1="gSyncLog.saveAs();"
+        ondialogextra2="gSyncLog.clear();">
 
   <script type="application/x-javascript"
           src="chrome://weave/content/load-weave.js"/>

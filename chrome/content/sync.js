@@ -178,8 +178,7 @@ Sync.prototype = {
 
   _onSvcUnlock: function Sync__onSvcUnlock() {
     if (this._userLogin)
-      this._openWindow('Sync:Login', 'chrome://weave/content/login.xul',
-                      'chrome, dialog, modal, resizable=yes');
+      this._openWindow('Sync:Login', 'chrome://weave/content/login.xul');
     this._userLogin = false;
   },
 
@@ -259,8 +258,7 @@ Sync.prototype = {
   },
 
   doLoginPopup : function Sync_doLoginPopup(event) {
-      this._openWindow('Sync:Login', 'chrome://weave/content/login.xul',
-                      'chrome, dialog, modal, resizable=yes');
+    this._openWindow('Sync:Login', 'chrome://weave/content/login.xul');
   },
   
   doLogin: function Sync_doLogin(event) {
@@ -281,7 +279,7 @@ Sync.prototype = {
   
   doOpenSetupWizard : function Sync_doOpenSetupWizard(event) {
       window.openDialog('chrome://weave/content/wizard.xul', '',
-        'chrome, dialog, modal, resizable=yes', null);  	
+        'chrome, dialog, resizable=yes', null);  	
   },
 
   doLogout: function Sync_doLogout(event) {
@@ -293,8 +291,7 @@ Sync.prototype = {
   },
 
   doShare: function Sync_doShare(event) {
-    this._openWindow('Sync:Share', 'chrome://weave/content/share.xul',
-                     'chrome, dialog, modal, resizable=yes');
+    this._openWindow('Sync:Share', 'chrome://weave/content/share.xul');
   },
 
   doCancelSync: function Sync_doCancelSync(event) {
@@ -311,7 +308,7 @@ Sync.prototype = {
 
   doOpenActivityLog: function Sync_doOpenActivityLog(event) {
     this._openWindow('Weave:Log', 'chrome://weave/content/log.xul',
-                     'chrome,centerscreen,dialog,modal,resizable=yes');
+                     'chrome, centerscreen, dialog, resizable=yes');
   },
 
   doPopup: function Sync_doPopup(event) {

@@ -89,6 +89,31 @@ let gSyncLog = {
         fp.file.remove(false);
       file.copyTo(fp.file.parent, fp.file.leafName);
     }
+  },
+
+  clear: function SyncLog_clear() {
+    let dirSvc = Cc["@mozilla.org/file/directory_service;1"].
+    getService(Ci.nsIProperties);
+  
+    let file = dirSvc.get("ProfD", Ci.nsIFile);
+    file.QueryInterface(Ci.nsILocalFile);
+    file.append("weave");
+    file.append("logs");
+    file.append("brief-log.txt");
+
+    if (file.exists())
+      file.remove(false);
+
+    file = file.parent;
+    file.append("verbose-log.txt");
+
+    if (file.exists())
+      file.remove(false);
+
+    document.getElementById("sync-log-frame").
+      setAttribute("src", "chrome://weave/content/default-log.txt");
+    document.getElementById("sync-log-verbose-frame").
+      setAttribute("src", "chrome://weave/content/default-log.txt");
   }
 }
 
