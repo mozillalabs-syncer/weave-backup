@@ -6,11 +6,6 @@ function Login() {
   this._init();
 }
 Login.prototype = {
-  __ss: null,
-  get _ss() {
-    return Weave.Service;
-  },
-
   __os: null,
   get _os() {
     if (!this.__os)
@@ -35,13 +30,12 @@ Login.prototype = {
     this._log.info("Sync login window opened");
     this._os.addObserver(this, "weave:service-login:success", false);
     this._os.addObserver(this, "weave:service-login:error", false);
-    this._os.addObserver(this, "weave:service-unlock:success", false);
 
     let username = document.getElementById("username");
-    username.value = this._ss.username;
-    if (this._ss.password) {
+    username.value = Weave.Service.username;
+    if (Weave.Service.password) {
       let password = document.getElementById("password");
-      password.value = this._ss.password;
+      password.value = Weave.Service.password;
     }
 
     let branch = Cc["@mozilla.org/preferences-service;1"]
@@ -52,9 +46,9 @@ Login.prototype = {
       hbox.setAttribute("hidden", "true");
     else {
       hbox.setAttribute("hidden", "false");
-      if (this._ss.passphrase) {
+      if (Weave.Service.passphrase) {
 	let passphrase = document.getElementById("passphrase");
-	passphrase.value = this._ss.passphrase;
+	passphrase.value = Weave.Service.passphrase;
       }
     }
   },
@@ -63,7 +57,6 @@ Login.prototype = {
     this._log.info("Sync login window closed");
     this._os.removeObserver(this, "weave:service-login:success");
     this._os.removeObserver(this, "weave:service-login:error");
-    this._os.removeObserver(this, "weave:service-unlock:success");
   },
 
   _onLogin: function Login__onLogin() {
@@ -84,7 +77,7 @@ Login.prototype = {
     }
     this._loggingIn = true;
     let username = document.getElementById("username");
-    this._ss.username = username.value;
+    Weave.Service.username = username.value;
     let password = document.getElementById("password");
     let passphrase = document.getElementById("passphrase");
     let savePass = document.getElementById("save-password");
@@ -103,13 +96,13 @@ Login.prototype = {
     }
 
     if (savePass.checked) {
-      this._ss.password = password.value;
-      this._ss.passphrase = passphrase.value;
+      Weave.Service.password = password.value;
+      Weave.Service.passphrase = passphrase.value;
     } else {
-      this._ss.password = null;
-      this._ss.passphrase = null;
+      Weave.Service.password = null;
+      Weave.Service.passphrase = null;
     }
-    this._ss.login(password.value, passphrase.value);
+    Weave.Service.login(null, password.value, passphrase.value);
     return false; // don't close the dialog yet
   },
 

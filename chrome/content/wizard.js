@@ -43,11 +43,6 @@ function SyncWizard() {
 
 SyncWizard.prototype = {
 
- __ss: null,
-  get _ss() {
-    return Weave.Service;
-  },
-
   __os: null,
   get _os() {
     if (!this.__os)
@@ -180,16 +175,16 @@ SyncWizard.prototype = {
     }
 
     this._log.info("Adding user login/password to password manager");
-    this._ss.username = username.value;
-    this._ss.password = password.value;
-    this._ss.passphrase = passphrase.value;
+    Weave.Service.username = username.value;
+    Weave.Service.password = password.value;
+    Weave.Service.passphrase = passphrase.value;
 
-    this._ss.logout();
-    this._ss.login(null, null);
+    Weave.Service.logout();
+    Weave.Service.login();
   },
   
   onSync: function SyncWizard_onSync() {
-    this._ss.sync();
+    Weave.Service.sync();
   },
 
   observe: function(subject, topic, data) {

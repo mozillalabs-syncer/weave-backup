@@ -13,11 +13,6 @@ WeavePrefs.prototype = {
     return this._stringBundle;
   },
 
- __ss: null,
-  get _ss() {
-    return Weave.Service;
-  },
-
   _init : function WeavePrefs__init() {
   },
 
@@ -28,7 +23,7 @@ WeavePrefs.prototype = {
     let createButton = document.getElementById('sync-create-button');
     let syncUserName = document.getElementById('sync-username-field');
 
-    if (!this._ss.currentUser) {
+    if (!Weave.Service.currentUser) {
       signOnButton.setAttribute("hidden", "false");
       signOutButton.setAttribute("hidden", "true");
       createButton.setAttribute("hidden", "false");
@@ -37,7 +32,7 @@ WeavePrefs.prototype = {
     } else {
       let signedInDescription =
         this._stringBundle.getFormattedString("signedIn.description",
-                                              [this._ss.currentUser]);
+                                              [Weave.Service.currentUser]);
       signOnButton.setAttribute("hidden", "true");
       signOutButton.setAttribute("hidden", "false");
       createButton.setAttribute("hidden", "true");
@@ -82,7 +77,7 @@ WeavePrefs.prototype = {
   },
 
   doSignOut: function WeavePrefs_doSignOut() {
-    this._ss.logout();
+    Weave.Service.logout();
     this._checkAccountInfo();
   },
 
@@ -98,27 +93,11 @@ WeavePrefs.prototype = {
       window.open(url);
   },
 
-  doSyncNow: function WeavePrefs_doSyncNow() {
-    this._ss.sync();
-  },
-
-  resetServerLock: function WeavePrefs_resetServerLock() {
-    this._ss.resetLock();
-  },
-
-  resetServerData: function WeavePrefs_resetServerData() {
-    this._ss.resetServer();
-  },
-
-  resetClientData: function WeavePrefs_resetClientData() {
-    this._ss.resetClient();
-  },
-
   resetLoginCredentials: function WeavePrefs_resetLoginCredentials() {
-    this._ss.logout();
-    this._ss.password = null;
-    this._ss.passphrase = null;
-    this._ss.username = null;
+    Weave.Service.logout();
+    Weave.Service.password = null;
+    Weave.Service.passphrase = null;
+    Weave.Service.username = null;
     this._checkAccountInfo();
   },
 
@@ -129,7 +108,7 @@ WeavePrefs.prototype = {
     let serverURL = branch.getCharPref("extensions.weave.serverURL");
     let serverField = document.getElementById('sync-server-field');
     serverField.setAttribute("value", serverURL);
-    this._ss.logout();
+    Weave.Service.logout();
   }
 };
 

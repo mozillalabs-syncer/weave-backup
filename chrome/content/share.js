@@ -40,7 +40,7 @@ Share.prototype = {
   doShare: function Share_doShare(event) {
     let user = document.getElementById("username");
     if (user)
-      Weave.Service.shareBookmarks(user.value);
+      Weave.Service.shareBookmarks(null, user.value);
   },
   doCancel: function Share_doCancel(event) { return true; },
   shutDown: function Share_shutDown(event) {}

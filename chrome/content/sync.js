@@ -119,18 +119,14 @@ Sync.prototype = {
   _setThrobber: function Sync__setThrobber(status) {
     document.getElementById("sync-menu-button").setAttribute("status", status);
     document.getElementById("sync-menu").setAttribute("status", status);
+    let label = this._stringBundle.getString("status." + status);
+    document.getElementById("sync-menu-status").setAttribute("value", label);
   },
 
   _onLogin: function Sync__onLogin() {
     this._log.info("Login successful");
 
     this._userLogin = false;
-
-    let status1 = document.getElementById("sync-menu-status");
-    if(status1) {
-      status1.setAttribute("value",  Weave.Service.currentUser);
-      status1.setAttribute("hidden", "false");
-    }
 
     this._setThrobber("idle");
 
@@ -176,12 +172,6 @@ Sync.prototype = {
       syncnowitem.setAttribute("disabled", "true");
   },
 
-  _onSvcUnlock: function Sync__onSvcUnlock() {
-    if (this._userLogin)
-      this._openWindow('Sync:Login', 'chrome://weave/content/login.xul');
-    this._userLogin = false;
-  },
-
   _onSyncStart: function Sync_onSyncStart() {
     this._setThrobber("active");
 	  
@@ -207,9 +197,6 @@ Sync.prototype = {
   startUp: function Sync_startUp(event) {
     this._log.info("Sync window opened");
 
-    this._os.addObserver(this, "weave:service-unlock:success", false);
-    this._os.addObserver(this, "weave:service-lock:success", false);
-    this._os.addObserver(this, "weave:service-lock:error", false);
     this._os.addObserver(this, "weave:service-login:success", false);
     this._os.addObserver(this, "weave:service-login:error", false);
     this._os.addObserver(this, "weave:service-logout:success", false);
@@ -240,15 +227,12 @@ Sync.prototype = {
     let autoconnect = this._prefSvc.getBoolPref("extensions.weave.autoconnect");
     if(autoconnect &&
        Weave.Service.username && Weave.Service.username != 'nobody@mozilla.com')
-      Weave.Service.login(null, null);
+      Weave.Service.login();
   },
 
   shutDown: function Sync_shutDown(event) {
     this._log.info("Sync window closed");
 
-    this._os.removeObserver(this, "weave:service-unlock:success");
-    this._os.removeObserver(this, "weave:service-lock:success");
-    this._os.removeObserver(this, "weave:service-lock:error");
     this._os.removeObserver(this, "weave:service-login:success");
     this._os.removeObserver(this, "weave:service-login:error");
     this._os.removeObserver(this, "weave:service-logout:success");
@@ -273,7 +257,7 @@ Sync.prototype = {
     }
 
 //    this._userLogin = true;
-//    Weave.Service.login(null, null);
+//    Weave.Service.login();
     this.doLoginPopup();
   },
   
@@ -357,14 +341,6 @@ Sync.prototype = {
   // nsIObserver
   observe: function(subject, topic, data) {
     switch(topic) {
-    case "weave:service-unlock:success":
-      this._onSvcUnlock();
-      break;
-    case "weave:service-lock:success":
-      break;
-    case "weave:service-lock:error":
-      this._onLogout(false);
-      break;
     case "weave:service-login:success":
       this._onLogin();
       break;

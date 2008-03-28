@@ -64,8 +64,8 @@
                         insertbefore="security-button"
                         onmousedown="gSync.onMenuButtonMouseDown()">
             <label id="sync-menu-status"
-                   hidden="false"
-                   control="sync-menu-button"/>
+                   control="sync-menu-button"
+                   value="&status.offline.label;"/>
         </statusbarpanel>
     </statusbar>
 </overlay>
