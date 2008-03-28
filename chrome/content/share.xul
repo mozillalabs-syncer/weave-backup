@@ -31,8 +31,13 @@
       <button label="&share.button.label;" oncommand="gShare.doShare();"/>
     </hbox>
     <separator class="thin"/>
-    <label id="description.ok" value="&description.ok;" hidden="true"/>
-    <label id="description.error" value="&description.error;" hidden="true"/>
+    <hbox align="center">
+      <image id="throbber" src="chrome://weave/skin/sync-throbber-16x16.png"/>
+      <image id="throbber-active"
+             src="chrome://weave/skin/sync-throbber-16x16-active.apng"
+             hidden="true"/>
+      <label id="status.label" value="&status.waiting;"/>
+    </hbox>
     <spacer style="min-height: 5px" flex="1"/>
   </vbox>
 </dialog>

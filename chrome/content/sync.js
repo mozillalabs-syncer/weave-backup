@@ -110,7 +110,7 @@ Sync.prototype = {
      else {
        var ww = Cc["@mozilla.org/embedcomp/window-watcher;1"].
          getService(Ci.nsIWindowWatcher);
-       if (options === null)
+       if (!options)
          options = 'chrome,centerscreen,dialog,modal,resizable=yes';
        ww.activeWindow.openDialog(uri, '', options, null);
      }

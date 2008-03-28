@@ -37,10 +37,29 @@
 
 function Share() {}
 Share.prototype = {
+  get _stringBundle() {
+    let stringBundle = document.getElementById("weaveStringBundle");
+    this.__defineGetter__("_stringBundle", function() { return stringBundle });
+    return this._stringBundle;
+  },
   doShare: function Share_doShare(event) {
-    let user = document.getElementById("username");
-    if (user)
-      Weave.Service.shareBookmarks(null, user.value);
+    let labelStr = this._stringBundle.getString("status.working");
+    let label = document.getElementById("status.label");
+    label.setAttribute("value", labelStr);
+    label.setAttribute("hidden", false);
+    document.getElementById("throbber").setAttribute("hidden", true);
+    document.getElementById("throbber-active").setAttribute("hidden", false);
+    let self = this;
+    let user = document.getElementById("username").value;
+    Weave.Service.shareBookmarks(function(ret) { self.shareCb(ret); }, user);
+  },
+  shareCb: function Share_Callback(ret) {
+    document.getElementById("throbber").setAttribute("hidden", false);
+    document.getElementById("throbber-active").setAttribute("hidden", true);
+    let label = ret?
+      this._stringBundle.getString("status.ok") :
+      this._stringBundle.getString("status.error");
+    document.getElementById("status.label").setAttribute("value", label);
   },
   doCancel: function Share_doCancel(event) { return true; },
   shutDown: function Share_shutDown(event) {}
