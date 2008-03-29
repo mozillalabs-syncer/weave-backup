@@ -152,10 +152,6 @@ Sync.prototype = {
     else
       this._setThrobber("error");
 
-    let status1 = document.getElementById("sync-menu-status");
-    if (status1)
-      status1.setAttribute("hidden", "true");
-
     let loginitem = document.getElementById("sync-loginitem");
     let logoutitem = document.getElementById("sync-logoutitem");
     if(loginitem && logoutitem) {
