@@ -28,8 +28,8 @@ Login.prototype = {
 
   startUp: function Login_startUp() {
     this._log.info("Sync login window opened");
-    this._os.addObserver(this, "weave:service-login:success", false);
-    this._os.addObserver(this, "weave:service-login:error", false);
+    this._os.addObserver(this, "weave:service:login:success", false);
+    this._os.addObserver(this, "weave:service:login:error", false);
 
     let username = document.getElementById("username");
     username.value = Weave.Service.username;
@@ -55,8 +55,8 @@ Login.prototype = {
 
   shutDown: function Login_shutDown() {
     this._log.info("Sync login window closed");
-    this._os.removeObserver(this, "weave:service-login:success");
-    this._os.removeObserver(this, "weave:service-login:error");
+    this._os.removeObserver(this, "weave:service:login:success");
+    this._os.removeObserver(this, "weave:service:login:error");
   },
 
   _onLogin: function Login__onLogin() {
@@ -114,10 +114,10 @@ Login.prototype = {
   // nsIObserver
   observe: function(subject, topic, data) {
     switch(topic) {
-    case "weave:service-login:success":
+    case "weave:service:login:success":
       this._onLogin();
       break;
-    case "weave:service-login:error":
+    case "weave:service:login:error":
       this._onLoginError();
       break;
     default:

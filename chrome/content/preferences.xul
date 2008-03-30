@@ -197,7 +197,7 @@
               <hbox>
                 <label value="&resetServerDataButton.description;" flex="1"/>
                 <button label="&resetServerDataButton.label;"
-                        oncommand="Weave.Service.resetServer();"/>
+                        oncommand="Weave.Service.serverWipe();"/>
               </hbox>
               <hbox>
                 <label value="&resetClientDataButton.description;" flex="1"/>

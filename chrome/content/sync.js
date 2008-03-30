@@ -193,9 +193,9 @@ Sync.prototype = {
   startUp: function Sync_startUp(event) {
     this._log.info("Sync window opened");
 
-    this._os.addObserver(this, "weave:service-login:success", false);
-    this._os.addObserver(this, "weave:service-login:error", false);
-    this._os.addObserver(this, "weave:service-logout:success", false);
+    this._os.addObserver(this, "weave:service:login:success", false);
+    this._os.addObserver(this, "weave:service:login:error", false);
+    this._os.addObserver(this, "weave:service:logout:success", false);
     this._os.addObserver(this, "weave:service:sync:start", false);
     this._os.addObserver(this, "weave:service:sync:success", false);
     this._os.addObserver(this, "weave:service:sync:error", false);
@@ -229,9 +229,9 @@ Sync.prototype = {
   shutDown: function Sync_shutDown(event) {
     this._log.info("Sync window closed");
 
-    this._os.removeObserver(this, "weave:service-login:success");
-    this._os.removeObserver(this, "weave:service-login:error");
-    this._os.removeObserver(this, "weave:service-logout:success");
+    this._os.removeObserver(this, "weave:service:login:success");
+    this._os.removeObserver(this, "weave:service:login:error");
+    this._os.removeObserver(this, "weave:service:logout:success");
     this._os.removeObserver(this, "weave:service:sync:start");
     this._os.removeObserver(this, "weave:service:sync:success");
     this._os.removeObserver(this, "weave:service:sync:error");
@@ -337,12 +337,12 @@ Sync.prototype = {
   // nsIObserver
   observe: function(subject, topic, data) {
     switch(topic) {
-    case "weave:service-login:success":
+    case "weave:service:login:success":
       this._onLogin();
       break;
-    case "weave:service-login:error":
+    case "weave:service:login:error":
       break;
-    case "weave:service-logout:success":
+    case "weave:service:logout:success":
       this._onLogout(true);
       break;
     case "weave:service:sync:start":
