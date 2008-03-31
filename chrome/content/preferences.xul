@@ -187,22 +187,22 @@
               <hbox>
                 <label value="&resetCredentialsButton.description;" flex="1"/>
                 <button label="&resetCredentialsButton.label;"
-                        oncommand="gWeavePrefs.resetLoginCredentials()"/>
+                        oncommand="gWeavePrefs.resetLoginCredentials();"/>
               </hbox>
               <hbox>
                 <label value="&resetServerLockButton.description;" flex="1"/>
                 <button label="&resetServerLockButton.label;"
-                        oncommand="Weave.Service.resetLock();"/>
+                        oncommand="gWeavePrefs.resetLock();"/>
               </hbox>
               <hbox>
                 <label value="&resetServerDataButton.description;" flex="1"/>
                 <button label="&resetServerDataButton.label;"
-                        oncommand="Weave.Service.serverWipe();"/>
+                        oncommand="gWeavePrefs.resetServer();"/>
               </hbox>
               <hbox>
                 <label value="&resetClientDataButton.description;" flex="1"/>
                 <button label="&resetClientDataButton.label;"
-                        oncommand="Weave.Service.resetClient();"/>
+                        oncommand="gWeavePrefs.resetClient();"/>
               </hbox>
             </groupbox>
 

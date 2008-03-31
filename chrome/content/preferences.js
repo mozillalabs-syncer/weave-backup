@@ -18,7 +18,7 @@ WeavePrefs.prototype = {
 
   _checkAccountInfo: function WeavePrefs__checkAccountInfo() {
     let signOnButton = document.getElementById('sync-signon-button');
-    let signOutButton = document.getElementById('sync-signout-button'); 
+    let signOutButton = document.getElementById('sync-signout-button');
     let syncNowButton = document.getElementById('sync-syncnow-button');
     let createButton = document.getElementById('sync-create-button');
     let syncUserName = document.getElementById('sync-username-field');
@@ -58,16 +58,16 @@ WeavePrefs.prototype = {
                      'chrome,centerscreen,dialog,modal,resizable=yes', null);
      }
   },
- 
+
   doSignOn: function WeavePrefs_doSignOn() {
 
     let branch = Cc["@mozilla.org/preferences-service;1"].
       getService(Ci.nsIPrefBranch);
     let username = branch.getCharPref("extensions.weave.username");
-  
-    if (!username || username == 'nobody@mozilla.com') { 
+
+    if (!username || username == 'nobody@mozilla.com') {
          window.openDialog('chrome://weave/content/wizard.xul', '',
-		      'chrome, dialog, modal, resizable=yes', null);          
+		      'chrome, dialog, modal, resizable=yes', null);
     } else {
          window.openDialog('chrome://weave/content/login.xul', '',
                       'chrome, dialog, modal, resizable=yes', null);
@@ -109,6 +109,28 @@ WeavePrefs.prototype = {
     let serverField = document.getElementById('sync-server-field');
     serverField.setAttribute("value", serverURL);
     Weave.Service.logout();
+  },
+
+  resetLock: function WeavePrefs_resetLock() {
+    Weave.Service.resetLock();
+  },
+
+  resetServer: function WeavePrefs_resetServer() {
+    let p = Cc["@mozilla.org/embedcomp/prompt-service;1"]
+      .getService(Ci.nsIPromptService);
+    if (p.confirm(null,
+                  this._stringBundle.getString("reset.server.warning.title"),
+                  this._stringBundle.getString("reset.server.warning")))
+      Weave.Service.serverWipe();
+  },
+
+  resetClient: function WeavePrefs_resetClient() {
+    let p = Cc["@mozilla.org/embedcomp/prompt-service;1"]
+      .getService(Ci.nsIPromptService);
+    if (p.confirm(null,
+                  this._stringBundle.getString("reset.client.warning.title"),
+                  this._stringBundle.getString("reset.client.warning")))
+      Weave.Service.resetClient();
   }
 };
 
