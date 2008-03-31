@@ -37,7 +37,7 @@
 			  label="&syncNowItem.label;"
 			  oncommand="gSync.doSync(event);"/>
 		<menuitem id="sync-shareitem"
-			  hidden="false" disabled="true"
+			  hidden="true" disabled="true"
 			  checked="false" autocheck="false"
 			  label="&shareItem.label;"
 			  oncommand="gSync.doShare(event);"/>
