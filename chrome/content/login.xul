@@ -6,7 +6,7 @@
 
 <dialog xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         id="login-dialog" 
-        windowtype="Sync:Login"
+        windowtype="Weave:Login"
         title="&dialog.title;"
         buttons="accept,cancel"
         ondialogaccept="return gLogin.doOK();"
@@ -21,18 +21,6 @@
     <stringbundle id="weaveStringBundle" src="chrome://weave/locale/login.properties"/>
   </stringbundleset>
 
-  <preferences>
-    <preference id="sync-username"
-      name="extensions.weave.username"  
-      type="string" />
-    <preference id="sync-rememberpassword"
-      name="extensions.weave.rememberpassword"  
-      type="bool" />
-    <preference id="extensions.weave.autoconnect"
-      name="extensions.weave.autoconnect"
-      type="bool" />
-  </preferences>
-
   <vbox>
     <label value="&dialog.label;"/>
 
@@ -46,7 +34,7 @@
           <hbox flex="1" align="right">
 	    <label value="&username.label;"/>
 	  </hbox>
-          <textbox id="username" preference="sync-username"/>
+          <textbox id="username" preference="username"/>
         </row>
         <row align="center">
           <hbox flex="1" align="right">
@@ -54,7 +42,7 @@
 	  </hbox>
           <textbox id="password" type="password"/>
         </row>
-        <row id="passphrase-hbox" align="center">
+        <row id="passphrase-ui" align="center">
           <hbox flex="1" align="right">
             <label value="&encryptionPassphrase.label;"/>
 	  </hbox>
@@ -63,10 +51,7 @@
       </rows>
     </grid>
 
-    <checkbox id="save-password" preference="sync-rememberpassword"
-              label="&savePassword.label;"/>
-    <checkbox id="sync-autoconnect-checkbox"
-              label="&autoconnect.label;"
-              preference="extensions.weave.autoconnect"/>
+    <checkbox id="save-password-checkbox" label="&savePassword.label;"/>
+    <checkbox id="autoconnect-checkbox" label="&autoconnect.label;"/>
   </vbox>
 </dialog>
