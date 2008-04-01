@@ -36,14 +36,41 @@
  * ***** END LICENSE BLOCK ***** */
 
 function Sync() {
-  this._init();
+  this._log = Log4Moz.Service.getLogger("Chrome.Window");
+
+  this._log.info("Initializing Weave UI");
+
+  this._os.addObserver(this, "weave:service:login:success", false);
+  this._os.addObserver(this, "weave:service:login:error", false);
+  this._os.addObserver(this, "weave:service:logout:success", false);
+  this._os.addObserver(this, "weave:service:sync:start", false);
+  this._os.addObserver(this, "weave:service:sync:success", false);
+  this._os.addObserver(this, "weave:service:sync:error", false);
+
+  if (Weave.Utils.prefs.getBoolPref("ui.syncnow"))
+    document.getElementById("sync-syncnowitem").setAttribute("hidden", false);
+  if (Weave.Utils.prefs.getBoolPref("ui.sharebookmarks"))
+    document.getElementById("sync-shareitem").setAttribute("hidden", false);
+
+  if (Weave.Utils.prefs.getCharPref("lastversion") == "firstrun") {
+    let url = "http://sm-labs01.mozilla.org/projects/weave/firstrun/?version=" +
+                Weave.WEAVE_VERSION;
+    setTimeout(function() { window.openUILinkIn(url, "tab") }, 500);
+  }
+
+  if (Weave.Utils.prefs.getCharPref("lastversion") != WEAVE_VERSION) {
+    let url = "http://sm-labs01.mozilla.org/projects/weave/updated/?version=" +
+                Weave.WEAVE_VERSION;
+    setTimeout(function() { window.openUILinkIn(url, "tab") }, 500);
+  }
+
+  Weave.Utils.prefs.setCharPref("lastversion", WEAVE_VERSION);
+
+  if (Weave.Utils.prefs.getBoolPref("autoconnect") &&
+     Weave.Service.username && Weave.Service.username != 'nobody@mozilla.com')
+    Weave.Service.login();
 }
 Sync.prototype = {
-  __ss: null,
-  get _ss() {
-    return Weave.Service;
-  },
-
   __os: null,
   get _os() {
     if (!this.__os)
@@ -100,12 +127,6 @@ Sync.prototype = {
     return this._stringBundle;
   },
 
-  _log: null,
-
-  _init: function Sync__init() {
-    this._log = Log4Moz.Service.getLogger("Chrome.Window");
-  },
-
   _openWindow: function Sync__openWindow(type, uri, options) {
     let wm = Cc["@mozilla.org/appshell/window-mediator;1"].
       getService(Ci.nsIWindowMediator);
@@ -115,7 +136,7 @@ Sync.prototype = {
      else {
        var ww = Cc["@mozilla.org/embedcomp/window-watcher;1"].
          getService(Ci.nsIWindowWatcher);
-       if (options === null)
+       if (!options)
          options = 'chrome,centerscreen,dialog,modal,resizable=yes';
        ww.activeWindow.openDialog(uri, '', options, null);
      }
@@ -124,18 +145,14 @@ Sync.prototype = {
   _setThrobber: function Sync__setThrobber(status) {
     document.getElementById("sync-menu-button").setAttribute("status", status);
     document.getElementById("sync-menu").setAttribute("status", status);
+    let label = this._stringBundle.getString("status." + status);
+    document.getElementById("sync-menu-status").setAttribute("value", label);
   },
 
   _onLogin: function Sync__onLogin() {
     this._log.info("Login successful");
 
     this._userLogin = false;
-
-    let status1 = document.getElementById("sync-menu-status");
-    if(status1) {
-      status1.setAttribute("value",  this._ss.currentUser);
-      status1.setAttribute("hidden", "false");
-    }
 
     this._setThrobber("idle");
 
@@ -145,6 +162,10 @@ Sync.prototype = {
       loginitem.setAttribute("hidden", "true");
       logoutitem.setAttribute("hidden", "false");
     }
+
+    let shareitem = document.getElementById("sync-shareitem");
+    if (shareitem)
+      shareitem.setAttribute("disabled", "false");
 
     let syncnowitem = document.getElementById("sync-syncnowitem");
     if (syncnowitem)
@@ -157,10 +178,6 @@ Sync.prototype = {
     else
       this._setThrobber("error");
 
-    let status1 = document.getElementById("sync-menu-status");
-    if (status1)
-      status1.setAttribute("hidden", "true");
-
     let loginitem = document.getElementById("sync-loginitem");
     let logoutitem = document.getElementById("sync-logoutitem");
     if(loginitem && logoutitem) {
@@ -168,21 +185,18 @@ Sync.prototype = {
       logoutitem.setAttribute("hidden", "true");
     }
 
+    let shareitem = document.getElementById("sync-shareitem");
+    if (shareitem)
+      shareitem.setAttribute("disabled", "true");
+
     let syncnowitem = document.getElementById("sync-syncnowitem");
     if (syncnowitem)
       syncnowitem.setAttribute("disabled", "true");
   },
 
-  _onSvcUnlock: function Sync__onSvcUnlock() {
-    if (this._userLogin)
-      this._openWindow('Sync:Login', 'chrome://weave/content/login.xul',
-                      'chrome, dialog, modal, resizable=yes');
-    this._userLogin = false;
-  },
-
   _onSyncStart: function Sync_onSyncStart() {
     this._setThrobber("active");
-	  
+
     let syncitem = document.getElementById("sync-syncnowitem");
     if(syncitem)
       syncitem.setAttribute("active", "false");
@@ -193,81 +207,35 @@ Sync.prototype = {
       this._setThrobber("idle");
     else
       this._setThrobber("error");
-	  
+
     let syncitem = document.getElementById("sync-syncnowitem");
     if(syncitem)
       syncitem.setAttribute("active", "true");
-    
-    let branch = Cc["@mozilla.org/preferences-service;1"].
-      getService(Ci.nsIPrefBranch);
-    branch.setCharPref("extensions.weave.lastsync", new Date().getTime());
+
+    this._prefSvc.setCharPref("extensions.weave.lastsync", new Date().getTime());
     this._updateLastSyncItem();
-  },
-
-  startUp: function Sync_startUp(event) {
-    this._log.info("Sync window opened");
-
-    this._os.addObserver(this, "weave:service-unlock:success", false);
-    this._os.addObserver(this, "weave:service-lock:success", false);
-    this._os.addObserver(this, "weave:service-lock:error", false);
-    this._os.addObserver(this, "weave:service-login:success", false);
-    this._os.addObserver(this, "weave:service-login:error", false);
-    this._os.addObserver(this, "weave:service-logout:success", false);
-    this._os.addObserver(this, "weave:service:sync:start", false);
-    this._os.addObserver(this, "weave:service:sync:success", false);
-    this._os.addObserver(this, "weave:service:sync:error", false);
-
-    let branch = Cc["@mozilla.org/preferences-service;1"].
-      getService(Ci.nsIPrefBranch);
-
-    if (branch.getCharPref("extensions.weave.lastversion") == "firstrun") {
-      let url = this._baseURL +
-        "addon/" + this._locale + "/firstrun/?version=" + WEAVE_VERSION;
-      setTimeout(function() { window.openUILinkIn(url, "tab") }, 500);
-      this._prefSvc.setCharPref("extensions.weave.lastversion", WEAVE_VERSION);
-      return;
-    }
-
-    if (branch.getCharPref("extensions.weave.lastversion") != WEAVE_VERSION) {
-      let url = this._baseURL +
-	"addon/" + this._locale + "/updated/?version=" + WEAVE_VERSION;
-      setTimeout(function() { window.openUILinkIn(url, "tab") }, 500);
-      this._prefSvc.setCharPref("extensions.weave.lastversion", WEAVE_VERSION);
-      return;
-    }
-
-    let autoconnect = branch.getBoolPref("extensions.weave.autoconnect");
-    if(autoconnect &&
-       this._ss.username && this._ss.username != 'nobody@mozilla.com')
-      this._ss.login(null, null);
   },
 
   shutDown: function Sync_shutDown(event) {
     this._log.info("Sync window closed");
 
-    this._os.removeObserver(this, "weave:service-unlock:success");
-    this._os.removeObserver(this, "weave:service-lock:success");
-    this._os.removeObserver(this, "weave:service-lock:error");
-    this._os.removeObserver(this, "weave:service-login:success");
-    this._os.removeObserver(this, "weave:service-login:error");
-    this._os.removeObserver(this, "weave:service-logout:success");
+    this._os.removeObserver(this, "weave:service:login:success");
+    this._os.removeObserver(this, "weave:service:login:error");
+    this._os.removeObserver(this, "weave:service:logout:success");
     this._os.removeObserver(this, "weave:service:sync:start");
     this._os.removeObserver(this, "weave:service:sync:success");
     this._os.removeObserver(this, "weave:service:sync:error");
   },
 
   doLoginPopup : function Sync_doLoginPopup(event) {
-      this._openWindow('Sync:Login', 'chrome://weave/content/login.xul',
-                      'chrome, dialog, modal, resizable=yes');
+    this._openWindow('Sync:Login', 'chrome://weave/content/login.xul');
   },
-  
+
   doLogin: function Sync_doLogin(event) {
-    if (this._ss.currentUser)
+    if (Weave.Service.currentUser)
       return; // already logged in
 
-    let branch = Cc["@mozilla.org/preferences-service;1"].
-      getService(Ci.nsIPrefBranch);
-    let username = branch.getCharPref("extensions.weave.username");
+    let username = this._prefSvc.getCharPref("extensions.weave.username");
 
     if (!username || username == 'nobody@mozilla.com') {
       this.doOpenSetupWizard();
@@ -275,21 +243,25 @@ Sync.prototype = {
     }
 
 //    this._userLogin = true;
-//    this._ss.login(null, null);
+//    Weave.Service.login();
     this.doLoginPopup();
   },
-  
+
   doOpenSetupWizard : function Sync_doOpenSetupWizard(event) {
       window.openDialog('chrome://weave/content/wizard.xul', '',
-        'chrome, dialog, modal, resizable=yes', null);  	
+        'chrome, dialog, resizable=yes', null);
   },
 
   doLogout: function Sync_doLogout(event) {
-    this._ss.logout();
+    Weave.Service.logout();
   },
 
   doSync: function Sync_doSync(event) {
-    this._ss.sync();
+    Weave.Service.sync();
+  },
+
+  doShare: function Sync_doShare(event) {
+    this._openWindow('Sync:Share', 'chrome://weave/content/share.xul');
   },
 
   doCancelSync: function Sync_doCancelSync(event) {
@@ -306,7 +278,7 @@ Sync.prototype = {
 
   doOpenActivityLog: function Sync_doOpenActivityLog(event) {
     this._openWindow('Weave:Log', 'chrome://weave/content/log.xul',
-                     'chrome,centerscreen,dialog,modal,resizable=yes');
+                     'chrome, centerscreen, dialog, resizable=yes');
   },
 
   doPopup: function Sync_doPopup(event) {
@@ -314,10 +286,7 @@ Sync.prototype = {
   },
 
   _updateLastSyncItem: function Sync__updateLastSyncItem() {
-    let pref = Cc["@mozilla.org/preferences-service;1"].
-      getService(Ci.nsIPrefBranch);
-
-    let lastSync = pref.getCharPref("extensions.weave.lastsync");
+    let lastSync = this._prefSvc.getCharPref("extensions.weave.lastsync");
     if (!lastSync)
       return;
 
@@ -358,20 +327,12 @@ Sync.prototype = {
   // nsIObserver
   observe: function(subject, topic, data) {
     switch(topic) {
-    case "weave:service-unlock:success":
-      this._onSvcUnlock();
-      break;
-    case "weave:service-lock:success":
-      break;
-    case "weave:service-lock:error":
-      this._onLogout(false);
-      break;
-    case "weave:service-login:success":
+    case "weave:service:login:success":
       this._onLogin();
       break;
-    case "weave:service-login:error":
+    case "weave:service:login:error":
       break;
-    case "weave:service-logout:success":
+    case "weave:service:logout:success":
       this._onLogout(true);
       break;
     case "weave:service:sync:start":
@@ -390,8 +351,8 @@ Sync.prototype = {
   }
 };
 
-let gSync = new Sync();
+let gSync;
 
-window.addEventListener("load", function(e) { gSync.startUp(e); }, false);
+window.addEventListener("load", function(e) { gSync = new Sync(); }, false);
 window.addEventListener("unload", function(e) { gSync.shutDown(e); }, false);
 

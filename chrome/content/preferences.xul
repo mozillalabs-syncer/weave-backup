@@ -127,7 +127,7 @@
                 </vbox>
                 <spacer flex="1"/>
                 <button id="sync-syncnow-button" label="&syncNowButton.label;"
-                        oncommand="gWeavePrefs.doSyncNow()"/>
+                        oncommand="Weave.Service.sync();"/>
               </hbox>
 
               <separator/>
@@ -196,22 +196,22 @@
               <hbox>
                 <label value="&resetCredentialsButton.description;" flex="1"/>
                 <button label="&resetCredentialsButton.label;"
-                        oncommand="gWeavePrefs.resetLoginCredentials()"/>
+                        oncommand="gWeavePrefs.resetLoginCredentials();"/>
               </hbox>
               <hbox>
                 <label value="&resetServerLockButton.description;" flex="1"/>
                 <button label="&resetServerLockButton.label;"
-                        oncommand="gWeavePrefs.resetServerLock()"/>
+                        oncommand="gWeavePrefs.resetLock();"/>
               </hbox>
               <hbox>
                 <label value="&resetServerDataButton.description;" flex="1"/>
                 <button label="&resetServerDataButton.label;"
-                        oncommand="gWeavePrefs.resetServerData()"/>
+                        oncommand="gWeavePrefs.resetServer();"/>
               </hbox>
               <hbox>
                 <label value="&resetClientDataButton.description;" flex="1"/>
                 <button label="&resetClientDataButton.label;"
-                        oncommand="gWeavePrefs.resetClientData()"/>
+                        oncommand="gWeavePrefs.resetClient();"/>
               </hbox>
             </groupbox>
 

@@ -13,22 +13,17 @@ WeavePrefs.prototype = {
     return this._stringBundle;
   },
 
- __ss: null,
-  get _ss() {
-    return Weave.Service;
-  },
-
   _init : function WeavePrefs__init() {
   },
 
   _checkAccountInfo: function WeavePrefs__checkAccountInfo() {
     let signOnButton = document.getElementById('sync-signon-button');
-    let signOutButton = document.getElementById('sync-signout-button'); 
+    let signOutButton = document.getElementById('sync-signout-button');
     let syncNowButton = document.getElementById('sync-syncnow-button');
     let createButton = document.getElementById('sync-create-button');
     let syncUserName = document.getElementById('sync-username-field');
 
-    if (!this._ss.currentUser) {
+    if (!Weave.Service.currentUser) {
       signOnButton.setAttribute("hidden", "false");
       signOutButton.setAttribute("hidden", "true");
       createButton.setAttribute("hidden", "false");
@@ -37,7 +32,7 @@ WeavePrefs.prototype = {
     } else {
       let signedInDescription =
         this._stringBundle.getFormattedString("signedIn.description",
-                                              [this._ss.currentUser]);
+                                              [Weave.Service.currentUser]);
       signOnButton.setAttribute("hidden", "true");
       signOutButton.setAttribute("hidden", "false");
       createButton.setAttribute("hidden", "true");
@@ -63,16 +58,16 @@ WeavePrefs.prototype = {
                      'chrome,centerscreen,dialog,modal,resizable=yes', null);
      }
   },
- 
+
   doSignOn: function WeavePrefs_doSignOn() {
 
     let branch = Cc["@mozilla.org/preferences-service;1"].
       getService(Ci.nsIPrefBranch);
     let username = branch.getCharPref("extensions.weave.username");
-  
-    if (!username || username == 'nobody@mozilla.com') { 
+
+    if (!username || username == 'nobody@mozilla.com') {
          window.openDialog('chrome://weave/content/wizard.xul', '',
-		      'chrome, dialog, modal, resizable=yes', null);          
+		      'chrome, dialog, modal, resizable=yes', null);
     } else {
          window.openDialog('chrome://weave/content/login.xul', '',
                       'chrome, dialog, modal, resizable=yes', null);
@@ -82,7 +77,7 @@ WeavePrefs.prototype = {
   },
 
   doSignOut: function WeavePrefs_doSignOut() {
-    this._ss.logout();
+    Weave.Service.logout();
     this._checkAccountInfo();
   },
 
@@ -98,27 +93,11 @@ WeavePrefs.prototype = {
       window.open(url);
   },
 
-  doSyncNow: function WeavePrefs_doSyncNow() {
-    this._ss.sync();
-  },
-
-  resetServerLock: function WeavePrefs_resetServerLock() {
-    this._ss.resetLock();
-  },
-
-  resetServerData: function WeavePrefs_resetServerData() {
-    this._ss.resetServer();
-  },
-
-  resetClientData: function WeavePrefs_resetClientData() {
-    this._ss.resetClient();
-  },
-
   resetLoginCredentials: function WeavePrefs_resetLoginCredentials() {
-    this._ss.logout();
-    this._ss.password = null;
-    this._ss.passphrase = null;
-    this._ss.username = null;
+    Weave.Service.logout();
+    Weave.Service.password = null;
+    Weave.Service.passphrase = null;
+    Weave.Service.username = null;
     this._checkAccountInfo();
   },
 
@@ -129,7 +108,29 @@ WeavePrefs.prototype = {
     let serverURL = branch.getCharPref("extensions.weave.serverURL");
     let serverField = document.getElementById('sync-server-field');
     serverField.setAttribute("value", serverURL);
-    this._ss.logout();
+    Weave.Service.logout();
+  },
+
+  resetLock: function WeavePrefs_resetLock() {
+    Weave.Service.resetLock();
+  },
+
+  resetServer: function WeavePrefs_resetServer() {
+    let p = Cc["@mozilla.org/embedcomp/prompt-service;1"]
+      .getService(Ci.nsIPromptService);
+    if (p.confirm(null,
+                  this._stringBundle.getString("reset.server.warning.title"),
+                  this._stringBundle.getString("reset.server.warning")))
+      Weave.Service.serverWipe();
+  },
+
+  resetClient: function WeavePrefs_resetClient() {
+    let p = Cc["@mozilla.org/embedcomp/prompt-service;1"]
+      .getService(Ci.nsIPromptService);
+    if (p.confirm(null,
+                  this._stringBundle.getString("reset.client.warning.title"),
+                  this._stringBundle.getString("reset.client.warning")))
+      Weave.Service.resetClient();
   }
 };
 

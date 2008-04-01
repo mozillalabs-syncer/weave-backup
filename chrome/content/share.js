@@ -19,6 +19,7 @@
  *
  * Contributor(s):
  *  Dan Mills <thunder@mozilla.com>
+ *  Chris Beard <cbeard@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -34,16 +35,36 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-const EXPORTED_SYMBOLS = ['Weave'];
+function Share() {}
+Share.prototype = {
+  get _stringBundle() {
+    let stringBundle = document.getElementById("weaveStringBundle");
+    this.__defineGetter__("_stringBundle", function() { return stringBundle });
+    return this._stringBundle;
+  },
+  doShare: function Share_doShare(event) {
+    let labelStr = this._stringBundle.getString("status.working");
+    let label = document.getElementById("status.label");
+    label.setAttribute("value", labelStr);
+    label.setAttribute("hidden", false);
+    document.getElementById("throbber").setAttribute("hidden", true);
+    document.getElementById("throbber-active").setAttribute("hidden", false);
+    let self = this;
+    let user = document.getElementById("username").value;
+    Weave.Service.shareBookmarks(function(ret) { self.shareCb(ret); }, user);
+  },
+  shareCb: function Share_Callback(ret) {
+    document.getElementById("throbber").setAttribute("hidden", false);
+    document.getElementById("throbber-active").setAttribute("hidden", true);
+    let label = ret?
+      this._stringBundle.getString("status.ok") :
+      this._stringBundle.getString("status.error");
+    document.getElementById("status.label").setAttribute("value", label);
+  },
+  doCancel: function Share_doCancel(event) { return true; },
+  shutDown: function Share_shutDown(event) {}
+};
 
-const Cc = Components.classes;
-const Ci = Components.interfaces;
-const Cr = Components.results;
-const Cu = Components.utils;
-
-Cu.import("resource://gre/modules/XPCOMUtils.jsm");
-Cu.import("resource://weave/service.js");
-
-let Weave = {};
-//Weave.Crypto = new WeaveCrypto();
-Weave.Service = new WeaveSyncService();
+let gShare;
+window.addEventListener("load", function(e) { gShare = new Share(); }, false);
+window.addEventListener("unload", function(e) { gShare.shutDown(e); }, false);

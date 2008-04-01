@@ -43,11 +43,6 @@ function SyncWizard() {
 
 SyncWizard.prototype = {
 
- __ss: null,
-  get _ss() {
-    return Weave.Service;
-  },
-
   __os: null,
   get _os() {
     if (!this.__os)
@@ -67,9 +62,9 @@ SyncWizard.prototype = {
 
     this._log.info("Initializing setup wizard");
 
-    this._os.addObserver(this, "weave:service-login:success", false);
-    this._os.addObserver(this, "weave:service-login:error", false);
-    this._os.addObserver(this, "weave:service-logout:success", false);
+    this._os.addObserver(this, "weave:service:login:success", false);
+    this._os.addObserver(this, "weave:service:login:error", false);
+    this._os.addObserver(this, "weave:service:logout:success", false);
     this._os.addObserver(this, "weave:service:sync:start", false);
     this._os.addObserver(this, "weave:service:sync:success", false);
     this._os.addObserver(this, "weave:service:sync:error", false);
@@ -78,9 +73,9 @@ SyncWizard.prototype = {
   onWizardShutdown: function SyncWizard_onWizardshutdown() {
     this._log.info("Shutting down setup wizard");
 
-    this._os.removeObserver(this, "weave:service-login:success");
-    this._os.removeObserver(this, "weave:service-login:error");
-    this._os.removeObserver(this, "weave:service-logout:success");
+    this._os.removeObserver(this, "weave:service:login:success");
+    this._os.removeObserver(this, "weave:service:login:error");
+    this._os.removeObserver(this, "weave:service:logout:success");
     this._os.removeObserver(this, "weave:service:sync:start");
     this._os.removeObserver(this, "weave:service:sync:success");
     this._os.removeObserver(this, "weave:service:sync:error");
@@ -180,16 +175,16 @@ SyncWizard.prototype = {
     }
 
     this._log.info("Adding user login/password to password manager");
-    this._ss.username = username.value;
-    this._ss.password = password.value;
-    this._ss.passphrase = passphrase.value;
+    Weave.Service.username = username.value;
+    Weave.Service.password = password.value;
+    Weave.Service.passphrase = passphrase.value;
 
-    this._ss.logout();
-    this._ss.login(null, null);
+    Weave.Service.logout();
+    Weave.Service.login();
   },
   
   onSync: function SyncWizard_onSync() {
-    this._ss.sync();
+    Weave.Service.sync();
   },
 
   observe: function(subject, topic, data) {
@@ -201,21 +196,21 @@ SyncWizard.prototype = {
     let verifyStatus, initStatus, throbber1, throbber2, sync1;
 
     switch(topic) {
-    case "weave:service-login:success":
+    case "weave:service:login:success":
       this._log.info("Login verified");
       verifyStatus = document.getElementById('sync-wizard-verify-status');
       verifyStatus.setAttribute("value",
         this._stringBundle.getString("verifyStatusLoginVerified.label"));
       wizard.canAdvance = true;
       break;
-    case "weave:service-login:error":
+    case "weave:service:login:error":
       this._log.info("Login failed");
       verifyStatus = document.getElementById('sync-wizard-verify-status');
       verifyStatus.setAttribute("value",
         this._stringBundle.getString("verifyStatusLoginFailed.label"));
       wizard.canAdvance = false;
       break;
-    case "weave:service-logout:success":
+    case "weave:service:logout:success":
       this._log.info("Logged out");
       break;
     case "weave:service:sync:start":

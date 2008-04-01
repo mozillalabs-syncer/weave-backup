@@ -89,6 +89,14 @@ let gSyncLog = {
         fp.file.remove(false);
       file.copyTo(fp.file.parent, fp.file.leafName);
     }
+  },
+
+  clear: function SyncLog_clear() {
+    Weave.Service.clearLogs();
+    document.getElementById("sync-log-frame").
+      setAttribute("src", "chrome://weave/content/default-log.txt");
+    document.getElementById("sync-log-verbose-frame").
+      setAttribute("src", "chrome://weave/content/default-log.txt");
   }
 }
 

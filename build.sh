@@ -1,9 +1,8 @@
-#!/bin/bash -x
+#!/bin/sh -x
 
 substitutions="unpacked jar"
 unpacked=
 jar="# "
-
 
 if [[ "x$1" == xxpi ]]; then
     unpacked="# "
