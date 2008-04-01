@@ -56,17 +56,15 @@ function Sync() {
     let url = "http://sm-labs01.mozilla.org/projects/weave/firstrun/?version=" +
                 Weave.WEAVE_VERSION;
     setTimeout(function() { window.openUILinkIn(url, "tab") }, 500);
-    Weave.Utils.prefs.setCharPref("lastversion", Weave.WEAVE_VERSION);
-    return;
   }
 
   if (Weave.Utils.prefs.getCharPref("lastversion") != WEAVE_VERSION) {
-    let url = this._baseURL +
-      "addon/" + this._locale + "/updated/?version=" + WEAVE_VERSION;
+    let url = "http://sm-labs01.mozilla.org/projects/weave/updated/?version=" +
+                Weave.WEAVE_VERSION;
     setTimeout(function() { window.openUILinkIn(url, "tab") }, 500);
-    Weave.Utils.prefs.setCharPref("lastversion", WEAVE_VERSION);
-    return;
   }
+
+  Weave.Utils.prefs.setCharPref("lastversion", WEAVE_VERSION);
 
   if (Weave.Utils.prefs.getBoolPref("autoconnect") &&
      Weave.Service.username && Weave.Service.username != 'nobody@mozilla.com')
