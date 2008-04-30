@@ -1,5 +1,14 @@
 #!/bin/bash -x
 
+function error() {
+  echo $*
+  exit 1
+}
+
+[[ -z "$MOZSDKDIR" ]] && error "Gecko SDK directory (MOZSDKDIR) not set"
+
+# Create files from .in, with substitutions below
+
 substitutions="unpacked jar"
 unpacked=
 jar="# "
@@ -18,9 +27,22 @@ for in in `find . -type f -name \*.in`; do
     done
 done
 
-if [[ ! "x$1" == xxpi ]]; then
-    exit 0;
-fi
+# Build the XPCOM components
+
+cd src
+make test-install
+[[ $? -eq 0 ]] || error "Could not build XPCOM component, aborting."
+cd ..
+
+cd tests/unit
+make all
+[[ $? -eq 0 ]] || error "Test failed"
+cd -
+
+# Quit now unless we're building an XPI
+[[ "x$1" == xxpi ]] || exit 0
+
+# Build XPI
 
 cd chrome
 zip -9 -ur sync.jar *
