@@ -30,9 +30,14 @@ done
 # Build the XPCOM components
 
 cd src
-make sdkdir=$MOZSDKDIR install
+make test-install
 [[ $? -eq 0 ]] || error "Could not build XPCOM component, aborting."
 cd ..
+
+cd tests/unit
+make all
+[[ $? -eq 0 ]] || error "Test failed"
+cd -
 
 # Quit now unless we're building an XPI
 [[ "x$1" == xxpi ]] || exit 0
