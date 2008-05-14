@@ -7,16 +7,24 @@ function error() {
 
 [[ -z "$MOZSDKDIR" ]] && error "Gecko SDK directory (MOZSDKDIR) not set"
 
-# Create files from .in, with substitutions below
+# Substitutions for .in files
 
-substitutions="unpacked jar"
+substitutions="unpacked jar buildid"
 unpacked=
 jar="# "
+buildid=${WEAVE_BUILDID}
 
 if [[ "x$1" == xxpi ]]; then
     unpacked="# "
     jar=
 fi
+
+if [ -z "$buildid" ]; then
+    buildid=`hg tip 2>/dev/null | grep ^changeset | awk '{print $2}' | awk -F: '{print $1}'`
+fi
+[ -z "$buildid" ] && error "Could not determine build id. Install hg or set WEAVE_BUILDID the checkout id"
+
+# Find any .in files and process them to set substitutions above
 
 for in in `find . -type f -name \*.in`; do
     out=`echo $in | sed 's/\.in$//'`
