@@ -9,3 +9,8 @@ src/.*\.o
 src/.*\.dylib
 src/I.*\.h
 tests/.*/.*\.log$
+src/.*\.dll$
+src/.*\.rc$
+src/.*\.res$
+src/fake\.exp$
+src/fake\.lib$
