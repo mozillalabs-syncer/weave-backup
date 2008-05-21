@@ -40,6 +40,7 @@ function Sync() {
 
   this._log.info("Initializing Weave UI");
 
+  this._os.addObserver(this, "weave:service:login:start", false);
   this._os.addObserver(this, "weave:service:login:success", false);
   this._os.addObserver(this, "weave:service:login:error", false);
   this._os.addObserver(this, "weave:service:logout:success", false);
@@ -149,6 +150,15 @@ Sync.prototype = {
     document.getElementById("sync-menu-status").setAttribute("value", label);
   },
 
+  _onLoginStart: function Sync__onLoginStart() {
+    this._setThrobber("active");
+  },
+  
+  _onLoginError: function Sync__onLoginError() {  
+    this._setThrobber("error");
+    this._openWindow('Sync:Login', 'chrome://weave/content/login.xul');
+  },
+  
   _onLogin: function Sync__onLogin() {
     this._log.info("Login successful");
 
@@ -219,6 +229,7 @@ Sync.prototype = {
   shutDown: function Sync_shutDown(event) {
     this._log.info("Sync window closed");
 
+    this._os.removeObserver(this, "weave:service:login:start");
     this._os.removeObserver(this, "weave:service:login:success");
     this._os.removeObserver(this, "weave:service:login:error");
     this._os.removeObserver(this, "weave:service:logout:success");
@@ -327,10 +338,14 @@ Sync.prototype = {
   // nsIObserver
   observe: function(subject, topic, data) {
     switch(topic) {
+    case "weave:service:login:start":
+      this._onLoginStart();
+      break;
     case "weave:service:login:success":
       this._onLogin();
       break;
     case "weave:service:login:error":
+      this._onLoginError();
       break;
     case "weave:service:logout:success":
       this._onLogout(true);

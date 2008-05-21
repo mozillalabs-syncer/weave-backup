@@ -49,14 +49,6 @@ Login.prototype = {
     this._log.trace("Sync login window closed");
   },
 
-  _onLoginComplete: function Login__onLoginComplete(retval) {
-    if (retval) {
-      let dialog = document.getElementById("login-dialog");
-      dialog.cancelDialog();
-    } else
-      alert(this._stringBundle.getString("loginFailed.alert"));
-  },
-
   doOK: function Login_doOK() {
     let username = document.getElementById("username");
     let password = document.getElementById("password");
@@ -91,10 +83,8 @@ Login.prototype = {
       Weave.Service.passphrase = null;
     }
 
-    let cb = Weave.Utils.bind2(this, this._onLoginComplete);
-    Weave.Service.login(cb, password.value, passphrase.value);
-
-    return false; // callback closes the dialog
+    Weave.Service.login(null, password.value, passphrase.value);
+    return true;
   },
 
   doCancel: function Login_doCancel() { return true; }
