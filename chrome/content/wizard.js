@@ -131,7 +131,7 @@ SyncWizard.prototype = {
 
   onBookmarksBackup: function SyncWizard_onBookmarksBackup() {
     let fp = Cc["@mozilla.org/filepicker;1"].createInstance(Ci.nsIFilePicker);
-    fp.init(window, PlacesUtils.getString("bookmarksBackupTitle"),
+    fp.init(window, PlacesUIUtils.getString("bookmarksBackupTitle"),
             Ci.nsIFilePicker.modeSave);
     fp.appendFilters(Ci.nsIFilePicker.filterHTML);
  
@@ -143,8 +143,8 @@ SyncWizard.prototype = {
     // Use YYYY-MM-DD (ISO 8601) as it doesn't contain illegal characters
     // and makes the alphabetical order of multiple backup files more useful.
     let date = (new Date).toLocaleFormat("%Y-%m-%d");
-    fp.defaultString = PlacesUtils.getFormattedString("bookmarksBackupFilename",
-                                                      [date]);
+    fp.defaultString = PlacesUIUtils.getFormattedString("bookmarksBackupFilename",
+                                                        [date]);
   
     if (fp.show() != Ci.nsIFilePicker.returnCancel) {
       let ieSvc = Cc["@mozilla.org/browser/places/import-export-service;1"].
