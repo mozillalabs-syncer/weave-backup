@@ -66,13 +66,19 @@ Login.prototype = {
       alert(this._stringBundle.getString("noPassword.alert"));
       return false;
     }
-    if (!passphrase.value) {
-      alert(this._stringBundle.getString("noPassphrase.alert"));
-      return false;
-    }
-    if (password.value == passphrase.value) {
-      alert(this._stringBundle.getString("samePasswordAndPassphrase.alert"));
-      return false;
+    
+    if ("none" == Weave.Utils.prefs.getCharPref("encryption")) {
+      passphrase.value = null;
+    } else {
+      if (!passphrase.value) {
+        alert(this._stringBundle.getString("noPassphrase.alert"));
+        return false;
+      }
+      
+      if (password.value == passphrase.value) {
+        alert(this._stringBundle.getString("samePasswordAndPassphrase.alert"));
+        return false;
+      }
     }
 
     if (Weave.Utils.prefs.getBoolPref("rememberpassword")) {
