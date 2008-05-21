@@ -49,7 +49,7 @@ ifeq ($(native_topsrcdir),)
 native_topsrcdir = ../..
 endif
 
-xpcshell = $(sdkdir)/bin/xpcshell
+xpcshell = $(sdkdir)/bin/xpcshell -v 180
 
 head := -f $(harnessdir)/head.js $(patsubst %,-f %,$(wildcard head*.js))
 tail := $(patsubst %,-f %,$(wildcard tail*.js)) -f $(harnessdir)/tail.js
