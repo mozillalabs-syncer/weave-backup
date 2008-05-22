@@ -51,7 +51,10 @@
         <preference id="extensions.weave.cookies"
                     name="extensions.weave.cookies"
                     type="bool"/>
-        </preferences>
+        <preference id="extensions.weave.passwords"
+                    name="extensions.weave.passwords"
+                    type="bool"/>
+      </preferences>
 
       <tabbox id="sync-tabbox" flex="1">
         <tabs>
@@ -148,6 +151,11 @@
                     <checkbox id="sync-cookies-checkbox"
                               label="&cookiesCheckbox.label;"
                               preference="extensions.weave.cookies"/>
+                </richlistitem>
+                <richlistitem>
+                    <checkbox id="sync-passwords-checkbox"
+                              label="&passwordsCheckbox.label;"
+                              preference="extensions.weave.passwords"/>
                 </richlistitem>
 
               </richlistbox>
