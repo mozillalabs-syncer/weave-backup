@@ -1,7 +1,7 @@
 .*~
 chrome.manifest
 chrome/sync.jar
-sync.xpi
+sync.*.xpi
 platform/*
 components/*
 src/.*\.xpt

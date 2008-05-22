@@ -55,4 +55,4 @@ cd -
 cd chrome
 zip -9 -ur sync.jar *
 cd ..
-zip -9 -ur sync.xpi chrome/sync.jar defaults modules openssl install.rdf chrome.manifest
+zip -9 -ur sync-`uname -s`.xpi chrome/sync.jar defaults modules openssl install.rdf chrome.manifest

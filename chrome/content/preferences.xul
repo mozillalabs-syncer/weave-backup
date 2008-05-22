@@ -54,6 +54,9 @@
         <preference id="extensions.weave.engine.passwords"
                     name="extensions.weave.engine.passwords"
                     type="bool"/>
+        <preference id="extensions.weave.engine.forms"
+                    name="extensions.weave.engine.forms"
+                    type="bool"/>
       </preferences>
 
       <tabbox id="sync-tabbox" flex="1">
@@ -157,7 +160,11 @@
                               label="&passwordsCheckbox.label;"
                               preference="extensions.weave.engine.passwords"/>
                 </richlistitem>
-
+                <richlistitem>
+                    <checkbox id="sync-forms-checkbox"
+                              label="&formsCheckbox.label;"
+                              preference="extensions.weave.engine.forms"/>
+                </richlistitem>
               </richlistbox>
             </groupbox>
           </tabpanel>
