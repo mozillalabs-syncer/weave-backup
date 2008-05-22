@@ -42,17 +42,17 @@
         <preference id="extensions.weave.encryption"
                     name="extensions.weave.encryption"
                     type="string"/>
-        <preference id="extensions.weave.bookmarks"
-                    name="extensions.weave.bookmarks"
+        <preference id="extensions.weave.engine.bookmarks"
+                    name="extensions.weave.engine.bookmarks"
                     type="bool"/>
-        <preference id="extensions.weave.history"
-                    name="extensions.weave.history"
+        <preference id="extensions.weave.engine.history"
+                    name="extensions.weave.engine.history"
                     type="bool"/>
-        <preference id="extensions.weave.cookies"
-                    name="extensions.weave.cookies"
+        <preference id="extensions.weave.engine.cookies"
+                    name="extensions.weave.engine.cookies"
                     type="bool"/>
-        <preference id="extensions.weave.passwords"
-                    name="extensions.weave.passwords"
+        <preference id="extensions.weave.engine.passwords"
+                    name="extensions.weave.engine.passwords"
                     type="bool"/>
       </preferences>
 
@@ -140,22 +140,22 @@
                 <richlistitem>
                     <checkbox id="sync-bookmarks-checkbox"
                               label="&bookmarksCheckbox.label;"
-                              preference="extensions.weave.bookmarks"/>
+                              preference="extensions.weave.engine.bookmarks"/>
                 </richlistitem>
                 <richlistitem>
                     <checkbox id="sync-bookmarks-checkbox"
                               label="&historyCheckbox.label;"
-                              preference="extensions.weave.history"/>
+                              preference="extensions.weave.engine.history"/>
                 </richlistitem>
                 <richlistitem>
                     <checkbox id="sync-cookies-checkbox"
                               label="&cookiesCheckbox.label;"
-                              preference="extensions.weave.cookies"/>
+                              preference="extensions.weave.engine.cookies"/>
                 </richlistitem>
                 <richlistitem>
                     <checkbox id="sync-passwords-checkbox"
                               label="&passwordsCheckbox.label;"
-                              preference="extensions.weave.passwords"/>
+                              preference="extensions.weave.engine.passwords"/>
                 </richlistitem>
 
               </richlistbox>
