@@ -48,10 +48,10 @@
         <preference id="extensions.weave.history"
                     name="extensions.weave.history"
                     type="bool"/>
-	<preference id="extensions.weave.cookies"
-		    name="extensions.weave.cookies"
-		    type="bool"/>
-      </preferences>
+        <preference id="extensions.weave.cookies"
+                    name="extensions.weave.cookies"
+                    type="bool"/>
+        </preferences>
 
       <tabbox id="sync-tabbox" flex="1">
         <tabs>
