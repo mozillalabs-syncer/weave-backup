@@ -13,7 +13,8 @@
 # over.
 #
 # Note that in the future, this process will be replaced by a Buildbot
-# trigger or something much less hackish. :)
+# trigger or something much less hackish. See #433927 for more thoughts
+# on this.
 #
 # [1] Er, they *should* be identical, assuming that all the XPIs are
 # from the same prisitne HG revision.  TODO: Add some code that
