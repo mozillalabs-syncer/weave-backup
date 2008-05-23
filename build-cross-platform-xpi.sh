@@ -20,10 +20,14 @@
 # from the same prisitne HG revision.  TODO: Add some code that
 # asserts this is the case.
 
+NEW_XPI=sync.xpi
+
+rm -rf ${NEW_XPI}
 rm -rf build
 mkdir build
 cd build
 unzip ../*.xpi
-zip -9 -ur ../sync.xpi *
+zip -9 -ur ../${NEW_XPI} *
 cd ..
 rm -rf build
+python ensure_xpis_are_consistent.py ${NEW_XPI} *.xpi
