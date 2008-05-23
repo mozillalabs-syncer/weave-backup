@@ -57,8 +57,8 @@ Login.prototype = {
     let savePass = document.getElementById("save-password-checkbox");
     let autoconnect = document.getElementById("autoconnect-checkbox");
 
-    Weave.Utils.prefs.setBoolPref("rememberpassword", savePass.checked)
-    Weave.Utils.prefs.setBoolPref("autoconnect", autoconnect.checked)
+    Weave.Utils.prefs.setBoolPref("rememberpassword", savePass.checked);
+    Weave.Utils.prefs.setBoolPref("autoconnect", autoconnect.checked);
 
     Weave.Service.username = username.value;
 
@@ -66,7 +66,7 @@ Login.prototype = {
       alert(this._stringBundle.getString("noPassword.alert"));
       return false;
     }
-    
+
     if ("none" == Weave.Utils.prefs.getCharPref("encryption")) {
       passphrase.value = null;
     } else {
@@ -74,7 +74,7 @@ Login.prototype = {
         alert(this._stringBundle.getString("noPassphrase.alert"));
         return false;
       }
-      
+
       if (password.value == passphrase.value) {
         alert(this._stringBundle.getString("samePasswordAndPassphrase.alert"));
         return false;

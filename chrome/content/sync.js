@@ -56,13 +56,13 @@ function Sync() {
   if (Weave.Utils.prefs.getCharPref("lastversion") == "firstrun") {
     let url = "http://sm-labs01.mozilla.org/projects/weave/firstrun/?version=" +
                 Weave.WEAVE_VERSION;
-    setTimeout(function() { window.openUILinkIn(url, "tab") }, 500);
+    setTimeout(function() { window.openUILinkIn(url, "tab"); }, 500);
   }
 
   if (Weave.Utils.prefs.getCharPref("lastversion") != WEAVE_VERSION) {
     let url = "http://sm-labs01.mozilla.org/projects/weave/updated/?version=" +
                 Weave.WEAVE_VERSION;
-    setTimeout(function() { window.openUILinkIn(url, "tab") }, 500);
+    setTimeout(function() { window.openUILinkIn(url, "tab"); }, 500);
   }
 
   Weave.Utils.prefs.setCharPref("lastversion", WEAVE_VERSION);
@@ -124,7 +124,8 @@ Sync.prototype = {
 
   get _stringBundle() {
     let stringBundle = document.getElementById("weaveStringBundle");
-    this.__defineGetter__("_stringBundle", function() { return stringBundle });
+    this.__defineGetter__("_stringBundle",
+                          function() { return stringBundle; });
     return this._stringBundle;
   },
 
@@ -156,12 +157,12 @@ Sync.prototype = {
     this._log.info("Weave version: " + WEAVE_VERSION);
     this._setThrobber("active");
   },
-  
-  _onLoginError: function Sync__onLoginError() {  
+
+  _onLoginError: function Sync__onLoginError() {
     this._setThrobber("error");
     this._openWindow('Sync:Login', 'chrome://weave/content/login.xul');
   },
-  
+
   _onLogin: function Sync__onLogin() {
     this._log.info("Login successful");
 
@@ -225,7 +226,8 @@ Sync.prototype = {
     if(syncitem)
       syncitem.setAttribute("active", "true");
 
-    this._prefSvc.setCharPref("extensions.weave.lastsync", new Date().getTime());
+    this._prefSvc.setCharPref("extensions.weave.lastsync",
+                              new Date().getTime());
     this._updateLastSyncItem();
   },
 

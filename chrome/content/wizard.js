@@ -34,7 +34,7 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
- 
+
 const SYNC_NS_ERROR_LOGIN_ALREADY_EXISTS = 2153185310;
 
 function SyncWizard() {
@@ -49,11 +49,12 @@ SyncWizard.prototype = {
       this.__os = Cc["@mozilla.org/observer-service;1"]
         .getService(Ci.nsIObserverService);
     return this.__os;
-  },    
+  },
 
   get _stringBundle() {
     let stringBundle = document.getElementById("weaveStringBundle");
-    this.__defineGetter__("_stringBundle", function() { return stringBundle });
+    this.__defineGetter__("_stringBundle",
+                          function() { return stringBundle; });
     return this._stringBundle;
   },
 
@@ -87,7 +88,7 @@ SyncWizard.prototype = {
     let status1, sync1;
 
     switch(pageId) {
-    case "sync-wizard-welcome": 
+    case "sync-wizard-welcome":
       this._log.info("Showing welcome page");
       wizard.canAdvance = true;
       break;
@@ -101,8 +102,10 @@ SyncWizard.prototype = {
         getService(Ci.nsIPrefBranch);
       let serverURL = branch.getCharPref("extensions.weave.serverURL");
       let uri = Utils.makeURI(serverURL);
-      let lm = Cc["@mozilla.org/login-manager;1"].getService(Ci.nsILoginManager);
-      let logins = lm.findLogins({}, uri.hostPort, null, 'services.mozilla.com - proxy');
+      let lm = Cc["@mozilla.org/login-manager;1"].
+               getService(Ci.nsILoginManager);
+      let logins = lm.findLogins({}, uri.hostPort, null,
+                                 'services.mozilla.com - proxy');
       status1 = document.getElementById('sync-wizard-verify-status');
       status1.setAttribute("value",
         this._stringBundle.getString("verifyStatusUnverified.label"));
@@ -122,7 +125,7 @@ SyncWizard.prototype = {
         this._stringBundle.getString("initStatusReadyToSync.label"));
       sync1.setAttribute("disabled", false);
       wizard.canAdvance = false;
-      break;	   
+      break;
     default:
       this._log.warn("Unknown wizard page requested: " + pageId);
       break;
@@ -134,23 +137,25 @@ SyncWizard.prototype = {
     fp.init(window, PlacesUIUtils.getString("bookmarksBackupTitle"),
             Ci.nsIFilePicker.modeSave);
     fp.appendFilters(Ci.nsIFilePicker.filterHTML);
- 
+
     let dirSvc = Cc["@mozilla.org/file/directory_service;1"].
       getService(Ci.nsIProperties);
     let backupsDir = dirSvc.get("Desk", Ci.nsILocalFile);
     fp.displayDirectory = backupsDir;
-  
+
     // Use YYYY-MM-DD (ISO 8601) as it doesn't contain illegal characters
     // and makes the alphabetical order of multiple backup files more useful.
     let date = (new Date).toLocaleFormat("%Y-%m-%d");
-    fp.defaultString = PlacesUIUtils.getFormattedString("bookmarksBackupFilename",
-                                                        [date]);
-  
+    fp.defaultString = PlacesUIUtils.getFormattedString(
+      "bookmarksBackupFilename",
+      [date]
+    );
+
     if (fp.show() != Ci.nsIFilePicker.returnCancel) {
       let ieSvc = Cc["@mozilla.org/browser/places/import-export-service;1"].
         getService(Ci.nsIPlacesImportExportService);
       ieSvc.exportHTMLToFile(fp.file);
-    }	
+    }
   },
 
   onVerify: function SyncWizard_onVerify() {
@@ -162,6 +167,9 @@ SyncWizard.prototype = {
     if (!(username && password && username.value && password.value &&
           username.value != 'nobody@mozilla.com')) {
       alert(this._stringBundle.getString("invalidCredentials.alert"));
+      // FIXME: What boolean value should we return here?  We're returning
+      // a boolean in other return statements here, so I assume we should
+      // be returning one here too. -AV
       return;
     }
 
@@ -182,7 +190,7 @@ SyncWizard.prototype = {
     Weave.Service.logout();
     Weave.Service.login();
   },
-  
+
   onSync: function SyncWizard_onSync() {
     Weave.Service.sync();
   },
