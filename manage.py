@@ -28,7 +28,8 @@ if __name__ == "__main__":
             sys.exit(1)
         profile_dir = args[1]
 
-        rdf = xml.dom.minidom.parse("install.rdf")
+        rdf_path = os.path.join(path_to_extension_root, "install.rdf")
+        rdf = xml.dom.minidom.parse(rdf_path)
         em_id = rdf.documentElement.getElementsByTagName("em:id")[0]
         extension_id = em_id.firstChild.nodeValue
 
