@@ -66,10 +66,7 @@ function Sync() {
   }
 
   Weave.Utils.prefs.setCharPref("lastversion", WEAVE_VERSION);
-
-  if (Weave.Utils.prefs.getBoolPref("autoconnect") &&
-     Weave.Service.username && Weave.Service.username != 'nobody@mozilla.com')
-    Weave.Service.login();
+  Weave.Service.onWindowOpened();
 }
 Sync.prototype = {
   __os: null,
