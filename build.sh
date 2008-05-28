@@ -42,10 +42,9 @@ make test-install
 [[ $? -eq 0 ]] || error "Could not build XPCOM component, aborting."
 cd ..
 
-cd tests/unit
-make all
-[[ $? -eq 0 ]] || error "Test failed"
-cd -
+# Run unit and system tests.
+python manage.py test
+[[ $? -eq 0 ]] || error "Tests failed."
 
 # Quit now unless we're building an XPI
 [[ "x$1" == xxpi ]] || exit 0
