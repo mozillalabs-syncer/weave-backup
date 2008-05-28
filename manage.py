@@ -3,6 +3,54 @@ import sys
 import xml.dom.minidom
 import subprocess
 
+TEST_DIRS = [os.path.join("tests", "unit"),
+             os.path.join("tests", "system")]
+
+def find_tests():
+    tests = []
+    for dirname in TEST_DIRS:
+        testfiles = [os.path.join(dirname, filename)
+                     for filename in os.listdir(dirname)
+                     if (filename.startswith("test_") and
+                         filename.endswith(".js"))]
+        tests.extend(testfiles)
+    return tests
+
+def run_test(test):
+    dirname = os.path.dirname(test)
+    testname = os.path.splitext(os.path.basename(test))[0]
+    print "%-25s: " % testname,
+    result = subprocess.call(
+        ["make",
+         "-C", dirname,
+         testname],
+        stdout = subprocess.PIPE,
+        stderr = subprocess.STDOUT
+        )
+    if result != 0:
+        print "FAIL"
+        logfile = os.path.join(dirname, testname + ".log")
+        return open(logfile, "r").read()
+    else:
+        print "PASS"
+        return None
+
+def run_tests(tests = None):
+    if not tests:
+        tests = find_tests()
+    errors = {}
+    for test in tests:
+        errors[test] = run_test(test)
+    failed_tests = [test for test in tests
+                    if errors[test] != None]
+    for test in failed_tests:
+        print "-" * 40
+        print "Output of %s:" % test
+        print
+        print errors[test]
+    if failed_tests:
+        sys.exit(1)
+
 if __name__ == "__main__":
     args = sys.argv[1:]
     if not args:
@@ -10,6 +58,7 @@ if __name__ == "__main__":
         print
         print "'command' can be one of the following:"
         print
+        print "    test - run unit tests"
         print "    install - install to the given profile dir"
         print "    uninstall - uninstall from the given profile dir"
         print
@@ -22,7 +71,9 @@ if __name__ == "__main__":
 
     cmd = args[0]
     
-    if cmd in ["install", "uninstall"]:
+    if cmd == "test":
+        run_tests()
+    elif cmd in ["install", "uninstall"]:
         if len(args) != 2:
             print "Path to profile directory not supplied."
             sys.exit(1)
