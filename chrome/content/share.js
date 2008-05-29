@@ -69,3 +69,58 @@ Share.prototype = {
 let gShare;
 window.addEventListener("load", function(e) { gShare = new Share(); }, false);
 window.addEventListener("unload", function(e) { gShare.shutDown(e); }, false);
+
+
+// BookmarksEventHandler is defined in browser.js as a singleton object.
+// the onPopupShowing: function BM_onPopupShowing(event) method
+// is what adds the "Open All In Tabs" to the bottom.
+// Override this function to also add a "Share this folder..." or
+// "Cancel/Stop sharing this folder..." depending on its status.
+
+// Also change the favicon of the folder, if possible, to a "tiny people"
+// icon to show that a folder's being shared?
+
+var oldOnPopupShowingFunc = BookmarksEventHandler.onPopupShowing;
+
+BookmarksEventHandler.onPopupShowing = function BT_onPopupShowing_new(event) {
+  // TODO get the global extensions.weave.ui.sharebookmarks preference,
+  // don't add anything to the menu unless it's turned on!
+  let target = event.originalTarget;
+  let stringBundle = document.getElementById("weaveStringBundle");
+  
+  // Call the original version, to put all the stuff into the menu that
+  // we expect to be there:
+  oldOnPopupShowingFunc( event );
+
+  // put a separator line if there isn't one already.
+  if (!target._endOptSeparator) {
+    // create a separator before options
+    target._endOptSeparator = document.createElement("menuseparator");
+    target._endOptSeparator.setAttribute("builder", "end");
+    target._endMarker = target.childNodes.length;
+    target.appendChild(target._endOptSeparator);
+  }
+
+  // the separator line is going in the wrong place??
+
+  // add an item for "share folder", only if it's not already there
+  if (!target._endOptShareFolder ) {
+    target._endOptShareFolder = document.createElement("menuitem");
+    target._endOptShareFolder.setAttribute( "oncommand",
+					    "gSync.doShare(event)" );
+    let label = "Share This Folder..."
+    // label = stringBundle.getString("shareItem.label");
+    // Not getting the right string out of shareItem.label?
+    target._endOptShareFolder.setAttribute( "label", label );
+    target.appendChild( target._endOptShareFolder );
+  }
+};
+
+// Removed this from sync.xul:
+/*		<menuitem id="sync-shareitem"
+			  hidden="true" disabled="true"
+			  checked="false" autocheck="false"
+			  label="&shareItem.label;"
+			  oncommand="gSync.doShare(event);"/>
+*/
+

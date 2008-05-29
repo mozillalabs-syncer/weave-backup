@@ -10,7 +10,9 @@
             src="chrome://weave/content/load-weave.js"/>
     <script type="application/x-javascript"
             src="chrome://weave/content/sync.js"/>
-
+    <script type="application/x-javascript"
+            src="chrome://weave/content/share.js"/>
+    
     <stringbundleset id="stringbundleset">
       <stringbundle id="weaveStringBundle" src="chrome://weave/locale/sync.properties"/>
     </stringbundleset>
@@ -36,11 +38,6 @@
 			  checked="false" autocheck="false"
 			  label="&syncNowItem.label;"
 			  oncommand="gSync.doSync(event);"/>
-		<menuitem id="sync-shareitem"
-			  hidden="true" disabled="true"
-			  checked="false" autocheck="false"
-			  label="&shareItem.label;"
-			  oncommand="gSync.doShare(event);"/>
 		<menuseparator/>
 		<menuitem id="sync-openprefsitem"
 			  disabled="false"
