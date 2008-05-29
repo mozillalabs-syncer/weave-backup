@@ -82,15 +82,22 @@ window.addEventListener("unload", function(e) { gShare.shutDown(e); }, false);
 
 var oldOnPopupShowingFunc = BookmarksEventHandler.onPopupShowing;
 
+var prefs = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService).getBranch( "extensions.weave." );
+
 BookmarksEventHandler.onPopupShowing = function BT_onPopupShowing_new(event) {
-  // TODO get the global extensions.weave.ui.sharebookmarks preference,
-  // don't add anything to the menu unless it's turned on!
+  /* Call the original version, to put all the stuff into the menu that
+     we expect to be there: */
+  oldOnPopupShowingFunc( event );
+
+  /* Get the global extensions.weave.ui.sharebookmarks preference,
+     don't add anything to the menu unless it's turned on! */
+  if ( prefs.getBoolPref( "ui.sharebookmarks" ) == false ) {
+    return;
+  }
+
+  /* Get the menu... */
   let target = event.originalTarget;
   let stringBundle = document.getElementById("weaveStringBundle");
-  
-  // Call the original version, to put all the stuff into the menu that
-  // we expect to be there:
-  oldOnPopupShowingFunc( event );
 
   // put a separator line if there isn't one already.
   if (!target._endOptSeparator) {
@@ -124,3 +131,12 @@ BookmarksEventHandler.onPopupShowing = function BT_onPopupShowing_new(event) {
 			  oncommand="gSync.doShare(event);"/>
 */
 
+
+
+// An error I get on browser startup:
+// Error: document.getElementById("sync-shareitem") is null
+// Source File: chrome://weave/content/sync.js   Line: 54
+
+/* Error: redeclaration of const LOAD_IN_SIDEBAR_ANNO
+Source File: chrome://browser/content/places/utils.js
+Line: 57 */
