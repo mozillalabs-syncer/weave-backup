@@ -36,38 +36,37 @@
 #
 # ***** END LICENSE BLOCK *****
 
+# fixme: version or build id in the xpi name?
+xpi_name := sync-`uname -s`.xpi
+xpi_files := chrome/sync.jar defaults modules openssl platform \
+             install.rdf chrome.manifest
+
 sdkdir ?= ${MOZSDKDIR}
-harnessdir = ../harness
-topsrcdir ?= ${TOPSRCDIR}
-native_topsrcdir ?= ${NATIVE_TOPSRCDIR}
-
-ifeq ($(topsrcdir),)
-topsrcdir = ../..
+ifeq ($(sdkdir),)
+  $(warning No 'sdkdir' variable given)
+  $(warning It should point to the location of the Gecko SDK)
+  $(warning For example: "make sdkdir=/foo/bar/baz")
+  $(warning Or set the MOZSDKDIR environment variable to point to it)
+  $(error )
 endif
 
-ifeq ($(native_topsrcdir),)
-native_topsrcdir = ../..
-endif
+all: subst binary-xpcom test
+.PHONY: subst binary-xpcom test
 
-xpcshell = $(sdkdir)/bin/xpcshell -v 180
+subst:
+	./subst.sh
 
-head := -f $(harnessdir)/head.js $(patsubst %,-f %,$(wildcard head*.js))
-tail := $(patsubst %,-f %,$(wildcard tail*.js)) -f $(harnessdir)/tail.js
-tests := $(wildcard test*.js)
+binary-xpcom: subst
+	$(MAKE) -C src
 
-all: $(tests:.js=)
+test: subst binary-xpcom
+	$(MAKE) -k -C tests/unit
 
-# fixme: hiding commands here means they can't be copy-and-pasted to run by hand
-$(tests:.js=): $(tests)
-	@NATIVE_TOPSRCDIR="$(native_topsrcdir)" TOPSRCDIR="$(topsrcdir)" \
-	$(xpcshell) -s $(head) -f $(@).js $(tail) 2> $(@).log 1>&2
-	@if [ `grep -c '\*\*\* PASS' $(@).log` = 0 ]; then \
-	  echo "$(@):\tFAIL"; exit 1; \
-	else \
-	  echo "$(@):\tPASS"; \
-	fi
+# fixme: use explicit file list instead of glob
+chrome/sync.jar:
+	cd chrome; zip -9 -ur sync.jar *; cd ..
 
-# fixme: hiding commands here means they can't be copy-and-pasted to run by hand
-$(tests:.js=-interactive): $(tests)
-	@NATIVE_TOPSRCDIR="$(native_topsrcdir)" TOPSRCDIR="$(topsrcdir)" \
-	@$(xpcshell) -s $(head) -f $(@:-interactive=).js $(tail) -i 2>&1
+# fixme: add binary-xpcom req once we really start using it
+# fixme2: require 'test' here?
+xpi: subst binary-xpcom chrome/sync.jar $(xpi_files)
+	zip -9 -ur $(xpi_name) $(xpi_files)
