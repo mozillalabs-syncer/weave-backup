@@ -59,13 +59,13 @@ function Sync() {
     setTimeout(function() { window.openUILinkIn(url, "tab"); }, 500);
   }
 
-  if (Weave.Utils.prefs.getCharPref("lastversion") != WEAVE_VERSION) {
+  if (Weave.Utils.prefs.getCharPref("lastversion") != Weave.WEAVE_VERSION) {
     let url = "http://sm-labs01.mozilla.org/projects/weave/updated/?version=" +
                 Weave.WEAVE_VERSION;
     setTimeout(function() { window.openUILinkIn(url, "tab"); }, 500);
   }
 
-  Weave.Utils.prefs.setCharPref("lastversion", WEAVE_VERSION);
+  Weave.Utils.prefs.setCharPref("lastversion", Weave.WEAVE_VERSION);
   Weave.Service.onWindowOpened();
 }
 Sync.prototype = {
