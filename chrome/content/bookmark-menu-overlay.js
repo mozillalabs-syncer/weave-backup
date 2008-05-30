@@ -1,22 +1,78 @@
+/* ***** BEGIN LICENSE BLOCK *****
+ * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+ *
+ * The contents of this file are subject to the Mozilla Public License Version
+ * 1.1 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the
+ * License.
+ *
+ * The Original Code is Bookmarks Sync.
+ *
+ * The Initial Developer of the Original Code is Mozilla.
+ * Portions created by the Initial Developer are Copyright (C) 2007
+ * the Initial Developer. All Rights Reserved.
+ *
+ * Contributor(s):
+ *  Dan Mills <thunder@mozilla.com>
+ *  Chris Beard <cbeard@mozilla.com>
+ *
+ * Alternatively, the contents of this file may be used under the terms of
+ * either the GNU General Public License Version 2 or later (the "GPL"), or
+ * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+ * in which case the provisions of the GPL or the LGPL are applicable instead
+ * of those above. If you wish to allow use of your version of this file only
+ * under the terms of either the GPL or the LGPL, and not to allow others to
+ * use your version of this file under the terms of the MPL, indicate your
+ * decision by deleting the provisions above and replace them with the notice
+ * and other provisions required by the GPL or the LGPL. If you do not delete
+ * the provisions above, a recipient may use your version of this file under
+ * the terms of any one of the MPL, the GPL or the LGPL.
+ *
+ * ***** END LICENSE BLOCK ***** */
+
 var Cc = Components.classes;
 var Ci = Components.interfaces;
 
-// BookmarksEventHandler is defined in browser.js as a singleton object.
-// the onPopupShowing: function BM_onPopupShowing(event) method
-// is what adds the "Open All In Tabs" to the bottom.
-// Override this function to also add a "Share this folder..." or
-// "Cancel/Stop sharing this folder..." depending on its status.
+/* BookmarksEventHandler is defined in browser.js as a singleton object.
+ the onPopupShowing: function BM_onPopupShowing(event) method
+ is what adds the "Open All In Tabs" to the bottom.
+ Override this function to also add a "Share this folder..." or
+ "Cancel/Stop sharing this folder..." depending on its status. */
 
-// Also change the favicon of the folder, if possible, to a "tiny people"
-// icon to show that a folder's being shared?
+/* TODO: 
+   1. change the favicon of the folder to a "tiny people"
+      icon to show that a folder's being shared.
+   2. Use annotations to keep track of when a folder is being shared, and
+      change the text of the menu item appropriately.
+   3. Use the event passed in to doMenuItem to tell the dialog box what
+      folder it is that is being shared. 
+   4. LONGTERM: might be healthier to add an onPopupShowing event handler to
+      the bookmark menu to do this, instead of overriding the original
+      handler.  ( Do this by using 
+      bookmarkMenu.addEventListener( "popupshowing", myfunc, false );
+      use getElementById to get bookmarkMenu. )
+
+   5. LONGTERM: There's a race condition here in that if this override
+      gets called before the handler is set up in the first place, it 
+      won't work.  Might want to set up a timer callback (with timeout 0)
+      to ensure this override gets called only after startup is otherwise
+      complete.
+
+   6. LONGTERM: The guts of the sharing are going to have to be in a
+      component, accessed either through XPCom or by using the
+      ObserverService to register listeners and pass messages around.
+*/
 
 var oldOnPopupShowingFunc = BookmarksEventHandler.onPopupShowing;
 
-var prefs = Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefService).getBranch( "extensions.weave." );
+var prefs = Cc["@mozilla.org/preferences-service;1"].
+            getService(Ci.nsIPrefService).getBranch( "extensions.weave." );
 
-//I could add a onPopupShowing event handler to the bookmark menu?
-// using bookmarkMenu.addEventListener( "popupshowing", myfunc, false );
-// use getElementById to get bookmarkMenu.
 BookmarksEventHandler.onPopupShowing = function BT_onPopupShowing_new(event) {
   /* Call the original version, to put all the stuff into the menu that
      we expect to be there: */
@@ -79,20 +135,9 @@ BookmarksEventHandler.onPopupShowing = function BT_onPopupShowing_new(event) {
     target._endOptShareFolder.addEventListener( "command",
 					        doMenuItem,
 						false );
-    
 
-    // DO a notification to nsIObserverService
-    // the guts of sharing are going to have to be in a component
-   
-    /* Note: gSync is defined in sync.js, and is initialized/shutdown
-       in window "load" and "unload" event listeners. 
-    When I try to call it from here, I get "gSync is undefined".
-    Is that because 1. */
-    /*Error: gSync is undefined
-      Source File: chrome://browser/content/browser.xul
-      Line: 1 */
-
-    let label = "Share This Folder..."
+    let label = "Share This Folder...";
+    // TODO 
     // label = stringBundle.getString("shareItem.label");
     // Not getting the right string out of shareItem.label?
     target._endOptShareFolder.setAttribute( "label", label );
@@ -100,13 +145,3 @@ BookmarksEventHandler.onPopupShowing = function BT_onPopupShowing_new(event) {
   }
 };
 
-
-
-
-// An error I get on browser startup:
-// Error: document.getElementById("sync-shareitem") is null
-// Source File: chrome://weave/content/sync.js   Line: 54
-
-/* Error: redeclaration of const LOAD_IN_SIDEBAR_ANNO
-Source File: chrome://browser/content/places/utils.js
-Line: 57 */
