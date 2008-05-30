@@ -102,12 +102,9 @@ BookmarksEventHandler.onPopupShowing = function BT_onPopupShowing_new(event) {
     // Get the bookmark folder name out of event?
     // let's have a look at the 
     let log = Log4Moz.Service.getLogger("Chrome.bookmarkMenuItem");
-    let logStr = "";
-    for ( var x in event.target ) {
-      logStr = logStr + "event.target[x] = " + event.target[x] + ";";
-    }
-    log.info( "Here's the event passed to doMenuItem:\n");
-    log.info( logStr );
+
+    let folderName = event.target.parentNode.label;
+    log.info( "Share folder named " + folderName );
 
     let type = "Sync:Share";
     let uri = "Chrome://weave/content/share.xul";
