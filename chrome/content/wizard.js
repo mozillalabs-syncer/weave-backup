@@ -101,7 +101,7 @@ SyncWizard.prototype = {
       let branch = Cc["@mozilla.org/preferences-service;1"].
         getService(Ci.nsIPrefBranch);
       let serverURL = branch.getCharPref("extensions.weave.serverURL");
-      let uri = Utils.makeURI(serverURL);
+      let uri = Weave.Utils.makeURI(serverURL);
       let lm = Cc["@mozilla.org/login-manager;1"].
                getService(Ci.nsILoginManager);
       let logins = lm.findLogins({}, uri.hostPort, null,

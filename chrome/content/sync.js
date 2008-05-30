@@ -151,7 +151,7 @@ Sync.prototype = {
   _onLoginStart: function Sync__onLoginStart() {
     this._log.info("Logging in...");
     this._log.info("User string: " + navigator.userAgent);
-    this._log.info("Weave version: " + WEAVE_VERSION);
+    this._log.info("Weave version: " + Weave.WEAVE_VERSION);
     this._setThrobber("active");
   },
 
