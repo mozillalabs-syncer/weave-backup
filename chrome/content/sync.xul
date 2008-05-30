@@ -12,6 +12,8 @@
             src="chrome://weave/content/sync.js"/>
     <script type="application/x-javascript"
             src="chrome://weave/content/share.js"/>
+    <script type="application/x-javascript"
+            src="chrome://weave/content/bookmark-menu-overlay.js"/>
     
     <stringbundleset id="stringbundleset">
       <stringbundle id="weaveStringBundle" src="chrome://weave/locale/sync.properties"/>
