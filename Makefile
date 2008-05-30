@@ -50,23 +50,23 @@ ifeq ($(sdkdir),)
   $(error )
 endif
 
-all: subst binary-xpcom test
-.PHONY: subst binary-xpcom test
+all: subst test
+.PHONY: subst platform test
 
 subst:
 	./subst.sh
 
-binary-xpcom: subst
-	$(MAKE) -C src
-
-test: subst binary-xpcom
+test: subst
+	$(MAKE) -C src test-install
 	$(MAKE) -k -C tests/unit
 
+platform:
+	$(MAKE) -C src install
+
 # fixme: use explicit file list instead of glob
-chrome/sync.jar:
+chrome/sync.jar: subst
 	cd chrome; zip -9 -ur sync.jar *; cd ..
 
-# fixme: add binary-xpcom req once we really start using it
-# fixme2: require 'test' here?
-xpi: subst binary-xpcom chrome/sync.jar $(xpi_files)
+# fixme: require 'test' here?
+xpi: subst platform chrome/sync.jar $(xpi_files)
 	zip -9 -ur $(xpi_name) $(xpi_files)
