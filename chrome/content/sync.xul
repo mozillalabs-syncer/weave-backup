@@ -21,7 +21,7 @@
 
     <menupopup id="menu_ToolsPopup">
 	<menu id="sync-menu" class="menu-iconic" label="&syncMenu.label;"
-	      insertafter="menu_openAddons">
+	      insertafter="menu_openAddons" image="chrome://weave/skin/sync-16x16.png">
 	    <menupopup id="sync-menu-popup"
 		       onpopupshowing="if (event.target == this) gSync.doPopup(event);"
 		       onpopuphiding="gSync.onMenuPopupHiding()">
