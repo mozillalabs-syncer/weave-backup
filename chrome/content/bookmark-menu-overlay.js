@@ -99,11 +99,9 @@ BookmarksEventHandler.onPopupShowing = function BT_onPopupShowing_new(event) {
   }
 
   function doMenuItem( event ) {
-    // Get the bookmark folder name out of event?
-    // let's have a look at the 
     let log = Log4Moz.Service.getLogger("Chrome.bookmarkMenuItem");
 
-    let folderName = event.target.parentNode.label;
+    let folderName = event.target.parentNode.parentNode.getAttribute("label");
     log.info( "Share folder named " + folderName );
 
     let type = "Sync:Share";
@@ -121,23 +119,17 @@ BookmarksEventHandler.onPopupShowing = function BT_onPopupShowing_new(event) {
       if (!options) {
          options = 'chrome,centerscreen,dialog,modal,resizable=yes';
       }
-      ww.activeWindow.openDialog(uri, '', options, null);
+      ww.activeWindow.openDialog(uri, '', options, folderName);
      }
 
   }
   // add an item for "share folder", only if it's not already there
   if (!target._endOptShareFolder ) {
     target._endOptShareFolder = document.createElement("menuitem");
-    // add event listener to object instead of setting onCommand attr?
-
     target._endOptShareFolder.addEventListener( "command",
 					        doMenuItem,
 						false );
-
-    let label = "Share This Folder...";
-    // TODO 
-    // label = stringBundle.getString("shareItem.label");
-    // Not getting the right string out of shareItem.label?
+    label = stringBundle.getString("shareBookmark.menuItem");
     target._endOptShareFolder.setAttribute( "label", label );
     target.appendChild( target._endOptShareFolder );
   }
