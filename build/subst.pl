@@ -16,7 +16,7 @@ open DEST, ">$file" or die "Could not open '$file': $!";
 
 while (my $line = <SRC>) {
   foreach my $subst (@subst) {
-    $line =~ s/\@$subst->[0]\@/$subst->[1]/;
+    $line =~ s/\@$subst->[0]\@/$subst->[1]/g;
   }
   print DEST $line;
 }
