@@ -36,37 +36,62 @@
 #
 # ***** END LICENSE BLOCK *****
 
-# fixme: version or build id in the xpi name?
-xpi_name := sync-`uname -s`.xpi
-xpi_files := chrome/sync.jar defaults modules openssl platform \
-             install.rdf chrome.manifest
-
 sdkdir ?= ${MOZSDKDIR}
 ifeq ($(sdkdir),)
   $(warning No 'sdkdir' variable given)
   $(warning It should point to the location of the Gecko SDK)
   $(warning For example: "make sdkdir=/foo/bar/baz")
   $(warning Or set the MOZSDKDIR environment variable to point to it)
-  $(error )
+  $(error)
 endif
 
-all: subst test
-.PHONY: subst platform test
+buildid ?= ${WEAVE_BUILDID}
+ifeq ($(buildid),)
+  buildid:=$(shell build/gen-buildid.sh)
+endif
+ifeq ($(buildid),)
+  $(warning Could not determine build id)
+  $(warning Install hg or set WEAVE_BUILDID the checkout id)
+  $(error)
+endif
 
-subst:
-	./subst.sh
+substitutions := 'buildid=$(buildid)'
+ifeq ($(MAKECMDGOALS),xpi)
+  substitutions += 'unpacked=\# ' 'jar='
+else
+  substitutions += 'unpacked=' 'jar=\# '
+endif
 
-test: subst
-	$(MAKE) -C src test-install
-	$(MAKE) -k -C tests/unit
+
+all: test
+.PHONY: build platform test xpi clean
+
+dotin_files := $(shell find . -type f -name \*.in)
+dotin_files := $(dotin_files:.in=)
+$(dotin_files): $(dotin_files:=.in)
+	./build/subst.pl $@ $(substitutions)
 
 platform:
 	$(MAKE) -C src install
 
-# fixme: use explicit file list instead of glob
-chrome/sync.jar: subst
+build: $(dotin_files) platform
+
+test: build
+	$(MAKE) -C src test-install
+	$(MAKE) -k -C tests/unit
+
+# fixme: version or build id in the xpi name?
+xpi_name := sync-`uname -s`.xpi
+xpi_files := chrome/sync.jar defaults modules openssl platform \
+             install.rdf chrome.manifest
+
+# fixme: use explicit file list instead of glob?
+chrome/sync.jar:
 	cd chrome; zip -9 -ur sync.jar *; cd ..
 
-# fixme: require 'test' here?
-xpi: subst platform chrome/sync.jar $(xpi_files)
+xpi: build chrome/sync.jar $(xpi_files)
 	zip -9 -ur $(xpi_name) $(xpi_files)
+
+clean:
+	$(MAKE) -C src clean
+	rm -f $(dotin_files) $(xpi_name)
