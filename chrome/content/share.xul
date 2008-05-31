@@ -23,6 +23,7 @@
   </stringbundleset>
 
   <vbox>
+    <label id="folder-msg" value=""/>
     <label value="&description.top;"/>
     <separator class="thin"/>
     <hbox align="center">

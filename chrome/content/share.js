@@ -35,8 +35,16 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-function Share() {}
+function Share() {
+  this._init();
+}
 Share.prototype = {
+  _init: function Share__init() {
+    let fullString = this._stringBundle.getFormattedString( "folder.message",
+							    window.arguments );
+    document.getElementById("folder-msg").setAttribute("value", fullString);
+  },
+
   get _stringBundle() {
     let stringBundle = document.getElementById("weaveStringBundle");
     this.__defineGetter__("_stringBundle",
