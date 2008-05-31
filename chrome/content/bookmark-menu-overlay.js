@@ -18,8 +18,7 @@
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
- *  Dan Mills <thunder@mozilla.com>
- *  Chris Beard <cbeard@mozilla.com>
+ *  Jono DiCarlo <jdicarlo@mozilla.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -84,11 +83,13 @@ BookmarksEventHandler.onPopupShowing = function BT_onPopupShowing_new(event) {
     return;
   }
 
-  /* Get the menu... */
+  // Get the menu... 
   let target = event.originalTarget;
   let stringBundle = document.getElementById("weaveStringBundle");
 
   // put a separator line if there isn't one already.
+  /* TODO the separator line moves between the first and second menu view
+     of a submenu with only one bookmark in it.  Weird. */
   if (!target._endOptSeparator) {
     // create a separator before options
     target._endOptSeparator = document.createElement("menuseparator");
@@ -97,17 +98,13 @@ BookmarksEventHandler.onPopupShowing = function BT_onPopupShowing_new(event) {
     target.appendChild(target._endOptSeparator);
   }
 
-  // the separator line is going in the wrong place??
-
-  // have this file overlay the menu in chrome.manifest?
-    //overlay browser.xul with xul that references the bookmarks menu
-  // menu id = bookmark and includes my .js file
-  // otherwise this file won't be in the context of the menu
-  /*  function doNotification () {
-    notifyObservers(null, "weave:service:logout:success", "");
-    }*/
   function doMenuItem( event ) {
     // Get the bookmark folder name out of event?
+    // let's have a look at the 
+    let log = Log4Moz.Service.getLogger("Chrome.bookmarkMenuItem");
+
+    let folderName = event.target.parentNode.label;
+    log.info( "Share folder named " + folderName );
 
     let type = "Sync:Share";
     let uri = "Chrome://weave/content/share.xul";
@@ -121,8 +118,9 @@ BookmarksEventHandler.onPopupShowing = function BT_onPopupShowing_new(event) {
     } else {
       var ww = Cc["@mozilla.org/embedcomp/window-watcher;1"].
         getService(Ci.nsIWindowWatcher);
-      if (!options)
+      if (!options) {
          options = 'chrome,centerscreen,dialog,modal,resizable=yes';
+      }
       ww.activeWindow.openDialog(uri, '', options, null);
      }
 

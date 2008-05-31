@@ -50,8 +50,6 @@ function Sync() {
 
   if (Weave.Utils.prefs.getBoolPref("ui.syncnow"))
     document.getElementById("sync-syncnowitem").setAttribute("hidden", false);
-  if (Weave.Utils.prefs.getBoolPref("ui.sharebookmarks"))
-    document.getElementById("sync-shareitem").setAttribute("hidden", false);
 
   if (Weave.Utils.prefs.getCharPref("lastversion") == "firstrun") {
     let url = "http://sm-labs01.mozilla.org/projects/weave/firstrun/?version=" +
@@ -151,7 +149,7 @@ Sync.prototype = {
   _onLoginStart: function Sync__onLoginStart() {
     this._log.info("Logging in...");
     this._log.info("User string: " + navigator.userAgent);
-    this._log.info("Weave version: " + WEAVE_VERSION);
+    this._log.info("Weave version: " + Weave.WEAVE_VERSION);
     this._setThrobber("active");
   },
 
@@ -174,10 +172,6 @@ Sync.prototype = {
       logoutitem.setAttribute("hidden", "false");
     }
 
-    let shareitem = document.getElementById("sync-shareitem");
-    if (shareitem)
-      shareitem.setAttribute("disabled", "false");
-
     let syncnowitem = document.getElementById("sync-syncnowitem");
     if (syncnowitem)
       syncnowitem.setAttribute("disabled", "false");
@@ -195,10 +189,6 @@ Sync.prototype = {
       loginitem.setAttribute("hidden", "false");
       logoutitem.setAttribute("hidden", "true");
     }
-
-    let shareitem = document.getElementById("sync-shareitem");
-    if (shareitem)
-      shareitem.setAttribute("disabled", "true");
 
     let syncnowitem = document.getElementById("sync-syncnowitem");
     if (syncnowitem)
