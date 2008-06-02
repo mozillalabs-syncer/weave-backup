@@ -25,6 +25,7 @@ Components.utils.import("resource://weave/async.js", {});
 Components.utils.import("resource://weave/crypto.js", {});
 Components.utils.import("resource://weave/identity.js", {});
 Components.utils.import("resource://weave/dav.js", {});
+Components.utils.import("resource://weave/remote.js", {});
 Components.utils.import("resource://weave/wrap.js", {});
 Components.utils.import("resource://weave/stores.js", {});
 Components.utils.import("resource://weave/syncCores.js", {});
