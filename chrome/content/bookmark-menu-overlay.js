@@ -99,11 +99,8 @@ BookmarksEventHandler.onPopupShowing = function BT_onPopupShowing_new(event) {
   }
 
   function doMenuItem( event ) {
-    let log = Log4Moz.Service.getLogger("Chrome.bookmarkMenuItem");
-
+    /* Pop the dialog box for sharing the selected folder */
     let folderName = event.target.parentNode.parentNode.getAttribute("label");
-    log.info( "Share folder named " + folderName );
-
     let type = "Sync:Share";
     let uri = "Chrome://weave/content/share.xul";
     let options = null;
@@ -123,6 +120,7 @@ BookmarksEventHandler.onPopupShowing = function BT_onPopupShowing_new(event) {
      }
 
   }
+
   // add an item for "share folder", only if it's not already there
   if (!target._endOptShareFolder ) {
     target._endOptShareFolder = document.createElement("menuitem");
@@ -131,6 +129,9 @@ BookmarksEventHandler.onPopupShowing = function BT_onPopupShowing_new(event) {
 						false );
     label = stringBundle.getString("shareBookmark.menuItem");
     target._endOptShareFolder.setAttribute( "label", label );
+    /* Set mini-icon on the menu item: */
+    target._endOptShareFolder.setAttribute( "class", "menu-iconic" );
+    target._endOptShareFolder.setAttribute( "image", "chrome://weave/skin/shared-folder-16x16.png" );
     target.appendChild( target._endOptShareFolder );
   }
 };
