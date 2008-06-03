@@ -154,23 +154,24 @@ BookmarksEventHandler.onPopupShowing = function BT_onPopupShowing_new(event) {
     target._endOptShareFolder = document.createElement("menuitem");
     /* Set mini-icon on the menu item: */
     target._endOptShareFolder.setAttribute( "class", "menu-iconic" );
-    target._endOptShareFolder.setAttribute( "image", "chrome://weave/skin/shared-folder-16x16.png" );
     target._endOptShareFolder.addEventListener( "command",
                                                 doShareMenuItem,
                                                 false );
     target.appendChild( target._endOptShareFolder );
   }
 
-  // Set name of menu item based on shared status:
+  // Set name and icon of menu item based on shared status:
   let isShared = isFolderShared( event.target.parentNode );
   if ( isShared ) {
     /* If the folder is shared already, the menu item is Un-Share Folder */
     let label = stringBundle.getString("unShareBookmark.menuItem");
     target._endOptShareFolder.setAttribute( "label", label );
+    target._endOptShareFolder.setAttribute( "image", "chrome://weave/skin/unshare-folder-16x16.png" );
   } else {
     /* If the folder is not shared already, the menu item is Share Folder */
     let label = stringBundle.getString("shareBookmark.menuItem");
     target._endOptShareFolder.setAttribute( "label", label );
+    target._endOptShareFolder.setAttribute( "image", "chrome://weave/skin/shared-folder-16x16.png" );
   }
 };
 
