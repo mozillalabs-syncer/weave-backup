@@ -55,6 +55,7 @@
 	    </menupopup>
 	</menu>
     </menupopup>
+
     <statusbar id="status-bar">
         <statusbarpanel id="sync-menu-button"
                         class="statusbarpanel-menu-iconic"
@@ -64,5 +65,38 @@
                    control="sync-menu-button"
                    value="&status.offline.label;"/>
         </statusbarpanel>
+        <!-- FIXME: once notifications are unified, make this panel
+           - be a notification rather than its own statusbarpanel. -->
+        <statusbarpanel id="sync-tabs-button" hidden="true"
+                        label="&syncOpenTabsPanelButton.label;"
+                        popup="sync-tabs-panel"/>
+        <panel id="sync-tabs-panel" onpopupshowing="gSync.doInitTabsPanel(event);">
+            <label class="header" value="&syncTabsPanel.title;"/>
+            <separator class="groove-thin"/>
+            <description>
+                &syncTabsPanel.description;
+            </description>
+            <listbox id="sync-tabs-list"/>
+            <hbox>
+                <button label="&syncCancelTabsPanelButton.label;"
+                        oncommand="gSync.doCloseTabsPanel();"/>
+                <spacer flex="1"/>
+                <button label="&syncTabsButton.label;"
+                        oncommand="gSync.doSyncTabs();"/>
+            </hbox>
+        </panel>
     </statusbar>
+
+    <menupopup id="goPopup">
+        <menu id="sync-tabs-menu" label="&syncTabsMenu.label;"
+              insertafter="historyUndoMenu" 
+              oncommand="gSync.onCommandTabsMenu(event);"
+              onclick="checkForMiddleClick(this, event);">
+            <menupopup id="sync-tabs-menu-popup" onpopupshowing="gSync.doInitTabsMenu(event);">
+                <menuitem id="sync-no-tabs-menu-item"
+                          label="&syncNoTabsMenuItem.label;"
+                          disabled="true"/>
+            </menupopup>
+        </menu>
+    </menupopup>
 </overlay>

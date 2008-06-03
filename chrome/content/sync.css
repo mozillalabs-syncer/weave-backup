@@ -21,3 +21,7 @@
 #sync-menu-button {
 	-moz-box-direction: reverse;
 }
+
+#sync-tabs-panel {
+	max-width: 30em;
+}
