@@ -67,6 +67,18 @@ function Sync() {
   Weave.Service.onWindowOpened();
 }
 Sync.prototype = {
+  get _isTopBrowserWindow() {
+    // TODO: This code is mostly just a workaround that ensures that only one
+    // browser window ever performs any actions that are meant to only
+    // be performed once in response to a weave event.  Ideally, such code
+    // should not be handled by browser windows, but instead by e.g. actual
+    // singleton services.
+    var wm = Components.classes["@mozilla.org/appshell/window-mediator;1"]
+                       .getService(Components.interfaces.nsIWindowMediator);
+    var win = wm.getMostRecentWindow("navigator:browser");
+    return (win == window);
+  },
+
   __os: null,
   get _os() {
     if (!this.__os)
@@ -155,7 +167,12 @@ Sync.prototype = {
 
   _onLoginError: function Sync__onLoginError() {
     this._setThrobber("error");
-    this._openWindow('Sync:Login', 'chrome://weave/content/login.xul');
+
+    // TODO: We may want to just display a notification here that the user
+    // can deal with on their own time instead of forcing them to deal
+    // with an unsuccessful login immediately.
+    if (this._isTopBrowserWindow)
+      this._openWindow('Sync:Login', 'chrome://weave/content/login.xul');
   },
 
   _onLogin: function Sync__onLogin() {
@@ -213,8 +230,9 @@ Sync.prototype = {
     if(syncitem)
       syncitem.setAttribute("active", "true");
 
-    this._prefSvc.setCharPref("extensions.weave.lastsync",
-                              new Date().getTime());
+    if (this._isTopBrowserWindow)
+      this._prefSvc.setCharPref("extensions.weave.lastsync",
+                                new Date().getTime());
     this._updateLastSyncItem();
   },
 
