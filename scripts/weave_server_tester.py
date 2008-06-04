@@ -4,9 +4,11 @@
 """
 
 import sys
-import sha
 import urllib2
 import httplib
+
+DEFAULT_SERVER = "sm-labs01.mozilla.org"
+DEFAULT_REALM = "services.mozilla.com - proxy"
 
 class DavRequest(urllib2.Request):
     def __init__(self, method, *args, **kwargs):
@@ -17,15 +19,18 @@ class DavRequest(urllib2.Request):
         return self.__method
 
 class WeaveSession(object):
-    def __init__(self, username, password):
+    def __init__(self, username, password, server = DEFAULT_SERVER,
+                 realm = DEFAULT_REALM):
         self.username = username
+        self.server = server
+        self.realm = realm
         self.__password = password
         self._make_opener()
 
     def _make_opener(self):
         authHandler = urllib2.HTTPBasicAuthHandler()
-        authHandler.add_password("services.mozilla.com - proxy",
-                                 "services.mozilla.com",
+        authHandler.add_password(self.realm,
+                                 self.server,
                                  self.username,
                                  self.__password)
         self.__opener = urllib2.build_opener(authHandler)
@@ -33,8 +38,9 @@ class WeaveSession(object):
     def _get_url(self, path):
         if path.startswith("/"):
             path = path[1:]
-        hexuser = sha.sha(self.username).hexdigest()
-        url = "https://services.mozilla.com/user/%s/%s" % (hexuser, path)
+        url = "https://%s/user/%s/%s" % (self.server,
+                                         self.username,
+                                         path)
         return url
 
     def _enact_dav_request(self, request):
