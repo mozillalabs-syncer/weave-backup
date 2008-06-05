@@ -3,47 +3,48 @@ var Cu = Components.utils;
 Cu.import( "resource://weave/xmpp/xmppClient.js" );
 
 function LOG(aMsg) {
-  dump("TEST_XMPP_SIMPLE: " + aMsg + "\n");
+  dump("TEST_XMPP: " + aMsg + "\n");
 }
 
-var serverUrl = "http://127.0.0.1:5280/http-poll";
-var jabberDomain = Cc["@mozilla.org/network/dns-service;1"].
-                   getService(Ci.nsIDNSService).myHostName;
+var serverUrl = "http://localhost:5280/http-poll";
+var jabberDomain = "localhost";
 
 var timer = Cc["@mozilla.org/timer;1"].createInstance( Ci.nsITimer );
 var threadManager = Cc["@mozilla.org/thread-manager;1"].getService();
-
-var alice;
 
 function run_test() {
   // FIXME: this test hangs when you don't have a server, disabling for now
   return;
 
   /* First, just see if we can connect: */
-  var transport = new HTTPPollingTransport( serverUrl,
-					    false,
-					    4000 );
+  var transport = new HTTPPollingTransport(serverUrl, false, 4000);
   var auth = new PlainAuthenticator();
-  alice = new XmppClient( "alice", jabberDomain, "iamalice",
-			       transport, auth );
+  var alice = new XmppClient("alice", jabberDomain, "iamalice",
+    	            		       transport, auth);
 
   // test connection
+  LOG("connecting");
   alice.connect( jabberDomain );
   alice.waitForConnection();
   do_check_eq( alice._connectionStatus, alice.CONNECTED);
+  LOG("connected");
+
+  // test disconnection
+  LOG("disconnecting");
+  alice.disconnect();
+  do_check_eq( alice._connectionStatus, alice.NOT_CONNECTED);
+  LOG("disconnected");
 
   // test re-connection
-  alice.disconnect();
-  LOG("disconnected");
+  LOG("reconnecting");
   alice.connect( jabberDomain );
-  LOG("wait");
   alice.waitForConnection();
-  LOG("waited");
+  LOG("reconnected");
   do_check_eq( alice._connectionStatus, alice.CONNECTED);
+  alice.disconnect();
 
   /*
   // test connection failure
-  alice.disconnect();
   alice.connect( "bad domain" );
   alice.waitForConnection();
   do_check_eq( alice._connectionStatus, alice.FAILED );
@@ -98,8 +99,8 @@ function run_test() {
   while( !testIsOver ) {
     currentThread.processNextEvent( true );
   }
-  */
 
   alice.disconnect();
-  //bob.disconnect();
+  bob.disconnect();
+  */
 };
