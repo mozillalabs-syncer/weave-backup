@@ -102,7 +102,7 @@
                            oncommand="gWeavePrefs.doSignOut()"/>
                 </hbox>
                 <groupbox align="start">
-                  <caption>&accountSettings.label;</caption>
+                  <caption label="&accountSettings.label;"/>
 		  <checkbox id="sync-autoconnect-checkbox" class="indent"
                             label="&autoconnectCheckbox.label;"
                             preference="extensions.weave.autoconnect"/>
