@@ -47,6 +47,8 @@ function Sync() {
   this._os.addObserver(this, "weave:service:sync:start", false);
   this._os.addObserver(this, "weave:service:sync:success", false);
   this._os.addObserver(this, "weave:service:sync:error", false);
+  this._os.addObserver(this, "weave:store:tabs:virtual:created", false);
+  this._os.addObserver(this, "weave:store:tabs:virtual:removed", false);
 
   if (Weave.Utils.prefs.getBoolPref("ui.syncnow"))
     document.getElementById("sync-syncnowitem").setAttribute("hidden", false);
@@ -64,9 +66,30 @@ function Sync() {
   }
 
   Weave.Utils.prefs.setCharPref("lastversion", Weave.WEAVE_VERSION);
+
+  // TODO: This is a fix for the general case of bug 436936.  It will
+  // not support marginal cases such as when a new browser window is
+  // opened in the middle of signing-in or syncing.
+  if (Weave.Service.currentUser)
+    this._onLogin();
+
   Weave.Service.onWindowOpened();
+
+  this._updateSyncTabsButton();
 }
 Sync.prototype = {
+  get _isTopBrowserWindow() {
+    // TODO: This code is mostly just a workaround that ensures that only one
+    // browser window ever performs any actions that are meant to only
+    // be performed once in response to a weave event.  Ideally, such code
+    // should not be handled by browser windows, but instead by e.g. actual
+    // singleton services.
+    var wm = Components.classes["@mozilla.org/appshell/window-mediator;1"]
+                       .getService(Components.interfaces.nsIWindowMediator);
+    var win = wm.getMostRecentWindow("navigator:browser");
+    return (win == window);
+  },
+
   __os: null,
   get _os() {
     if (!this.__os)
@@ -124,6 +147,19 @@ Sync.prototype = {
     return this._stringBundle;
   },
 
+  get _sessionStore() {
+    let sessionStore = Cc["@mozilla.org/browser/sessionstore;1"].
+		       getService(Ci.nsISessionStore);
+    this.__defineGetter__("_sessionStore", function() sessionStore);
+    return this._sessionStore;
+  },
+
+  get _json() {
+    let json = Cc["@mozilla.org/dom/json;1"].createInstance(Ci.nsIJSON);
+    this.__defineGetter__("_json", function() json);
+    return this._json;
+  },
+
   _openWindow: function Sync__openWindow(type, uri, options) {
     let wm = Cc["@mozilla.org/appshell/window-mediator;1"].
       getService(Ci.nsIWindowMediator);
@@ -155,7 +191,12 @@ Sync.prototype = {
 
   _onLoginError: function Sync__onLoginError() {
     this._setThrobber("error");
-    this._openWindow('Sync:Login', 'chrome://weave/content/login.xul');
+
+    // TODO: We may want to just display a notification here that the user
+    // can deal with on their own time instead of forcing them to deal
+    // with an unsuccessful login immediately.
+    if (this._isTopBrowserWindow)
+      this._openWindow('Sync:Login', 'chrome://weave/content/login.xul');
   },
 
   _onLogin: function Sync__onLogin() {
@@ -213,8 +254,9 @@ Sync.prototype = {
     if(syncitem)
       syncitem.setAttribute("active", "true");
 
-    this._prefSvc.setCharPref("extensions.weave.lastsync",
-                              new Date().getTime());
+    if (this._isTopBrowserWindow)
+      this._prefSvc.setCharPref("extensions.weave.lastsync",
+                                new Date().getTime());
     this._updateLastSyncItem();
   },
 
@@ -228,6 +270,8 @@ Sync.prototype = {
     this._os.removeObserver(this, "weave:service:sync:start");
     this._os.removeObserver(this, "weave:service:sync:success");
     this._os.removeObserver(this, "weave:service:sync:error");
+    this._os.removeObserver(this, "weave:store:tabs:virtual:created");
+    this._os.removeObserver(this, "weave:store:tabs:virtual:removed");
   },
 
   doLoginPopup : function Sync_doLoginPopup(event) {
@@ -286,6 +330,145 @@ Sync.prototype = {
 
   doPopup: function Sync_doPopup(event) {
     this._updateLastSyncItem();
+  },
+
+  _getSortedVirtualTabs: function Sync__getSortedVirtualTabs() {
+    let virtualTabs = Weave.Engines.get("tabs").store.virtualTabs;
+
+    // Convert the hash of virtual tabs indexed by ID into an array
+    // of virtual tabs whose ID is stored in an ID property.
+    virtualTabs =
+      [(virtualTabs[id].id = id) && virtualTabs[id] for (id in virtualTabs)];
+
+    // Sort virtual tabs by their position in their windows.
+    // Note: we don't actually group by window first, so all first tabs
+    // will appear first in the list, followed by all second tabs, and so on.
+    // FIXME: group by window, even though we aren't opening them up that way,
+    // so the list better resembles the pattern the user remembers.
+    virtualTabs.sort(function(a, b) a.position > b.position ?  1 :
+                                    a.position < b.position ? -1 : 0);
+
+    return virtualTabs;
+  },
+
+  doInitTabsMenu: function Sync_doInitTabsMenu() {
+    let menu = document.getElementById("sync-tabs-menu");
+    let virtualTabs = this._getSortedVirtualTabs();
+
+    while (menu.itemCount > 1)
+      menu.removeItemAt(menu.itemCount - 1);
+
+    for each (let virtualTab in virtualTabs) {
+      let currentEntry = virtualTab.state.entries[virtualTab.state.index - 1];
+      if (!currentEntry || !currentEntry.url) {
+        this._log.warn("doInitTabsMenu: no current entry or no URL, can't " +
+                       "identify " + this._json.encode(virtualTab));
+        continue;
+      }
+
+      let label = currentEntry.title ? currentEntry.title : currentEntry.url;
+      let menuitem = menu.appendItem(label, virtualTab.id);
+      // Make a tooltip that contains either or both of the title and URL.
+      menuitem.tooltipText =
+        [currentEntry.title, currentEntry.url].filter(function(v) v).join("\n");
+    }
+
+    document.getElementById("sync-no-tabs-menu-item").hidden = (menu.itemCount > 1);
+  },
+
+  onCommandTabsMenu: function Sync_onCommandTabsMenu(event) {
+    let tabID = event.target.value;
+    let virtualTabs = Weave.Engines.get("tabs").store.virtualTabs;
+    let virtualTab = virtualTabs[tabID];
+
+    let tab = gBrowser.addTab("about:blank");
+    this._sessionStore.setTabState(tab, this._json.encode(virtualTab.state));
+    gBrowser.selectedTab = tab;
+    delete virtualTabs[tabID];
+  },
+
+  _onVirtualTabCreated: function Sync__onVirtualTabCreated() {
+    this._updateSyncTabsButton();
+    // FIXME: do more to alert the user about new undisposed virtual tabs?
+  },
+
+  _onVirtualTabRemoved: function Sync__onVirtualTabRemoved() {
+    this._updateSyncTabsButton();
+  },
+
+  _updateSyncTabsButton: function Sync__updateSyncTabsButton() {
+    let virtualTabs = Weave.Engines.get("tabs").store.virtualTabs;
+
+    // As long as there is at least one virtual tab that hasn't previously been
+    // disposed of by the user, show the button for opening the sync tabs panel.
+    for (id in virtualTabs) {
+      if (!virtualTabs[id]._disposed) {
+        document.getElementById("sync-tabs-button").hidden = false;
+        return;
+      }
+    }
+
+    // Otherwise, hide the button.
+    document.getElementById("sync-tabs-button").hidden = true;
+  },
+
+  doInitTabsPanel: function Sync_doInitTabsPanel() {
+    let list = document.getElementById("sync-tabs-list");
+
+    let virtualTabs = this._getSortedVirtualTabs();
+
+    // Remove virtual tabs that have previously been disposed of by the user.
+    virtualTabs = virtualTabs.filter(function(v) !v._disposed);
+
+    while (list.hasChildNodes())
+      list.removeChild(list.lastChild);
+
+    for each (let virtualTab in virtualTabs) {
+      let currentEntry = virtualTab.state.entries[virtualTab.state.index - 1];
+      if (!currentEntry || !currentEntry.url) {
+        this._log.warn("doInitTabsPanel: no current entry or no URL, can't " +
+                       "identify " + this._json.encode(virtualTab));
+        continue;
+      }
+
+      let label = currentEntry.title ? currentEntry.title : currentEntry.url;
+      let listitem = list.appendItem(label, virtualTab.id);
+      listitem.setAttribute("type", "checkbox");
+      // Make a tooltip that contains either or both of the title and URL.
+      listitem.tooltipText =
+        [currentEntry.title, currentEntry.url].filter(function(v) v).join("\n");
+    }
+  },
+
+  doCloseTabsPanel: function Sync_doCloseTabsPanel() {
+    document.getElementById("sync-tabs-panel").hidePopup();
+  },
+
+  doSyncTabs: function Sync_doSyncTabs() {
+    let list = document.getElementById("sync-tabs-list");
+    let virtualTabs = Weave.Engines.get("tabs").store.virtualTabs;
+
+    for (let i = 0; i < list.childNodes.length; i++) {
+      let listitem = list.childNodes[i];
+      let virtualTab = virtualTabs[listitem.value];
+      if (listitem.checked) {
+        let tab = gBrowser.addTab("about:blank");
+        this._sessionStore.setTabState(tab, this._json.encode(virtualTab.state));
+        delete virtualTabs[listitem.value];
+      }
+      else {
+        // Mark the tab disposed of by the user so we don't show it the next
+        // time the user opens the sync tabs panel.  Note: this flag does not
+        // get synced to the server, so disposal happens on each client
+        // separately, which means the user will still be prompted about this
+        // tab when syncing to a third client.
+        virtualTab._disposed = true;
+      }
+    }
+
+    Weave.Engines.get("tabs").store.virtualTabs = virtualTabs;
+    this.doCloseTabsPanel();
+    document.getElementById("sync-tabs-button").hidden = true;
   },
 
   _updateLastSyncItem: function Sync__updateLastSyncItem() {
@@ -350,6 +533,12 @@ Sync.prototype = {
       break;
     case "weave:service:sync:error":
       this._onSyncEnd(false);
+      break;
+    case "weave:store:tabs:virtual:created":
+      this._onVirtualTabCreated();
+      break;
+    case "weave:store:tabs:virtual:removed":
+      this._onVirtualTabRemoved();
       break;
     default:
       this._log.warn("Unknown observer notification topic: " + topic);

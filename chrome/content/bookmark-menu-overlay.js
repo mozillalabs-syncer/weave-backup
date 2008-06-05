@@ -44,10 +44,6 @@ var Ci = Components.interfaces;
  "Cancel/Stop sharing this folder..." depending on its status. */
 
 /* TODO: 
-   1. change the favicon of the folder to a "tiny people"
-      icon to show that a folder's being shared.
-   2. Use annotations to keep track of when a folder is being shared, and
-      change the text of the menu item appropriately.
    3. Use the event passed in to doMenuItem to tell the dialog box what
       folder it is that is being shared. 
    4. LONGTERM: might be healthier to add an onPopupShowing event handler to
@@ -71,8 +67,39 @@ var oldOnPopupShowingFunc = BookmarksEventHandler.onPopupShowing;
 
 var prefs = Cc["@mozilla.org/preferences-service;1"].
             getService(Ci.nsIPrefService).getBranch( "extensions.weave." );
+var log = Log4Moz.Service.getLogger("Share.Menu");
+
+function isFolderShared( menuFolder ) {
+  let menuFolderId = menuFolder.node.itemId;
+  let annotations = PlacesUtils.getAnnotationsForItem( menuFolderId );
+  let isShared = false;
+  for ( var x in annotations ) {
+    if ( annotations[x].name == "weave/share/shared_outgoing" ) {
+      isShared = annotations[x].value;
+    }
+  }
+  return isShared;
+}
+
+function adjustBookmarkMenuIcons() {
+  let bookmarkMenu = document.getElementById( "bookmarksMenuPopup" );
+  let currentChild = bookmarkMenu.firstChild;
+  while (currentChild) {
+    if (currentChild.localName != "menuitem" && currentChild.node) {
+      let label = currentChild.getAttribute( "label" );
+      if ( label ) { // a crude way of skipping the separators
+	if ( isFolderShared( currentChild ) ) {
+	  currentChild.setAttribute( "image", "chrome://weave/skin/shared-folder-16x16.png" );
+	}
+      }
+
+    }
+    currentChild = currentChild.nextSibling;
+  }
+}
 
 BookmarksEventHandler.onPopupShowing = function BT_onPopupShowing_new(event) {
+
   /* Call the original version, to put all the stuff into the menu that
      we expect to be there: */
   oldOnPopupShowingFunc.call( BookmarksEventHandler, event );
@@ -82,6 +109,12 @@ BookmarksEventHandler.onPopupShowing = function BT_onPopupShowing_new(event) {
   if ( prefs.getBoolPref( "ui.sharebookmarks" ) == false ) {
     return;
   }
+
+  /* Try to set the icons of shared folders...
+   Problem: this only works on the second, and subsequent, time that the
+  bookmark menu pops up.  The first time after firefox starts, it seems that
+  the expected bookmark folder items aren't even in the menu yet.*/
+  adjustBookmarkMenuIcons();
 
   // Get the menu... 
   let target = event.originalTarget;
@@ -98,40 +131,67 @@ BookmarksEventHandler.onPopupShowing = function BT_onPopupShowing_new(event) {
     target.appendChild(target._endOptSeparator);
   }
 
-  function doMenuItem( event ) {
-    let log = Log4Moz.Service.getLogger("Chrome.bookmarkMenuItem");
-
-    let folderName = event.target.parentNode.parentNode.getAttribute("label");
-    log.info( "Share folder named " + folderName );
-
-    let type = "Sync:Share";
-    let uri = "Chrome://weave/content/share.xul";
-    let options = null;
-
-    let wm = Cc["@mozilla.org/appshell/window-mediator;1"].
-      getService(Ci.nsIWindowMediator);
-    let window = wm.getMostRecentWindow(type);
-    if (window) {
-      window.focus();
+  function doShareMenuItem( event ) {
+    let selectedMenuFolder = event.target.parentNode.parentNode;
+    if ( isFolderShared( selectedMenuFolder ) ) {
+      // Un-share the selected folder:
+      let folderItemId = selectedMenuFolder.node.itemId;
+      let annotation = { name: "weave/share/shared_outgoing",
+                         value: false,
+                         flags: 0,
+                         mimeType: null,
+                         type: PlacesUtils.TYPE_BOOLEAN,
+                         expires: PlacesUtils.EXPIRE_NEVER };
+      PlacesUtils.setAnnotationsForItem( folderItemId, [ annotation ] );
+      // TODO tell Weave.Service to stop sharing those bookmarks
+      // TODO reset the bookmark folder menu item icon to what it was
+      // originally (which is not neccessarily the generic folder icon.)
     } else {
-      var ww = Cc["@mozilla.org/embedcomp/window-watcher;1"].
-        getService(Ci.nsIWindowWatcher);
-      if (!options) {
-         options = 'chrome,centerscreen,dialog,modal,resizable=yes';
+      // Pop the dialog box for sharing the selected folder:
+      let type = "Sync:Share";
+      let uri = "Chrome://weave/content/share.xul";
+      let options = null;
+    
+      let wm = Cc["@mozilla.org/appshell/window-mediator;1"].
+        getService(Ci.nsIWindowMediator);
+      let window = wm.getMostRecentWindow(type);
+      if (window) {
+        window.focus();
+      } else {
+        var ww = Cc["@mozilla.org/embedcomp/window-watcher;1"].
+          getService(Ci.nsIWindowWatcher);
+        if (!options) {
+           options = 'chrome,centerscreen,dialog,modal,resizable=yes';
+        }
+        ww.activeWindow.openDialog(uri, '', options, selectedMenuFolder);
       }
-      ww.activeWindow.openDialog(uri, '', options, folderName);
-     }
-
+    }
   }
+
   // add an item for "share folder", only if it's not already there
-  if (!target._endOptShareFolder ) {
+  if ( !target._endOptShareFolder ) {
+    /* TODO grey out this menu item if we're not logged in to Weave.*/
     target._endOptShareFolder = document.createElement("menuitem");
+    /* Set mini-icon on the menu item: */
+    target._endOptShareFolder.setAttribute( "class", "menu-iconic" );
     target._endOptShareFolder.addEventListener( "command",
-					        doMenuItem,
-						false );
-    label = stringBundle.getString("shareBookmark.menuItem");
-    target._endOptShareFolder.setAttribute( "label", label );
+                                                doShareMenuItem,
+                                                false );
     target.appendChild( target._endOptShareFolder );
   }
-};
+
+  // Set name and icon of menu item based on shared status:
+  let isShared = isFolderShared( event.target.parentNode );
+  if ( isShared ) {
+    /* If the folder is shared already, the menu item is Un-Share Folder */
+    let label = stringBundle.getString("unShareBookmark.menuItem");
+    target._endOptShareFolder.setAttribute( "label", label );
+    target._endOptShareFolder.setAttribute( "image", "chrome://weave/skin/unshare-folder-16x16.png" );
+  } else {
+    /* If the folder is not shared already, the menu item is Share Folder */
+    let label = stringBundle.getString("shareBookmark.menuItem");
+    target._endOptShareFolder.setAttribute( "label", label );
+    target._endOptShareFolder.setAttribute( "image", "chrome://weave/skin/shared-folder-16x16.png" );
+  }
+}
 

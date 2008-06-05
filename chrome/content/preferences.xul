@@ -57,6 +57,9 @@
         <preference id="extensions.weave.engine.forms"
                     name="extensions.weave.engine.forms"
                     type="bool"/>
+        <preference id="extensions.weave.engine.tabs"
+                    name="extensions.weave.engine.tabs"
+                    type="bool"/>
       </preferences>
 
       <tabbox id="sync-tabbox" flex="1">
@@ -99,7 +102,7 @@
                            oncommand="gWeavePrefs.doSignOut()"/>
                 </hbox>
                 <groupbox align="start">
-                  <caption>&accountSettings.label;</caption>
+                  <caption label="&accountSettings.label;"/>
 		  <checkbox id="sync-autoconnect-checkbox" class="indent"
                             label="&autoconnectCheckbox.label;"
                             preference="extensions.weave.autoconnect"/>
@@ -160,6 +163,12 @@
                               label="&passwordsCheckbox.label;"
                               preference="extensions.weave.engine.passwords"/>
                 </richlistitem>
+                <richlistitem>
+                    <checkbox id="sync-tabs-checkbox"
+                              label="&tabsCheckbox.label;"
+                              preference="extensions.weave.engine.tabs"/>
+                </richlistitem>
+
                 <richlistitem>
                     <checkbox id="sync-forms-checkbox"
                               label="&formsCheckbox.label;"
