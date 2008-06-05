@@ -44,10 +44,6 @@ var Ci = Components.interfaces;
  "Cancel/Stop sharing this folder..." depending on its status. */
 
 /* TODO: 
-   1. change the favicon of the folder to a "tiny people"
-      icon to show that a folder's being shared.
-   2. Use annotations to keep track of when a folder is being shared, and
-      change the text of the menu item appropriately.
    3. Use the event passed in to doMenuItem to tell the dialog box what
       folder it is that is being shared. 
    4. LONGTERM: might be healthier to add an onPopupShowing event handler to
@@ -71,6 +67,7 @@ var oldOnPopupShowingFunc = BookmarksEventHandler.onPopupShowing;
 
 var prefs = Cc["@mozilla.org/preferences-service;1"].
             getService(Ci.nsIPrefService).getBranch( "extensions.weave." );
+var log = Log4Moz.Service.getLogger("Share.Menu");
 
 function isFolderShared( menuFolder ) {
   let menuFolderId = menuFolder.node.itemId;
@@ -82,10 +79,27 @@ function isFolderShared( menuFolder ) {
     }
   }
   return isShared;
-};
+}
 
+function adjustBookmarkMenuIcons() {
+  let bookmarkMenu = document.getElementById( "bookmarksMenuPopup" );
+  let currentChild = bookmarkMenu.firstChild;
+  while (currentChild) {
+    if (currentChild.localName != "menuitem" && currentChild.node) {
+      let label = currentChild.getAttribute( "label" );
+      if ( label ) { // a crude way of skipping the separators
+	if ( isFolderShared( currentChild ) ) {
+	  currentChild.setAttribute( "image", "chrome://weave/skin/shared-folder-16x16.png" );
+	}
+      }
+
+    }
+    currentChild = currentChild.nextSibling;
+  }
+}
 
 BookmarksEventHandler.onPopupShowing = function BT_onPopupShowing_new(event) {
+
   /* Call the original version, to put all the stuff into the menu that
      we expect to be there: */
   oldOnPopupShowingFunc.call( BookmarksEventHandler, event );
@@ -95,6 +109,12 @@ BookmarksEventHandler.onPopupShowing = function BT_onPopupShowing_new(event) {
   if ( prefs.getBoolPref( "ui.sharebookmarks" ) == false ) {
     return;
   }
+
+  /* Try to set the icons of shared folders...
+   Problem: this only works on the second, and subsequent, time that the
+  bookmark menu pops up.  The first time after firefox starts, it seems that
+  the expected bookmark folder items aren't even in the menu yet.*/
+  adjustBookmarkMenuIcons();
 
   // Get the menu... 
   let target = event.originalTarget;
@@ -173,5 +193,5 @@ BookmarksEventHandler.onPopupShowing = function BT_onPopupShowing_new(event) {
     target._endOptShareFolder.setAttribute( "label", label );
     target._endOptShareFolder.setAttribute( "image", "chrome://weave/skin/shared-folder-16x16.png" );
   }
-};
+}
 
