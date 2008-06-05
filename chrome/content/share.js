@@ -78,13 +78,12 @@ Share.prototype = {
       this._stringBundle.getString("status.error");
     document.getElementById("status.label").setAttribute("value", label);
     let log = Log4Moz.Service.getLogger("Share.Dialog");
-    if (ret) {
-      // really do stuff
-    } else {
-      log.warn( "Share failed!! OMGWTFBBQ" );
-    }
       
     // Set the annotation on the folder:
+    /* TODO: really this code should only be called if the sharing was a
+       success, i.e. if ret is true.
+       But for debugging purposes, I'm assuming for now that it succeeded.
+       This is a really bad assumption! */
     let folderItemId = this._selectedMenuFolder.node.itemId;
     let folderName = this._selectedMenuFolder.getAttribute( "label" );
     let annotation = { name: "weave/share/shared_outgoing",
