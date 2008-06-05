@@ -73,6 +73,14 @@ class WeaveSession(object):
         req = DavRequest("DELETE", self._get_url(path))
         self._enact_dav_request(req)
 
+def test_weave_disallows_php(session):
+    session.put_file("phptest.php", "<?php echo 'hai2u!' ?>")
+    try:
+        if session.get_file("phptest.php") == "hai2u!":
+            raise Exception("Weave server allows PHP execution!")
+    finally:
+        session.delete_file("phptest.php")
+
 if __name__ == "__main__":
     args = sys.argv[1:]
     if len(args) < 2:
@@ -93,5 +101,7 @@ if __name__ == "__main__":
 
     print "Removing directory."
     session.remove_dir("blargle")
+
+    test_weave_disallows_php()
 
     print "Test complete."
