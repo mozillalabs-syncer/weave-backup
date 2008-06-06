@@ -7,7 +7,7 @@ import sys
 import urllib2
 import httplib
 
-DEFAULT_SERVER = "sm-labs01.mozilla.org"
+DEFAULT_SERVER = "sm-labs01.mozilla.org:81"
 DEFAULT_REALM = "services.mozilla.com - proxy"
 
 class DavRequest(urllib2.Request):
@@ -102,6 +102,6 @@ if __name__ == "__main__":
     print "Removing directory."
     session.remove_dir("blargle")
 
-    test_weave_disallows_php()
+    test_weave_disallows_php(session)
 
     print "Test complete."
