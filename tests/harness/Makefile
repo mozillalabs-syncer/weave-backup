@@ -40,6 +40,7 @@ sdkdir ?= ${MOZSDKDIR}
 harnessdir = ../harness
 topsrcdir ?= ${TOPSRCDIR}
 native_topsrcdir ?= ${NATIVE_TOPSRCDIR}
+sys := $(shell uname -s)
 
 ifeq ($(topsrcdir),)
 topsrcdir = ../..
@@ -49,7 +50,12 @@ ifeq ($(native_topsrcdir),)
 native_topsrcdir = ../..
 endif
 
+
+ifeq ($(sys), Linux)
+xpcshell = $(sdkdir)/bin/run-mozilla.sh $(sdkdir)/bin/xpcshell -v 180
+else
 xpcshell = $(sdkdir)/bin/xpcshell -v 180
+endif
 
 head := -f $(harnessdir)/head.js $(patsubst %,-f %,$(wildcard head*.js))
 tail := $(patsubst %,-f %,$(wildcard tail*.js)) -f $(harnessdir)/tail.js
