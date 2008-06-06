@@ -4,8 +4,11 @@
 """
 
 import sys
+import urllib
 import urllib2
 import httplib
+
+import json
 
 DEFAULT_SERVER = "sm-labs01.mozilla.org:81"
 DEFAULT_REALM = "services.mozilla.com - proxy"
@@ -35,7 +38,7 @@ class WeaveSession(object):
                                  self.__password)
         self.__opener = urllib2.build_opener(authHandler)
 
-    def _get_url(self, path):
+    def _get_user_url(self, path):
         if path.startswith("/"):
             path = path[1:]
         url = "https://%s/user/%s/%s" % (self.server,
@@ -53,7 +56,7 @@ class WeaveSession(object):
                 raise
 
     def create_dir(self, path):
-        req = DavRequest("MKCOL", self._get_url(path))
+        req = DavRequest("MKCOL", self._get_user_url(path))
         self._enact_dav_request(req)
 
     def remove_dir(self, path):
@@ -62,16 +65,26 @@ class WeaveSession(object):
         self.delete_file(path)
 
     def get_file(self, path):
-        obj = self.__opener.open(self._get_url(path))
+        obj = self.__opener.open(self._get_user_url(path))
         return obj.read()
 
     def put_file(self, path, data):
-        req = DavRequest("PUT", self._get_url(path), data)
+        req = DavRequest("PUT", self._get_user_url(path), data)
         self._enact_dav_request(req)
 
     def delete_file(self, path):
-        req = DavRequest("DELETE", self._get_url(path))
+        req = DavRequest("DELETE", self._get_user_url(path))
         self._enact_dav_request(req)
+
+    def share_with_users(self, path, users):
+        url = "https://%s/share/" % (self.server)
+        cmd = {"version" : 1,
+               "directory" : path,
+               "share_to_users" : users}
+        postdata = urllib.urlencode({"cmd" : json.write(cmd)})
+        req = urllib2.Request(url, postdata)
+        result = self.__opener.open(req)
+        print result.read()
 
 def test_weave_disallows_php(session):
     session.put_file("phptest.php", "<?php echo 'hai2u!' ?>")
@@ -101,6 +114,9 @@ if __name__ == "__main__":
 
     print "Removing directory."
     session.remove_dir("blargle")
+
+    # Share the public directory with all users.
+    session.share_with_users("public", "all")
 
     test_weave_disallows_php(session)
 
