@@ -39,7 +39,9 @@ def make_read_share_htaccess(owner, users):
         read_require_perms = "valid-user"
     else:
         users = set(users + [owner])
-        read_require_perms = " ".join(users)
+        users = list(users)
+        users.sort()
+        read_require_perms = "user %s" % " ".join(users)
     lines = [
         "Options +Indexes",
         "<Limit GET PROPFIND>",
