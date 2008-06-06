@@ -65,7 +65,7 @@ WeavePrefs.prototype = {
       getService(Ci.nsIPrefBranch);
     let username = branch.getCharPref("extensions.weave.username");
 
-    if (!username || username == 'nobody@mozilla.com') {
+    if (!username || username == 'nobody') {
          window.openDialog('chrome://weave/content/wizard.xul', '',
 		      'chrome, dialog, modal, resizable=yes', null);
     } else {
