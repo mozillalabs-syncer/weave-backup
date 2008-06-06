@@ -130,6 +130,10 @@ if __name__ == "__main__":
             session_1.share_with_users("blargle", [username_2])
             print "Ensuring user 2 can read user 1's file."
             assert session_2.get_file("blargle/bloop", username_1) == "hai2u!"
+            print "Sharing directory with everyone."
+            session_1.share_with_users("blargle", ["all"])
+            print "Ensuring user 2 can read user 1's file."
+            assert session_2.get_file("blargle/bloop", username_1) == "hai2u!"
         finally:
             session_1.delete_file("blargle/bloop")
     finally:
