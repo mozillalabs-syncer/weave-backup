@@ -85,8 +85,9 @@ class WeaveSession(object):
                "share_to_users" : users}
         postdata = urllib.urlencode({"cmd" : json.write(cmd)})
         req = urllib2.Request(url, postdata)
-        result = self.__opener.open(req)
-        return result.read()
+        result = self.__opener.open(req).read()
+        if result != "OK":
+            raise Exception("Share attempt failed: %s" % result)
 
 def test_weave_disallows_php(session):
     print "Ensuring that weave disallows PHP upload and execution."
