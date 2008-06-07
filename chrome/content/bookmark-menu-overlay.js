@@ -143,7 +143,10 @@ BookmarksEventHandler.onPopupShowing = function BT_onPopupShowing_new(event) {
                          type: PlacesUtils.TYPE_BOOLEAN,
                          expires: PlacesUtils.EXPIRE_NEVER };
       PlacesUtils.setAnnotationsForItem( folderItemId, [ annotation ] );
-      // TODO tell Weave.Service to stop sharing those bookmarks
+      // TODO tell Weave.Service to stop sharing bookmarks
+      // (will need to make the value of the annotation be the weave username
+      // of who they are being shared with, so that we have that name to
+      // pass to Weave.Service.
       // TODO reset the bookmark folder menu item icon to what it was
       // originally (which is not neccessarily the generic folder icon.)
     } else {
