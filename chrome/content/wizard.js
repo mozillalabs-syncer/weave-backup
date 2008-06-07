@@ -165,7 +165,7 @@ SyncWizard.prototype = {
     let passphrase = document.getElementById('sync-passphrase-field');
 
     if (!(username && password && username.value && password.value &&
-          username.value != 'nobody@mozilla.com')) {
+          username.value != 'nobody')) {
       alert(this._stringBundle.getString("invalidCredentials.alert"));
       // FIXME: What boolean value should we return here?  We're returning
       // a boolean in other return statements here, so I assume we should

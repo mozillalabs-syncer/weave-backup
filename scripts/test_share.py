@@ -3,8 +3,28 @@ import unittest
 from share import *
 
 class Tests(unittest.TestCase):
-    def test_write_htaccess_works(self, root_dir = None, owner = None,
-                                  cmd = None):
+    def test_write_htaccess_user_works(self, root_dir = None, owner = None,
+                                       cmd = None):
+        if not root_dir:
+            root_dir = "/home/foo/blarg"
+            owner = "johndoe"
+            cmd = {"version" : 1,
+                   "directory" : "public",
+                   "share_to_users" : ["janedoe"]}
+
+        def mock_open(path, flag):
+            assert flag == "w"
+            assert path == "/home/foo/blarg/johndoe/public/.htaccess"
+            class MockFile:
+                def write(self, data):
+                    assert "Require user janedoe johndoe\n" in data
+                    assert "Require user johndoe\n" in data
+            return MockFile()
+
+        write_htaccess(root_dir, owner, cmd, file_open = mock_open)
+
+    def test_write_htaccess_all_works(self, root_dir = None, owner = None,
+                                      cmd = None):
         if not root_dir:
             root_dir = "/home/foo/blarg"
             owner = "johndoe"
@@ -28,7 +48,7 @@ class Tests(unittest.TestCase):
             "/home/foo/blarg",
             "johndoe",
             '{"version": 1,"directory":"public","share_to_users":["all"]}',
-            write_htaccess = self.test_write_htaccess_works
+            write_htaccess = self.test_write_htaccess_all_works
             )
 
     def test_write_htaccess_stops_evil_dirs(self):

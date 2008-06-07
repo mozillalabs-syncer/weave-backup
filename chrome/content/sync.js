@@ -57,7 +57,12 @@ function Sync() {
     let url = "http://sm-labs01.mozilla.org/projects/weave/firstrun/?version=" +
                 Weave.WEAVE_VERSION;
     setTimeout(function() { window.openUILinkIn(url, "tab"); }, 500);
-  }
+  } else
+  if (Weave.Utils.prefs.getCharPref("lastversion") == "0.1.30") {
+      setTimeout(function() { alert("Due to server changes you will need to create a new Weave account to continue.");
+	      gSync.doOpenSetupWizard(); }, 500);
+   
+  } 
 
   if (Weave.Utils.prefs.getCharPref("lastversion") != Weave.WEAVE_VERSION) {
     let url = "http://sm-labs01.mozilla.org/projects/weave/updated/?version=" +
@@ -67,6 +72,11 @@ function Sync() {
 
   Weave.Utils.prefs.setCharPref("lastversion", Weave.WEAVE_VERSION);
 
+  let username = this._prefSvc.getCharPref("extensions.weave.username");
+  if (!username || username == 'nobody') {
+      setTimeout(function() { gSync.doOpenSetupWizard(); }, 500);
+  }
+
   // TODO: This is a fix for the general case of bug 436936.  It will
   // not support marginal cases such as when a new browser window is
   // opened in the middle of signing-in or syncing.
@@ -74,7 +84,6 @@ function Sync() {
     this._onLogin();
 
   Weave.Service.onWindowOpened();
-
   this._updateSyncTabsButton();
 }
 Sync.prototype = {
@@ -284,7 +293,7 @@ Sync.prototype = {
 
     let username = this._prefSvc.getCharPref("extensions.weave.username");
 
-    if (!username || username == 'nobody@mozilla.com') {
+    if (!username || username == 'nobody') {
       this.doOpenSetupWizard();
       return;
     }
