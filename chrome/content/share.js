@@ -56,6 +56,11 @@ Share.prototype = {
     return this._stringBundle;
   },
   doShare: function Share_doShare(event) {
+    /* This is called when the user clicks the Share button in the
+       dialog box.*/
+
+    /* Start the active display widgets (throbber, label) to let the user know 
+       that something is happening: */
     let labelStr = this._stringBundle.getString("status.working");
     let label = document.getElementById("status.label");
     label.setAttribute("value", labelStr);
@@ -63,37 +68,49 @@ Share.prototype = {
     document.getElementById("throbber").setAttribute("hidden", true);
     document.getElementById("throbber-active").setAttribute("hidden", false);
     let self = this;
+
+    /* tell the weave service to share the chosen bookmark folder with
+       the user specified in the "username' input field. */
     let user = document.getElementById("username").value;
-    /* TODO pass this._selectedMenuFolder into Weave.service.shareBookmarks to
-       tell it what folder to share.*/
-    Weave.Service.shareBookmarks(function(ret) { self.shareCb(ret); }, user);
+    Weave.Service.shareData("bookmarks",
+                            function(ret) { self.shareCb(ret); },
+                            this._selectedMenuFolder, // turn into GUID?
+                            user);
   },
   shareCb: function Share_Callback(ret) {
-    /* TODO the stuff below should happen in a new dialog box that
-       shows success or failure.*/
+    /* Called when share has either succeded or failed.
+       First, set the active display widgets to stop spinning and show
+       success or failure.
+
+       LONGTERM TODO Consider redesign of the notification ui: a progress bar?
+       Dismiss the window immediately and give a separate notification
+       when we're done?
+    */
     document.getElementById("throbber").setAttribute("hidden", false);
     document.getElementById("throbber-active").setAttribute("hidden", true);
     let label = ret?
       this._stringBundle.getString("status.ok") :
       this._stringBundle.getString("status.error");
     document.getElementById("status.label").setAttribute("value", label);
-    let log = Log4Moz.Service.getLogger("Share.Dialog");
-      
-    // Set the annotation on the folder:
-    /* TODO: really this code should only be called if the sharing was a
-       success, i.e. if ret is true.
-       But for debugging purposes, I'm assuming for now that it succeeded.
-       This is a really bad assumption! */
-    let folderItemId = this._selectedMenuFolder.node.itemId;
-    let folderName = this._selectedMenuFolder.getAttribute( "label" );
-    let annotation = { name: "weave/share/shared_outgoing",
-		       value: true,
-		       flags: 0,
-		       mimeType: null,
-		       type: PlacesUtils.TYPE_BOOLEAN,
-		       expires: PlacesUtils.EXPIRE_NEVER };
-    PlacesUtils.setAnnotationsForItem( folderItemId, [ annotation ] );
-    log.info( "Folder " + folderName + " annotated with " + PlacesUtils.getAnnotationsForItem( folderItemId ) );
+
+    if (ret ) {
+      /* If we succeeded, set the annotation on the folder so we know
+	 it's an outgoing share: */
+      let folderItemId = this._selectedMenuFolder.node.itemId;
+      let folderName = this._selectedMenuFolder.getAttribute( "label" );
+      /* TODO: consider using the shared-with username as the value of this
+	 annotation instead of simply 'true'. */
+      let annotation = { name: "weave/share/shared_outgoing",
+                         value: true,
+                         flags: 0,
+                         mimeType: null,
+                         type: PlacesUtils.TYPE_BOOLEAN,
+                         expires: PlacesUtils.EXPIRE_NEVER };
+      PlacesUtils.setAnnotationsForItem( folderItemId, [ annotation ] );
+      let log = Log4Moz.Service.getLogger("Share.Dialog");
+      log.info( "Folder " + folderName + " annotated with " +
+                PlacesUtils.getAnnotationsForItem( folderItemId ) );
+    }
   },
   doCancel: function Share_doCancel(event) { return true; },
   shutDown: function Share_shutDown(event) {}
