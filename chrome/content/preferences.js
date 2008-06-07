@@ -59,6 +59,11 @@ WeavePrefs.prototype = {
      }
   },
 
+  openAdvancedPrefs: function WeavePrefs_openAdvancedPrefs() {
+         window.openDialog('chrome://weave/content/advanced.xul', '',
+                      'chrome, dialog, modal, resizable=yes, ', null);
+  },
+
   doSignOn: function WeavePrefs_doSignOn() {
 
     let branch = Cc["@mozilla.org/preferences-service;1"].
@@ -86,7 +91,7 @@ WeavePrefs.prototype = {
              getService(Ci.nsIWindowMediator);
     let recentWindow = wm.getMostRecentWindow("navigator:browser");
     // FIXME: should be based upon baseURL
-    var url = "https://services.mozilla.com";
+    var url = "https://sm-labs01.mozilla.org:81/";
     if (recentWindow)
       recentWindow.delayedOpenTab(url, null, null, null, null);
     else
@@ -94,11 +99,17 @@ WeavePrefs.prototype = {
   },
 
   resetLoginCredentials: function WeavePrefs_resetLoginCredentials() {
-    Weave.Service.logout();
-    Weave.Service.password = null;
-    Weave.Service.passphrase = null;
-    Weave.Service.username = null;
-    this._checkAccountInfo();
+    let p = Cc["@mozilla.org/embedcomp/prompt-service;1"]
+      .getService(Ci.nsIPromptService);
+    if (p.confirm(null,
+                  this._stringBundle.getString("reset.login.warning.title"),
+                  this._stringBundle.getString("reset.login.warning"))) {
+      Weave.Service.logout();
+      Weave.Service.password = null;
+      Weave.Service.passphrase = null;
+      Weave.Service.username = null;
+      this._checkAccountInfo();
+    }
   },
 
   resetServerURL: function WeavePrefs_resetServerURL() {
@@ -112,7 +123,13 @@ WeavePrefs.prototype = {
   },
 
   resetLock: function WeavePrefs_resetLock() {
-    Weave.Service.resetLock();
+    let p = Cc["@mozilla.org/embedcomp/prompt-service;1"]
+      .getService(Ci.nsIPromptService);
+    if (p.confirm(null,
+                  this._stringBundle.getString("reset.lock.warning.title"),
+                  this._stringBundle.getString("reset.lock.warning"))) {
+       Weave.Service.resetLock();
+    }
   },
 
   resetServer: function WeavePrefs_resetServer() {

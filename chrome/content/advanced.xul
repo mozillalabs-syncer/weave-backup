@@ -1,0 +1,42 @@
+<?xml-stylesheet href="chrome://global/skin/global.css" type="text/css"?>
+
+<!DOCTYPE overlay SYSTEM "chrome://weave/locale/preferences.dtd">
+
+<dialog xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+	    xmlns:html="http://www.w3.org/1999/xhtml"
+        id="sync-advanced-preferences-dialog"
+        title="&debugCaption.label;"
+        buttons="accept, cancel">
+
+      <script type="application/x-javascript"
+              src="chrome://weave/content/load-weave.js"/>
+      <script type="application/x-javascript"
+              src="chrome://weave/content/preferences.js"/>
+
+      <stringbundleset id="stringbundleset">
+        <stringbundle id="weaveStringBundle" src="chrome://weave/locale/preferences.properties"/>
+      </stringbundleset>
+
+      <groupbox id="sync-debug-group" flex="1">
+              <hbox>
+                <label value="&resetCredentialsButton.description;" flex="1"/>
+                <button label="&resetCredentialsButton.label;"
+                        oncommand="gWeavePrefs.resetLoginCredentials();"/>
+              </hbox>
+              <hbox>
+                <label value="&resetServerLockButton.description;" flex="1"/>
+                <button label="&resetServerLockButton.label;"
+                        oncommand="gWeavePrefs.resetLock();"/>
+              </hbox>
+              <hbox>
+                <label value="&resetServerDataButton.description;" flex="1"/>
+                <button label="&resetServerDataButton.label;"
+                        oncommand="gWeavePrefs.resetServer();"/>
+              </hbox>
+              <hbox>
+                <label value="&resetClientDataButton.description;" flex="1"/>
+                <button label="&resetClientDataButton.label;"
+                        oncommand="gWeavePrefs.resetClient();"/>
+	      </hbox>
+       </groupbox>
+</dialog>

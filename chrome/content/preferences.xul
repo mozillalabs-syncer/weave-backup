@@ -101,13 +101,15 @@
 	           <button id="signOutButton" label="&signOutButton.label;"
                            oncommand="gWeavePrefs.doSignOut()"/>
                 </hbox>
-                <groupbox align="start">
-                  <caption label="&accountSettings.label;"/>
-		  <checkbox id="sync-autoconnect-checkbox" class="indent"
+	      </groupbox>
+
+              <!-- Account Settings -->
+              <groupbox align="start">
+                <caption label="&accountSettings.label;"/>
+                  <checkbox id="sync-autoconnect-checkbox" class="indent"
                             label="&autoconnectCheckbox.label;"
                             preference="extensions.weave.autoconnect"/>
-                </groupbox>
-	      </groupbox>
+              </groupbox>
 
               <!-- Create Account -->
               <groupbox id="sync-create-button">
@@ -225,7 +227,8 @@
                 <label value="&encryption.label;"/>
                 <menulist preference="extensions.weave.encryption" disabled="true">
                   <menupopup>
-                    <menuitem label="&teaAlgorithmItem.label;" value="XXXTEA"/>
+                    <menuitem label="&aesAlgorithmItem.label;" value="0" />
+                    <menuitem label="&teaAlgorithmItem.label;" value="1"/>
                     <menuitem label="&noEncryptionItem.label;" value="none"/>
                   </menupopup>
                 </menulist>
@@ -234,44 +237,20 @@
                 &defaultServerRequiresEncryption.description;
               </description>
             </groupbox>
-
-            <groupbox id="sync-debug-group" flex="1">
+            <groupbox>
               <caption label="&debugCaption.label;"/>
-              <separator class="thin"/>
-              <description class="indent">
-                &debugGroupbox.description;
-              </description>                    
-              <separator class="thin"/>
-              <hbox>
-                <label value="&resetCredentialsButton.description;" flex="1"/>
-                <button label="&resetCredentialsButton.label;"
-                        oncommand="gWeavePrefs.resetLoginCredentials();"/>
-              </hbox>
-              <hbox>
-                <label value="&resetServerLockButton.description;" flex="1"/>
-                <button label="&resetServerLockButton.label;"
-                        oncommand="gWeavePrefs.resetLock();"/>
-              </hbox>
-              <hbox>
-                <label value="&resetServerDataButton.description;" flex="1"/>
-                <button label="&resetServerDataButton.label;"
-                        oncommand="gWeavePrefs.resetServer();"/>
-              </hbox>
-              <hbox>
-                <label value="&resetClientDataButton.description;" flex="1"/>
-                <button label="&resetClientDataButton.label;"
-                        oncommand="gWeavePrefs.resetClient();"/>
-              </hbox>
-            </groupbox>
-
-            <groupbox flex="1">
-              <caption label="&logsCaption.label;"/>
               <hbox>
                 <label value="&openActivityLogButton.description;" flex="1"/>
                 <button label="&openActivityLogButton.label;"
                         oncommand="gWeavePrefs.openActivityLog()"/>
               </hbox>
+	      <hbox>
+                <spacer flex="1"/>
+                <button label="&advancedDialogButton.label;"
+                        oncommand="gWeavePrefs.openAdvancedPrefs()"/>
+              </hbox>
             </groupbox>
+
           </tabpanel>
 
         </tabpanels>
