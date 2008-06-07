@@ -195,6 +195,18 @@ SyncWizard.prototype = {
     Weave.Service.sync();
   },
 
+  doCreateAccount: function SyncWizard_doCreateAccount() {
+    let wm = Cc["@mozilla.org/appshell/window-mediator;1"].
+    getService(Ci.nsIWindowMediator);
+    let recentWindow = wm.getMostRecentWindow("navigator:browser");
+
+    var url = "https://sm-labs01.mozilla.org:81/";
+    if (recentWindow)
+	recentWindow.delayedOpenTab(url, null, null, null, null);
+    else
+	window.open(url);
+  },
+
   observe: function(subject, topic, data) {
     if (!document) {
       this._log.warn("XXX FIXME: wizard observer called after wizard went away");

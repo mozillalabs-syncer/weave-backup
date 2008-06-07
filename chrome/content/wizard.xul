@@ -36,6 +36,10 @@
     <description>
       &step1.note;
     </description>
+    <hbox>
+    <button class="dialog" id="sync-wizard-create-account-button" label="&createAccount.label;" oncommand="return gSyncWizard.doCreateAccount();"/>
+    <spacer flex="1"/>
+    </hbox>
     <separator class="thin"/>
     <separator class="thin"/>
     <description style="font-weight: bold;">
