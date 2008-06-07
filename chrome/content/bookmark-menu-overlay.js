@@ -44,8 +44,6 @@ var Ci = Components.interfaces;
  "Cancel/Stop sharing this folder..." depending on its status. */
 
 /* TODO: 
-   3. Use the event passed in to doMenuItem to tell the dialog box what
-      folder it is that is being shared. 
    4. LONGTERM: might be healthier to add an onPopupShowing event handler to
       the bookmark menu to do this, instead of overriding the original
       handler.  ( Do this by using 
@@ -69,7 +67,7 @@ var prefs = Cc["@mozilla.org/preferences-service;1"].
             getService(Ci.nsIPrefService).getBranch( "extensions.weave." );
 var log = Log4Moz.Service.getLogger("Share.Menu");
 
-function isFolderShared( menuFolder ) {
+function isFolderSharedOutgoing( menuFolder ) {
   let menuFolderId = menuFolder.node.itemId;
   let annotations = PlacesUtils.getAnnotationsForItem( menuFolderId );
   let isShared = false;
@@ -88,7 +86,7 @@ function adjustBookmarkMenuIcons() {
     if (currentChild.localName != "menuitem" && currentChild.node) {
       let label = currentChild.getAttribute( "label" );
       if ( label ) { // a crude way of skipping the separators
-	if ( isFolderShared( currentChild ) ) {
+	if ( isFolderSharedOutgoing( currentChild ) ) {
 	  currentChild.setAttribute( "image", "chrome://weave/skin/shared-folder-16x16.png" );
 	}
       }
@@ -133,7 +131,7 @@ BookmarksEventHandler.onPopupShowing = function BT_onPopupShowing_new(event) {
 
   function doShareMenuItem( event ) {
     let selectedMenuFolder = event.target.parentNode.parentNode;
-    if ( isFolderShared( selectedMenuFolder ) ) {
+    if ( isFolderSharedOutgoing( selectedMenuFolder ) ) {
       // Un-share the selected folder:
       let folderItemId = selectedMenuFolder.node.itemId;
       let annotation = { name: "weave/share/shared_outgoing",
@@ -184,7 +182,7 @@ BookmarksEventHandler.onPopupShowing = function BT_onPopupShowing_new(event) {
   }
 
   // Set name and icon of menu item based on shared status:
-  let isShared = isFolderShared( event.target.parentNode );
+  let isShared = isFolderSharedOutgoing( event.target.parentNode );
   if ( isShared ) {
     /* If the folder is shared already, the menu item is Un-Share Folder */
     let label = stringBundle.getString("unShareBookmark.menuItem");
