@@ -171,7 +171,6 @@ BookmarksEventHandler.onPopupShowing = function BT_onPopupShowing_new(event) {
 
   // add an item for "share folder", only if it's not already there
   if ( !target._endOptShareFolder ) {
-    /* TODO grey out this menu item if we're not logged in to Weave.*/
     target._endOptShareFolder = document.createElement("menuitem");
     /* Set mini-icon on the menu item: */
     target._endOptShareFolder.setAttribute( "class", "menu-iconic" );
@@ -179,6 +178,12 @@ BookmarksEventHandler.onPopupShowing = function BT_onPopupShowing_new(event) {
                                                 doShareMenuItem,
                                                 false );
     target.appendChild( target._endOptShareFolder );
+  }
+
+  /* Grey out the share folder item if we're not logged into weave or
+     if weave is disabled: */
+  if ( !Weave.Service.enabled() || !Weave.Service.currentUser() ) {
+    target._endOptShareFolder.disabled = true;
   }
 
   // Set name and icon of menu item based on shared status:
