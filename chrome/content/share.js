@@ -71,11 +71,11 @@ Share.prototype = {
 
     /* tell the weave service to share the chosen bookmark folder with
        the user specified in the "username' input field. */
-    let user = document.getElementById("username").value;
+    this._username = document.getElementById("username").value;
     Weave.Service.shareData("bookmarks",
                             function(ret) { self.shareCb(ret); },
                             this._selectedMenuFolder, // turn into GUID?
-                            user);
+                            this._username);
   },
   shareCb: function Share_Callback(ret) {
     /* Called when share has either succeded or failed.
@@ -101,12 +101,16 @@ Share.prototype = {
       /* TODO: consider using the shared-with username as the value of this
 	 annotation instead of simply 'true'. */
       let annotation = { name: "weave/share/shared_outgoing",
-                         value: true,
+                         value: this._username,
                          flags: 0,
                          mimeType: null,
-                         type: PlacesUtils.TYPE_BOOLEAN,
+                         type: PlacesUtils.TYPE_STRING,
                          expires: PlacesUtils.EXPIRE_NEVER };
+      // TODO: does this clobber existing annotations?
       PlacesUtils.setAnnotationsForItem( folderItemId, [ annotation ] );
+      /* LONGTERM TODO: in the future when we allow sharing one folder
+         with many people, the value of the annotation can be a whole list
+         of usernames instead of just one. */
       let log = Log4Moz.Service.getLogger("Share.Dialog");
       log.info( "Folder " + folderName + " annotated with " +
                 PlacesUtils.getAnnotationsForItem( folderItemId ) );

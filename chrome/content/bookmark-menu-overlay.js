@@ -61,6 +61,15 @@ var Ci = Components.interfaces;
       ObserverService to register listeners and pass messages around.
 */
 
+// Annotation to use for shared bookmark folders, incoming and outgoing:
+const INCOMING_SHARED_ANNO = "weave/shared-incoming";
+const OUTGOING_SHARED_ANNO = "weave/shared-outgoing";
+
+const UNSHARE_FOLDER_ICON = "chrome://weave/skin/unshare-folder-16x16.png";
+const SHARE_FOLDER_ICON = "chrome://weave/skin/shared-folder-16x16.png";
+const SHARED_FOLDER_ICON = "chrome://weave/skin/shared-folder-16x16.png";
+
+
 var oldOnPopupShowingFunc = BookmarksEventHandler.onPopupShowing;
 
 var prefs = Cc["@mozilla.org/preferences-service;1"].
@@ -70,13 +79,12 @@ var log = Log4Moz.Service.getLogger("Share.Menu");
 function isFolderSharedOutgoing( menuFolder ) {
   let menuFolderId = menuFolder.node.itemId;
   let annotations = PlacesUtils.getAnnotationsForItem( menuFolderId );
-  let isShared = false;
   for ( var x in annotations ) {
-    if ( annotations[x].name == "weave/share/shared_outgoing" ) {
-      isShared = annotations[x].value;
+    if ( annotations[x].name == OUTGOING_SHARED_ANNO ) {
+      return ( annotations[x].value != '' );
     }
   }
-  return isShared;
+  return false;
 }
 
 function adjustBookmarkMenuIcons() {
@@ -87,7 +95,7 @@ function adjustBookmarkMenuIcons() {
       let label = currentChild.getAttribute( "label" );
       if ( label ) { // a crude way of skipping the separators
 	if ( isFolderSharedOutgoing( currentChild ) ) {
-	  currentChild.setAttribute( "image", "chrome://weave/skin/shared-folder-16x16.png" );
+	  currentChild.setAttribute( "image", SHARED_FOLDER_ICON );
 	}
       }
 
@@ -134,11 +142,11 @@ BookmarksEventHandler.onPopupShowing = function BT_onPopupShowing_new(event) {
     if ( isFolderSharedOutgoing( selectedMenuFolder ) ) {
       // Un-share the selected folder:
       let folderItemId = selectedMenuFolder.node.itemId;
-      let annotation = { name: "weave/share/shared_outgoing",
-                         value: false,
+      let annotation = { name: OUTGOING_SHARED_ANNO,
+                         value: '',
                          flags: 0,
                          mimeType: null,
-                         type: PlacesUtils.TYPE_BOOLEAN,
+                         type: PlacesUtils.TYPE_STRING,
                          expires: PlacesUtils.EXPIRE_NEVER };
       PlacesUtils.setAnnotationsForItem( folderItemId, [ annotation ] );
       // TODO tell Weave.Service to stop sharing bookmarks
@@ -192,12 +200,11 @@ BookmarksEventHandler.onPopupShowing = function BT_onPopupShowing_new(event) {
     /* If the folder is shared already, the menu item is Un-Share Folder */
     let label = stringBundle.getString("unShareBookmark.menuItem");
     target._endOptShareFolder.setAttribute( "label", label );
-    target._endOptShareFolder.setAttribute( "image", "chrome://weave/skin/unshare-folder-16x16.png" );
+    target._endOptShareFolder.setAttribute( "image", UNSHARE_FOLDER_ICON );
   } else {
     /* If the folder is not shared already, the menu item is Share Folder */
     let label = stringBundle.getString("shareBookmark.menuItem");
     target._endOptShareFolder.setAttribute( "label", label );
-    target._endOptShareFolder.setAttribute( "image", "chrome://weave/skin/shared-folder-16x16.png" );
+    target._endOptShareFolder.setAttribute( "image", SHARE_FOLDER_ICON );
   }
 }
-
