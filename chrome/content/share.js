@@ -92,27 +92,6 @@ Share.prototype = {
       this._stringBundle.getString("status.ok") :
       this._stringBundle.getString("status.error");
     document.getElementById("status.label").setAttribute("value", label);
-
-    if (ret ) {
-      /* If we succeeded, set the annotation on the folder so we know
-	 it's an outgoing share: */
-      let folderItemId = this._selectedMenuFolder.node.itemId;
-      let folderName = this._selectedMenuFolder.getAttribute( "label" );
-      let annotation = { name: "weave/share/shared_outgoing",
-                         value: this._username,
-                         flags: 0,
-                         mimeType: null,
-                         type: PlacesUtils.TYPE_STRING,
-                         expires: PlacesUtils.EXPIRE_NEVER };
-      // TODO: does this clobber existing annotations?
-      PlacesUtils.setAnnotationsForItem( folderItemId, [ annotation ] );
-      /* LONGTERM TODO: in the future when we allow sharing one folder
-         with many people, the value of the annotation can be a whole list
-         of usernames instead of just one. */
-      let log = Log4Moz.Service.getLogger("Share.Dialog");
-      log.info( "Folder " + folderName + " annotated with " +
-                PlacesUtils.getAnnotationsForItem( folderItemId ) );
-    }
   },
   doCancel: function Share_doCancel(event) { return true; },
   shutDown: function Share_shutDown(event) {}
