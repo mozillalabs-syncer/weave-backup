@@ -98,8 +98,6 @@ Share.prototype = {
 	 it's an outgoing share: */
       let folderItemId = this._selectedMenuFolder.node.itemId;
       let folderName = this._selectedMenuFolder.getAttribute( "label" );
-      /* TODO: consider using the shared-with username as the value of this
-	 annotation instead of simply 'true'. */
       let annotation = { name: "weave/share/shared_outgoing",
                          value: this._username,
                          flags: 0,
