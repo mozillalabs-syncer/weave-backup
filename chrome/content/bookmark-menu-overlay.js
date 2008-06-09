@@ -195,7 +195,10 @@ BookmarksEventHandler.onPopupShowing = function BT_onPopupShowing_new(event) {
   }
 
   // Set name and icon of menu item based on shared status:
-  let isShared = isFolderSharedOutgoing( event.target.parentNode );
+  let isShared = false;
+  if ( event.target.parentNode.node != undefined ) {
+    isShared = isFolderSharedOutgoing( event.target.parentNode );
+  }
   if ( isShared ) {
     /* If the folder is shared already, the menu item is Un-Share Folder */
     let label = stringBundle.getString("unShareBookmark.menuItem");
