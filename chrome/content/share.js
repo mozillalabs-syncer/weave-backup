@@ -58,7 +58,6 @@ Share.prototype = {
   doShare: function Share_doShare(event) {
     /* This is called when the user clicks the Share button in the
        dialog box.*/
-
     /* Start the active display widgets (throbber, label) to let the user know 
        that something is happening: */
     let labelStr = this._stringBundle.getString("status.working");
@@ -68,7 +67,6 @@ Share.prototype = {
     document.getElementById("throbber").setAttribute("hidden", true);
     document.getElementById("throbber-active").setAttribute("hidden", false);
     let self = this;
-
     /* tell the weave service to share the chosen bookmark folder with
        the user specified in the "username' input field. */
     this._username = document.getElementById("username").value;
@@ -76,6 +74,7 @@ Share.prototype = {
                             function(ret) { self.shareCb(ret); },
                             this._selectedMenuFolder, // turn into GUID?
                             this._username);
+    this.shareCb( true );
   },
   shareCb: function Share_Callback(ret) {
     /* Called when share has either succeded or failed.
