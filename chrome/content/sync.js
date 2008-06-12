@@ -169,6 +169,13 @@ Sync.prototype = {
     return this._json;
   },
 
+  get _windowType() {
+    let wm = Cc["@mozilla.org/appshell/window-mediator;1"].
+             getService(Ci.nsIWindowMediator);
+	let win = wm.getMostRecentWindow("");
+	return win.document.documentElement.getAttribute("windowtype");	
+  },
+  
   _openWindow: function Sync__openWindow(type, uri, options) {
     let wm = Cc["@mozilla.org/appshell/window-mediator;1"].
       getService(Ci.nsIWindowMediator);
@@ -204,8 +211,10 @@ Sync.prototype = {
     // TODO: We may want to just display a notification here that the user
     // can deal with on their own time instead of forcing them to deal
     // with an unsuccessful login immediately.
-    if (this._isTopBrowserWindow)
-      this._openWindow('Sync:Login', 'chrome://weave/content/login.xul');
+    if (this._isTopBrowserWindow) {
+	  if (this._windowType != "Sync:wizard")
+        this._openWindow('Sync:Login', 'chrome://weave/content/login.xul');
+	}
   },
 
   _onLogin: function Sync__onLogin() {
