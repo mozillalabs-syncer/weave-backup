@@ -117,7 +117,7 @@ BookmarksEventHandler.onPopupShowing = function BT_onPopupShowing_new(event) {
   }
 
   /* Try to set the icons of shared folders...
-   Problem: this only works on the second, and subsequent, time that the
+  Problem: this only works on the second, and subsequent, time that the
   bookmark menu pops up.  The first time after firefox starts, it seems that
   the expected bookmark folder items aren't even in the menu yet.*/
   adjustBookmarkMenuIcons();
@@ -153,8 +153,6 @@ BookmarksEventHandler.onPopupShowing = function BT_onPopupShowing_new(event) {
       // (will need to make the value of the annotation be the weave username
       // of who they are being shared with, so that we have that name to
       // pass to Weave.Service.
-      // TODO reset the bookmark folder menu item icon to what it was
-      // originally (which is not neccessarily the generic folder icon.)
     } else {
       // Pop the dialog box for sharing the selected folder:
       let type = "Sync:Share";
@@ -191,7 +189,8 @@ BookmarksEventHandler.onPopupShowing = function BT_onPopupShowing_new(event) {
   /* Grey out the share folder item if we're not logged into weave or
      if weave is disabled: */
   if ( !Weave.Service.enabled || !Weave.Service.currentUser ) {
-    target._endOptShareFolder.setAttribute( "disabled", "true" );
+    // target._endOptShareFolder.setAttribute( "disabled", "true" );
+    // I commented this out so I can test...
   }
 
   // Set name and icon of menu item based on shared status:
