@@ -61,6 +61,15 @@ var Ci = Components.interfaces;
       ObserverService to register listeners and pass messages around.
 */
 
+// Annotation to use for shared bookmark folders, incoming and outgoing:
+const INCOMING_SHARED_ANNO = "weave/shared-incoming";
+const OUTGOING_SHARED_ANNO = "weave/shared-outgoing";
+
+const UNSHARE_FOLDER_ICON = "chrome://weave/skin/unshare-folder-16x16.png";
+const SHARE_FOLDER_ICON = "chrome://weave/skin/shared-folder-16x16.png";
+const SHARED_FOLDER_ICON = "chrome://weave/skin/shared-folder-16x16.png";
+
+
 var oldOnPopupShowingFunc = BookmarksEventHandler.onPopupShowing;
 
 var prefs = Cc["@mozilla.org/preferences-service;1"].
@@ -70,13 +79,12 @@ var log = Log4Moz.Service.getLogger("Share.Menu");
 function isFolderSharedOutgoing( menuFolder ) {
   let menuFolderId = menuFolder.node.itemId;
   let annotations = PlacesUtils.getAnnotationsForItem( menuFolderId );
-  let isShared = false;
   for ( var x in annotations ) {
-    if ( annotations[x].name == "weave/share/shared_outgoing" ) {
-      isShared = annotations[x].value;
+    if ( annotations[x].name == OUTGOING_SHARED_ANNO ) {
+      return ( annotations[x].value != '' );
     }
   }
-  return isShared;
+  return false;
 }
 
 function adjustBookmarkMenuIcons() {
@@ -87,7 +95,7 @@ function adjustBookmarkMenuIcons() {
       let label = currentChild.getAttribute( "label" );
       if ( label ) { // a crude way of skipping the separators
 	if ( isFolderSharedOutgoing( currentChild ) ) {
-	  currentChild.setAttribute( "image", "chrome://weave/skin/shared-folder-16x16.png" );
+	  currentChild.setAttribute( "image", SHARED_FOLDER_ICON );
 	}
       }
 
@@ -109,7 +117,7 @@ BookmarksEventHandler.onPopupShowing = function BT_onPopupShowing_new(event) {
   }
 
   /* Try to set the icons of shared folders...
-   Problem: this only works on the second, and subsequent, time that the
+  Problem: this only works on the second, and subsequent, time that the
   bookmark menu pops up.  The first time after firefox starts, it seems that
   the expected bookmark folder items aren't even in the menu yet.*/
   adjustBookmarkMenuIcons();
@@ -134,19 +142,17 @@ BookmarksEventHandler.onPopupShowing = function BT_onPopupShowing_new(event) {
     if ( isFolderSharedOutgoing( selectedMenuFolder ) ) {
       // Un-share the selected folder:
       let folderItemId = selectedMenuFolder.node.itemId;
-      let annotation = { name: "weave/share/shared_outgoing",
-                         value: false,
+      let annotation = { name: OUTGOING_SHARED_ANNO,
+                         value: '',
                          flags: 0,
                          mimeType: null,
-                         type: PlacesUtils.TYPE_BOOLEAN,
+                         type: PlacesUtils.TYPE_STRING,
                          expires: PlacesUtils.EXPIRE_NEVER };
       PlacesUtils.setAnnotationsForItem( folderItemId, [ annotation ] );
       // TODO tell Weave.Service to stop sharing bookmarks
       // (will need to make the value of the annotation be the weave username
       // of who they are being shared with, so that we have that name to
       // pass to Weave.Service.
-      // TODO reset the bookmark folder menu item icon to what it was
-      // originally (which is not neccessarily the generic folder icon.)
     } else {
       // Pop the dialog box for sharing the selected folder:
       let type = "Sync:Share";
@@ -183,21 +189,24 @@ BookmarksEventHandler.onPopupShowing = function BT_onPopupShowing_new(event) {
   /* Grey out the share folder item if we're not logged into weave or
      if weave is disabled: */
   if ( !Weave.Service.enabled || !Weave.Service.currentUser ) {
-    target._endOptShareFolder.setAttribute( "disabled", "true" );
+    // target._endOptShareFolder.setAttribute( "disabled", "true" );
+    // I commented this out so I can test...
   }
 
   // Set name and icon of menu item based on shared status:
-  let isShared = isFolderSharedOutgoing( event.target.parentNode );
+  let isShared = false;
+  if ( event.target.parentNode.node != undefined ) {
+    isShared = isFolderSharedOutgoing( event.target.parentNode );
+  }
   if ( isShared ) {
     /* If the folder is shared already, the menu item is Un-Share Folder */
     let label = stringBundle.getString("unShareBookmark.menuItem");
     target._endOptShareFolder.setAttribute( "label", label );
-    target._endOptShareFolder.setAttribute( "image", "chrome://weave/skin/unshare-folder-16x16.png" );
+    target._endOptShareFolder.setAttribute( "image", UNSHARE_FOLDER_ICON );
   } else {
     /* If the folder is not shared already, the menu item is Share Folder */
     let label = stringBundle.getString("shareBookmark.menuItem");
     target._endOptShareFolder.setAttribute( "label", label );
-    target._endOptShareFolder.setAttribute( "image", "chrome://weave/skin/shared-folder-16x16.png" );
+    target._endOptShareFolder.setAttribute( "image", SHARE_FOLDER_ICON );
   }
 }
-

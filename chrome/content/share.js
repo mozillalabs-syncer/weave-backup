@@ -58,7 +58,6 @@ Share.prototype = {
   doShare: function Share_doShare(event) {
     /* This is called when the user clicks the Share button in the
        dialog box.*/
-
     /* Start the active display widgets (throbber, label) to let the user know 
        that something is happening: */
     let labelStr = this._stringBundle.getString("status.working");
@@ -68,14 +67,14 @@ Share.prototype = {
     document.getElementById("throbber").setAttribute("hidden", true);
     document.getElementById("throbber-active").setAttribute("hidden", false);
     let self = this;
-
     /* tell the weave service to share the chosen bookmark folder with
        the user specified in the "username' input field. */
-    let user = document.getElementById("username").value;
+    this._username = document.getElementById("username").value;
     Weave.Service.shareData("bookmarks",
                             function(ret) { self.shareCb(ret); },
                             this._selectedMenuFolder, // turn into GUID?
-                            user);
+                            this._username);
+    this.shareCb( true );
   },
   shareCb: function Share_Callback(ret) {
     /* Called when share has either succeded or failed.
@@ -92,25 +91,6 @@ Share.prototype = {
       this._stringBundle.getString("status.ok") :
       this._stringBundle.getString("status.error");
     document.getElementById("status.label").setAttribute("value", label);
-
-    if (ret ) {
-      /* If we succeeded, set the annotation on the folder so we know
-	 it's an outgoing share: */
-      let folderItemId = this._selectedMenuFolder.node.itemId;
-      let folderName = this._selectedMenuFolder.getAttribute( "label" );
-      /* TODO: consider using the shared-with username as the value of this
-	 annotation instead of simply 'true'. */
-      let annotation = { name: "weave/share/shared_outgoing",
-                         value: true,
-                         flags: 0,
-                         mimeType: null,
-                         type: PlacesUtils.TYPE_BOOLEAN,
-                         expires: PlacesUtils.EXPIRE_NEVER };
-      PlacesUtils.setAnnotationsForItem( folderItemId, [ annotation ] );
-      let log = Log4Moz.Service.getLogger("Share.Dialog");
-      log.info( "Folder " + folderName + " annotated with " +
-                PlacesUtils.getAnnotationsForItem( folderItemId ) );
-    }
   },
   doCancel: function Share_doCancel(event) { return true; },
   shutDown: function Share_shutDown(event) {}
