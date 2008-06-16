@@ -84,7 +84,45 @@ function _do_quit() {
   _quit = true;
 }
 
+function _find_and_run_tests() {
+  var parent = this;
+
+  var tests = [];
+
+  for (prop in parent)
+    if (prop.indexOf("test") == 0)
+      tests.push(prop);
+
+  if (tests.length == 0)
+    throw new Error("No run_test() found, nor any functions that " +
+                    "begin with 'test'!");
+
+  var numFailed = 0;
+
+  for (var i = 0; i < tests.length; i++) {
+    var test = tests[i];
+    dump("Running test: " + test + "\n");
+    try {
+      parent[test]();
+    } catch (e) {
+      dump(e + "\n");
+      numFailed++;
+    }
+  }
+
+  var numPassed = tests.length - numFailed;
+  var outcome = numPassed + " of " + tests.length + " tests passed.";
+
+  if (numFailed)
+    throw new Error(outcome);
+  else
+    dump(outcome + "\n");
+}
+
 function _execute_test(func) {
+  if (typeof func == "undefined")
+    func = _find_and_run_tests;
+
   try {
     do_test_pending();
     func();

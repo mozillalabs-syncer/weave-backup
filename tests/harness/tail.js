@@ -35,4 +35,4 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-_execute_test(run_test);
+_execute_test(this.run_test);

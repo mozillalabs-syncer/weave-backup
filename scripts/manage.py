@@ -35,10 +35,19 @@ def run_test(test):
         print "PASS"
         return None
 
-def run_tests(tests = None):
-    if not tests:
-        tests = find_tests()
+def run_tests(testnames = None):
+    tests = find_tests()
+    if testnames:
+        newtests = []
+        for testname in testnames:
+            for test in tests:
+                if testname in test:
+                    newtests.append(test)
+        tests = newtests
     errors = {}
+    if not tests:
+        print "No tests found!"
+        sys.exit(1)
     for test in tests:
         errors[test] = run_test(test)
     failed_tests = [test for test in tests
@@ -54,11 +63,11 @@ def run_tests(tests = None):
 if __name__ == "__main__":
     args = sys.argv[1:]
     if not args:
-        print "usage: %s <command>" % sys.argv[0]
+        print "usage: %s <command> [options]" % sys.argv[0]
         print
         print "'command' can be one of the following:"
         print
-        print "    test - run unit tests"
+        print "    test - run unit tests, optionally specifying tests to run"
         print "    install - install to the given profile dir"
         print "    uninstall - uninstall from the given profile dir"
         print
@@ -72,7 +81,7 @@ if __name__ == "__main__":
     cmd = args[0]
     
     if cmd == "test":
-        run_tests()
+        run_tests(args[1:])
     elif cmd in ["install", "uninstall"]:
         if len(args) != 2:
             print "Path to profile directory not supplied."
