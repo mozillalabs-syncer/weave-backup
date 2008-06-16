@@ -26,7 +26,7 @@ weave/tests/system contains system tests, i.e. end-to-end tests of weave as a wh
 
 To run the tests, cd into weave/tests/unit or weave/tests/system and run "make".
 
-To run one particular test only, you can give the name of the test file (without the .js suffix) as an argument to make.  For instance, to run just the test in test_xmpp.js and no others, run:
+To run one particular test suite only, you can give the name of the test file (without the .js suffix) as an argument to make.  For instance, to run just the test in test_xmpp.js and no others, run:
 
         > make test_xmpp
 
