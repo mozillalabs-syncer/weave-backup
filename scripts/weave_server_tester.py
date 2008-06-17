@@ -79,7 +79,7 @@ class WeaveSession(object):
         self._enact_dav_request(req)
 
     def share_with_users(self, path, users):
-        url = "https://%s/share/" % (self.server)
+        url = "https://%s/api/share/" % (self.server)
         cmd = {"version" : 1,
                "directory" : path,
                "share_to_users" : users}
