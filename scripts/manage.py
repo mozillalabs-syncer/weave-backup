@@ -2,6 +2,7 @@ import os
 import sys
 import xml.dom.minidom
 import subprocess
+import difflib
 
 TEST_DIRS = [os.path.join("tests", "unit"),
              os.path.join("tests", "system")]
@@ -27,11 +28,23 @@ def run_test(test):
         stdout = subprocess.PIPE,
         stderr = subprocess.STDOUT
         )
+    logfile_name = os.path.join(dirname, testname + ".log")
     if result != 0:
         print "FAIL"
-        logfile = os.path.join(dirname, testname + ".log")
-        return open(logfile, "r").read()
+        return open(logfile_name, "r").read()
     else:
+        expected_logfile_name = logfile_name + ".expected"
+        if os.path.exists(expected_logfile_name):
+            expected = open(expected_logfile_name, "r").read()
+            actual = open(logfile_name, "r").read()
+            if expected != actual:
+                print "FAIL"
+                diff = "Expected results differ from actual results.\n\n"
+                diff += "\n".join(difflib.unified_diff(
+                    expected.splitlines(), actual.splitlines(),
+                    "expected results", "actual results"
+                    ))
+                return diff
         print "PASS"
         return None
 
