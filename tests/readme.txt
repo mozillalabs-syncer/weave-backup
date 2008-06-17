@@ -26,7 +26,7 @@ weave/tests/system contains system tests, i.e. end-to-end tests of weave as a wh
 
 To run the tests, cd into weave/tests/unit or weave/tests/system and run "make".
 
-To run one particular test only, you can give the name of the test file (without the .js suffix) as an argument to make.  For instance, to run just the test in test_xmpp.js and no others, run:
+To run one particular test suite only, you can give the name of the test file (without the .js suffix) as an argument to make.  For instance, to run just the test in test_xmpp.js and no others, run:
 
         > make test_xmpp
 
@@ -38,14 +38,23 @@ Simply create a javascript file with a name that starts with "test_" in the weav
 
         test_foo.js
 
-Each file can contain only a single test function (but any number of assertions can be made within that function).  The function must be called run_test:
+Each file can contain any number of functions that start with the string 'test', e.g.:
+
+        function test_that_foo_accepts_multiple_args() {
+        }
+
+Such functions will be found and run automatically, and if any of them throw exceptions, they will be counted as failed tests.
+
+Alternatively, the file can contain a single function called 'run_test' like so:
 
         function run_test() {
         }
 
-If the name of the file and the name of the function match this pattern, the test will automatically be detected and run when you execute "make".  No modification to the makefile is needed.
+If this function exists, it will be run instead of functions that begin with the string 'test'.  This functionality is included for backwards compatibility.
 
-Functions that you can use within run_test() to make assertions include the following:
+If the name of the file and the name of the function(s) match the patterns outlined above, all tests will automatically be detected and run when you execute "make".  No modification to the makefile is needed.
+
+Functions that you can use within tests to make assertions include the following:
 
         do_check_eq( a, b );    // asserts that a and b are equal
         do_check_neq( a, b );  // asserts that a and b are not equal
