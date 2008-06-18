@@ -79,7 +79,7 @@ class WeaveSession(object):
         self._enact_dav_request(req)
 
     def share_with_users(self, path, users):
-        url = "https://%s/share/" % (self.server)
+        url = "https://%s/api/share/" % (self.server)
         cmd = {"version" : 1,
                "directory" : path,
                "share_to_users" : users}
@@ -89,7 +89,7 @@ class WeaveSession(object):
         if result != "OK":
             raise Exception("Share attempt failed: %s" % result)
 
-def test_weave_disallows_php(session):
+def ensure_weave_disallows_php(session):
     print "Ensuring that weave disallows PHP upload and execution."
     session.put_file("phptest.php", "<?php echo 'hai2u!' ?>")
     try:
@@ -141,6 +141,6 @@ if __name__ == "__main__":
         print "Removing directory."
         session_1.remove_dir("blargle")
 
-    test_weave_disallows_php(session_1)
+    ensure_weave_disallows_php(session_1)
 
     print "Test complete."
