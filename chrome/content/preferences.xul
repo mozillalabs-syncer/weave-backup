@@ -1,5 +1,7 @@
 <?xml version="1.0"?>
 
+<?xml-stylesheet href="chrome://weave/content/preferences.css" type="text/css"?>
+
 <!DOCTYPE overlay SYSTEM "chrome://weave/locale/preferences.dtd">
 
 <overlay id="sync-preferences"
@@ -102,6 +104,69 @@
                            oncommand="gWeavePrefs.doSignOut()"/>
                 </hbox>
 	      </groupbox>
+
+              <!-- Change Password -->
+              <groupbox id="sync-change-password-form">
+                <caption label="&changePassword.caption;"/>
+
+		<grid>
+		  <columns>
+		    <column flex="1"/>
+		    <column/>
+		    <column flex="1"/>
+		  </columns>
+
+		  <rows>
+		    <row align="center" flex="1">
+		      <hbox align="center">
+			<label control="oldPassword"
+			       value="&oldPassword.label;"/>
+			<textbox id="oldPassword" type="password" flex="1"/>
+		      </hbox>
+		      <label control="newPassword" value="&newPassword.label;"/>
+		      <!-- See note in preferences.css about how we make this be
+		         - both a password and a timed textbox. -->
+		      <textbox id="newPassword" type="password" flex="1"
+			       timeout="600"
+			       oncommand="gWeavePrefs.validateNewPasswords()"/>
+		    </row>
+
+		    <row align="center" flex="1">
+		      <checkbox label="&showPasswords.label;"
+				oncommand="gWeavePrefs.doToggleShowPasswords(event)"/>
+		      <hbox flex="1" pack="end">
+			<label control="newPasswordAgain"
+			       value="&newPasswordAgain.label;"/>
+		      </hbox>
+		      <!-- See note in preferences.css about how we make this be
+		         - both a password and a timed textbox. -->
+		      <textbox id="newPasswordAgain" type="password" flex="1"
+			       timeout="600"
+			       oncommand="gWeavePrefs.validateNewPasswords()"/>
+		    </row>
+
+		  </rows>
+
+		</grid>
+
+		<hbox flex="1" align="center">
+		  <hbox id="changePasswordStatus" status="idle" align="center">
+		    <image id="changePasswordIcon"/>
+		    <!-- We duplicate the idle text here so we don't have to
+		       - dupe it in preferences.dtd and preferences.properties.
+		       - We use the idlevalue attribute when setting the status
+		       - to idle in WeavePrefs::_setChangePasswordStatus. -->
+		    <label id="changePasswordDescription"
+			   value="&changePassword.description;"
+		           idlevalue="&changePassword.description;"/>
+		  </hbox>
+		  <spacer flex="1"/>
+		  <button id="changePasswordButton"
+			  label="&changePasswordButton.label;"
+			  oncommand="gWeavePrefs.doChangePassword()"/>
+		</hbox>
+
+              </groupbox>
 
               <!-- Account Settings -->
               <groupbox align="start">
