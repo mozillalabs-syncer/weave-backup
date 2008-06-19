@@ -189,8 +189,7 @@ BookmarksEventHandler.onPopupShowing = function BT_onPopupShowing_new(event) {
   /* Grey out the share folder item if we're not logged into weave or
      if weave is disabled: */
   if ( !Weave.Service.enabled || !Weave.Service.currentUser ) {
-    // target._endOptShareFolder.setAttribute( "disabled", "true" );
-    // I commented this out so I can test...
+    target._endOptShareFolder.setAttribute( "disabled", "true" );
   }
 
   // Set name and icon of menu item based on shared status:
