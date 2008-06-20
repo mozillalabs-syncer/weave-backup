@@ -219,6 +219,8 @@ SyncWizard.prototype = {
 	if (document.getElementById("create3-check").value == "true")
 	  return true;
 	
+	httpRequest.open('POST', REGISTER_URL, true);
+
 	httpRequest.onreadystatechange = function() { 
 	  if (httpRequest.readyState == 4) {
 	    switch (httpRequest.status) {
@@ -264,9 +266,7 @@ SyncWizard.prototype = {
 				  "&mail=" + encodeURIComponent(mail) + 
 				  "&recaptcha_response_field=" + encodeURIComponent(response) + 
 				  "&recaptcha_challenge_field=" + encodeURIComponent(challenge);
-	
-	httpRequest.open('POST', REGISTER_URL, true);
-	
+		
 	httpRequest.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 	httpRequest.setRequestHeader("Content-Length", message.length);
     httpRequest.send(message);		
@@ -374,6 +374,8 @@ SyncWizard.prototype = {
 	  return false;
 	}
 		
+    httpRequest.open('GET', url, true);
+
     httpRequest.onreadystatechange = function() {			
 	  if (httpRequest.readyState == 4) {
 	    if (httpRequest.status == 200) {
@@ -395,7 +397,6 @@ SyncWizard.prototype = {
 	  }	
 	};
 				
-    httpRequest.open('GET', url, true);
     httpRequest.send(null);		
   },
 
@@ -428,6 +429,8 @@ SyncWizard.prototype = {
 	  return false;
     }
     
+    httpRequest.open('GET', url, true);
+
     httpRequest.onreadystatechange = function() {			
 	  if (httpRequest.readyState == 4) {
 	    if (httpRequest.status == 200) {
@@ -448,7 +451,6 @@ SyncWizard.prototype = {
 	  }	
 	};
 				
-    httpRequest.open('GET', url, true);
     httpRequest.send(null);		
   },
   
@@ -496,7 +498,7 @@ SyncWizard.prototype = {
     
     let input = document.getElementById('captchaInput');
     
-    // email is optional
+    // email is currently optional, not checking for value
     if (!(input && input.value)) {
       wizard.canAdvance = false;
       return false;
