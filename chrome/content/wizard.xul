@@ -29,29 +29,7 @@
               <!--style="background-image: url('chrome://weave/skin/weave_bg2.jpg'); background-color:#ffffff;" -->                 
 
     <label hidden="true" id="welcome-check" value="false"/>     
-    <description>
-      &instanceName.description;
-    </description>
     <separator class="thin"/> 
-    <grid>   
-      <columns>
-        <column/>
-        <column flex="1"/>
-      </columns>     
-      <rows>
-        <row align="center">
-          <label value="&instanceName.label;" control="sync-username-field"/>
-          <textbox id="sync-instanceName-field" class="padded" oninput="gSyncWizard.checkWelcome();"/>
-        </row>
-        <separator class="thin"/>
-        <row align="center">
-          <spacer flex="1"/>
-          <label value="&examples.label;"/>
-        </row>
-      </rows>
-    </grid>
-
-    <separator/><separator/>
       
     <radiogroup id="sync-radio-group">
       <grid> 
@@ -191,13 +169,11 @@
 
 
 
-
-
 	
   <wizardpage label="&create1.title;" pageid="sync-wizard-create1" 
 	          next="sync-wizard-create2" 
 	          onpageshow="gSyncWizard.onPageShow('sync-wizard-create1');"
-	          onpageadvanced="return gSyncWizard.checkAccountInput('password');">
+	          onpageadvanced="return gSyncWizard.checkEmail();">
     
     <label hidden="true" id="create1-check" value="false"/>     
     <grid>   
@@ -239,6 +215,23 @@
           <spacer flex="1"/>
           <label hidden="true" id="sync-password-match-error" value="&passwordMatchError.label;"/>
         </row>
+        
+        <separator/>
+        
+        <row align="center">
+          <label value="&email.label;" control="sync-email-create-field"/>
+          <textbox id="sync-email-create-field" class="padded"
+                   type="timed" timeout="2000"
+                   oninput="gSyncWizard.checkUserPasswordFields();" 
+                   oncommand="gSyncWizard.checkEmail();"/>
+        </row>
+        <row>
+          <spacer flex="1"/>
+          <hbox>
+            <image hidden="true" id="sync-wizard-verifyEmail-icon" src="chrome://weave/skin/sync-throbber-16x16.png" />
+            <label id="sync-wizard-verifyEmail" value=""/>
+          </hbox>
+        </row>
       </rows>
     </grid>
 
@@ -272,37 +265,20 @@
         <row align="center">
           <label value="&passphrase.label;" control="sync-passphrase-create-field" />
           <textbox id="sync-passphrase-create-field" class="padded" 
-                   type="timed" timeout="2000" 
+                   type="password" timeout="2000" 
                    oninput="gSyncWizard.checkPassphraseEmailFields();" 
                    oncommand="gSyncWizard.checkAccountInput('passphrase');"/>
         </row>
         <row align="center"> 
           <label value="&reenterPassphrase.label;" control="sync-reenter-passphrase-field" />
           <textbox id="sync-reenter-passphrase-field" class="padded" 
-                   type="timed" timeout="2000"
+                   type="password" timeout="2000"
                    oninput="gSyncWizard.checkPassphraseEmailFields();"
                    oncommand="gSyncWizard.checkAccountInput('passphrase');"/>
         </row>
         <row>
           <spacer flex="1"/>
           <label id="sync-passphrase-error" value=""/>
-        </row>
-        <separator/>
-        
-        <description value="&email.description;"/>
-        <row align="center">
-          <label value="&email.label;" control="sync-email-create-field"/>
-          <textbox id="sync-email-create-field" class="padded"
-                   type="timed" timeout="2000"
-                   oninput="gSyncWizard.checkPassphraseEmailFields();" 
-                   oncommand="gSyncWizard.checkEmail();"/>
-        </row>
-        <row>
-          <spacer flex="1"/>
-          <hbox>
-            <image hidden="true" id="sync-wizard-verifyEmail-icon" src="chrome://weave/skin/sync-throbber-16x16.png" />
-            <label id="sync-wizard-verifyEmail" value=""/>
-          </hbox>
         </row>
       </rows>
     </grid>
@@ -378,9 +354,17 @@
               <!--Wait and do this on final screen in case user Cancels-->
               <!--onpageadvanced="return gSyncWizard.setPrefs();"-->
     
-    <description value="&data.description;"/>
-    <separator class="thin"/>
-    <richlistbox rows="5">
+    <description>
+      &instanceName.description;
+    </description>
+      <hbox align="center">
+        <label value="&instanceName.label;" control="sync-username-field"/>
+        <textbox id="sync-instanceName-field" class="padded"/>
+      </hbox>
+      <separator/> <separator/>
+      <description value="&data.description;"/>
+      <separator class="thin"/>
+      <richlistbox rows="5">
       <richlistitem> <checkbox id="sync-wizard-bookmarks" checked="true" label="&bookmarks.label;"/> </richlistitem>
       <richlistitem> <checkbox id="sync-wizard-history" checked="true" label="&history.label;"/> </richlistitem>       
       <richlistitem> <checkbox id="sync-wizard-cookies" checked="false" label="&cookies.label;"/> </richlistitem>       
@@ -388,13 +372,8 @@
       <richlistitem> <checkbox id="sync-wizard-tabs" checked="false" label="&tabs.label;"/> </richlistitem>       
       <richlistitem> <checkbox id="sync-wizard-forms" checked="false" label="&formdata.label;"/> </richlistitem>
     </richlistbox>
-    <separator/>
-    <description value="&data.note;"/>
-    <separator/>
-    <separator/>
-    <hbox>
-      <checkbox id="removeBookmarks" label="&removeBookmarks.label;"/>
-    </hbox>
+    
+
   </wizardpage>
 
 

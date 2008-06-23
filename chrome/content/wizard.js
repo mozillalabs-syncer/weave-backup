@@ -156,7 +156,13 @@ SyncWizard.prototype = {
 	case "sync-wizard-data": {
       
 	  this._log.info("Wizard: Showing data page");
-
+	  
+	  // set default device name
+	  
+	  let username = Weave.Service.currentUser; 
+	  let deviceName = document.getElementById('sync-instanceName-field');
+	  deviceName.value = username + "'s Firefox";
+	  
       let branch = Cc["@mozilla.org/preferences-service;1"].
                    getService(Ci.nsIPrefService).
 		           getBranch(Weave.PREFS_BRANCH + "engine.");
@@ -224,10 +230,8 @@ SyncWizard.prototype = {
     let wizard = document.getElementById('sync-wizard');
     let radio1 = document.getElementById('sync-curuser-radio');
     let radio2 = document.getElementById('sync-newuser-radio');
-    let name = document.getElementById('sync-instanceName-field');
     
-    if ((radio1.getAttribute("selected") || radio2.getAttribute("selected")) &&
-         name && name.value) {
+    if (radio1.getAttribute("selected") || radio2.getAttribute("selected")) {
       wizard.canAdvance = true;
       document.getElementById('welcome-check').value = "true";
     }
@@ -272,7 +276,7 @@ SyncWizard.prototype = {
     }
     else if (type == "create") {
       dataPage.setAttribute("label", this._stringBundle.getString("data-create.title"));
-      finalPage.label.setAttribute("label", this._stringBundle.getString("final-create.title"));
+      finalPage.setAttribute("label", this._stringBundle.getString("final-create.title"));
     }
     
   }, 
@@ -444,14 +448,23 @@ SyncWizard.prototype = {
     let availableStatus = this._stringBundle.getString("usernameAvailable.label");
     let password1 = document.getElementById("sync-password-create-field");
 	let password2 = document.getElementById("sync-reenter-password-field");
+    let email = document.getElementById('sync-email-create-field');
+	let emailLabel = document.getElementById('sync-wizard-verifyEmail');
+	let emailOk = this._stringBundle.getString("emailOk.label");
 		
 	if (!(usernameField && usernameField.value &&
-	      password1 && password1.value && password2 && password2.value)) {
+	      password1 && password1.value && password2 && password2.value && 
+	      email && email.value)) {
 	  wizard.canAdvance = false;
       document.getElementById('create1-check').value = "false";
 	  return false;
     }
-	
+	if (email.value && emailLabel.value == emailOk) {
+      wizard.canAdvance = true;
+      document.getElementById('create1-check').value = "true";
+      return true;
+    }
+
 	if (usernameStatus.value == availableStatus) {
 	  wizard.canAdvance = true;
       document.getElementById('create1-check').value = "true";
@@ -468,10 +481,6 @@ SyncWizard.prototype = {
 
     let passphrase1 = document.getElementById('sync-passphrase-create-field');
     let passphrase2 = document.getElementById('sync-reenter-passphrase-field');
-    let email = document.getElementById('sync-email-create-field');
-	let emailLabel = document.getElementById('sync-wizard-verifyEmail');
-    let	emailUnverified = this._stringBundle.getString("emailUnverified.label");
-	let emailOk = this._stringBundle.getString("emailOk.label");
     
     if (!(passphrase1 && passphrase1.value && passphrase2 && passphrase2.value)) {
       wizard.canAdvance = false;
@@ -479,15 +488,8 @@ SyncWizard.prototype = {
       return false;
     }
     
-    if ((email.value && emailLabel.value == emailOk) ||
-        ((!email.value) && emailLabel.value == emailUnverified)) {
-      wizard.canAdvance = true;
-      document.getElementById('create2-check').value = "true";
-      return true;
-    }
-    
-    wizard.canAdvance = false;
-    return false;
+    wizard.canAdvance = true;
+    return true;
   },
 
   /* checkAccountInput() - Called onadvance from password and passphrase entry screens.
@@ -505,16 +507,18 @@ SyncWizard.prototype = {
 	if (field == "password") {
 	  let passwordMatchError = document.getElementById("sync-password-match-error");
 	
-      if(!gSyncWizard.checkUserPasswordFields())
-        return false;
-      
       if (password1.value != password2.value)  {
 	    passwordMatchError.hidden = false;
 	    wizard.canAdvance = false;
         document.getElementById('create1-check').value = "false";
 	    return false;
 	  }
-      passwordMatchError.hidden = true;
+	  else 
+	    passwordMatchError.hidden = true;
+
+      if(!gSyncWizard.checkUserPasswordFields())
+        return false;
+      
       wizard.canAdvance = true;
       document.getElementById('create1-check').value = "true";
 	}
@@ -657,7 +661,7 @@ SyncWizard.prototype = {
 	  emailIcon = THROBBER;
 	  emailLabel.value = emailUnverified;
 	  wizard.canAdvance = true;
-      document.getElementById('create2-check').value = "true";
+      document.getElementById('create1-check').value = "true";
 	  return true;
 	}
 	
@@ -665,7 +669,7 @@ SyncWizard.prototype = {
       emailIcon = THROBBER_ERROR;
 	  emailLabel.value = emailInvalid; 
 	  wizard.canAdvance = false;
-      document.getElementById('create2-check').value = "false";
+      document.getElementById('create1-check').value = "false";
 	  return false;
     }
     
@@ -681,15 +685,15 @@ SyncWizard.prototype = {
 	        emailLabel.value = emailTaken;
 	        emailIcon.src = THROBBER_ERROR;
 	        wizard.canAdvance = false;
-            document.getElementById('create2-check').value = "false";
+            document.getElementById('create1-check').value = "false";
 	      }
 	      else {
 	        emailLabel.value = emailOk;
 	        emailIcon.src = THROBBER;
 	        
-	        // check that passphrase fields are correct 
+	        // check that password fields are correct 
 	        // will also take care of advancing
-	        gSyncWizard.checkAccountInput("passphrase");
+	        gSyncWizard.checkAccountInput("password");
 	      }
 	      serverError.hidden = true;
 	    } 
