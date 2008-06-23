@@ -4,6 +4,7 @@ import difflib
 import unittest
 import subprocess
 
+import getnose
 import nose.plugins
 import nose.plugins.builtin
 
