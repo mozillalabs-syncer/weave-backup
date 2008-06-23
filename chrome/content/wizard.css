@@ -1,5 +1,24 @@
+wizard {
+  background-image: url(chrome://weave/skin/wizard-background.jpg);
+  background-color: transparent;
+  -moz-appearance: none;
+}
 
 #sync-password-field, #sync-password-create-field, #sync-reenter-password-field, #sync-passphrase-create-field, #sync-reenter-passphrase-field {
-  -moz-binding:
-    url("chrome://global/content/bindings/textbox.xml#timed-textbox");
+  -moz-binding: url("chrome://global/content/bindings/textbox.xml#timed-textbox");
+}
+
+.wizard-header, .wizard-page-box {
+  -moz-appearance: none;
+  background-color: #FFFFFF;
+  opacity: 0.7;
+}
+
+.hint {
+  color: #6f6f6f;
+}
+
+a {
+  text-decoration: none;
+  color: #0000ff;
 }
