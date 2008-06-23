@@ -82,7 +82,7 @@ test: build
 
 # fixme: version or build id in the xpi name?
 xpi_name := sync-`uname -s`.xpi
-xpi_files := chrome/sync.jar defaults modules openssl platform \
+xpi_files := chrome/sync.jar defaults modules platform \
              install.rdf chrome.manifest
 
 # fixme: use explicit file list instead of glob?
