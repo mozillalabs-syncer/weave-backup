@@ -1,0 +1,20 @@
+window {
+  padding: 40px;
+}
+
+#statusIcon {
+  list-style-image: url("chrome://weave/skin/sync-throbber-16x16.png");
+}
+
+#statusBox[status="active"] > #statusIcon {
+  list-style-image: url("chrome://weave/skin/sync-throbber-16x16-active.apng");
+}
+
+#statusBox[status="error"] > #statusIcon {
+  list-style-image: url("chrome://weave/skin/sync-throbber-16x16-error.png");
+}
+
+/* FIXME: find a better icon for this status. */
+#statusBox[status="success"] > #statusIcon {
+  list-style-image: url("chrome://global/skin/icons/information-16.png");
+}
