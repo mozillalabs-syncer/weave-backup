@@ -378,35 +378,40 @@ SyncWizard.prototype = {
 	let usernameField = document.getElementById('sync-username-create-field');
 	let url = CHECK_USERNAME_URL + usernameField.value;
 		
-    let statusLabel = document.getElementById('create-username-error');
-    let statusIcon = document.getElementById('create-username-icon');
-	let usernameTaken = this._stringBundle.getString("createUsername-error.label");
-	let usernameAvailable = this._stringBundle.getString("createUsername-success.label");
-	let checkingUsername = this._stringBundle.getString("createUsername-progress.label");
-	let serverError = stringBundle.getString("serverError.label");
-
 	if (!(usernameField && usernameField.value)) {
 	  wizard.canAdvance = false;
 	  return false;
 	}
-	
-	statusIcon.src = THROBBER_ACTIVE;
-	statusLabel.value = checkingUsername;
-	
-    httpRequest.open('GET', url, true);
 
-    httpRequest.onreadystatechange = function() {			
+        let statusLabel = document.getElementById('create-username-error');
+        let statusIcon = document.getElementById('create-username-icon');
+
+        // Get status messages
+	let usernameTaken = this._stringBundle.getFormattedString("createUsername-error.label", [usernameField.value]);
+	let usernameAvailable = this._stringBundle.getFormattedString("createUsername-success.label", [usernameField.value]);
+	let serverError = stringBundle.getString("serverError.label");
+	let serverTimeoutError = stringBundle.getString("serverTimeoutError.label");
+
+        // Set the notification to display "Checking availability..."
+	statusLabel.value = this._stringBundle.getString("createUsername-progress.label");
+	statusIcon.src = THROBBER_ACTIVE;
+        statusIcon.hidden = false;
+       
+        // Check availability	
+        httpRequest.open('GET', url, true);
+        httpRequest.onreadystatechange = function() {
 	  if (httpRequest.readyState == 4) {
 	    if (httpRequest.status == 200) {
 	      if (httpRequest.responseText == 0) {
-            statusIcon.hidden = true;
-	        statusLabel.value = usernameTaken;
+	        statusIcon.hidden = true;
+                statusLabel.value = usernameTaken;
+                statusLabel.style.color = "red";
 	        wizard.canAdvance = false;
-            document.getElementById('create1-check').value = "false";
-	      }
-	      else {
-            statusIcon.hidden = true;
+                document.getElementById('create1-check').value = "false";
+	      } else {
+                statusIcon.hidden = true;
 	        statusLabel.value = usernameAvailable;
+                statusLabel.style.color = "blue";
 	        // check that password fields are correct 
 	        // will also take care of advancing
 	        gSyncWizard.checkAccountInput("password");
@@ -415,22 +420,23 @@ SyncWizard.prototype = {
 	    else {
 	      log.info("Error: received status " + httpRequest.status);
 	      //serverError.setAttribute("hidden", false);
-          statusIcon.hidden = true;
-          statusLabel.value = serverError;
+              statusIcon.hidden = true;
+              statusLabel.value = serverError;
+              statusLabel.style.color = "red";
 	      wizard.canAdvance = false;
-          document.getElementById('create1-check').value = "false";
+              document.getElementById('create1-check').value = "false";
 	    }
 	  }	
-	};
-				
-    httpRequest.send(null);	
+	};			
+        httpRequest.send(null);	
 
       	
     // Only wait a certain amount of time for the server
     setTimeout(function() {
               if (statusLabel.value == checkingUsername) {
                 statusIcon.hidden = true;
-                statusLabel.value = serverError;
+                statusLabel.value = serverTimeoutError;
+                statusLabel.style.color = red;
               }
             }, SERVER_TIMEOUT);
     
@@ -442,27 +448,30 @@ SyncWizard.prototype = {
    *  available username has been chosen.
    */
   checkUserPasswordFields: function SyncWizard_checkUserPasswordFields() {
-	let wizard = document.getElementById('sync-wizard');
+    let wizard = document.getElementById('sync-wizard');
+
     let usernameField = document.getElementById('sync-username-create-field');
     let usernameStatus = document.getElementById('create-username-error');
+
     let availableStatus = this._stringBundle.getString("createUsername-success.label");
     let password1 = document.getElementById("sync-password-create-field");
-	let password2 = document.getElementById("sync-reenter-password-field");
+    let password2 = document.getElementById("sync-reenter-password-field");
     let email = document.getElementById('sync-email-create-field');
-	let emailLabel = document.getElementById('email-error');
-	let emailOk = this._stringBundle.getString("email-success.label");
+    let emailLabel = document.getElementById('email-error');
+    let emailOk = this._stringBundle.getString("email-success.label");
 		
-	if (!(usernameField && usernameField.value &&
+    if (!(usernameField && usernameField.value &&
 	      password1 && password1.value && password2 && password2.value && 
 	      email && email.value)) {
 	  wizard.canAdvance = false;
-      document.getElementById('create1-check').value = "false";
+          document.getElementById('create1-check').value = "false";
 	  return false;
     }
-	if (email.value && emailLabel.value == emailOk) {
-      wizard.canAdvance = true;
-      document.getElementById('create1-check').value = "true";
-      return true;
+
+    if (email.value && emailLabel.value == emailOk) {
+        wizard.canAdvance = true;
+        document.getElementById('create1-check').value = "true";
+        return true;
     }
 
 	if (usernameStatus.value == availableStatus) {
@@ -516,8 +525,9 @@ SyncWizard.prototype = {
 	  else 
 	    passwordMatchError.value = "";
 
-      if(!gSyncWizard.checkUserPasswordFields())
-        return false;
+// XXX temporarily disabled
+//      if(!gSyncWizard.checkUserPasswordFields())
+//        return false;
       
       wizard.canAdvance = true;
       document.getElementById('create1-check').value = "true";
@@ -654,46 +664,51 @@ SyncWizard.prototype = {
 	
 	let regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
 	
-	let emailTaken = this._stringBundle.getString("email-unavailable.label");
-	let emailInvalid = this._stringBundle.getString("email-invalid.label");
-	let emailOk = this._stringBundle.getString("email-success.label");
 	let checkingEmail = this._stringBundle.getString("email-progress.label");
+
+	let emailTaken = this._stringBundle.getFormattedString("email-unavailable.label", [emailField.value]);
+	let emailOk = this._stringBundle.getFormattedString("email-success.label", [emailField.value]);
+	let emailInvalid = this._stringBundle.getString("email-invalid.label");
+
 	let serverError = this._stringBundle.getString("serverError.label");
-	
+	let serverTimeoutError = this._stringBundle.getString("serverTimeoutError.label");
+
 	if (!(emailField && emailField.value)) {
 	  emailIcon.hidden = true;
 	  emailLabel.value = "";
 	  wizard.canAdvance = true;
-      document.getElementById('create1-check').value = "true";
+          document.getElementById('create1-check').value = "true";
 	  return true;
 	}
 	
-    if (!regex.test(emailField.value)) {
-      emailIcon.hidden = true;
+       if (!regex.test(emailField.value)) {
+          emailIcon.hidden = true;
 	  emailLabel.value = emailInvalid; 
+          emailLabel.style.color = "red";
 	  wizard.canAdvance = false;
-      document.getElementById('create1-check').value = "false";
+          document.getElementById('create1-check').value = "false";
 	  return false;
-    }
+       }
     
     emailLabel.value = checkingEmail;
     emailIcon.hidden = false;
     
-    httpRequest.open('GET', url, true);
-
-    httpRequest.onreadystatechange = function() {			
+     httpRequest.open('GET', url, true);
+     httpRequest.onreadystatechange = function() {			
 	  if (httpRequest.readyState == 4) {
 	    if (httpRequest.status == 200) {
 	      if (httpRequest.responseText == 0) {
 	        emailLabel.value = emailTaken;
+		emailLabel.style.color = "red";
 	        emailIcon.hidden = true;
 	        wizard.canAdvance = false;
-            document.getElementById('create1-check').value = "false";
+                document.getElementById('create1-check').value = "false";
 	      }
 	      else {
 	        emailLabel.value = emailOk;
+                emailLabel.style.color = "blue";
 	        emailIcon.hidden = true;
-	        
+                	        
 	        // check that password fields are correct 
 	        // will also take care of advancing
 	        gSyncWizard.checkAccountInput("password");
@@ -701,7 +716,8 @@ SyncWizard.prototype = {
 	    } 
 	    else {
 	      log.info("Error: received status " + httpRequest.status);
-	      emailLabel.value = emailUnverified;
+	      emailLabel.value = serverError;
+              emailLabel.style.color = "red";
 	      emailIcon.hidden = true;
 	    }
 	  }	
@@ -713,7 +729,8 @@ SyncWizard.prototype = {
     setTimeout(function() {
               if (emailLabel.value == checkingEmail) {
                 emailIcon.hidden = true;
-                emailLabel.value = serverError;
+                emailLabel.value = serverTimeoutError;
+                emailLabel.style.color = "red";
               }
             }, SERVER_TIMEOUT);
 

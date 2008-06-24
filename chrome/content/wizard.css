@@ -28,7 +28,11 @@ wizard {
   color: #6f6f6f;
 }
 
+.header {
+  font-weight: bold;
+}
+
 a {
-  text-decoration: none;
+  text-decoration: underline;
   color: #0000ff;
 }
