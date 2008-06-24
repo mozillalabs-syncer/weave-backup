@@ -105,7 +105,7 @@ function _find_and_run_tests() {
     try {
       parent[test]();
     } catch (e) {
-      dump(e + "\n");
+      _display_exception(e);
       numFailed++;
     }
   }
@@ -119,6 +119,22 @@ function _find_and_run_tests() {
     dump(outcome + "\n");
 }
 
+function _display_exception(e) {
+  dump("An exception occurred: ");
+  dump(e + "\n\n");
+  dump("Traceback:\n\n");
+  if (e.location) {
+    let frame = e.location;
+    while (frame) {
+      dump(frame + "\n");
+      frame = frame.caller;
+    }
+  } else if (e.stack)
+    dump(e.stack);
+  else
+    dump("No traceback available.\n");
+}
+
 function _execute_test(func) {
   if (typeof func == "undefined")
     func = _find_and_run_tests;
@@ -130,7 +146,7 @@ function _execute_test(func) {
     _do_main();
   } catch (e) {
     _fail = true;
-    dump(e + "\n");
+    _display_exception(e);
   }
 
   if (_fail)
