@@ -1,0 +1,38 @@
+wizard {
+    background-image: url(chrome://weave/skin/wizard-background.png);
+    -moz-appearance: none;
+}
+
+#sync-password-field, #sync-password-create-field, #sync-reenter-password-field, #sync-passphrase-create-field, #sync-reenter-passphrase-field {
+  -moz-binding: url("chrome://global/content/bindings/textbox.xml#timed-textbox");
+}
+
+.wizard-header {
+  -moz-border-radius-topright: 15px;
+  -moz-border-radius-topleft: 15px;
+  margin-top: 70px;
+}
+
+.wizard-page-box {
+  -moz-border-radius-bottomright: 15px;
+  -moz-border-radius-bottomleft: 15px;
+}
+
+.wizard-header, .wizard-page-box {
+    -moz-appearance: none;
+    background-color: #FFFFFF;
+    opacity: 0.8;
+}
+
+.hint {
+  color: #6f6f6f;
+}
+
+.header {
+  font-weight: bold;
+}
+
+a {
+  text-decoration: underline;
+  color: #0000ff;
+}

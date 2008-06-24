@@ -60,8 +60,7 @@ function Sync() {
   } else
   if (Weave.Utils.prefs.getCharPref("lastversion") == "0.1.30") {
       setTimeout(function() { alert("Due to server changes you will need to create a new Weave account to continue.");
-	      gSync.doOpenSetupWizard(); }, 500);
-   
+	      gSync.doOpenSetupWizard(); }, 500);   
   } 
 
   if (Weave.Utils.prefs.getCharPref("lastversion") != Weave.WEAVE_VERSION) {
@@ -314,7 +313,7 @@ Sync.prototype = {
 
   doOpenSetupWizard : function Sync_doOpenSetupWizard(event) {
       window.openDialog('chrome://weave/content/wizard.xul', '',
-        'chrome, dialog, resizable=yes', null);
+        'chrome,centerscreen,dialog,resizable=yes', null);
   },
 
   doLogout: function Sync_doLogout(event) {
