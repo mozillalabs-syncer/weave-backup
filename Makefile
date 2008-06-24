@@ -84,7 +84,7 @@ test: build
 xpi_name := sync-`uname -s`.xpi
 xpi_files := chrome/sync.jar defaults modules platform \
              install.rdf chrome.manifest
-chrome_files := chrome/content chrome/skin chrome/locale
+chrome_files := chrome/content/* chrome/skin/* chrome/locale/*
 
 # fixme: use explicit file list instead of glob?
 chrome/sync.jar: $(chrome_files)
