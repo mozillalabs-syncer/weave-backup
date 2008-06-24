@@ -1,5 +1,5 @@
 wizard {
-  background-image: url(chrome://weave/skin/wizard-background.jpg);
+  background-image: url(chrome://weave/skin/wizard-background.png);
   background-color: transparent;
   -moz-appearance: none;
 }
@@ -8,10 +8,21 @@ wizard {
   -moz-binding: url("chrome://global/content/bindings/textbox.xml#timed-textbox");
 }
 
+.wizard-header {
+  -moz-border-radius-topright: 15px;
+  -moz-border-radius-topleft: 15px;
+  margin-top: 70px;
+}
+
+.wizard-page-box {
+  -moz-border-radius-bottomright: 15px;
+  -moz-border-radius-bottomleft: 15px;
+}
+
 .wizard-header, .wizard-page-box {
   -moz-appearance: none;
   background-color: #FFFFFF;
-  opacity: 0.7;
+  opacity: 0.8;
 }
 
 .hint {
