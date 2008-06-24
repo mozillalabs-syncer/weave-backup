@@ -334,21 +334,10 @@
     <separator/>
     
     <label id="terms" value="&terms.label;"/>
-<<<<<<< local
-<<<<<<< local
-    <textbox multiline="true" rows="3"/>    
-    <hbox>
-=======
-=======
->>>>>>> other
 
     <iframe src="chrome://weave/content/ToS.xhtml" width="400" height="100"/>
 
     <hbox align="left">
-<<<<<<< local
->>>>>>> other
-=======
->>>>>>> other
       <spacer flex="1"/>
       <checkbox id="terms-checkbox" selected="false" label="&acceptTerms.label;"
                 oncommand="gSyncWizard.checkFinalFields();"/>
