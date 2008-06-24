@@ -82,7 +82,7 @@ test: build
 
 # fixme: version or build id in the xpi name?
 xpi_name := sync-`uname -s`.xpi
-xpi_files := chrome/sync.jar defaults modules platform \
+xpi_files := chrome/sync.jar defaults components modules platform \
              install.rdf chrome.manifest
 chrome_files := chrome/content/* chrome/skin/* chrome/locale/*
 
