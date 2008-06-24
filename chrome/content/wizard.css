@@ -1,7 +1,6 @@
 wizard {
-  background-image: url(chrome://weave/skin/wizard-background.png);
-  background-color: transparent;
-  -moz-appearance: none;
+    background-image: url(chrome://weave/skin/wizard-background.png);
+    -moz-appearance: none;
 }
 
 #sync-password-field, #sync-password-create-field, #sync-reenter-password-field, #sync-passphrase-create-field, #sync-reenter-passphrase-field {
@@ -20,9 +19,9 @@ wizard {
 }
 
 .wizard-header, .wizard-page-box {
-  -moz-appearance: none;
-  background-color: #FFFFFF;
-  opacity: 0.8;
+    -moz-appearance: none;
+    background-color: #FFFFFF;
+    opacity: 0.8;
 }
 
 .hint {

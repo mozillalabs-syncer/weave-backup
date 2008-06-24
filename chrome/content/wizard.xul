@@ -42,7 +42,7 @@
                             gSyncWizard.setTitles('verify');
                             gSyncWizard.checkWelcome();"/>
           <spacer width="10"/>
-          <vbox width="200">
+          <vbox width="180">
             <hbox><html:strong>
               <label value="&curUser-title.label;" control="sync-curuser-radio"
                      onclick="gSyncWizard.selectRadio('sync-curuser-radio');
@@ -50,7 +50,7 @@
                               gSyncWizard.setTitles('verify');"/>
             </html:strong></hbox>
             <separator />
-            <description width="200" control="sync-curuser-radio"
+            <description width="180" control="sync-curuser-radio"
                          onclick="gSyncWizard.selectRadio('sync-curuser-radio');
                                   gSyncWizard.setNextPage('sync-wizard-welcome', 'sync-wizard-verify');
                                   gSyncWizard.setTitles('verify');">
@@ -66,7 +66,7 @@
     	                    gSyncWizard.setTitles('create');
     	                    gSyncWizard.checkWelcome();"/>
     	  <spacer width="10"/>
-    	  <vbox width="200">
+    	  <vbox width="180">
     	    <hbox><html:strong>
     	      <label value="&newUser-title.label;" control="sync-newuser-radio"
     	             onclick="gSyncWizard.selectRadio('sync-newuser-radio');
@@ -74,7 +74,7 @@
     	                      gSyncWizard.setTitles('create');"/>
     	    </html:strong></hbox>
             <separator />
-    	    <description width="200" control="sync-newuser-radio"
+    	    <description width="180" control="sync-newuser-radio"
     	                 onclick="gSyncWizard.selectRadio('sync-newuser-radio');
     	                          gSyncWizard.setNextPage('sync-wizard-welcome', 'sync-wizard-create1');
     	                          gSyncWizard.setTitles('create');"> 
@@ -334,9 +334,10 @@
     
     
     <label id="terms" value="&terms.label;"/>
-    <textbox multiline="true" rows="5"/>
-    
-    <hbox>
+
+    <iframe src="chrome://weave/content/ToS.xhtml" width="400" height="100"/>
+
+    <hbox align="left">
       <spacer flex="1"/>
       <checkbox id="terms-checkbox" selected="false" label="&acceptTerms.label;"
                 oncommand="gSyncWizard.checkFinalFields();"/>
