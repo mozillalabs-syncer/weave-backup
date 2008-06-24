@@ -120,8 +120,16 @@
         <row>
           <spacer flex="1"/>
           <hbox>
-            <image id="sync-wizard-verifyPassword-icon" src="chrome://weave/skin/sync-throbber-16x16.png" />
-            <label id="sync-wizard-verifyPassword-status" value="&unverified.label;"/>
+            <label id="verify-account-error" value=""/>
+            <image hidden="true" id="verify-account-icon" src="chrome://global/skin/icons/notloading_16.png" />
+            <spacer flex="1"/>
+            <description>
+              &reminder.label;
+              <html:a style="text-decoration: underline; color: blue;" 
+                href="&recovery.link;" target="_blank">
+                &clickHere.text;
+              </html:a>
+            </description>
           </hbox>
         </row>
         
@@ -135,26 +143,15 @@
         <row>
           <spacer flex="1"/>
           <hbox>
-            <image src="chrome://weave/skin/sync-throbber-16x16.png" />
-            <label id="sync-wizard-verifyPassphrase-status" value="&unverified.label;"/>
+            <label id="verify-passphrase-error" value=""/>
+            <image hidden="true" id="verify-passphrase-icon" src="chrome://global/skin/icons/notloading_16.png" />
           </hbox>
         </row>
       </rows>    
     </grid>
         
     <separator/> <separator/>
-    
-    <vbox>
-      <description>
-        &reminder.label;
-        <html:a style="text-decoration: underline; color: blue;" 
-                href="&recovery.link;" target="_blank">
-          &clickHere.text;
-        </html:a>
-      </description>
-    </vbox>
      
-    <separator/>
     <description hidden="true" id="sync-wizard-verify-serverError">
       &serverError1.description; 
       <html:a style="text-decoration: underline; color: blue;" href="#" 
@@ -192,11 +189,13 @@
         <row>
           <spacer flex="1"/>
           <hbox>
-            <image id="sync-wizard-verifyUsername-icon" src="chrome://weave/skin/sync-throbber-16x16.png" />
-            <label id="sync-wizard-verifyUsername" value="&usernameUnchecked.label;"/>
+            <label id="create-username-error" value=""/>
+            <image hidden="true" id="create-username-icon" src="chrome://global/skin/icons/notloading_16.png" />
           </hbox>
-        </row>         
+        </row>     
+        
         <separator />
+        
         <row align="center">
           <label value="&password.label;" control="sync-password-create-field"/>
           <textbox id="sync-password-create-field" class="padded" 
@@ -213,7 +212,7 @@
         </row>
         <row>
           <spacer flex="1"/>
-          <label hidden="true" id="sync-password-match-error" value="&passwordMatchError.label;"/>
+          <label id="password-match-error" value=""/>
         </row>
         
         <separator/>
@@ -228,8 +227,8 @@
         <row>
           <spacer flex="1"/>
           <hbox>
-            <image hidden="true" id="sync-wizard-verifyEmail-icon" src="chrome://weave/skin/sync-throbber-16x16.png" />
-            <label id="sync-wizard-verifyEmail" value=""/>
+            <label id="email-error" value=""/>
+            <image hidden="true" id="email-icon" src="chrome://global/skin/icons/notloading_16.png" />
           </hbox>
         </row>
       </rows>
@@ -278,7 +277,7 @@
         </row>
         <row>
           <spacer flex="1"/>
-          <label id="sync-passphrase-error" value=""/>
+          <label id="passphrase-match-error" value=""/>
         </row>
       </rows>
     </grid>
@@ -301,8 +300,9 @@
 
     <label hidden="true" id="create3-check" value="false"/>     
 
-    <description id="create3-error" hidden="true"/>
-    <separator class="thin"/>
+    <description id="create-account-description"> &createAccount.description; </description>
+   
+    <separator/>
 
     <grid>
       <rows>
@@ -318,6 +318,7 @@
               <html:a style="text-decoration: underline; color: blue;" href="#" onclick="gSyncWizard.reloadCaptcha();">&reloadCaptcha.text;</html:a>
             .</label>
             <textbox id="captchaInput" oninput="gSyncWizard.checkFinalFields();"/>
+            <label id="captcha-error" value=""/>
           </vbox>
           <spacer flex="1"/>
         </row>
@@ -332,18 +333,30 @@
     
     <separator/>
     
-    
     <label id="terms" value="&terms.label;"/>
+<<<<<<< local
+<<<<<<< local
+    <textbox multiline="true" rows="3"/>    
+    <hbox>
+=======
+=======
+>>>>>>> other
 
     <iframe src="chrome://weave/content/ToS.xhtml" width="400" height="100"/>
 
     <hbox align="left">
+<<<<<<< local
+>>>>>>> other
+=======
+>>>>>>> other
       <spacer flex="1"/>
       <checkbox id="terms-checkbox" selected="false" label="&acceptTerms.label;"
                 oncommand="gSyncWizard.checkFinalFields();"/>
     </hbox>
     
+    <separator/>
     
+    <description id="account-creation-error"/>
 
   </wizardpage>
 
@@ -358,9 +371,9 @@
     <description>
       &instanceName.description;
     </description>
-      <hbox align="center">
+      <hbox align="center" >
         <label value="&instanceName.label;" control="sync-username-field"/>
-        <textbox id="sync-instanceName-field" class="padded"/>
+        <textbox flex="1" id="sync-instanceName-field" class="padded"/>
       </hbox>
       <separator/> <separator/>
       <description value="&data.description;"/>
