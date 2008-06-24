@@ -43,15 +43,15 @@ var Ci = Components.interfaces;
  Override this function to also add a "Share this folder..." or
  "Cancel/Stop sharing this folder..." depending on its status. */
 
-/* TODO: 
+/* TODO:
    4. LONGTERM: might be healthier to add an onPopupShowing event handler to
       the bookmark menu to do this, instead of overriding the original
-      handler.  ( Do this by using 
+      handler.  ( Do this by using
       bookmarkMenu.addEventListener( "popupshowing", myfunc, false );
       use getElementById to get bookmarkMenu. )
 
    5. LONGTERM: There's a race condition here in that if this override
-      gets called before the handler is set up in the first place, it 
+      gets called before the handler is set up in the first place, it
       won't work.  Might want to set up a timer callback (with timeout 0)
       to ensure this override gets called only after startup is otherwise
       complete.
@@ -82,6 +82,18 @@ function isFolderSharedOutgoing( menuFolder ) {
   for ( var x in annotations ) {
     if ( annotations[x].name == OUTGOING_SHARED_ANNO ) {
       return ( annotations[x].value != '' );
+    }
+  }
+  return false;
+}
+
+function getUsernameFromSharedFolder( menuFolder ) {
+  // TODO this is almost the same code as isFolderSharedOutgoing, refactor!
+  let menuFolderId = menuFolder.node.itemId;
+  let annotations = PlacesUtils.getAnnotationsForItem( menuFolderId );
+  for ( var x in annotations ) {
+    if ( annotations[x].name == OUTGOING_SHARED_ANNO ) {
+      return ( annotations[x].value );
     }
   }
   return false;
@@ -122,7 +134,7 @@ BookmarksEventHandler.onPopupShowing = function BT_onPopupShowing_new(event) {
   the expected bookmark folder items aren't even in the menu yet.*/
   adjustBookmarkMenuIcons();
 
-  // Get the menu... 
+  // Get the menu...
   let target = event.originalTarget;
   let stringBundle = document.getElementById("weaveStringBundle");
 
@@ -142,23 +154,17 @@ BookmarksEventHandler.onPopupShowing = function BT_onPopupShowing_new(event) {
     if ( isFolderSharedOutgoing( selectedMenuFolder ) ) {
       // Un-share the selected folder:
       let folderItemId = selectedMenuFolder.node.itemId;
-      let annotation = { name: OUTGOING_SHARED_ANNO,
-                         value: '',
-                         flags: 0,
-                         mimeType: null,
-                         type: PlacesUtils.TYPE_STRING,
-                         expires: PlacesUtils.EXPIRE_NEVER };
-      PlacesUtils.setAnnotationsForItem( folderItemId, [ annotation ] );
-      // TODO tell Weave.Service to stop sharing bookmarks
-      // (will need to make the value of the annotation be the weave username
-      // of who they are being shared with, so that we have that name to
-      // pass to Weave.Service.
+      let username = getUsernameFromSharedFolder(selectedMenuFolder);
+      Weave.Service.stopSharingData("bookmarks",
+                                    null, // no callback needed
+                                    selectedMenuFolder,
+                                    username);
     } else {
       // Pop the dialog box for sharing the selected folder:
       let type = "Sync:Share";
       let uri = "Chrome://weave/content/share.xul";
       let options = null;
-    
+
       let wm = Cc["@mozilla.org/appshell/window-mediator;1"].
         getService(Ci.nsIWindowMediator);
       let window = wm.getMostRecentWindow(type);

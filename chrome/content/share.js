@@ -58,7 +58,7 @@ Share.prototype = {
   doShare: function Share_doShare(event) {
     /* This is called when the user clicks the Share button in the
        dialog box.*/
-    /* Start the active display widgets (throbber, label) to let the user know 
+    /* Start the active display widgets (throbber, label) to let the user know
        that something is happening: */
     let labelStr = this._stringBundle.getString("status.working");
     let label = document.getElementById("status.label");
@@ -72,7 +72,7 @@ Share.prototype = {
     this._username = document.getElementById("username").value;
     Weave.Service.shareData("bookmarks",
                             function(ret) { self.shareCb(ret); },
-                            this._selectedMenuFolder, // turn into GUID?
+                            this._selectedMenuFolder,
                             this._username);
     this.shareCb( true );
   },
