@@ -82,6 +82,10 @@ SyncWizard.prototype = {
 
   _init : function SyncWizard__init() {
     this._log = Log4Moz.Service.getLogger("Chrome.Wizard");
+    
+    if (Weave.Service.isLoggedIn) {
+      Weave.Service.logout();
+    }
 	
     this._log.info("Initializing setup wizard");
 
@@ -170,7 +174,6 @@ SyncWizard.prototype = {
     case "sync-wizard-data": {      
 	  this._log.info("Wizard: Showing data page");
 	
-<<<<<<< local
 	  // TODO: use a formatted string here from properties
 	  // set default device name
 	  let deviceName = document.getElementById('sync-instanceName-field');
@@ -180,21 +183,11 @@ SyncWizard.prototype = {
 	    username = document.getElementById('sync-username-field').value; 
 	  else if (path == "create")
 	    username = document.getElementById('sync-username-create-field').value;
-=======
-	// set default device name
-	let deviceName = document.getElementById('sync-instanceName-field');
-	if (Weave.Service.isLoggedIn)
-	    deviceName.value = Weave.Service.username + "'s Firefox";
-	else 
-	    deviceName.value = "Firefox";
->>>>>>> other
 	  
 	  if (username)
-	    deviceName.value = this._stringBundle.getFormattedString("default-name", [username]);
+	    deviceName.value = this._stringBundle.getFormattedString("default-name.label", [username]);
 	  else
-	    deviceName.value = this._stringBundle.getString("default-name-nouser");
-
-	  
+	    deviceName.value = this._stringBundle.getString("default-name-nouser.label");
 	  
 	  let branch = Cc["@mozilla.org/preferences-service;1"].
 	               getService(Ci.nsIPrefService).getBranch(Weave.PREFS_BRANCH + "engine.");
@@ -343,16 +336,10 @@ SyncWizard.prototype = {
     let statusLabel = document.getElementById('verify-account-error');
     let statusLink = document.getElementById('verify-account-error-link');
     let statusIcon = document.getElementById('verify-account-icon');
-<<<<<<< local
-    let username = document.getElementById('sync-username-field');
-    let password = document.getElementById('sync-password-field');
-=======
     let username = document.getElementById('sync-username-field').value;
     let password = document.getElementById('sync-password-field').value;
->>>>>>> other
     let progress = this._stringBundle.getString("verify-progress.label");
     let serverError = this._stringBundle.getString("serverError.label");
-      
 
     // Check for empty fields
     if (!username || !password) {
@@ -366,32 +353,11 @@ SyncWizard.prototype = {
     statusIcon.hidden = false;
     statusLabel.hidden = false;
     statusLabel.value = progress;
-<<<<<<< local
     statusLabel.style.color = PROGRESS_COLOR;
     statusLink.hidden = true;
-    
-    Weave.Service.logout();
-    
-    // FIXME: don't have a passphrase here
-    Weave.Service.login(function() {
-	    //check currentUser here?
-        }, password.value, "", true);
-   
-    // Only wait a certain amount of time for the server
-    setTimeout(function() {
-            if (statusLabel.value == progress) {
-	          statusIcon.hidden = true;
-		      statusLabel.value = serverError;
-		      statusLabel.style.color = SERVER_ERROR_COLOR;
-		      statusLink.hidden = false;
-            }
-	}, SERVER_TIMEOUT);
-    return false;
-=======
       
     // This will first a notification when when it succeeds/fails
     Weave.Service.verifyLogin(username, password);
->>>>>>> other
   },
   
   acceptExistingAccount: function SyncWizard_acceptExistingAccount() {
@@ -917,24 +883,17 @@ SyncWizard.prototype = {
     finalIcon.hidden = false;
     finalLink.hidden = true;
 
-    if (Weave.Service.currentUser) {
-      gSyncWizard.initialSync();
-      return false;
-    }
-
     // set prefs
     finalStatus.value = prefsProgress;
     gSyncWizard.setPrefs();    
     prefStatus.style.color = SUCCESS_COLOR;
    
-    // login 
+    // login and perform initial sync
     finalStatus.value = loginProgress;
     finalIcon.hidden = false;
-    Weave.Service.logout();
 	
-	// after login, if we have a currentUser, then 
     Weave.Service.login(function() {
-          if(Weave.Service.currentUser) {
+          if(Weave.Service.isLoggedIn) {
             accountStatus.style.color = SUCCESS_COLOR;
             gSyncWizard.initialSync();
           } 
@@ -945,17 +904,9 @@ SyncWizard.prototype = {
             finalIcon.hidden = true;
             finalLink.hidden = false;
           }
-      }, password.value, passphrase.value, false);
-    
-<<<<<<< local
-    
+      }, password.value, passphrase.value);
+
     return false;
-=======
-    Weave.Service.login(function() {
-      if(Weave.Service.isLoggedIn)
-        gSyncWizard.initialSync();
-      });
->>>>>>> other
   },
   
   /* initialSync() - Called from completeInstallation(). 
@@ -1005,26 +956,6 @@ SyncWizard.prototype = {
       return true;
   },
   
-<<<<<<< local
-=======
-  
-  /* initialSync() - Called during final screen checklist after successful login.
-   *  Performs sync and updates status on screen.
-   */
-  initialSync: function SyncWizard_initialSync() {
-      let wizard = document.getElementById('sync-wizard');
-      let syncStatus = document.getElementById('syncLabel');
-      let syncIcon = document.getElementById('syncCheck');
-      
-      this._log.info("Doing initial sync...");
-      
-      syncIcon.src = THROBBER_ACTIVE;
-      syncStatus.setAttribute("disabled", "false");
-      
-      Weave.Service.sync();
-	
-  },
-  
   /* tryAgain() - Called onclick from "try again" link if server error happens during setup.
    *  Re-does login or login->sync depending on [what] didn't work.
    */
@@ -1050,7 +981,6 @@ SyncWizard.prototype = {
 	  break;
     }
   }, 
->>>>>>> other
   
   observe: function(subject, topic, data) {
     if (!document) {
@@ -1060,12 +990,9 @@ SyncWizard.prototype = {
     let wizard = document.getElementById('sync-wizard');
 
     switch(topic) {
-<<<<<<< local
-    case "weave:service:login:success": {
-=======
-    case "weave:service:login:success":
+
     case "weave:service:verify-login:success":
->>>>>>> other
+    case "weave:service:login:success":
       if (wizard.currentPage.pageid == "sync-wizard-verify") {
         this._log.info("Login verified");
 	    document.getElementById('login-verified').value = "true";
@@ -1078,39 +1005,23 @@ SyncWizard.prototype = {
         verifyStatus.style.color = SUCCESS_COLOR;
         verifyLink.hidden = true;
         
-<<<<<<< local
-        // check that the other fields are completed
-        // this will take care advancing
-        gSyncWizard.checkVerify();
-=======
-	    document.getElementById('sync-wizard-verify-serverError').hidden = true;
-
         // If the passphrase hasn't been verified, try doing so now.
         // Its check may have been deferred until we had a valid login.
         if (document.getElementById('passphrase-verified').value == "false") {
           this._log.info("login verifed, so checking passphrase too");
           this.verifyPassphrase();
         }
->>>>>>> other
       }
       else if (wizard.currentPage.pageid == "sync-wizard-final") {
         this._log.info("Initial login succeeded");
       }
       break;
-<<<<<<< local
-    }
-    case "weave:service:login:error": {
-=======
+
     case "weave:service:login:error":
     case "weave:service:verify-login:error":
->>>>>>> other
       if (wizard.currentPage.pageid == "sync-wizard-verify") {
-<<<<<<< local
-        this._log.info("Login (verify) failed");
-=======
         this._log.info("Login failed");
-	    document.getElementById('login-verified').value = "false";
->>>>>>> other
+        document.getElementById('login-verified').value = "false";
 
         let verifyIcon = document.getElementById('verify-account-icon');
         let verifyLink = document.getElementById('verify-account-error-link');
@@ -1126,10 +1037,11 @@ SyncWizard.prototype = {
         this._log.info("Initial login failed");
       }
       break;
-    }
+
     case "weave:service:logout:success":
       this._log.info("Logged out");
       break;
+
     case "weave:service:sync:success": {
       let syncStatus    = document.getElementById('final-sync-status');
       let finalStatus   = document.getElementById('final-status');
@@ -1145,8 +1057,9 @@ SyncWizard.prototype = {
       finalLink.hidden = true;
       
       wizard.advance('sync-wizard-thankyou');
+      }
       break;
-    }
+
     case "weave:service:sync:error": {
       let syncStatus    = document.getElementById('final-sync-status');
       let finalStatus   = document.getElementById('final-status');
@@ -1160,8 +1073,9 @@ SyncWizard.prototype = {
       finalStatus.style.color = SERVER_ERROR_COLOR;
       finalLink.hidden = false;
       finalIcon.hidden = true;
+      }
       break;
-    }
+    
     default:
       this._log.warn("Unknown observer notification topic: " + topic);
       break;
