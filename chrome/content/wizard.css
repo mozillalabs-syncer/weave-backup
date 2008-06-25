@@ -37,3 +37,31 @@ a {
   text-decoration: underline;
   color: #0000ff;
 }
+
+#leftButton, #rightButton {
+  width: 200px;
+  height: 200px; 
+  -moz-border-radius: 10px;
+}
+
+#leftVbox, #rightVbox {
+  margin-top: 10px;
+  height: 125px;
+}
+
+#leftLabel, #rightLabel {
+  font-size: larger;
+  margin-left: 10px;
+}
+#leftDescription, #rightDescription {
+  margin-left: 10px;
+  margin-right: 10px;
+  width: 150px;
+}
+
+#leftSpacer, #rightSpacer {
+  width: 25px;
+}
+#centerSpacer {
+  width: 30px;
+}
