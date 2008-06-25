@@ -85,6 +85,8 @@ SyncWizard.prototype = {
 
     this._os.addObserver(this, "weave:service:login:success", false);
     this._os.addObserver(this, "weave:service:login:error", false);
+    this._os.addObserver(this, "weave:service:verify-login:success", false);
+    this._os.addObserver(this, "weave:service:verify-login:error", false);
     this._os.addObserver(this, "weave:service:logout:success", false);
     this._os.addObserver(this, "weave:service:sync:start", false);
     this._os.addObserver(this, "weave:service:sync:success", false);
@@ -96,6 +98,8 @@ SyncWizard.prototype = {
 
     this._os.removeObserver(this, "weave:service:login:success");
     this._os.removeObserver(this, "weave:service:login:error");
+    this._os.removeObserver(this, "weave:service:verify-login:success");
+    this._os.removeObserver(this, "weave:service:verify-login:error");
     this._os.removeObserver(this, "weave:service:logout:success");
     this._os.removeObserver(this, "weave:service:sync:start");
     this._os.removeObserver(this, "weave:service:sync:success");
@@ -120,7 +124,10 @@ SyncWizard.prototype = {
     case "sync-wizard-verify":
 	this._log.info("Wizard: Showing account verification page");
 	
-	if (document.getElementById('verify-check').value == "true")
+    // If we've already verified the info, no need to do so again.
+    let loginVerified = document.getElementById('login-verified').value;
+    let passphraseVerified = document.getElementById('passphrase-verified').value;
+    if (loginVerified == "true" && passphraseVerified == "true")
 	    wizard.canAdvance = true;
 	else
 	    wizard.canAdvance = false;
@@ -162,10 +169,9 @@ SyncWizard.prototype = {
 	this._log.info("Wizard: Showing data page");
 	
 	// set default device name
-	let username = Weave.Service.currentUser; 
 	let deviceName = document.getElementById('sync-instanceName-field');
-	if (username)
-	    deviceName.value = username + "'s Firefox";
+	if (Weave.Service.isLoggedIn)
+	    deviceName.value = Weave.Service.username + "'s Firefox";
 	else 
 	    deviceName.value = "Firefox";
 	  
@@ -229,85 +235,87 @@ SyncWizard.prototype = {
   
   /////ACCOUNT VERIFICATION/////
   
-  /* checkVerify() - Called onadvance from account verification screen and onInput 
-   *  from other fields. Checks that all fields have a value.
+  /* verifyPassphrase() - called when passphrase field changes.
+   * Eventually this should actually verify that the passphrase works. :-)
    */
-  checkVerify: function SyncWizard_checkVerify() {
-      let wizard = document.getElementById('sync-wizard');
-      let statusLabel = document.getElementById('verify-account-error');
-      let username = document.getElementById('sync-username-field');
-      let password = document.getElementById('sync-password-field');
-      let passphrase = document.getElementById('sync-passphrase-field');
-      let loginVerified = this._stringBundle.getString("verify-success.label");
-      
-      wizard.canAdvance = false;
-      
-      if (!(username && username.value && password && password.value &&
-	        passphrase && passphrase.value)) {
-	    wizard.canAdvance = false;
-	    document.getElementById('verify-check').value = "false";
-	    return false;
-      }
-      if (statusLabel.value == loginVerified) {
-	    wizard.canAdvance = true;
-	    document.getElementById('verify-check').value = "true";
-	    return true; 
-      }
-      
+  verifyPassphrase : function SyncWizard_verifyPassphrase() {
+    this._log.trace("verifyPassphrase called");
+
+    // Don't allow advancing until we verify the passphrase.
+    let wizard = document.getElementById('sync-wizard');
+	wizard.canAdvance = false;
+	document.getElementById('passphrase-verified').value = "false";
+
+    // If the login hasn't been verified yet, we can't login to fetch the private key.
+	if (document.getElementById('login-verified').value == "false") {
+       this._log.info("deferring passphrase verification until login checked");
+       return;
+    }
+
+    let username   = document.getElementById('sync-username-field').value;
+    let password   = document.getElementById('sync-password-field').value;
+    let passphrase = document.getElementById('sync-passphrase-field').value;
+
+    // XXX at this point we should kick off an async fetch of the wrapped
+    // private key from the server, and try unwrapping it with the passphrase.
+    // If that's good, allow advancing. If not, the passphrase is bad.
+    //
+    // For now, just assume the passphrase is good if non-empty.
+
+    if (passphrase) {
       wizard.canAdvance = true;
-      return true;
+	  document.getElementById('passphrase-verified').value = "true";
+    }
   },
   
-  /* verifyPassword() - Called onadvance from first account verification screen.
-   *  Checks for empty fields and verifies login information. 
+  /* verifyLogin() - called when username or password field is changed.
+   * Asychronously tests the login on the server.
    */
-  verifyPassword: function SyncWizard_verifyPassword(fromUsername) {
+  verifyLogin: function SyncWizard_verifyLogin() {
+    this._log.trace("verifyLogin called");
+
+    // Don't allow advancing until we verify the account.
     let wizard = document.getElementById('sync-wizard');
+	wizard.canAdvance = false;
+	document.getElementById('login-verified').value = "false";
 
     let statusLabel = document.getElementById('verify-account-error');
     let statusIcon = document.getElementById('verify-account-icon');
-    let serverError = document.getElementById('sync-wizard-verify-serverError');
-    let username = document.getElementById('sync-username-field');
-    let password = document.getElementById('sync-password-field');
+    let username = document.getElementById('sync-username-field').value;
+    let password = document.getElementById('sync-password-field').value;
     let progress = this._stringBundle.getString("verify-progress.label");
       
+
     // Check for empty fields
-    if (!(username && password && username.value && password.value)) {
-	  statusIcon.hidden = true;
-	  statusLabel.hidden = true;
-	  return false;
-    }
-    
-    // this was called from the username field. if the password hasn't been entered yet, 
-    // don't check with the server yet
-    if (fromUsername == "true" && !password.value) {
-	  return false;
+    if (!username || !password) {
+      statusIcon.hidden = true;
+      statusLabel.hidden = true;
+      return;
     }
     this._log.info("Verifying username/password...");
-    
+
     // Set the status and throbber
     statusIcon.hidden = false;
     statusLabel.hidden = false;
     statusLabel.value = progress;
-    
-    Weave.Service.logout();
-    
-    // FIXME: Login call is... wrong
-    Weave.Service.login(function() {
-	    //check currentUser here?
-        }, Weave.Service.password, Weave.Service.passphrase, true);
-   
-    // Only wait a certain amount of time for the server
-    setTimeout(function() {
-            if (statusLabel.value == progress) {
-	          statusIcon.hidden = true;
-		      statusLabel.value = stringBundle.getString("serverError.label");
-		      statusLabel.style.color = SERVER_ERROR_COLOR;
-            }
-	}, SERVER_TIMEOUT);
-    return false;
+      
+    // This will first a notification when when it succeeds/fails
+    Weave.Service.verifyLogin(username, password);
   },
   
+  acceptExistingAccount: function SyncWizard_acceptExistingAccount() {
+    let username   = document.getElementById('sync-username-field').value;
+    let password   = document.getElementById('sync-password-field').value;
+    let passphrase = document.getElementById('sync-passphrase-field').value;
+
+    // Setting these properties (really getters) results in this data being
+    // saved in the Firefox login manager.
+    Weave.Service.username = username;
+    Weave.Service.password = password;
+    Weave.Service.passphrase = passphrase;
+
+    return true;
+  },
   
   /////ACCOUNT CREATION - USERNAME, PASSWORD, PASSPHRASE/////
   
@@ -780,9 +788,9 @@ SyncWizard.prototype = {
 	loginIcon.src = THROBBER_ACTIVE; 
     
     Weave.Service.login(function() {
-      if(Weave.Service.currentUser)
+      if(Weave.Service.isLoggedIn)
         gSyncWizard.initialSync();
-      }, Weave.Service.password, Weave.Service.passphrase, false);
+      });
   },
   
   
@@ -856,7 +864,7 @@ SyncWizard.prototype = {
       case "login":
 	  syncStatus.setAttribute("disabled", "true");
 	  loginIcon.src = THROBBER_ACTIVE;
-	  Weave.Service.login(function() {gSyncWizard.initialSync()}, Weave.Service.password, Weave.Service.passphrase, false);
+	  Weave.Service.login(function() {gSyncWizard.initialSync()});
 	  break;
       case "sync":
 	  syncIcon.src = THROBBER_ACTIVE;
@@ -875,8 +883,10 @@ SyncWizard.prototype = {
 
     switch(topic) {
     case "weave:service:login:success":
+    case "weave:service:verify-login:success":
       if (wizard.currentPage.pageid == "sync-wizard-verify") {
         this._log.info("Login verified");
+	    document.getElementById('login-verified').value = "true";
         
         verifyIcon = document.getElementById('verify-account-icon');
         verifyStatus = document.getElementById('verify-account-error');        
@@ -884,10 +894,14 @@ SyncWizard.prototype = {
         verifyStatus.value = this._stringBundle.getString("verify-success.label");
         verifyStatus.style.color = SUCCESS_COLOR;
         
-        // check that the other fields are completed
-        // this will take care advancing
-        gSyncWizard.checkVerify();
 	    document.getElementById('sync-wizard-verify-serverError').hidden = true;
+
+        // If the passphrase hasn't been verified, try doing so now.
+        // Its check may have been deferred until we had a valid login.
+        if (document.getElementById('passphrase-verified').value == "false") {
+          this._log.info("login verifed, so checking passphrase too");
+          this.verifyPassphrase();
+        }
       }
       else if (wizard.currentPage.pageid == "sync-wizard-final") {
         this._log.info("Initial login succeeded");
@@ -895,8 +909,10 @@ SyncWizard.prototype = {
       }
       break;
     case "weave:service:login:error":
+    case "weave:service:verify-login:error":
       if (wizard.currentPage.pageid == "sync-wizard-verify") {
         this._log.info("Login failed");
+	    document.getElementById('login-verified').value = "false";
 
         verifyIcon = document.getElementById('verify-account-icon');
         verifyStatus = document.getElementById('verify-account-error');        

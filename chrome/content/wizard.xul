@@ -103,9 +103,10 @@
   <wizardpage label="&verify.title;" pageid="sync-wizard-verify" 
               next="sync-wizard-data" 
               onpageshow="gSyncWizard.onPageShow('sync-wizard-verify');"
-              onpageAdvanced = "return gSyncWizard.checkVerify();">
+	          onpageadvanced="return gSyncWizard.acceptExistingAccount();">
         
-    <label hidden="true" id="verify-check" value="false"/>     
+    <label hidden="true" id="login-verified"      value="false"/>     
+    <label hidden="true" id="passphrase-verified" value="false"/>     
     <grid>       
       <columns>
         <column/>
@@ -116,15 +117,13 @@
           <label value="&username.label;" control="sync-username-field"/>
           <textbox id="sync-username-field" class="padded"
                    type="timed" timeout="3000"
-                   oninput="gSyncWizard.checkVerify();"
-                   oncommand="gSyncWizard.verifyPassword('true');"/>
+                   oncommand="gSyncWizard.verifyLogin();"/>
         </row>
         <row align="center">
           <label value="&password.label;" control="sync-password-field"/>
           <textbox id="sync-password-field" class="padded" 
                    type="password" timeout="3000"
-                   oninput="gSyncWizard.checkVerify();"
-                   oncommand="gSyncWizard.verifyPassword();"/>
+                   oncommand="gSyncWizard.verifyLogin();"/>
         </row>
         <row>
           <spacer flex="1"/>
@@ -145,8 +144,9 @@
         
         <row align="center">
           <label value="&passphrase.label;" control="sync-passphrase-field"/>
-          <textbox id="sync-passphrase-field" class="padded" type="password"
-                   oninput="gSyncWizard.checkVerify()"/>
+          <textbox id="sync-passphrase-field" class="padded"
+                   type="password" timeout="3000"
+                   oncommand="gSyncWizard.verifyPassphrase();"/>
         </row>
         <row>
           <spacer flex="1"/>
@@ -163,7 +163,7 @@
     <description hidden="true" id="sync-wizard-verify-serverError">
       &serverError1.description; 
       <html:a href="#" 
-              onclick="gSyncWizard.checkPassword(); gSyncWizard.checkPassphrase();">
+              onclick="gSyncWizard.verifyLogin(); gSyncWizard.verifyPassphrase();">
         &clickHere.text;
       </html:a>
       &serverError2.description;
