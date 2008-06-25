@@ -79,7 +79,7 @@ function Sync() {
   // TODO: This is a fix for the general case of bug 436936.  It will
   // not support marginal cases such as when a new browser window is
   // opened in the middle of signing-in or syncing.
-  if (Weave.Service.currentUser)
+  if (Weave.Service.isLoggedIn)
     this._onLogin();
 
   Weave.Service.onWindowOpened();
@@ -296,7 +296,7 @@ Sync.prototype = {
   },
 
   doLogin: function Sync_doLogin(event) {
-    if (Weave.Service.currentUser)
+    if (Weave.Service.isLoggedIn)
       return; // already logged in
 
     let username = this._prefSvc.getCharPref("extensions.weave.username");
@@ -306,8 +306,6 @@ Sync.prototype = {
       return;
     }
 
-//    this._userLogin = true;
-//    Weave.Service.login();
     this.doLoginPopup();
   },
 

@@ -25,7 +25,7 @@ WeavePrefs.prototype = {
     let changePasswordForm =
       document.getElementById('sync-change-password-form');
 
-    if (!Weave.Service.currentUser) {
+    if (!Weave.Service.isLoggedIn) {
       signOnButton.setAttribute("hidden", "false");
       signOutButton.setAttribute("hidden", "true");
       createButton.setAttribute("hidden", "false");
@@ -35,7 +35,7 @@ WeavePrefs.prototype = {
     } else {
       let signedInDescription =
         this._stringBundle.getFormattedString("signedIn.description",
-                                              [Weave.Service.currentUser]);
+                                              [Weave.Service.username]);
       signOnButton.setAttribute("hidden", "true");
       signOutButton.setAttribute("hidden", "false");
       createButton.setAttribute("hidden", "true");
@@ -127,7 +127,7 @@ WeavePrefs.prototype = {
   },
 
   doChangePassword: function WeavePrefs_doChangePassword() {
-    let username = Weave.Service.currentUser;
+    let username = Weave.Service.username;
     let oldPassword = document.getElementById("oldPassword");
     let newPassword = document.getElementById("newPassword");
     let newPasswordAgain = document.getElementById("newPasswordAgain");

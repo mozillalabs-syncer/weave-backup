@@ -1,3 +1,444 @@
+<<<<<<< local
+<?xml version="1.0"?>
+
+<?xml-stylesheet href="chrome://global/skin/global.css" type="text/css"?>
+<?xml-stylesheet href="chrome://weave/content/wizard.css" type="text/css"?>
+
+<!DOCTYPE overlay SYSTEM "chrome://weave/locale/wizard.dtd">
+<wizard xmlns:html="http://www.w3.org/1999/xhtml"
+		xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        id="sync-wizard" title="&wizard.title;"
+        height="530" width="600"
+        onunload="gSyncWizard.onWizardShutdown();"
+        windowtype="Sync:wizard" >
+
+  <script type="application/x-javascript"
+          src="chrome://weave/content/load-weave.js"/>
+  <script type="application/x-javascript"
+          src="chrome://browser/content/places/utils.js"/>
+  <script type="application/x-javascript"
+          src="chrome://weave/content/wizard.js"/>
+
+  
+  <stringbundleset id="stringbundleset">
+    <stringbundle id="weaveStringBundle" src="chrome://weave/locale/wizard.properties"/>
+  </stringbundleset>
+
+  <wizardpage label="&intro.title;" pageid="sync-wizard-intro"
+              next="sync-wizard-welcome">
+    <description>
+      &intro.description;
+      <html:a href="#" onclick="window.open('&intro-more.link;');">&intro-more.label;</html:a>
+    </description>
+
+  </wizardpage>
+
+  <wizardpage label="&welcome.title;" pageid="sync-wizard-welcome" 
+              next="sync-wizard-verify" 
+              onpageshow="gSyncWizard.onPageShow('sync-wizard-welcome');" >
+              <!--style="background-image: url('chrome://weave/skin/weave_bg2.jpg'); background-color:#ffffff;" -->                 
+
+    <label hidden="true" id="welcome-check" value="false"/>
+    <label hidden="true" id="path" />
+    <separator class="thin"/> 
+      
+      <grid> 
+      <rows>
+      <row>
+       <spacer id="leftSpacer" flex="1"/>
+        <hbox class="bubble" align="top">
+          <vbox id="bubbleLeft"
+                    onclick="gSyncWizard.advanceTo('sync-wizard-verify');
+                             gSyncWizard.setTitles('verify');">
+            <label value="&curUser-title.label;"/>
+            <separator class="thin"/>
+            <description >
+              &curUser.description; 
+            </description>
+          </vbox>
+        </hbox>
+        <spacer id="centerSpacer" flex="1"/>
+        <hbox class="bubble"  align="top">
+         <vbox id="bubbleRight"
+               onclick="gSyncWizard.advanceTo('sync-wizard-create1');
+                        gSyncWizard.setTitles('create');">
+           <label value="&newUser-title.label;"/>
+            <separator class="thin"/>
+           <description >
+    	      &newUser.description; 
+    	    </description>
+    	  </vbox>
+        </hbox>
+        <spacer id="rightSpacer" flex="1"/>
+      </row>
+      </rows>
+      </grid>
+    
+  </wizardpage>
+
+
+
+  <wizardpage label="&verify.title;" pageid="sync-wizard-verify" 
+              next="sync-wizard-data" 
+              onpageshow="gSyncWizard.onPageShow('sync-wizard-verify');"
+              onpageAdvanced = "return gSyncWizard.verifyPassword();">
+        
+    <label hidden="true" id="verify-check" value="false"/>     
+    <grid>       
+      <columns>
+        <column/>
+        <column flex="1"/>
+      </columns>       
+      <rows>
+        <row align="center">
+          <label value="&username.label;" control="sync-username-field"/>
+          <textbox id="sync-username-field" class="padded"
+                   type="timed" timeout="1500"
+                   oninput="gSyncWizard.checkVerify();"/>
+        </row>
+        <row align="center">
+          <label value="&password.label;" control="sync-password-field"/>
+          <textbox id="sync-password-field" class="padded" 
+                   type="password" timeout="1500"
+                   oninput="gSyncWizard.checkVerify();"
+                   oncommand="gSyncWizard.verifyPassword();"/>
+        </row>
+        <row>
+          <spacer flex="1"/>
+          <hbox>
+            <label id="verify-account-error" value=""/>
+            <hbox hidden="true" id="verify-account-error-link"> <html:a href="#"
+              onclick="gSyncWizard.verifyPassword(); gSyncWizard.checkPassphrase();">
+              &tryAgain.text;
+            </html:a> </hbox>
+            <image hidden="true" id="verify-account-icon" src="chrome://global/skin/icons/loading_16.png" />
+            <spacer flex="1"/>
+          </hbox>
+        </row>
+        
+        <separator/>
+        
+        <row align="center">
+          <label value="&passphrase.label;" control="sync-passphrase-field"/>
+          <textbox id="sync-passphrase-field" class="padded" type="password"
+                   oninput="gSyncWizard.checkVerify()"/>
+        </row>
+        <row>
+          <spacer flex="1"/>
+          <hbox>
+            <label id="verify-passphrase-error" value=""/>
+            <hbox hidden="true" id="verify-passphrase-error-link"> <html:a href="#"
+              onclick="">
+              &tryAgain.text;
+            </html:a> </hbox>
+            <image hidden="true" id="verify-passphrase-icon" src="chrome://global/skin/icons/loading_16.png" />
+          </hbox>
+        </row>
+      </rows>    
+    </grid>
+        
+    <separator/> <separator/>
+     
+    <hbox>
+      <spacer flex="1"/>
+      <description>
+        &reminder.label;
+        <html:a href="&recovery.link;" target="_blank">
+          &clickHere.text;
+        </html:a>
+      </description>
+    </hbox>
+    
+  </wizardpage>
+
+  <wizardpage label="&create.title;" pageid="sync-wizard-create1" 
+	          next="sync-wizard-create2" 
+	          onpageshow="gSyncWizard.onPageShow('sync-wizard-create1');"
+	          onpageadvanced="return gSyncWizard.checkEmail();">
+    
+    <label hidden="true" id="create1-check" value="false"/>     
+    <grid>   
+      <columns>
+        <column/>
+        <column flex="1"/>
+      </columns>     
+      <rows>
+        <row align="start">
+           <label value="&createUsername.label;" control="sync-username-create-field"/>
+            <vbox><textbox id="sync-username-create-field" class="padded" 
+                   type="timed" timeout="1500"
+                   oninput="gSyncWizard.checkUserPasswordFields();"
+                   oncommand="gSyncWizard.checkUsername();"/>
+            <label class="hint" value="&createUsernameHint.label;"/>
+          </vbox>
+        </row>
+        <row>
+          <spacer flex="1"/>
+          <hbox>
+            <label id="create-username-error" value=""/>
+            <hbox hidden="true" id="create-username-error-link"> <html:a href="#"
+              onclick="gSyncWizard.checkUsername();">
+              &tryAgain.text;
+            </html:a> </hbox>
+            <image hidden="true" id="create-username-icon" src="chrome://global/skin/icons/loading_16.png" />
+          </hbox>
+        </row>     
+        
+        <separator />
+
+        <row align="start">
+          <label value="&createEmail.label;" control="sync-email-create-field"/>
+          <vbox><textbox id="sync-email-create-field" class="padded"
+                   type="timed" timeout="1500"
+                   oninput="gSyncWizard.checkUserPasswordFields();" 
+                   oncommand="gSyncWizard.checkEmail();"/>
+                 <label class="hint" value="&createEmailHint.label;"/>
+          </vbox>
+        </row>
+        <row>
+          <spacer flex="1"/>
+          <hbox>
+            <label id="email-error" value=""/>
+            <hbox hidden="true" id="email-error-link"> <html:a href="#"
+              onclick="gSyncWizard.checkEmail();">
+              &tryAgain.text;
+            </html:a> </hbox>
+            <image hidden="true" id="email-icon" src="chrome://global/skin/icons/loading_16.png" />
+          </hbox>
+        </row>
+
+    <separator/>
+              
+        <row align="start">
+          <label value="&createPassword.label;" control="sync-password-create-field"/>
+          <vbox><textbox id="sync-password-create-field" class="padded" 
+                   type="password" timeout="1500" 
+                   oninput="gSyncWizard.checkUserPasswordFields();"/>
+                 <label class="hint" value="&createPasswordHint.label;"/>
+          </vbox>
+        </row>
+        <row align="start">
+          <label value="&createReenterPassword.label;" control="sync-reenter-password-field"/>
+          <textbox id="sync-reenter-password-field" class="padded" 
+                   type="password" timeout="1500"
+                   oninput="gSyncWizard.checkUserPasswordFields();"
+                   oncommand="gSyncWizard.checkAccountInput('password');"/>
+        </row>
+        <row>
+          <spacer flex="1"/>
+          <label id="password-match-error" value=""/>
+        </row>
+        
+        <separator/>
+
+      </rows>
+    </grid>
+        
+  </wizardpage>
+
+
+  <wizardpage label="&create2.title;" pageid="sync-wizard-create2" 
+	          next="sync-wizard-create3" 
+	          onpageshow="gSyncWizard.onPageShow('sync-wizard-create2');" 
+	          onpageadvanced="return gSyncWizard.checkAccountInput('passphrase');">
+	            
+    <label hidden="true" id="create2-check" value="false"/>     
+    <grid>   
+      <columns>
+        <column/>
+        <column flex="1"/>
+      </columns>     
+      <rows>
+        <description>
+		&passphrase.description;
+      		<html:a href="#" onclick="window.open('&passphrase-more.link;');">&passphrase-more.label;</html:a>
+	</description>
+        <separator class="thin"/>
+        <row align="center">
+          <label value="&passphrase.label;" control="sync-passphrase-create-field" />
+          <textbox id="sync-passphrase-create-field" class="padded" 
+                   type="password" timeout="1500" 
+                   oninput="gSyncWizard.checkPassphraseEmailFields();" 
+                   oncommand="gSyncWizard.checkAccountInput('passphrase');"/>
+        </row>
+        <row align="center"> 
+          <label value="&reenterPassphrase.label;" control="sync-reenter-passphrase-field" />
+          <textbox id="sync-reenter-passphrase-field" class="padded" 
+                   type="password" timeout="1500"
+                   oninput="gSyncWizard.checkPassphraseEmailFields();"
+                   oncommand="gSyncWizard.checkAccountInput('passphrase');"/>
+        </row>
+        <row>
+          <spacer flex="1"/>
+          <label id="passphrase-match-error" value=""/>
+        </row>
+      </rows>
+    </grid>
+      
+  </wizardpage>
+
+  <wizardpage label="&create3.title;" pageid="sync-wizard-create3" 
+              next="sync-wizard-data" 
+              onpageshow="gSyncWizard.onPageShow('sync-wizard-create3');" 
+              onpageadvanced="return gSyncWizard.createAccount();" >
+
+    <label hidden="true" id="create3-check" value="false"/>     
+
+    <description id="account-creation-error"/>
+    
+    <label id="terms" value="&terms.label;"/>
+
+    <iframe src="chrome://weave/content/ToS.xhtml" width="400" height="100"/>
+
+    <separator/>
+    
+    <grid>
+      <rows>
+        <label value="&captcha.label;"/> (<html:a href="#" onclick="gSyncWizard.reloadCaptcha();">&reloadCaptcha.text;</html:a>)
+        <row>
+          <iframe type="content" id="captchaImage" width="316" height="75" />
+          <spacer flex="1"/>
+        </row>
+        <row>
+          <vbox width="316">
+            <textbox id="captchaInput" oninput="gSyncWizard.checkFinalFields();"/>
+            <hbox><label class="hint" value="&captchaHint.label;"/><spacer flex="1"/></hbox>
+            <hbox><label id="captcha-error" value=""/><spacer flex="1"/></hbox>
+          </vbox>
+          <spacer flex="1"/>
+        </row>
+      </rows>
+    </grid>  
+  
+    <hbox>
+      <browser hidden="true" type="content" id="captcha" />
+      <label hidden="true" id="lastCaptchaChallenge" />
+      <spacer flex="1"/>
+    </hbox>
+
+    
+    <hbox align="end">
+      <spacer flex="1"/>
+      <checkbox id="terms-checkbox" selected="false" label="&acceptTerms.label;"
+                oncommand="gSyncWizard.checkFinalFields();"/>
+    </hbox>
+    
+    <separator/>
+
+    <hbox>
+      <spacer flex="1"/>
+      <description id="account-creation-status"/>
+      <hbox hidden="true" id="account-creation-status-link"> <html:a href="#"
+            onclick="gSyncWizard.createAccount();">
+        &tryAgain.text;
+      </html:a> </hbox>
+      <image hidden="true" id="account-creation-status-icon" src="chrome://global/skin/icons/loading_16.png"/>
+    </hbox>
+ 
+  </wizardpage>
+
+
+  
+  <wizardpage pageid="sync-wizard-data" 
+              next="sync-wizard-final" 
+              onpageshow="gSyncWizard.onPageShow('sync-wizard-data');" >
+              <!--Wait and do this on final screen in case user Cancels-->
+              <!--onpageadvanced="return gSyncWizard.setPrefs();"-->
+    
+    <description>
+      &instanceName.description;
+    </description>
+      <hbox align="center" >
+        <label value="&instanceName.label;" control="sync-username-field"/>
+        <textbox flex="1" id="sync-instanceName-field" class="padded"/>
+      </hbox>
+      <separator/> <separator/>
+      <description value="&data.description;"/>
+      <separator class="thin"/>
+      <richlistbox rows="5">
+      <richlistitem> <checkbox id="sync-wizard-bookmarks" checked="true" label="&bookmarks.label;"/> </richlistitem>
+      <richlistitem> <checkbox id="sync-wizard-history" checked="true" label="&history.label;"/> </richlistitem>       
+      <richlistitem> <checkbox id="sync-wizard-cookies" checked="false" label="&cookies.label;"/> </richlistitem>       
+      <richlistitem> <checkbox id="sync-wizard-passwords" checked="false" label="&passwords.label;"/> </richlistitem>       
+      <richlistitem> <checkbox id="sync-wizard-tabs" checked="false" label="&tabs.label;"/> </richlistitem>       
+      <richlistitem> <checkbox id="sync-wizard-forms" checked="false" label="&formdata.label;"/> </richlistitem>
+    </richlistbox>
+    
+
+  </wizardpage>
+
+
+  <wizardpage pageid="sync-wizard-final" 
+              onpageshow="gSyncWizard.onPageShow('sync-wizard-final');"
+              next="sync-wizard-thankyou" 
+              onpageadvanced="return gSyncWizard.completeInstallation();">
+    
+    <description>&final.description;</description>
+   
+    <separator/>
+		
+    <hbox>
+      <label id="final-pref-status" value="&final-pref-title.description;"/>
+      <image id="final-pref-icon" hidden="true" src="chrome://global/skin/icons/loading_16.png"/>
+      <spacer flex="1"/>
+    </hbox>
+    <hbox>
+      <spacer width="10"/>
+      <label id="final-pref-details" disabled="true" />
+      <spacer flex="1"/>
+    </hbox>
+    <separator/>
+    <hbox>
+      <label id="final-account-status" value="&final-account-title.description;"/>
+      <image id="final-account-icon" hidden="true" src="chrome://global/skin/icons/loading_16.png"/>
+      <spacer flex="1"/>
+    </hbox>
+    <hbox>
+      <spacer width="10"/>
+      <label id="final-account-details" disabled="true" />
+      <spacer flex="1"/>
+    </hbox>
+    <separator/>
+    <hbox>
+      <label id="final-sync-status" value="&final-sync-title.description;"/>
+      <image id="final-sync-icon" hidden="true" src="chrome://global/skin/icons/loading_16.png"/>
+      <spacer flex="1"/>
+    </hbox>
+    <hbox>
+      <spacer width="10"/>
+      <label id="final-sync-details" disabled="true" />
+      <spacer flex="1"/>
+    </hbox>
+
+    <separator/> <separator/> <separator/>
+
+    <hbox>
+      <spacer flex="1"/>
+      <label id="final-status" />
+      <hbox hidden="true" id="final-status-link"> <html:a href="#"
+            onclick="gSyncWizard.completeInstallation();">
+        &tryAgain.text;
+      </html:a> </hbox>
+      <image hidden="true" id="final-status-icon" src="chrome://global/skin/icons/loading_16.png"/>
+    </hbox>
+	
+  </wizardpage>
+
+  <wizardpage label="&thankyou.title;" pageid="sync-wizard-thankyou">
+    <description>
+      &thankyou.description;
+    </description>
+  </wizardpage>
+
+</wizard>
+
+
+
+
+
+
+
+=======
 <?xml version="1.0"?>
 
 <?xml-stylesheet href="chrome://global/skin/global.css" type="text/css"?>
@@ -103,9 +544,10 @@
   <wizardpage label="&verify.title;" pageid="sync-wizard-verify" 
               next="sync-wizard-data" 
               onpageshow="gSyncWizard.onPageShow('sync-wizard-verify');"
-              onpageAdvanced = "return gSyncWizard.checkVerify();">
+	          onpageadvanced="return gSyncWizard.acceptExistingAccount();">
         
-    <label hidden="true" id="verify-check" value="false"/>     
+    <label hidden="true" id="login-verified"      value="false"/>     
+    <label hidden="true" id="passphrase-verified" value="false"/>     
     <grid>       
       <columns>
         <column/>
@@ -116,15 +558,13 @@
           <label value="&username.label;" control="sync-username-field"/>
           <textbox id="sync-username-field" class="padded"
                    type="timed" timeout="3000"
-                   oninput="gSyncWizard.checkVerify();"
-                   oncommand="gSyncWizard.verifyPassword('true');"/>
+                   oncommand="gSyncWizard.verifyLogin();"/>
         </row>
         <row align="center">
           <label value="&password.label;" control="sync-password-field"/>
           <textbox id="sync-password-field" class="padded" 
                    type="password" timeout="3000"
-                   oninput="gSyncWizard.checkVerify();"
-                   oncommand="gSyncWizard.verifyPassword();"/>
+                   oncommand="gSyncWizard.verifyLogin();"/>
         </row>
         <row>
           <spacer flex="1"/>
@@ -145,8 +585,9 @@
         
         <row align="center">
           <label value="&passphrase.label;" control="sync-passphrase-field"/>
-          <textbox id="sync-passphrase-field" class="padded" type="password"
-                   oninput="gSyncWizard.checkVerify()"/>
+          <textbox id="sync-passphrase-field" class="padded"
+                   type="password" timeout="3000"
+                   oncommand="gSyncWizard.verifyPassphrase();"/>
         </row>
         <row>
           <spacer flex="1"/>
@@ -163,7 +604,7 @@
     <description hidden="true" id="sync-wizard-verify-serverError">
       &serverError1.description; 
       <html:a href="#" 
-              onclick="gSyncWizard.checkPassword(); gSyncWizard.checkPassphrase();">
+              onclick="gSyncWizard.verifyLogin(); gSyncWizard.verifyPassphrase();">
         &clickHere.text;
       </html:a>
       &serverError2.description;
@@ -477,3 +918,4 @@
 
 
 
+>>>>>>> other

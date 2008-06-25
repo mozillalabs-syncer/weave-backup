@@ -89,7 +89,7 @@ Login.prototype = {
       Weave.Service.passphrase = null;
     }
 
-    Weave.Service.login(null, password.value, passphrase.value);
+    Weave.Service.login(null);
     return true;
   },
 
