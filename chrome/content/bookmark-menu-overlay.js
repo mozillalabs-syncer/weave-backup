@@ -138,6 +138,17 @@ BookmarksEventHandler.onPopupShowing = function BT_onPopupShowing_new(event) {
   let target = event.originalTarget;
   let stringBundle = document.getElementById("weaveStringBundle");
 
+  /* Don't add the command if this menu is the main bookmark menu;
+   Also not if it's one of the magic folders like "recently bookmarked"
+   or "bookmarks toolbar" or "recently tagged".  Normal folders only. */
+  if ( event.target.parentNode.node == undefined ) {
+    return;
+  }
+  let node = event.target.parentNode.node;
+  if ( node.type != node.RESULT_TYPE_FOLDER ) {
+    return;
+  }
+
   // put a separator line if there isn't one already.
   /* TODO the separator line moves between the first and second menu view
      of a submenu with only one bookmark in it.  Weird. */
