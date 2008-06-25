@@ -220,6 +220,12 @@ SyncWizard.prototype = {
     wizard.canAdvance = true;
     wizard.advance(pageid);
   },
+
+  selectRadio : function SyncWizard_selectRadio(radioId) {
+    let wizard = document.getElementById('sync-wizard');
+    // XXX do we need to check or do anything here?
+    wizard.canAdvance = true;
+  },
   
   /////ACCOUNT VERIFICATION/////
   
