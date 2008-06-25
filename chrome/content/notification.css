@@ -1,0 +1,34 @@
+
+#sync-notifications-box {
+  -moz-binding: url("chrome://weave/content/notification.xml#notificationbox");
+  width: 30em;
+  height: 30em;
+  overflow: auto;
+}
+
+#sync-notifications-box notification {
+  -moz-binding: url("chrome://weave/content/notification.xml#notification");
+}
+
+#sync-notifications-box notification[class="TabsNotification"] {
+  -moz-binding: url("chrome://weave/content/notification.xml#TabsNotification");
+}
+
+#sync-notifications-box .messageImage {
+  width: 24px;
+  height: 24px;
+}
+
+/* Default icons for notifications */
+
+#sync-notifications-box notification[type="info"] .messageImage {
+  list-style-image: url("chrome://global/skin/icons/information-24.png");
+}
+
+#sync-notifications-box notification[type="warning"] .messageImage {
+  list-style-image: url("chrome://global/skin/icons/warning-24.png");
+}
+
+#sync-notifications-box notification[type="critical"] .messageImage {
+  list-style-image: url("chrome://global/skin/icons/error-24.png");
+}

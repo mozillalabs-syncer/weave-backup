@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet href="chrome://weave/content/sync.css" type="text/css"?>
+<?xml-stylesheet href="chrome://weave/content/notification.css" type="text/css"?>
 
 <!DOCTYPE overlay SYSTEM "chrome://weave/locale/sync.dtd">
 <overlay id="sync-overlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
@@ -68,25 +69,14 @@
                    control="sync-menu-button"
                    value="&status.offline.label;"/>
         </statusbarpanel>
-        <!-- FIXME: once notifications are unified, make this panel
-           - be a notification rather than its own statusbarpanel. -->
-        <statusbarpanel id="sync-tabs-button" hidden="true"
-                        label="&syncOpenTabsPanelButton.label;"
-                        popup="sync-tabs-panel"/>
-        <panel id="sync-tabs-panel" onpopupshowing="gSync.doInitTabsPanel(event);">
-            <label class="header" value="&syncTabsPanel.title;"/>
-            <separator class="groove-thin"/>
-            <description>
-                &syncTabsPanel.description;
-            </description>
-            <listbox id="sync-tabs-list"/>
-            <hbox>
-                <button label="&syncCancelTabsPanelButton.label;"
-                        oncommand="gSync.doCloseTabsPanel();"/>
-                <spacer flex="1"/>
-                <button label="&syncTabsButton.label;"
-                        oncommand="gSync.doSyncTabs();"/>
-            </hbox>
+        <statusbarpanel id="sync-notifications-button"
+                        class="statusbarpanel-iconic"
+                        insertbefore="security-button"
+                        hidden="true"
+                        popup="sync-notifications-panel"
+                        image="chrome://global/skin/icons/warning-16.png"/>
+        <panel id="sync-notifications-panel" position="before_end">
+            <notificationbox id="sync-notifications-box"/>
         </panel>
     </statusbar>
 

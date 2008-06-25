@@ -47,6 +47,8 @@ function Sync() {
   this._os.addObserver(this, "weave:service:sync:start", false);
   this._os.addObserver(this, "weave:service:sync:success", false);
   this._os.addObserver(this, "weave:service:sync:error", false);
+  this._os.addObserver(this, "weave:notification:added", false);
+  this._os.addObserver(this, "weave:notification:removed", false);
   this._os.addObserver(this, "weave:store:tabs:virtual:created", false);
   this._os.addObserver(this, "weave:store:tabs:virtual:removed", false);
 
@@ -83,7 +85,9 @@ function Sync() {
     this._onLogin();
 
   Weave.Service.onWindowOpened();
-  this._updateSyncTabsButton();
+
+  // Display a tabs notification if there are any virtual tabs.
+  this._onVirtualTabsChanged();
 }
 Sync.prototype = {
   get _isTopBrowserWindow() {
@@ -190,10 +194,22 @@ Sync.prototype = {
      }
   },
 
-  _setThrobber: function Sync__setThrobber(status) {
+  _setStatus: function Sync__setStatus(status) {
     document.getElementById("sync-menu-button").setAttribute("status", status);
-    document.getElementById("sync-menu").setAttribute("status", status);
-    let label = this._stringBundle.getString("status." + status);
+
+    let label;
+    if (status == "offline")
+      label = this._stringBundle.getString("status.offline");
+    else {
+      let username = this._prefSvc.getCharPref("extensions.weave.username");
+      if (!username || username == 'nobody@mozilla.com') {
+        this._log.error("status is " + status + ", but username not set");
+        // Fall back to a generic string.
+        label = this._stringBundle.getString("status." + status);
+      }
+      else
+        label = username;
+    }
     document.getElementById("sync-menu-status").setAttribute("value", label);
   },
 
@@ -201,11 +217,11 @@ Sync.prototype = {
     this._log.info("Logging in...");
     this._log.info("User string: " + navigator.userAgent);
     this._log.info("Weave version: " + Weave.WEAVE_VERSION);
-    this._setThrobber("active");
+    this._setStatus("active");
   },
 
   _onLoginError: function Sync__onLoginError() {
-    this._setThrobber("error");
+    this._setStatus("offline");
 
     // TODO: We may want to just display a notification here that the user
     // can deal with on their own time instead of forcing them to deal
@@ -218,10 +234,9 @@ Sync.prototype = {
 
   _onLogin: function Sync__onLogin() {
     this._log.info("Login successful");
+    this._setStatus("idle");
 
     this._userLogin = false;
-
-    this._setThrobber("idle");
 
     let loginitem = document.getElementById("sync-loginitem");
     let logoutitem = document.getElementById("sync-logoutitem");
@@ -237,9 +252,19 @@ Sync.prototype = {
 
   _onLogout: function Sync__onLogout(status) {
     if (status)
-      this._setThrobber("offline");
-    else
-      this._setThrobber("error");
+      this._setStatus("offline");
+    else {
+      this._setStatus("idle");
+      let title = this._stringBundle.getString("error.logout.title");
+      let description =
+        this._stringBundle.getString("error.logout.description");
+      let notification =
+        new Weave.Notification(title,
+                               description,
+                               null,
+                               Weave.Notifications.PRIORITY_WARNING);
+      Weave.Notifications.add(notification);
+    }
 
     let loginitem = document.getElementById("sync-loginitem");
     let logoutitem = document.getElementById("sync-logoutitem");
@@ -254,7 +279,7 @@ Sync.prototype = {
   },
 
   _onSyncStart: function Sync_onSyncStart() {
-    this._setThrobber("active");
+    this._setStatus("active");
 
     let syncitem = document.getElementById("sync-syncnowitem");
     if(syncitem)
@@ -262,13 +287,30 @@ Sync.prototype = {
   },
 
   _onSyncEnd: function Sync_onSyncEnd(status) {
-    if (status)
-      this._setThrobber("idle");
-    else
-      this._setThrobber("error");
+    this._setStatus("idle");
+
+    if (!status) {
+      let title = this._stringBundle.getString("error.sync.title");
+      let description = this._stringBundle.getString("error.sync.description");
+      let tryAgainButton =
+        new Weave.NotificationButton(
+          this._stringBundle.getString("error.sync.tryAgainButton.label"),
+          this._stringBundle.getString("error.sync.tryAgainButton.accesskey"),
+          function() { Weave.Service.sync(); return false; }
+        );
+      let notification =
+        new Weave.Notification(
+          title,
+          description,
+          null,
+          Weave.Notifications.PRIORITY_WARNING,
+          [tryAgainButton]
+        );
+      Weave.Notifications.add(notification);
+    }
 
     let syncitem = document.getElementById("sync-syncnowitem");
-    if(syncitem)
+    if (syncitem)
       syncitem.setAttribute("active", "true");
 
     if (this._isTopBrowserWindow)
@@ -287,6 +329,8 @@ Sync.prototype = {
     this._os.removeObserver(this, "weave:service:sync:start");
     this._os.removeObserver(this, "weave:service:sync:success");
     this._os.removeObserver(this, "weave:service:sync:error");
+    this._os.removeObserver(this, "weave:notification:added");
+    this._os.removeObserver(this, "weave:notification:removed");
     this._os.removeObserver(this, "weave:store:tabs:virtual:created");
     this._os.removeObserver(this, "weave:store:tabs:virtual:removed");
   },
@@ -347,6 +391,8 @@ Sync.prototype = {
     this._updateLastSyncItem();
   },
 
+  // FIXME: refactor this function with the identical one in the notification
+  // binding.
   _getSortedVirtualTabs: function Sync__getSortedVirtualTabs() {
     let virtualTabs = Weave.Engines.get("tabs").store.virtualTabs;
 
@@ -388,7 +434,8 @@ Sync.prototype = {
         [currentEntry.title, currentEntry.url].filter(function(v) v).join("\n");
     }
 
-    document.getElementById("sync-no-tabs-menu-item").hidden = (menu.itemCount > 1);
+    document.getElementById("sync-no-tabs-menu-item").hidden =
+      (menu.itemCount > 1);
   },
 
   onCommandTabsMenu: function Sync_onCommandTabsMenu(event) {
@@ -400,90 +447,47 @@ Sync.prototype = {
     this._sessionStore.setTabState(tab, this._json.encode(virtualTab.state));
     gBrowser.selectedTab = tab;
     delete virtualTabs[tabID];
+
+    // FIXME: update a notification that lists the opened tab, if any.
   },
 
-  _onVirtualTabCreated: function Sync__onVirtualTabCreated() {
-    this._updateSyncTabsButton();
-    // FIXME: do more to alert the user about new undisposed virtual tabs?
+  _onNotificationAdded: function Sync__onNotificationAdded() {
+    document.getElementById("sync-notifications-button").hidden = false;
   },
 
-  _onVirtualTabRemoved: function Sync__onVirtualTabRemoved() {
-    this._updateSyncTabsButton();
+  _onNotificationRemoved: function Sync__onNotificationRemoved() {
+    if (Weave.Notifications.notifications.length == 0)
+      document.getElementById("sync-notifications-button").hidden = true;
   },
 
-  _updateSyncTabsButton: function Sync__updateSyncTabsButton() {
+  _onVirtualTabsChanged: function Sync__onVirtualTabsChanged() {
     let virtualTabs = Weave.Engines.get("tabs").store.virtualTabs;
 
+    // Get the (first, which should also be the only) notification, if any.
+    let [existingNotification] =
+      Weave.Notifications.notifications.
+      filter(function(v) v.constructor.name == "TabsNotification");
+
     // As long as there is at least one virtual tab that hasn't previously been
-    // disposed of by the user, show the button for opening the sync tabs panel.
+    // disposed of by the user, notify the user about available tabs.
     for (id in virtualTabs) {
       if (!virtualTabs[id]._disposed) {
-        document.getElementById("sync-tabs-button").hidden = false;
+        // If there's an existing tabs notification, update it.
+        // FIXME: make tabs notifications automatically update themselves.
+        let newNotification = new Weave.TabsNotification();
+        if (existingNotification)
+          Weave.Notifications.replace(existingNotification, newNotification);
+        else
+          Weave.Notifications.add(newNotification);
+
         return;
       }
     }
 
-    // Otherwise, hide the button.
-    document.getElementById("sync-tabs-button").hidden = true;
-  },
-
-  doInitTabsPanel: function Sync_doInitTabsPanel() {
-    let list = document.getElementById("sync-tabs-list");
-
-    let virtualTabs = this._getSortedVirtualTabs();
-
-    // Remove virtual tabs that have previously been disposed of by the user.
-    virtualTabs = virtualTabs.filter(function(v) !v._disposed);
-
-    while (list.hasChildNodes())
-      list.removeChild(list.lastChild);
-
-    for each (let virtualTab in virtualTabs) {
-      let currentEntry = virtualTab.state.entries[virtualTab.state.index - 1];
-      if (!currentEntry || !currentEntry.url) {
-        this._log.warn("doInitTabsPanel: no current entry or no URL, can't " +
-                       "identify " + this._json.encode(virtualTab));
-        continue;
-      }
-
-      let label = currentEntry.title ? currentEntry.title : currentEntry.url;
-      let listitem = list.appendItem(label, virtualTab.id);
-      listitem.setAttribute("type", "checkbox");
-      // Make a tooltip that contains either or both of the title and URL.
-      listitem.tooltipText =
-        [currentEntry.title, currentEntry.url].filter(function(v) v).join("\n");
-    }
-  },
-
-  doCloseTabsPanel: function Sync_doCloseTabsPanel() {
-    document.getElementById("sync-tabs-panel").hidePopup();
-  },
-
-  doSyncTabs: function Sync_doSyncTabs() {
-    let list = document.getElementById("sync-tabs-list");
-    let virtualTabs = Weave.Engines.get("tabs").store.virtualTabs;
-
-    for (let i = 0; i < list.childNodes.length; i++) {
-      let listitem = list.childNodes[i];
-      let virtualTab = virtualTabs[listitem.value];
-      if (listitem.checked) {
-        let tab = gBrowser.addTab("about:blank");
-        this._sessionStore.setTabState(tab, this._json.encode(virtualTab.state));
-        delete virtualTabs[listitem.value];
-      }
-      else {
-        // Mark the tab disposed of by the user so we don't show it the next
-        // time the user opens the sync tabs panel.  Note: this flag does not
-        // get synced to the server, so disposal happens on each client
-        // separately, which means the user will still be prompted about this
-        // tab when syncing to a third client.
-        virtualTab._disposed = true;
-      }
-    }
-
-    Weave.Engines.get("tabs").store.virtualTabs = virtualTabs;
-    this.doCloseTabsPanel();
-    document.getElementById("sync-tabs-button").hidden = true;
+    // If we've gotten this far, it means there are no tabs left to notify
+    // the user about, so remove the existing notification, if any.
+    if (existingNotification)
+      Weave.Notifications.remove(existingNotification);
   },
 
   _updateLastSyncItem: function Sync__updateLastSyncItem() {
@@ -549,11 +553,17 @@ Sync.prototype = {
     case "weave:service:sync:error":
       this._onSyncEnd(false);
       break;
+    case "weave:notification:added":
+      this._onNotificationAdded();
+      break;
+    case "weave:notification:removed":
+      this._onNotificationRemoved();
+      break;
     case "weave:store:tabs:virtual:created":
-      this._onVirtualTabCreated();
+      this._onVirtualTabsChanged();
       break;
     case "weave:store:tabs:virtual:removed":
-      this._onVirtualTabRemoved();
+      this._onVirtualTabsChanged();
       break;
     default:
       this._log.warn("Unknown observer notification topic: " + topic);

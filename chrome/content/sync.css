@@ -1,27 +1,11 @@
-#sync-throbber-active, #sync-throbber-online, #sync-throbber-offline {
-	border: 0px !important;
+#sync-menu-button, #sync-menu-button[status="offline"] {
+  list-style-image: url("chrome://weave/skin/sync-16x16.png");
 }
 
-/* #sync-menu, */ #sync-menu-button, #sync-menu-item[status="offline"], #sync-menu-button[status="offline"] {
-	list-style-image: url(chrome://weave/skin/sync-throbber-16x16.png);
+#sync-menu-button[status="idle"] {
+  list-style-image: url("chrome://weave/skin/sync-16x16.png");
 }
 
-/* #sync-menu[status="idle"], */ #sync-menu-button[status="idle"] {
-	list-style-image: url(chrome://weave/skin/sync-throbber-16x16.png);
-}
-
-/* #sync-menu[status="active"], */ #sync-menu-button[status="active"] {
-	list-style-image: url(chrome://weave/skin/sync-throbber-16x16-active.apng);
-}
-
-/* #sync-menu[status="error"], */ #sync-menu-button[status="error"] {
-	list-style-image: url(chrome://weave/skin/sync-throbber-16x16-error.png);
-}
-
-#sync-menu-button {
-	-moz-box-direction: reverse;
-}
-
-#sync-tabs-panel {
-	max-width: 30em;
+#sync-menu-button[status="active"] {
+  list-style-image: url("chrome://weave/skin/sync-throbber-16x16-active.apng");
 }
