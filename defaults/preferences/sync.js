@@ -7,7 +7,7 @@ pref("extensions.weave.lastversion", "firstrun");
 pref("extensions.weave.lastsync", "0");
 
 pref("extensions.weave.ui.syncnow", true);
-pref("extensions.weave.ui.sharebookmarks", true);
+pref("extensions.weave.ui.sharebookmarks", false);
 pref("extensions.weave.rememberpassword", true);
 pref("extensions.weave.autoconnect", true);
 pref("extensions.weave.enabled", true);
@@ -18,7 +18,7 @@ pref("extensions.weave.syncOnQuit.enabled", true);
 pref("extensions.weave.engine.bookmarks", true);
 pref("extensions.weave.engine.history", true);
 pref("extensions.weave.engine.cookies", true );
-pref("extensions.weave.engine.passwords", true );
+pref("extensions.weave.engine.passwords", false);
 pref("extensions.weave.engine.forms", true );
 pref("extensions.weave.engine.tabs", true);
 
@@ -34,7 +34,7 @@ pref("extensions.weave.log.logger.service.dav", "Debug");
 pref("extensions.weave.log.logger.service.engine", "Debug");
 pref("extensions.weave.log.logger.service.main", "Trace");
 
-pref("extensions.weave.xmpp.enabled", true);
+pref("extensions.weave.xmpp.enabled", false);
 pref("extensions.weave.xmpp.server.url",
      "https://sm-labs01.mozilla.org:81/xmpp");
 pref("extensions.weave.xmpp.server.realm", "sm-labs01.mozilla.org");

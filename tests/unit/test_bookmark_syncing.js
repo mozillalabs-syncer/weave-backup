@@ -14,55 +14,27 @@ function FakeMicrosummaryService() {
   return {hasMicrosummary: function() { return false; }};
 }
 
+function makeBookmarksEngine() {
+  let engine = new BookmarksEngine();
+  engine._store.__ms = new FakeMicrosummaryService();
+  return engine;
+}
+
 function run_test() {
-  var syncTesting = new SyncTestingInfrastructure();
+  // -----
+  // Setup
+  // -----
 
-  function freshEngineSync(cb) {
-    let engine = new BookmarksEngine();
-    engine._store.__ms = new FakeMicrosummaryService();
-    engine.sync(cb);
-  };
-
-  function resetProfile() {
-    syncTesting.fakeFilesystem.fakeContents = {};
-    let engine = new BookmarksEngine();
-    engine._store.wipe();
-  }
-
-  function saveClientState() {
-    return Utils.deepCopy(syncTesting.fakeFilesystem.fakeContents);
-  }
-
-  function restoreClientState(state, label) {
-    function _restoreState() {
-      let self = yield;
-
-      syncTesting.fakeFilesystem.fakeContents = Utils.deepCopy(state);
-      let engine = new BookmarksEngine();
-      engine._store.wipe();
-      let originalSnapshot = Utils.deepCopy(engine._store.wrap());
-      engine._snapshot.load();
-      let snapshot = engine._snapshot.data;
-
-      engine._core.detectUpdates(self.cb, originalSnapshot, snapshot);
-      let commands = yield;
-
-      engine._store.applyCommands.async(engine._store, self.cb, commands);
-      yield;
-    }
-
-    function restoreState(cb) {
-      _restoreState.async(this, cb);
-    }
-
-    syncTesting.runAsyncFunc("restore client state of " + label,
-                             restoreState);
-  }
+  var syncTesting = new SyncTestingInfrastructure(makeBookmarksEngine);
 
   let bms = Cc["@mozilla.org/browser/nav-bookmarks-service;1"].
     getService(Ci.nsINavBookmarksService);
 
   cleanUp();
+
+  // -----------
+  // Test Proper
+  // -----------
 
   let boogleBm = bms.insertBookmark(bms.bookmarksMenuFolder,
                                     uri("http://www.boogle.com"),
@@ -70,9 +42,9 @@ function run_test() {
                                     "Boogle");
   bms.setItemGUID(boogleBm, "boogle-bookmark-guid");
 
-  syncTesting.runAsyncFunc("initial sync w/ one bookmark", freshEngineSync);
+  syncTesting.doSync("initial sync w/ one bookmark");
 
-  syncTesting.runAsyncFunc("trivial re-sync", freshEngineSync);
+  syncTesting.doSync("trivial re-sync");
 
   let yoogleBm = bms.insertBookmark(bms.bookmarksMenuFolder,
                                     uri("http://www.yoogle.com"),
@@ -80,20 +52,19 @@ function run_test() {
                                     "Yoogle");
   bms.setItemGUID(yoogleBm, "yoogle-bookmark-guid");
 
-  syncTesting.runAsyncFunc("add bookmark and re-sync", freshEngineSync);
+  syncTesting.doSync("add bookmark and re-sync");
 
   bms.moveItem(yoogleBm,
                bms.bookmarksMenuFolder,
                0);
 
-  syncTesting.runAsyncFunc("swap bookmark order and re-sync",
-                           freshEngineSync);
+  syncTesting.doSync("swap bookmark order and re-sync");
 
-  var firstComputerState = saveClientState();
+  syncTesting.saveClientState("first computer");
 
-  resetProfile();
+  syncTesting.resetClientState();
 
-  syncTesting.runAsyncFunc("re-sync on second computer", freshEngineSync);
+  syncTesting.doSync("re-sync on second computer");
 
   let zoogleBm = bms.insertBookmark(bms.bookmarksMenuFolder,
                                     uri("http://www.zoogle.com"),
@@ -101,11 +72,14 @@ function run_test() {
                                     "Zoogle");
   bms.setItemGUID(zoogleBm, "zoogle-bookmark-guid");
 
-  syncTesting.runAsyncFunc("add bookmark on second computer and resync",
-                           freshEngineSync);
+  syncTesting.doSync("add bookmark on second computer and resync");
 
-  restoreClientState(firstComputerState, "first computer");
-  syncTesting.runAsyncFunc("re-sync on first computer", freshEngineSync);
+  syncTesting.restoreClientState("first computer");
+  syncTesting.doSync("re-sync on first computer");
+
+  // --------
+  // Teardown
+  // --------
 
   cleanUp();
 }
