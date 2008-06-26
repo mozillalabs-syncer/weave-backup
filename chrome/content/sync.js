@@ -62,8 +62,8 @@ function Sync() {
   } else
   if (Weave.Utils.prefs.getCharPref("lastversion") == "0.1.30") {
       setTimeout(function() { alert("Due to server changes you will need to create a new Weave account to continue.");
-	      gSync.doOpenSetupWizard(); }, 500);   
-  } 
+	      gSync.doOpenSetupWizard(); }, 500);
+  }
 
   if (Weave.Utils.prefs.getCharPref("lastversion") != Weave.WEAVE_VERSION) {
     let url = "http://sm-labs01.mozilla.org/projects/weave/updated/?version=" +
@@ -176,9 +176,9 @@ Sync.prototype = {
     let wm = Cc["@mozilla.org/appshell/window-mediator;1"].
              getService(Ci.nsIWindowMediator);
 	let win = wm.getMostRecentWindow("");
-	return win.document.documentElement.getAttribute("windowtype");	
+	return win.document.documentElement.getAttribute("windowtype");
   },
-  
+
   _openWindow: function Sync__openWindow(type, uri, options) {
     let wm = Cc["@mozilla.org/appshell/window-mediator;1"].
       getService(Ci.nsIWindowMediator);
