@@ -38,23 +38,15 @@
 
 const SYNC_NS_ERROR_LOGIN_ALREADY_EXISTS = 2153185310;
 
-//const REGISTER_URL = "https://sm-labs01.mozilla.org:81/api/register/new/";
-const REGISTER_URL = "https://services.mozilla.com/0.2/api/register/new/";
-//const CHECK_USERNAME_URL = "https://sm-labs01.mozilla.org:81/api/register/check/";
+const REGISTER_URL       = "https://services.mozilla.com/0.2/api/register/new/";
 const CHECK_USERNAME_URL = "https://services.mozilla.com/0.2/api/register/check/";
-const CHECK_EMAIL_URL = "https://services.mozilla.com/0.2/api/register/chkmail/";
-const CAPTCHA_IMAGE_URL = "http://api.recaptcha.net/image";
+const CHECK_EMAIL_URL    = "https://services.mozilla.com/0.2/api/register/chkmail/";
+const CAPTCHA_IMAGE_URL  = "http://api.recaptcha.net/image";
 
-const THROBBER_ACTIVE = "chrome://global/skin/icons/loading_16.png";
-const THROBBER = "chrome://global/skin/icons/notloading_16.png";
-const THROBBER_ERROR = "chrome://global/skin/icons/notloading_16.png";
-
-const CHECK = "chrome://weave/skin/cbox-check.gif";
-
-const PROGRESS_COLOR = "black";
-const ERROR_COLOR = "red";
+const PROGRESS_COLOR     = "black";
+const ERROR_COLOR        = "red";
 const SERVER_ERROR_COLOR = "black";
-const SUCCESS_COLOR = "blue";
+const SUCCESS_COLOR      = "blue";
 
 const SERVER_TIMEOUT = 10000;
 
@@ -116,26 +108,26 @@ SyncWizard.prototype = {
 
   onPageShow: function SyncWizard_onPageShow(pageId) {
     let wizard = document.getElementById('sync-wizard');
-    let status1, sync1;
 
     switch(pageId) {
       case "sync-wizard-intro":
-	    break;
+        wizard.canAdvance = true;
+        break;
 	
       case "sync-wizard-welcome":
-	    this._log.info("Wizard: Showing welcome page");
-	    wizard.canAdvance = false;
-	    break;
+        this._log.info("Wizard: Showing welcome page");
+        wizard.canAdvance = false;
+        break;
     
       case "sync-wizard-verify":
-	    this._log.info("Wizard: Showing account verification page");
+        this._log.info("Wizard: Showing account verification page");
 	
         // If we've already verified the info, no need to do so again.
         let loginVerified = document.getElementById('login-verified').value;
         let passphraseVerified = document.getElementById('passphrase-verified').value;
         if (loginVerified == "true" && passphraseVerified == "true")
           wizard.canAdvance = true;
-	    else
+        else
 	      wizard.canAdvance = false;
 	    break;
 
@@ -183,12 +175,12 @@ SyncWizard.prototype = {
 	    username = document.getElementById('sync-username-field').value; 
 	  else if (path == "create")
 	    username = document.getElementById('sync-username-create-field').value;
-	  
+	  /*
 	  if (username)
 	    deviceName.value = this._stringBundle.getFormattedString("default-name.label", [username]);
 	  else
 	    deviceName.value = this._stringBundle.getString("default-name-nouser.label");
-	  
+	  */
 	  let branch = Cc["@mozilla.org/preferences-service;1"].
 	               getService(Ci.nsIPrefService).getBranch(Weave.PREFS_BRANCH + "engine.");
 	
@@ -261,25 +253,28 @@ SyncWizard.prototype = {
   /* setTitles() - Called by welcome screen to set upcoming page titles.
    */
   setTitles: function SyncWizard_setTitles(type) {
-      let wizard = document.getElementById('sync-wizard');
-      let dataPage = wizard.getPageById('sync-wizard-data');
-      let finalPage = wizard.getPageById('sync-wizard-final');
+    let wizard = document.getElementById('sync-wizard');
+    let dataPage  = wizard.getPageById('sync-wizard-data');
+    let finalPage = wizard.getPageById('sync-wizard-final');
       
-      // also set the hidden "path" variable so future screens know 
-      let path = document.getElementById('path');
+    // The hidden "path" label- for later use so we know which path the user took.
+    let path = document.getElementById('path');
       
-      if (type == "verify") {
-	  dataPage.setAttribute("label", this._stringBundle.getString("data-verify.title"));
-	  finalPage.setAttribute("label", this._stringBundle.getString("final-verify.title"));
-	  path.value = "verify";
-      }
-      else if (type == "create") {
-	  dataPage.setAttribute("label", this._stringBundle.getString("data-create.title"));
-	  finalPage.setAttribute("label", this._stringBundle.getString("final-create.title"));
-	  path.value = "create";
-      }
-      
+    if (type == "verify") {
+      dataPage.setAttribute("label", this._stringBundle.getString("data-verify.title"));
+      finalPage.setAttribute("label", this._stringBundle.getString("final-verify.title"));
+      path.value = "verify";
+    }
+    else if (type == "create") {
+      dataPage.setAttribute("label", this._stringBundle.getString("data-create.title"));
+      finalPage.setAttribute("label", this._stringBundle.getString("final-create.title"));
+      path.value = "create";
+    }
   }, 
+  
+  /* advanceTo() - Called by buttons on account type screen.
+   *  Advances to the specified page.
+   */
   advanceTo: function SyncWizard_advanceTo(pageid) {
     let wizard = document.getElementById('sync-wizard');
     wizard.canAdvance = true;
@@ -291,16 +286,17 @@ SyncWizard.prototype = {
   
   checkVerificationFields: function SyncWizard_checkVerify() {
 	let wizard = document.getElementById('sync-wizard');
+
 	let statusLabel = document.getElementById('verify-account-error');
-    let username = document.getElementById('sync-username-field');
-    let password = document.getElementById('sync-password-field');
-    let passphrase = document.getElementById('sync-passphrase-field');
+    let username    = document.getElementById('sync-username-field');
+    let password    = document.getElementById('sync-password-field');
+    let passphrase  = document.getElementById('sync-passphrase-field');
+
     let loginVerified = this._stringBundle.getString("verify-success.label");
    
     wizard.canAdvance = false;
     
-    if (!(username && username.value && password && password.value &&
-          passphrase && passphrase.value)) {
+    if (!(username.value && password.value && passphrase.value)) {
       wizard.canAdvance = false;
       document.getElementById('verify-check').value = "false";
       return false;
@@ -353,42 +349,52 @@ SyncWizard.prototype = {
   },
   
   /* verifyLogin() - called when username or password field is changed.
-   * Asychronously tests the login on the server.
+   *  Asychronously tests the login on the server.
    */
   verifyLogin: function SyncWizard_verifyLogin() {
-    this._log.trace("verifyLogin called");
+    this._log.info("Verifying username/password...");
+    
+    let wizard = document.getElementById("sync-wizard");
+    let statusLabel = document.getElementById("verify-account-error");
+    let statusLink  = document.getElementById("verify-account-error-link");
+    let statusIcon  = document.getElementById("verify-account-icon");
 
+    let username = document.getElementById("sync-username-field").value;
+    let password = document.getElementById("sync-password-field").value;
+
+    let progress = this._stringBundle.getString("verify-progress.label");
+
+    let loginVerified = document.getElementById("login-verified");
 
     // Don't allow advancing until we verify the account.
-    let wizard = document.getElementById('sync-wizard');
 	wizard.canAdvance = false;
-	document.getElementById('login-verified').value = "false";
+	document.getElementById("login-verified").value = "false";
 
-    let statusLabel = document.getElementById('verify-account-error');
-    let statusLink = document.getElementById('verify-account-error-link');
-    let statusIcon = document.getElementById('verify-account-icon');
-    let username = document.getElementById('sync-username-field').value;
-    let password = document.getElementById('sync-password-field').value;
-    let progress = this._stringBundle.getString("verify-progress.label");
-    let serverError = this._stringBundle.getString("serverError.label");
-
-    // Check for empty fields
+    // Check for empty username or password fields
     if (!username || !password) {
       statusIcon.hidden = true;
       statusLabel.value = "";
       return;
     }
-    this._log.info("Verifying username/password...");
 
-    // Set the status and throbber
-    statusIcon.hidden = false;
+    // Ok to verify, set the status and throbber
+    statusIcon.hidden  = false;
+    statusLink.hidden  = true;
     statusLabel.hidden = false;
-    statusLabel.value = progress;
+    statusLabel.value  = progress;
     statusLabel.style.color = PROGRESS_COLOR;
-    statusLink.hidden = true;
       
-    // This will first a notification when when it succeeds/fails
+    // The observer will handle success and failure notifications
     Weave.Service.verifyLogin(username, password);
+    
+    // In case the server is hanging... 
+    setTimeout(function() {
+            if (loginVerified.value == "false") {
+		      statusIcon.hidden = true;
+		      statusLabel.value = serverTimeoutError;
+		      statusLabel.style.color = SERVER_ERROR_COLOR;
+            }
+	  }, SERVER_TIMEOUT);
   },
   
   // This shouldn't happen until the final page in case the user wants to cancel
