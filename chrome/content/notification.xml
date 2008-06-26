@@ -137,7 +137,15 @@
       </xul:hbox>
     </content>
     <implementation>
-      <field name="notification">null</field>
+      <!-- Note: this used to be a field, but for some reason it kept getting
+         - reset to its default value for TabNotification elements.
+         - As a property, that doesn't happen, even though the property stores
+         - its value in a JS property |_notification| that is not defined
+         - in XBL as a field or property.  Maybe this is wrong, but it works.
+         -->
+      <property name="notification"
+                onget="return this._notification"
+                onset="this._notification = val; return val;"/>
       <method name="close">
         <body><![CDATA[
           Notifications.remove(this.notification);
