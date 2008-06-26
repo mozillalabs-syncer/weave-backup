@@ -24,7 +24,7 @@
   </stringbundleset>
   
   <wizardpage label="&intro.title;" pageid="sync-wizard-intro"
-              next="sync-wizard-welcome"
+              next="sync-wizard-eula"
               onpageshow="gSyncWizard.onPageShow('sync-wizard-intro');">
     <vbox align="left">
       <image src="chrome://weave/skin/large-logo.png"/>
@@ -41,7 +41,32 @@
       </hbox>
     </vbox>
   </wizardpage>
+
   
+  <wizardpage label="&eula.title;" pageid="sync-wizard-eula"
+              next="sync-wizard-welcome"
+              onpageshow="gSyncWizard.onPageShow('sync-wizard-eula');">
+    
+    <description>&eula.description;</description>
+    
+    <separator class="thin"/>
+    
+    <vbox id="EULAText" flex="1">
+      <iframe style="min-height: 14em; min-width: 85ex" id="EULATextFrame" type="content" flex="1"
+              src="chrome://weave/content/EULA.xhtml"/>
+    </vbox>
+    
+    <separator class="thin"/>
+    
+    <radiogroup id="acceptOrDecline"
+                oncommand="gSyncWizard.onChangeEULARadio();">
+      <radio value="true" label="&eula.accept;"/>
+      <radio value="false" label="&eula.decline;"/>
+    </radiogroup>
+    
+  </wizardpage>
+  
+
   <wizardpage label="&welcome.title;" pageid="sync-wizard-welcome" 
               next="sync-wizard-verify" 
               onpageshow="gSyncWizard.onPageShow('sync-wizard-welcome');" >
