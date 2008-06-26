@@ -113,11 +113,17 @@ SyncWizard.prototype = {
       case "sync-wizard-intro":
         wizard.canAdvance = true;
         break;
-	
-      case "sync-wizard-welcome":
-        this._log.info("Wizard: Showing welcome page");
-        wizard.canAdvance = false;
-        break;
+
+    case "sync-wizard-eula":
+      let radio = document.getElementById("acceptOrDecline");
+      radio.value = "false";
+      wizard.canAdvance = false;
+      break;
+      
+    case "sync-wizard-welcome":
+      this._log.info("Wizard: Showing welcome page");
+      wizard.canAdvance = false;
+      break;
     
       case "sync-wizard-verify":
         this._log.info("Wizard: Showing account verification page");
@@ -244,6 +250,14 @@ SyncWizard.prototype = {
       this._log.warn("Unknown wizard page requested: " + pageId);
       break;
     }
+  },
+
+  /////EULA SCREEN/////
+  onChangeEULARadio: function SyncWizard_onChangeEULARadio() {
+    let wizard = document.getElementById('sync-wizard');
+    let radio = document.getElementById("acceptOrDecline");
+ 
+    wizard.canAdvance = (radio.value == "true");
   },
 
 
