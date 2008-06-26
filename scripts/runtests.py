@@ -52,6 +52,7 @@ class JsTestCase(unittest.TestCase):
         result = subprocess.call(
             ["make",
              "-C", dirname,
+             "-f", "../harness/Makefile",
              testname],
             stdout = subprocess.PIPE,
             stderr = subprocess.STDOUT
