@@ -167,7 +167,7 @@
   <binding id="TabsNotification" extends="chrome://weave/content/notification.xml#notification">
     <content>
       <xul:hbox class="notification-inner outset" flex="1" xbl:inherits="type" align="start">
-        <xul:image anonid="messageImage" class="messageImage" xbl:inherits="src=image" style="padding: 3px;"/>
+        <xul:image anonid="messageImage" class="messageImage" xbl:inherits="src=image"/>
         <xul:vbox flex="1">
           <xul:hbox anonid="details" align="center" flex="1">
             <xul:description anonid="messageText" class="messageText" flex="1">
@@ -187,11 +187,10 @@
             <children/>
           </xul:hbox>
         </xul:vbox>
-        <xul:spacer flex="1"/>
-        <xul:toolbarbutton ondblclick="event.stopPropagation();"
-                           class="messageCloseButton tabbable"
+        <xul:toolbarbutton class="messageCloseButton tabbable"
                            xbl:inherits="hidden=hideclose"
                            tooltiptext="&closeNotification.tooltip;"
+                           ondblclick="event.stopPropagation();"
                            oncommand="document.getBindingParent(this).close()"/>
       </xul:hbox>
     </content>
@@ -242,6 +241,7 @@
           while (list.hasChildNodes())
             list.removeChild(list.lastChild);
       
+          var numItems = 0;
           for each (var virtualTab in virtualTabs) {
             var currentEntry = virtualTab.state.entries[virtualTab.state.index - 1];
             if (!currentEntry || !currentEntry.url) {
@@ -256,7 +256,15 @@
             // Make a tooltip that contains either or both of the title and URL.
             listitem.tooltipText =
               [currentEntry.title, currentEntry.url].filter(function(v) v).join("\n");
+
+            ++numItems;
           }
+
+          // Resize the list to the number of items (up to ten).  We should
+          // be able to set this via CSS |height: auto; max-height: something|,
+          // but that doesn't work (the list is slightly shorter than it needs
+          // to be and keeps resizing, perhaps from bug 413336 and/or 261411).
+          list.setAttribute("rows", numItems > 10 ? 10 : numItems);
         ]]></body>
       </method>
 
