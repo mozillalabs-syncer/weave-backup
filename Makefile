@@ -62,12 +62,12 @@ else
   substitutions += 'unpacked=' 'jar=\# '
 endif
 
-
-all: test
-.PHONY: build platform test xpi clean
-
 dotin_files := $(shell find . -type f -name \*.in)
 dotin_files := $(dotin_files:.in=)
+
+all: test
+.PHONY: build platform test xpi clean $(dotin_files)
+
 $(dotin_files): $(dotin_files:=.in)
 	./build/subst.pl $@ $(substitutions)
 
