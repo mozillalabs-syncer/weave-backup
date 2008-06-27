@@ -67,6 +67,11 @@ WeavePrefs.prototype = {
          window.openDialog('chrome://weave/content/advanced.xul', '',
                       'chrome, dialog, modal, resizable=yes, ', null);
   },
+  
+  runSetupWizard: function WeavePrefs_runSetupWizard() {
+    window.openDialog('chrome://weave/content/wizard.xul', '',
+                      'chrome,centerscreen,dialog,resizable=yes', null);          
+  },
 
   doSignOn: function WeavePrefs_doSignOn() {
 

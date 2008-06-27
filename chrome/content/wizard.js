@@ -114,20 +114,20 @@ SyncWizard.prototype = {
         wizard.canAdvance = true;
         break;
 
-    case "sync-wizard-eula":
-      let radio = document.getElementById("acceptOrDecline");
-      radio.value = "false";
-      wizard.canAdvance = false;
-      break;
+      case "sync-wizard-eula":
+        let radio = document.getElementById("acceptOrDecline");
+        radio.value = "false";
+        wizard.canAdvance = false;
+        break;
       
-    case "sync-wizard-welcome":
-      this._log.info("Wizard: Showing welcome page");
-      wizard.canAdvance = false;
-      break;
+      case "sync-wizard-welcome":
+        this._log.info("Wizard: Showing welcome page");
+        wizard.canAdvance = false;
+        break;
     
       case "sync-wizard-verify":
         this._log.info("Wizard: Showing account verification page");
-	
+        
         if (document.getElementById("verify-check").value == "true")
           wizard.canAdvance = true;
         else
@@ -152,104 +152,97 @@ SyncWizard.prototype = {
 	      wizard.canAdvance = false;
 	    break;
 
-    case "sync-wizard-create3": 
-	this._log.info("Wizard: Showing captcha/license agreement page");
+      case "sync-wizard-create3": 
+        this._log.info("Wizard: Showing captcha/license agreement page");
+        
+        if (document.getElementById("create3-check").value == "true") {
+          //document.getElementById("captchaInput").value = "";
+          wizard.canAdvance = true;
+        } 
+        else {
+          document.getElementById("captcha").addEventListener("pageshow", function() {gSyncWizard.onLoadCaptcha()}, false, true);
+          document.getElementById("captcha").setAttribute("src", REGISTER_URL);
+          wizard.canAdvance = false;
+        }
+        break;
 	
-	if (document.getElementById("create3-check").value == "true") {
-	  document.getElementById("captchaInput").value = "";
-	  wizard.canAdvance = true;
-	} 
-	else {
-	  document.getElementById('captcha').addEventListener("pageshow", function() {gSyncWizard.onLoadCaptcha()}, false, true);
-	  document.getElementById('captcha').setAttribute("src", REGISTER_URL);
-	  wizard.canAdvance = false;
-	}
-	break;
-	
-    case "sync-wizard-data": {      
-	  this._log.info("Wizard: Showing data page");
-	
-	  // TODO: use a formatted string here from properties
-	  // set default device name
-	  let deviceName = document.getElementById('sync-instanceName-field');
-	  let path = document.getElementById('path').value;
-	  let username;  
-	  if (path == "verify") 
-	    username = document.getElementById('sync-username-field').value; 
-	  else if (path == "create")
-	    username = document.getElementById('sync-username-create-field').value;
-	  /*
-	  if (username)
-	    deviceName.value = this._stringBundle.getFormattedString("default-name.label", [username]);
-	  else
-	    deviceName.value = this._stringBundle.getString("default-name-nouser.label");
-	  */
-	  let branch = Cc["@mozilla.org/preferences-service;1"].
-	               getService(Ci.nsIPrefService).getBranch(Weave.PREFS_BRANCH + "engine.");
-	
-      // TODO: Move this into a separate module for use in prefs and wizard
-      document.getElementById('sync-wizard-bookmarks').checked = branch.getBoolPref("bookmarks");
-      document.getElementById('sync-wizard-history').checked = branch.getBoolPref("history");
-      document.getElementById('sync-wizard-cookies').checked = branch.getBoolPref("cookies");
-      document.getElementById('sync-wizard-passwords').checked = branch.getBoolPref("passwords");
-      document.getElementById('sync-wizard-tabs').checked = branch.getBoolPref("tabs");
-      document.getElementById('sync-wizard-forms').checked = branch.getBoolPref("forms");
-	
-	  wizard.canAdvance = true;
-	  break;
-	}
-    case "sync-wizard-final": {
-      this._log.info("Wizard: Showing final page");
+      case "sync-wizard-data": {      
+        this._log.info("Wizard: Showing data page");
+
+        let deviceName = document.getElementById('sync-instanceName-field');
+        let path = document.getElementById('path').value;
+        let username;  
+        
+        if (path == "verify") 
+          username = document.getElementById('sync-username-field').value; 
+        else if (path == "create")
+          username = document.getElementById('sync-username-create-field').value;
+          
+        let branch = Cc["@mozilla.org/preferences-service;1"].
+                     getService(Ci.nsIPrefService).getBranch(Weave.PREFS_BRANCH + "engine.");
+        // TODO: Move this into a separate module for use in prefs and wizard
+        document.getElementById('sync-wizard-bookmarks').checked = branch.getBoolPref("bookmarks");
+        document.getElementById('sync-wizard-history').checked = branch.getBoolPref("history");
+        document.getElementById('sync-wizard-cookies').checked = branch.getBoolPref("cookies");
+        document.getElementById('sync-wizard-passwords').checked = branch.getBoolPref("passwords");
+        document.getElementById('sync-wizard-tabs').checked = branch.getBoolPref("tabs");
+        document.getElementById('sync-wizard-forms').checked = branch.getBoolPref("forms");
+
+        wizard.canAdvance = true;
+        break;
+      }
+      case "sync-wizard-final": {
+        this._log.info("Wizard: Showing final page");
             
-      // display the username
-      // TODO: better way to check for this, and move error string out to wizard.properties
-      let accountDetails = document.getElementById('final-account-details');
-	  let verifyUsername = document.getElementById('sync-username-field').value;
-	  let createUsername = document.getElementById('sync-username-create-field').value;
-	  if (verifyUsername)
-        accountDetails.value = this._stringBundle.getFormattedString("final-account-value.label", [verifyUsername]);
-	  else if (createUsername)
-        accountDetails.value = this._stringBundle.getFormattedString("final-account-value.label", [createUsername]);
-	  else
-	    accountDetails.value = "No username provided";
+        // display the username
+        let accountDetails = document.getElementById('final-account-details');
+        let path = document.getElementById('path').value;
+        let username;  
+        
+        if (path == "verify") 
+          username = document.getElementById('sync-username-field').value; 
+        else if (path == "create")
+          username = document.getElementById('sync-username-create-field').value;
+        accountDetails.value = this._stringBundle.getFormattedString("final-account-value.label", [username]);
 
-      // get the preferences
-      var prefArray = new Array();
-      if (document.getElementById('sync-wizard-bookmarks').checked)
-        prefArray.push(this._stringBundle.getString("bookmarks.label"));
-      if (document.getElementById('sync-wizard-history').checked)
-        prefArray.push(this._stringBundle.getString("history.label"));
-      if (document.getElementById('sync-wizard-cookies').checked)
-        prefArray.push(this._stringBundle.getString("cookies.label"));
-      if (document.getElementById('sync-wizard-passwords').checked)
-        prefArray.push(this._stringBundle.getString("passwords.label"));
-      if (document.getElementById('sync-wizard-tabs').checked)
-        prefArray.push(this._stringBundle.getString("tabs.label"));
-      if (document.getElementById('sync-wizard-forms').checked)
-        prefArray.push(this._stringBundle.getString("formdata.label"));
-      var prefString = ""; 
-      for (var i=0; i<prefArray.length-1; i++) 
+        // get the preferences
+        var prefArray = new Array();
+        if (document.getElementById('sync-wizard-bookmarks').checked)
+          prefArray.push(this._stringBundle.getString("bookmarks.label"));
+        if (document.getElementById('sync-wizard-history').checked)
+          prefArray.push(this._stringBundle.getString("history.label"));
+        if (document.getElementById('sync-wizard-cookies').checked)
+          prefArray.push(this._stringBundle.getString("cookies.label"));
+        if (document.getElementById('sync-wizard-passwords').checked)
+          prefArray.push(this._stringBundle.getString("passwords.label"));
+        if (document.getElementById('sync-wizard-tabs').checked)
+          prefArray.push(this._stringBundle.getString("tabs.label"));
+        if (document.getElementById('sync-wizard-forms').checked)
+          prefArray.push(this._stringBundle.getString("formdata.label"));
+        var prefString = ""; 
+        for (var i=0; i<prefArray.length-1; i++) 
           prefString = prefString + prefArray[i] + ", ";
-      prefString = prefString + prefArray[prefArray.length-1];
+          prefString = prefString + prefArray[prefArray.length-1];
 
-      // display the preferences      
-      let prefDetails = document.getElementById('final-pref-details');
-      prefDetails.value = prefString;
+        // display the preferences      
+        let prefDetails = document.getElementById('final-pref-details');
+        prefDetails.value = prefString;
 
-      // explain sync
-      let syncDetails = document.getElementById('final-sync-details');
-      syncDetails.value = this._stringBundle.getString("final-sync-value.label");
+        // explain sync
+        let syncDetails = document.getElementById('final-sync-details');
+        syncDetails.value = this._stringBundle.getString("final-sync-value.label");
 
-      wizard.canAdvance = true;	
-      break;
-    }
-    default:
-      this._log.warn("Unknown wizard page requested: " + pageId);
-      break;
+        wizard.canAdvance = true;	
+        break;
+      }
+      default:
+        this._log.warn("Unknown wizard page requested: " + pageId);
+        break;
     }
   },
 
   /////EULA SCREEN/////
+  
   onChangeEULARadio: function SyncWizard_onChangeEULARadio() {
     let wizard = document.getElementById('sync-wizard');
     let radio = document.getElementById("acceptOrDecline");
@@ -747,6 +740,14 @@ SyncWizard.prototype = {
 
 
     
+  
+  /* reloadCaptcha() - Called onclick from "try another image" link.
+   *  Refreshes captcha image. 
+   */
+  reloadCaptcha: function SyncWizard_reloadCaptcha() {
+    document.getElementById("captcha").reload();
+  },  
+  
   onLoadCaptcha: function SyncWizard_onLoadCaptcha() {
     let captchaImage = document.getElementById('captcha').contentDocument.getElementById('recaptcha_challenge_field').value;
     document.getElementById('lastCaptchaChallenge').value = captchaImage;
@@ -759,152 +760,152 @@ SyncWizard.prototype = {
    */
   
   createAccount: function SyncWizard_createAccount() {
-      let httpRequest = new XMLHttpRequest();
       
-      let wizard = document.getElementById('sync-wizard');
-      let captchaError = document.getElementById('captcha-error');
-	  let status = document.getElementById('account-creation-status');
-	  let statusLink = document.getElementById('account-creation-status-link');
-	  let icon = document.getElementById('account-creation-status-icon');
+    let wizard = document.getElementById('sync-wizard');
+	let statusLabel = document.getElementById('account-creation-status');
+	let statusLink  = document.getElementById('account-creation-status-link');
+	let statusIcon  = document.getElementById('account-creation-status-icon');
+    
+    let captchaError   = document.getElementById('captcha-error');
+    let captchaImage   = document.getElementById('captcha').contentDocument.getElementById('recaptcha_challenge_field').value;
+    
+    let username         = document.getElementById('sync-username-create-field').value;
+    let created          = this._stringBundle.getFormattedString("create-success.label", [username]);
+    let serverError      = this._stringBundle.getString("serverError.label");
+    let progress         = this._stringBundle.getString("create-progress.label");
+    let uidTaken         = this._stringBundle.getString("create-uid-inuse.label");
+    let uidMissing       = this._stringBundle.getString("create-uid-missing.label");
+    let uidInvalid       = this._stringBundle.getString("create-uid-invalid.label");
+    let emailInvalid     = this._stringBundle.getString("create-mail-invalid.label");
+    let emailTaken       = this._stringBundle.getString("create-mail-inuse.label");
+    let captchaMissing   = this._stringBundle.getString("create-captcha-missing.label");
+    let passwordMissing  = this._stringBundle.getString("create-password-missing.label");
+    let incorrectCaptcha = this._stringBundle.getString("incorrectCaptcha.label");
       
-      let incorrectCaptcha = this._stringBundle.getString("incorrectCaptcha.label");
-
-      let username = document.getElementById('sync-username-create-field');
       
-      let created         = this._stringBundle.getFormattedString("create-success.label", [username.value]);
-      let serverError     = this._stringBundle.getString("serverError.label");
-      let progress        = this._stringBundle.getString("create-progress.label");
-      let uidTaken        = this._stringBundle.getString("create-uid-inuse.label");
-      let uidMissing      = this._stringBundle.getString("create-uid-missing.label");
-      let uidInvalid      = this._stringBundle.getString("create-uid-invalid.label");
-      let emailInvalid    = this._stringBundle.getString("create-mail-invalid.label");
-      let emailTaken      = this._stringBundle.getString("create-mail-inuse.label");
-      let captchaMissing  = this._stringBundle.getString("create-captcha-missing.label");
-      let passwordMissing = this._stringBundle.getString("create-password-missing.label");
-      
-      let log = this._log;
-      
-      if (document.getElementById("create3-check").value == "true")
-	    return true;
+    let log = this._log;
+    let httpRequest = new XMLHttpRequest();
+     
+    if (document.getElementById("create3-check").value == "true")
+	  return true;
 	    
-	  // tell the user the server is working...
-	  icon.hidden = false;
-	  status.hidden = false;
-	  status.value = progress;
-	  status.style.color = PROGRESS_COLOR;
-	  statusLink.hidden = true;
+	// tell the user the server is working...
+	statusIcon.hidden = false;
+	statusLink.hidden = true;
+	statusLabel.hidden = false;
+	statusLabel.value = progress;
+	statusLabel.style.color = PROGRESS_COLOR;
 
-      // hide the captcha error message if that was the problem
-      captchaError.value = "";
+    // hide the captcha error message in case that was the problem
+    captchaError.value = "";
       
-      httpRequest.open('POST', REGISTER_URL, true);
+    httpRequest.open('POST', REGISTER_URL, true);
       
-      httpRequest.onreadystatechange = function() { 
-	  if (httpRequest.readyState == 4) {
-	    switch (httpRequest.status) {
+    httpRequest.onreadystatechange = function() { 
+	if (httpRequest.readyState == 4) {
+	  switch (httpRequest.status) {
 		  
-		  // CREATED
-	      case 201:
-	        captchaError.value = "";
-	        if (httpRequest.responseText == "2: VERIFICATION SENT") 
-	          log.info("Account created, verification email sent.");
-	        else if (httpRequest.responseText == "3: CREATED") 
-	          log.info("Account created, no email address given.");
+	 // CREATED
+	    case 201:
+	      captchaError.value = "";
+	      if (httpRequest.responseText == "2: VERIFICATION SENT") 
+	        log.info("Account created, verification email sent.");
+	      else if (httpRequest.responseText == "3: CREATED") 
+	        log.info("Account created, no email address given.");
 	        
-	        icon.hidden = true;
-	        status.value = created;
-	        status.style.color = SUCCESS_COLOR;
-	        statusLink.hidden = true;
+	      //document.getElementById('lastCaptchaChallenge').value = captchaImage;
 	        
-	        document.getElementById("create3-check").value = "true";
-	        wizard.canAdvance = true;
-	        wizard.advance('sync-wizard-data');
-            break;
-            
-          // BAD REQUEST (the user should rarely get to this state -> ok to report one at a time)
-          case 400:
-            status.style.color = ERROR_COLOR;
-	        icon.hidden = true;
-	        statusLink.hidden = true;
-            let response = httpRequest.responseText;
-	        log.info("Status 400: Account not created, response " + response);
-
-            if (response.match("0") && !response.match("-10"))
-              status.value = uidTaken;
-            else if (response.match("-2"))
-              status.value = uidMissing;
-            else if (response.match("-3"))
-              status.value = uidInvalid;
-            else if (response.match("-4"))
-              status.value = emailInvalid;
-            else if (response.match("-5"))
-              status.value = emailTaken;
-            else if (response.match("-7")) {
-              captchaError.value = captchaMissing;
-	          captchaError.style.color = ERROR_COLOR;
-	          status.hidden = true;
-	        }
-            else if (response.match("-8"))
-              status.value = passwordMissing;
-	        else 
-	          status.value = serverError;
-            break;
-            
-	      // CAPTCHA FAILED
-	      case 417:
-	        log.info("Incorrect Captcha response. Account not created.");
-	        captchaError.value = incorrectCaptcha;
-	        captchaError.style.color = ERROR_COLOR;
-	        document.getElementById('captcha').reload();
-	        document.getElementById('captchaInput').value = "";
-	        icon.hidden = true;
-	        status.hidden = true;
-	        statusLink.hidden = true;
-	        //status.value = incorrectCaptcha;
-	        //status.style.color = ERROR_COLOR;
-	        break;
-
-	      default:
-	        log.info("Error: received status " + httpRequest.status + ". Account not created.");
-	        icon.hidden = true;
-	        status.value = serverError;
-	        status.style.color = SERVER_ERROR_COLOR;
-	        statusLink.hidden = false;
-	        break;
+	      statusIcon.hidden = true;
+	      statusLink.hidden = true;
+	      statusLabel.value = created;
+	      statusLabel.style.color = SUCCESS_COLOR;
+	      
+	      document.getElementById("create3-check").value = "true";
+	      wizard.canAdvance = true;
+	      wizard.advance('sync-wizard-data');
+          break;
+          
+        // BAD REQUEST (the user should rarely get to this state -> ok to report one at a time)
+        case 400:
+	      statusIcon.hidden = true;
+	      statusLink.hidden = true;
+          statusLabel.style.color = ERROR_COLOR;
+          let response = httpRequest.responseText;
+	      log.info("Status 400: Account not created, response " + response);
+          if (response.match("0") && !response.match("-10"))
+            statusLabel.value = uidTaken;
+          else if (response.match("-2"))
+            statusLabel.value = uidMissing;
+          else if (response.match("-3"))
+            statusLabel.value = uidInvalid;
+          else if (response.match("-4"))
+            statusLabel.value = emailInvalid;
+          else if (response.match("-5"))
+            statusLabel.value = emailTaken;
+          else if (response.match("-7")) {
+            captchaError.value = captchaMissing;
+            captchaError.style.color = ERROR_COLOR;
+	        statusLabel.hidden = true;
 	      }
+          else if (response.match("-8"))
+            statusLabel.value = passwordMissing;
+	      else 
+	        statusLabel.value = serverError;
+
+	      document.getElementById("create3-check").value = "false";
+	      wizard.canAdvance = false;
+          break;
+            
+	    // CAPTCHA FAILED
+	    case 417:
+	      log.info("Incorrect Captcha response. Account not created.");
+	      captchaError.value = incorrectCaptcha;
+	      captchaError.style.color = ERROR_COLOR;
+	      document.getElementById('captcha').reload();
+	      document.getElementById('captchaInput').value = "";
+	      statusIcon.hidden = true;
+	      statusLink.hidden = true;
+	      statusLabel.hidden = true;
+          document.getElementById("create3-check").value = "false";
+	      wizard.canAdvance = false;
+	      break;
+        
+        default:
+          log.info("Error: received status " + httpRequest.status + ". Account not created.");
+	      statusIcon.hidden = true;
+	      statusLink.hidden = false;
+	      statusLabel.value = serverError;
+	      statusLabel.style.color = SERVER_ERROR_COLOR;
+
+	      document.getElementById("create3-check").value = "false";
+	      wizard.canAdvance = false;
+	      break;
+	    }
 	  }
-      };
+    };
       
-      let uid = document.getElementById("sync-username-create-field").value;
-      let password = document.getElementById("sync-password-create-field").value;
-      let passphrase = document.getElementById("sync-passphrase-create-field").value;
-      let mail = document.getElementById("sync-email-create-field").value;
-      
-      let captchaDoc = document.getElementById("captcha").contentDocument;
-      let challenge = document.getElementById("lastCaptchaChallenge").value;
-      let response = document.getElementById("captchaInput").value;
-      
-      let message = "uid=" + encodeURIComponent(uid) + 
+    let uid = document.getElementById("sync-username-create-field").value;
+    let password = document.getElementById("sync-password-create-field").value;
+    let passphrase = document.getElementById("sync-passphrase-create-field").value;
+    let mail = document.getElementById("sync-email-create-field").value;
+    
+    let captchaDoc = document.getElementById("captcha").contentDocument;
+    let challenge = document.getElementById("lastCaptchaChallenge").value;
+    let response = document.getElementById("captchaInput").value;
+    
+    let message = "uid=" + encodeURIComponent(uid) + 
       "&password=" + encodeURIComponent(password) + 
       "&mail=" + encodeURIComponent(mail) + 
       "&recaptcha_response_field=" + encodeURIComponent(response) + 
       "&recaptcha_challenge_field=" + encodeURIComponent(challenge);
       
-      httpRequest.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-      httpRequest.setRequestHeader("Content-Length", message.length);
-      httpRequest.send(message);		
+    httpRequest.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    httpRequest.setRequestHeader("Content-Length", message.length);
+    httpRequest.send(message);		
       
-      return false;
+    return false;
   },
   
-  
-  
-  /* reloadCaptcha() - Called onclick from "try another image" link.
-   *  Refreshes captcha image. 
-   */
-  reloadCaptcha: function SyncWizard_reloadCaptcha() {
-      document.getElementById("captcha").reload();
-  },  
   
   
   /////INSTALLATION, FINAL SYNC/////
@@ -913,19 +914,18 @@ SyncWizard.prototype = {
    *  Allows wizard to advance if all fields have a value.
    */
   checkFinalFields: function SyncWizard_checkFinalFields() {
-      let wizard = document.getElementById('sync-wizard');
+    let wizard = document.getElementById('sync-wizard');
       
-      let input = document.getElementById('captchaInput');
-      let agree = document.getElementById('terms-checkbox');
+    let input = document.getElementById('captchaInput').value;
+    let agree = document.getElementById('terms-checkbox');
       
-      if ((!(input && input.value)) || !agree.checked) {
+    if (!input || !agree.checked) {
 	  wizard.canAdvance = false;
 	  return false;
-      }
+    }
       
-      wizard.canAdvance = true;
-      return true;
-      
+    wizard.canAdvance = true;
+    return true;
   },
    
    
@@ -983,6 +983,7 @@ SyncWizard.prototype = {
           }
       });
 
+    // don't let them advance- only sync:success will advance
     return false;
   },
   
@@ -1008,29 +1009,29 @@ SyncWizard.prototype = {
    */
   setPrefs: function SyncWizard_setPrefs() {
       
-      let branch = Cc["@mozilla.org/preferences-service;1"].
-      getService(Ci.nsIPrefService).
-      getBranch(Weave.PREFS_BRANCH + "engine.");
+    let branch = Cc["@mozilla.org/preferences-service;1"].
+    getService(Ci.nsIPrefService).
+    getBranch(Weave.PREFS_BRANCH + "engine.");
+    
+    let value;
       
-      let value;
-      
-      // TODO: Move this into a separate module for use in prefs and wizard
-      value = document.getElementById('sync-wizard-bookmarks').checked;
-      branch.setBoolPref("bookmarks", value);
-      value = document.getElementById('sync-wizard-history').checked;
-      branch.setBoolPref("history", value);
-      value = document.getElementById('sync-wizard-cookies').checked;
-      branch.setBoolPref("cookies", value);
-      value = document.getElementById('sync-wizard-passwords').checked;
-      branch.setBoolPref("passwords", value);
-      value = document.getElementById('sync-wizard-tabs').checked;
-      branch.setBoolPref("tabs", value);
-      value = document.getElementById('sync-wizard-forms').checked;
-      branch.setBoolPref("forms", value);
-      
-      this._log.info("Preferences set.");
+    // TODO: Move this into a separate module for use in prefs and wizard
+    value = document.getElementById('sync-wizard-bookmarks').checked;
+    branch.setBoolPref("bookmarks", value);
+    value = document.getElementById('sync-wizard-history').checked;
+    branch.setBoolPref("history", value);
+    value = document.getElementById('sync-wizard-cookies').checked;
+    branch.setBoolPref("cookies", value);
+    value = document.getElementById('sync-wizard-passwords').checked;
+    branch.setBoolPref("passwords", value);
+    value = document.getElementById('sync-wizard-tabs').checked;
+    branch.setBoolPref("tabs", value);
+    value = document.getElementById('sync-wizard-forms').checked;
+    branch.setBoolPref("forms", value);
+    
+    this._log.info("Preferences set.");
             
-      return true;
+    return true;
   },
   
   

@@ -309,7 +309,12 @@
                 <button label="&openActivityLogButton.label;"
                         oncommand="gWeavePrefs.openActivityLog()"/>
               </hbox>
-	      <hbox>
+              <hbox>
+                <label value="&runSetupWizardButton.description;" flex="1"/>
+                <button label="&runSetupWizardButton.label;"
+                        oncommand="gWeavePrefs.runSetupWizard()"/>
+              </hbox>
+	          <hbox>
                 <spacer flex="1"/>
                 <button label="&advancedDialogButton.label;"
                         oncommand="gWeavePrefs.openAdvancedPrefs()"/>
