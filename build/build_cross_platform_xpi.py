@@ -21,6 +21,7 @@ import os
 import glob
 import subprocess
 import zipfile
+from cStringIO import StringIO
 from distutils import dir_util
 
 def call(*args):
@@ -63,6 +64,29 @@ def nuke(path):
         else:
             os.remove(path)
 
+def ensure_jars_are_identical(jar1data, jar2data):
+    jars = [zipfile.ZipFile(StringIO(jar1data), "r"),
+            zipfile.ZipFile(StringIO(jar2data), "r")]
+    not_in_jars = [
+        [name
+         for name in jars[1].namelist()
+         if name not in jars[0].namelist()],
+        [name
+         for name in jars[0].namelist()
+         if name not in jars[1].namelist()],
+        ]
+    inconsistencies = [name
+                       for name in jars[0].namelist()
+                       if name in jars[1].namelist() and 
+                       jars[0].read(name) != jars[1].read(name)]
+    if not_in_jars[0] or not_in_jars[1] or inconsistencies:
+        print ("Jars in different platform-specific XPIs are not "
+               "identical.")
+        print not_in_jars[0]
+        print not_in_jars[1]
+        print inconsistencies
+        sys.exit(1)
+
 def ensure_xpis_are_consistent(canonical_xpi, src_xpis):
     canonical = zipfile.ZipFile(canonical_xpi, "r")
     for filename in src_xpis:
@@ -72,10 +96,22 @@ def ensure_xpis_are_consistent(canonical_xpi, src_xpis):
                            if name in zf.namelist() and 
                            zf.read(name) != canonical.read(name)]
         if inconsistencies:
-            print ("The following files are contained in two or more "
-                   "platform-specific XPIs, yet are not identical:\n")
-            print "\n".join(inconsistencies)
-            sys.exit(1)
+            actually_bad = []
+            for ifilename in inconsistencies:
+                if ifilename.endswith(".jar"):
+                    print "Examining %s." % ifilename
+                    ensure_jars_are_identical(
+                        canonical.read(ifilename),
+                        zf.read(ifilename)
+                        )
+                    print "Contents of jars are consistent."
+                else:
+                    actually_bad.append(ifilename)
+            if actually_bad:
+                print ("The following files are contained in two or more "
+                       "platform-specific XPIs, yet are not identical:\n")
+                print "\n".join(actually_bad)
+                sys.exit(1)
 
 def main():
     NEW_XPI = "sync.xpi"
