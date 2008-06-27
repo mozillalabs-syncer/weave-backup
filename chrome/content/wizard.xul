@@ -5,11 +5,11 @@
 
 <!DOCTYPE overlay SYSTEM "chrome://weave/locale/wizard.dtd">
 <wizard xmlns:html="http://www.w3.org/1999/xhtml"
-	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         id="sync-wizard" title="&wizard.title;"
         height="530" width="600"
         onunload="gSyncWizard.onWizardShutdown();"
-        windowtype="Sync:wizard" >
+        windowtype="Sync:wizard">
   
   <script type="application/x-javascript"
           src="chrome://weave/content/load-weave.js"/>
@@ -24,62 +24,87 @@
   </stringbundleset>
   
   <wizardpage label="&intro.title;" pageid="sync-wizard-intro"
-              next="sync-wizard-welcome">
-    <description>
-      &intro.description;
-      <html:a href="#" onclick="window.open('&intro-more.link;');">&intro-more.label;</html:a>
-    </description>
+              next="sync-wizard-eula"
+              onpageshow="gSyncWizard.onPageShow('sync-wizard-intro');">
+    <vbox align="left">
+      <image src="chrome://weave/skin/large-logo.png"/>
+      <separator/>
+      <description width="500">
+        &intro-weave.description;.
+        <html:a href="#" onclick="window.open('&intro-more.link;');">&intro-more.label;</html:a>
+      </description>
+      <separator/><separator/><separator/>
+      <hbox width="500">
+        <html:strong>
+          <description>&intro-warning.description;</description>
+        </html:strong>
+      </hbox>
+    </vbox>
+  </wizardpage>
+
+  
+  <wizardpage label="&eula.title;" pageid="sync-wizard-eula"
+              next="sync-wizard-welcome"
+              onpageshow="gSyncWizard.onPageShow('sync-wizard-eula');">
+    
+    <description>&eula.description;</description>
+    
+    <separator class="thin"/>
+    
+    <vbox id="EULAText" flex="1">
+      <iframe style="min-height: 14em; min-width: 85ex" id="EULATextFrame" type="content" flex="1"
+              src="chrome://weave/content/EULA.xhtml"/>
+    </vbox>
+    
+    <separator class="thin"/>
+    
+    <radiogroup id="acceptOrDecline"
+                oncommand="gSyncWizard.onChangeEULARadio();">
+      <radio value="true" label="&eula.accept;"/>
+      <radio value="false" label="&eula.decline;"/>
+    </radiogroup>
     
   </wizardpage>
   
+
   <wizardpage label="&welcome.title;" pageid="sync-wizard-welcome" 
               next="sync-wizard-verify" 
               onpageshow="gSyncWizard.onPageShow('sync-wizard-welcome');" >
+    
     <label hidden="true" id="welcome-check" value="false"/>
     <label hidden="true" id="path" />
-    <separator class="thin"/> 
     
+    <separator class="thin"/> 
     <grid> 
       <rows>
         <row>
           <spacer id="leftSpacer" flex="1"/>
           <hbox align="top">
-            <button id="leftButton"
-                  onclick="gSyncWizard.advanceTo('sync-wizard-verify');
-                           gSyncWizard.setTitles('verify');">
-            <vbox id="leftVbox">
-              <label id="leftLabel" value="&curUser-title.label;"/>
-              <separator class="thin"/>
-              <description id="leftDescription">
-                &curUser.description; 
-              </description>
-            </vbox>
+            <button id="leftButton" onclick="gSyncWizard.advanceTo('sync-wizard-verify');
+                                             gSyncWizard.setTitles('verify');">
+              <vbox id="leftVbox">
+                <label id="leftLabel" value="&curUser-title.label;"/>
+                <separator class="thin"/>
+                <description id="leftDescription">&curUser.description;</description>
+              </vbox>
             </button>
-            
           </hbox>
           <spacer id="centerSpacer" flex="1"/>
           <hbox align="top">
-            <button id="rightButton"
-                  onclick="gSyncWizard.advanceTo('sync-wizard-create1');
-                           gSyncWizard.setTitles('create');">
-            <vbox id="rightVbox">
-              <label id="rightLabel" value="&newUser-title.label;"/>
-              <separator class="thin"/>
-              <description id="rightDescription">
-    	        &newUser.description; 
-    	      </description>
-    	    </vbox>
+            <button id="rightButton" onclick="gSyncWizard.advanceTo('sync-wizard-create1');
+                                              gSyncWizard.setTitles('create');">
+              <vbox id="rightVbox">
+                <label id="rightLabel" value="&newUser-title.label;"/>
+                <separator class="thin"/>
+                <description id="rightDescription">&newUser.description;</description>
+    	      </vbox>
     	    </button>
-    	    
           </hbox>
           <spacer id="rightSpacer" flex="1"/>
         </row>
       </rows>
     </grid>
-    
   </wizardpage>
-  
-  
   
   <wizardpage label="&verify.title;" pageid="sync-wizard-verify" 
               next="sync-wizard-data" 
@@ -88,6 +113,7 @@
     
     <label hidden="true" id="login-verified"      value="false" />
     <label hidden="true" id="passphrase-verified" value="false"/>
+    
     <grid>       
       <columns>
         <column/>
@@ -358,7 +384,10 @@
     </description>
     <hbox align="center" >
       <label value="&instanceName.label;" control="sync-username-field"/>
-      <textbox flex="1" id="sync-instanceName-field" class="padded"/>
+      <vbox width="100%">
+        <textbox flex="1" id="sync-instanceName-field" class="padded"/>
+        <label disabled="true" value="&examples.label;"/>
+      </vbox>
     </hbox>
     <separator/> <separator/>
     <description value="&data.description;"/>
@@ -431,8 +460,14 @@
   
 
   <wizardpage label="&thankyou.title;" pageid="sync-wizard-thankyou">
+    <separator/>
     <description>
       &thankyou.description;
+    </description>
+    <separator/>
+    <separator/>
+    <description>
+      Want to get involved in Weave and other Labs projects? <html:a href="#">Click here</html:a> to find out more.
     </description>
   </wizardpage>
   

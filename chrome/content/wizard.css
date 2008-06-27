@@ -1,6 +1,7 @@
 wizard {
     background-image: url(chrome://weave/skin/wizard-background.png);
     -moz-appearance: none;
+    padding: 14px;
 }
 
 #sync-password-field, #sync-password-create-field, #sync-passphrase-field,
@@ -12,17 +13,33 @@ wizard {
   -moz-border-radius-topright: 15px;
   -moz-border-radius-topleft: 15px;
   margin-top: 70px;
+  margin-right: 0px;
+  margin-left: 0px;
+  border-bottom: none;
+  padding-left: 14px;
+  padding-right: 14px;
+  padding-top: 14px;
 }
 
 .wizard-page-box {
   -moz-border-radius-bottomright: 15px;
   -moz-border-radius-bottomleft: 15px;
+  margin-top: 0px;
+  margin-right: 0px;
+  margin-left: 0px;
+  padding-left: 14px;
+  padding-right: 14px;
+  padding-bottom: 14px;
 }
 
 .wizard-header, .wizard-page-box {
     -moz-appearance: none;
     background-color: #FFFFFF;
     opacity: 0.8;
+}
+
+.wizard-buttons-separator {
+    display: none;
 }
 
 .hint {

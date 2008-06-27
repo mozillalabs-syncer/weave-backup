@@ -17,6 +17,7 @@
 #sync-notifications-box .messageImage {
   width: 24px;
   height: 24px;
+  padding: 3px;
 }
 
 /* Default icons for notifications */
