@@ -164,7 +164,6 @@ BookmarksEventHandler.onPopupShowing = function BT_onPopupShowing_new(event) {
     let selectedMenuFolder = event.target.parentNode.parentNode;
     if ( isFolderSharedOutgoing( selectedMenuFolder ) ) {
       // Un-share the selected folder:
-      let folderItemId = selectedMenuFolder.node.itemId;
       let username = getUsernameFromSharedFolder(selectedMenuFolder);
       Weave.Service.stopSharingData("bookmarks",
                                     null, // no callback needed
