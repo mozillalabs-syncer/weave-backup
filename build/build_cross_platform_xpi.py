@@ -1,20 +1,26 @@
 #! /usr/bin/env python
 
-# This script builds a cross-platform XPI for Weave by simply
-# extracting all .xpi files in the root Weave directory into the same
-# directory; all files with the same name will be identical.  This
-# directory is then zipped up into a new .xpi in the root directory
-# called sync.xpi.
-#
-# The original platform-specific XPIs can be built by running
-# 'make xpi' in the root Weave directory.  This will only create
-# the XPI for the platform it's run on; the other platform-specific
-# XPIs will need to be run on their respective platforms and moved
-# over.
-#
-# Note that in the future, this process will be replaced by a Buildbot
-# trigger or something much less hackish. See #433927 for more thoughts
-# on this.
+"""
+    usage: python build_cross_platform_xpi.py <combined-xpi>
+           <xpi-1> <xpi-2> ... [xpi-n]
+
+    This script builds a cross-platform XPI for Weave by simply
+    extracting the given list of .xpi files in the root Weave
+    directory into the same temporary build directory; all files with
+    the same name must be identical.  This directory is then zipped up
+    into a target .xpi in the root directory, whose name is passed as
+    the 'combined-xpi' argument on the command-line.
+
+    The original platform-specific XPIs can be built by running
+    'make xpi' in the root Weave directory.  This will only create
+    the XPI for the platform it's run on; the other platform-specific
+    XPIs will need to be run on their respective platforms and moved
+    over.
+
+    Note that in the future, this process will be replaced by a Buildbot
+    trigger or something much less hackish. See #433927 for more thoughts
+    on this.
+"""
 
 import sys
 import os
@@ -119,14 +125,19 @@ def ensure_xpis_are_consistent(canonical_xpi, src_xpis):
                 print "\n".join(actually_bad)
                 sys.exit(1)
 
-def main():
-    NEW_XPI = "sync.xpi"
+def main(args=sys.argv[1:]):
+    if len(args) < 3:
+        usage_str = __import__("__main__").__doc__
+        print usage_str
+        sys.exit(1)
+
+    NEW_XPI = args[0]
     BUILD_DIR = "__temp_build"
 
     nuke(NEW_XPI)
     nuke(BUILD_DIR)
 
-    src_xpis = glob.glob("*.xpi")
+    src_xpis = args[1:]
     print "Combining these XPIs into a platform-independent XPI:"
     print "\n".join(src_xpis)
 
