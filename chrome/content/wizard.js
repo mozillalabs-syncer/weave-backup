@@ -128,19 +128,16 @@ SyncWizard.prototype = {
       case "sync-wizard-verify":
         this._log.info("Wizard: Showing account verification page");
 	
-        // If we've already verified the info, no need to do so again.
-        let loginVerified = document.getElementById('login-verified').value;
-        let passphraseVerified = document.getElementById('passphrase-verified').value;
-        if (loginVerified == "true" && passphraseVerified == "true")
+        if (document.getElementById("verify-check").value == "true")
           wizard.canAdvance = true;
         else
-	      wizard.canAdvance = false;
-	    break;
+          wizard.canAdvance = false;
+        break;
 
       case "sync-wizard-create1": 
         this._log.info("Wizard: Showing username/password creation page");
 
-        if (document.getElementById('create1-check').value == "true")
+        if (document.getElementById("create1-check").value == "true")
           wizard.canAdvance = true;
         else
           wizard.canAdvance = false;
@@ -149,7 +146,7 @@ SyncWizard.prototype = {
       case "sync-wizard-create2":
         this._log.info("Wizard: Showing passphrase/email page");
 
-        if (document.getElementById('create2-check').value == "true")
+        if (document.getElementById("create2-check").value == "true")
 	      wizard.canAdvance = true;
 	    else 
 	      wizard.canAdvance = false;
@@ -298,71 +295,42 @@ SyncWizard.prototype = {
   
   /////ACCOUNT VERIFICATION/////
   
+  /* checkVerificationFields() - Called oninput from all fields, and onadvance from verification page
+   *  Checks that all fields have values and that the login and passphrase were verified
+   */
   checkVerificationFields: function SyncWizard_checkVerify() {
 	let wizard = document.getElementById('sync-wizard');
 
 	let statusLabel = document.getElementById('verify-account-error');
-    let username    = document.getElementById('sync-username-field');
-    let password    = document.getElementById('sync-password-field');
-    let passphrase  = document.getElementById('sync-passphrase-field');
+    let username    = document.getElementById('sync-username-field').value;
+    let password    = document.getElementById('sync-password-field').value;
+    let passphrase  = document.getElementById('sync-passphrase-field').value;
 
     let loginVerified = this._stringBundle.getString("verify-success.label");
    
     wizard.canAdvance = false;
     
-    if (!(username.value && password.value && passphrase.value)) {
+    if (!(username && password && passphrase)) {
       wizard.canAdvance = false;
-      document.getElementById('verify-check').value = "false";
       return false;
     }
     
-    // makes sure the login verification worked as well
+    // Make sure the login has been verified
     // user could quickly enter an incorrect password and advance if malicious:)
-    // to prevent this, add a call to verifyPassphrase, but this is redundant for now
-	if (document.getElementById('login-verified').value == "true") {
+    // to prevent this, add a call to Weave.Service.login(), but this is redundant for now
+    // TODO: && document.getElementById('passphrase-verified').value == "true"
+    if (document.getElementById('login-verified').value == "true") {
 	  wizard.canAdvance = true;
       document.getElementById('verify-check').value = "true";
 	  return true; 
-	}
+    }
 
     wizard.canAdvance = false;
+    document.getElementById('verify-check').value = "false";
     return false;
   },
   
-  /* verifyPassphrase() - called when passphrase field changes.
-   * Eventually this should actually verify that the passphrase works. :-)
-   */
-  verifyPassphrase : function SyncWizard_verifyPassphrase() {
-    this._log.trace("verifyPassphrase called");
-
-    // Don't allow advancing until we verify the passphrase.
-    let wizard = document.getElementById('sync-wizard');
-	wizard.canAdvance = false;
-	document.getElementById('passphrase-verified').value = "false";
-
-    // If the login hasn't been verified yet, we can't login to fetch the private key.
-	if (document.getElementById('login-verified').value == "false") {
-       this._log.info("deferring passphrase verification until login checked");
-       return;
-    }
-
-    let username   = document.getElementById('sync-username-field').value;
-    let password   = document.getElementById('sync-password-field').value;
-    let passphrase = document.getElementById('sync-passphrase-field').value;
-
-    // XXX at this point we should kick off an async fetch of the wrapped
-    // private key from the server, and try unwrapping it with the passphrase.
-    // If that's good, allow advancing. If not, the passphrase is bad.
-    //
-    // For now, just assume the passphrase is good if non-empty.
-
-    if (passphrase) {
-      wizard.canAdvance = true;
-	  document.getElementById('passphrase-verified').value = "true";
-    }
-  },
-  
-  /* verifyLogin() - called when username or password field is changed.
+  /* verifyLogin() - Called when username or password field is changed.
    *  Asychronously tests the login on the server.
    */
   verifyLogin: function SyncWizard_verifyLogin() {
@@ -399,255 +367,390 @@ SyncWizard.prototype = {
     statusLabel.style.color = PROGRESS_COLOR;
       
     // The observer will handle success and failure notifications
+    // checkVerificationFields() will take care of allowing advance if this works
     Weave.Service.verifyLogin(username, password);
     
     // In case the server is hanging... 
     setTimeout(function() {
             if (loginVerified.value == "false") {
 		      statusIcon.hidden = true;
-		      statusLabel.value = serverTimeoutError;
+		      statusLabel.value = this._stringBundle.getString("serverTimeoutError.label") ;
 		      statusLabel.style.color = SERVER_ERROR_COLOR;
             }
 	  }, SERVER_TIMEOUT);
   },
+
+  /* verifyPassphrase() - Called when passphrase field changes.
+   * Eventually this should actually verify that the passphrase works. :-)
+   */
+  verifyPassphrase : function SyncWizard_verifyPassphrase() {
+    this._log.trace("verifyPassphrase called");
+
+    // Don't allow advancing until we verify the passphrase.
+    let wizard = document.getElementById('sync-wizard');
+	wizard.canAdvance = false;
+	document.getElementById('passphrase-verified').value = "false";
+
+    // If the login hasn't been verified yet, we can't login to fetch the private key.
+	if (document.getElementById('login-verified').value == "false") {
+       this._log.info("deferring passphrase verification until login checked");
+       return;
+    }
+
+    let username   = document.getElementById('sync-username-field').value;
+    let password   = document.getElementById('sync-password-field').value;
+    let passphrase = document.getElementById('sync-passphrase-field').value;
+
+    // XXX at this point we should kick off an async fetch of the wrapped
+    // private key from the server, and try unwrapping it with the passphrase.
+    // If that's good, allow advancing. If not, the passphrase is bad.
+    //
+    // For now, just assume the passphrase is good if non-empty.
+
+    if (passphrase) {
+      wizard.canAdvance = true;
+	  document.getElementById('passphrase-verified').value = "true";
+    }
+  },
   
-  // This shouldn't happen until the final page in case the user wants to cancel
-  
+  /* acceptExistingAccount() - Sets Weave properties so they are stored in login manager
+   *  Do not call until final wizard screen in case the user cancels setup.
+   */
   acceptExistingAccount: function SyncWizard_acceptExistingAccount() {
     let path = document.getElementById('path').value;
     let username, password, passphrase;
+    
     if (path == "verify") {
-      username = document.getElementById('sync-username-field');
-      password = document.getElementById('sync-password-field');
-      passphrase = document.getElementById('sync-passphrase-field');
+      username = document.getElementById('sync-username-field').value;
+      password = document.getElementById('sync-password-field').value;
+      passphrase = document.getElementById('sync-passphrase-field').value;
     }
     else if (path == "create") {
-      username = document.getElementById('sync-username-create-field');
-      password = document.getElementById('sync-password-create-field');
-      passphrase = document.getElementById('sync-passphrase-create-field');
+      username = document.getElementById('sync-username-create-field').value;
+      password = document.getElementById('sync-password-create-field').value;
+      passphrase = document.getElementById('sync-passphrase-create-field').value;
     }
 
     // Setting these properties (really getters) results in this data being
     // saved in the Firefox login manager.
-    Weave.Service.username = username.value;
-    Weave.Service.password = password.value;
-    Weave.Service.passphrase = passphrase.value;
+    Weave.Service.username = username;
+    Weave.Service.password = password;
+    Weave.Service.passphrase = passphrase;
 
     return true;
   },
   
   /////ACCOUNT CREATION - USERNAME, PASSWORD, PASSPHRASE/////
   
-  /* checkUsername() - Called onchange from username field for account creation. 
+  /* checkUsername() - Called oncommand from username field for account creation. 
    *   Checks username availability. 
    */
   checkUsername: function SyncWizard_checkUsername() {
-      let wizard = document.getElementById('sync-wizard');
-      let log = this._log;
-      
-      let httpRequest = new XMLHttpRequest();
-      let usernameField = document.getElementById('sync-username-create-field');
-      let url = CHECK_USERNAME_URL + usernameField.value;
-      
-      if (!(usernameField && usernameField.value)) {
-	    wizard.canAdvance = false;
-	    return false;
-      }
 
-      let statusLabel = document.getElementById('create-username-error');
-      let statusLink = document.getElementById('create-username-error-link');
-      let statusIcon = document.getElementById('create-username-icon');
-      
-      // Get status messages
-      let usernameTaken = this._stringBundle.getFormattedString("createUsername-error.label", [usernameField.value]);
-      let usernameAvailable = this._stringBundle.getFormattedString("createUsername-success.label", [usernameField.value]);
-	  let checkingUsername = this._stringBundle.getString("createUsername-progress.label");
-      let serverError = this._stringBundle.getString("serverError.label");
-      let serverTimeoutError = this._stringBundle.getString("serverTimeoutError.label");
-      
-      // Show progress
-      statusIcon.hidden = false;
-      statusLabel.hidden = false;
-      statusLabel.value = checkingUsername;
-      statusLabel.style.color = PROGRESS_COLOR;
-      statusLink.hidden = true;
-      
-      // Check availability	
-      httpRequest.open('GET', url, true);
-      httpRequest.onreadystatechange = function() {
-	  if (httpRequest.readyState == 4) {
-	    if (httpRequest.status == 200) {
-	      statusLink.hidden = true;
-		  if (httpRequest.responseText == 0) {
-		      statusIcon.hidden = true;
-		      statusLabel.value = usernameTaken;
-		      statusLabel.style.color = ERROR_COLOR;
-		      wizard.canAdvance = false;
-		      document.getElementById('create1-check').value = "false";
-		      document.getElementById("username-verified").value = "false";
-		  } else {
-		      statusIcon.hidden = true;
-		      statusLabel.value = usernameAvailable;
-		      statusLabel.style.color = SUCCESS_COLOR;
-		      document.getElementById("username-verified").value = "true";
-		      // check that password fields are correct 
-		      // will also take care of advancing  
-		      // take this out?
-		      gSyncWizard.checkAccountInput("password");
-		  }
-	    } 
-	    else {
-		  log.info("Error: received status " + httpRequest.status);
-		  //serverError.setAttribute("hidden", false);
-		  statusIcon.hidden = true;
-		  statusLabel.value = serverError;
-		  statusLabel.style.color = SERVER_ERROR_COLOR;
-		  statusLink.hidden = false;
-		  wizard.canAdvance = false;
-		  document.getElementById("username-verified").value = "false";
-		  document.getElementById('create1-check').value = "false";
-	    }
-	  }	
-    };
-    httpRequest.send(null);	
-      
-      
-      // Only wait a certain amount of time for the server
-      setTimeout(function() {
-              if (statusLabel.value == checkingUsername) {
-		        statusIcon.hidden = true;
-		        statusLabel.value = serverTimeoutError;
-		        statusLabel.style.color = SERVER_ERROR;
-            }
-	  }, SERVER_TIMEOUT);
-      
-      return true;
-  },
-  
-  /* checkUserPasswordFields() - Called oninput from password entry fields.
-   *  Allows the wizard to continue if password fields have values and if an 
-   *  available username has been chosen.
-   */
-  checkUserPasswordFields: function SyncWizard_checkUserPasswordFields() {
-      let wizard = document.getElementById('sync-wizard');
-      
-      let usernameField = document.getElementById('sync-username-create-field');
-      let password1 = document.getElementById("sync-password-create-field");
-      let password2 = document.getElementById("sync-reenter-password-field");
-      let email = document.getElementById('sync-email-create-field');
-      
-      if (!(usernameField && usernameField.value &&
-	        password1 && password1.value && password2 && password2.value && 
-	        email && email.value)) {
-	    wizard.canAdvance = false;
-        document.getElementById('create1-check').value = "false";
-	    return false;
-      }
-      
-      wizard.canAdvance = true;
-      return true;
-  },
-  
-  /* checkPassphraseEmailFields() - Called oninput from fields on passphrase / email entry screen.
-   *  Allows wizard to advance if all fields have a value.
-   */
-  checkPassphraseEmailFields: function SyncWizard_checkPassphraseFields() {
     let wizard = document.getElementById('sync-wizard');
-    
-    let passphrase1 = document.getElementById('sync-passphrase-create-field');
-    let passphrase2 = document.getElementById('sync-reenter-passphrase-field');
+    let username    = document.getElementById('sync-username-create-field').value;
+    let statusLabel = document.getElementById('create-username-error');
+    let statusLink  = document.getElementById('create-username-error-link');
+    let statusIcon  = document.getElementById('create-username-icon');
       
-    if (!(passphrase1 && passphrase1.value && passphrase2 && passphrase2.value)) {
+    let log = this._log;
+    let httpRequest = new XMLHttpRequest();
+    let url = CHECK_USERNAME_URL + username;
+      
+    // Status messages
+    let usernameTaken      = this._stringBundle.getFormattedString("createUsername-error.label", [username]);
+    let usernameAvailable  = this._stringBundle.getFormattedString("createUsername-success.label", [username]);
+	let checkingUsername   = this._stringBundle.getString("createUsername-progress.label");
+    let serverError        = this._stringBundle.getString("serverError.label");
+    let serverTimeoutError = this._stringBundle.getString("serverTimeoutError.label");
+
+    // Don't check if they haven't entered something
+    if (!username) {
+      statusIcon.hidden = true;
+      statusLink.hidden = true;
+      statusLabel.value = "";
 	  wizard.canAdvance = false;
-	  document.getElementById('create2-check').value = "false";
 	  return false;
     }
       
-    wizard.canAdvance = true;
-    return true;
+    // Show progress
+    statusIcon.hidden = false;
+    statusLink.hidden = true;
+    statusLabel.hidden = false;
+    statusLabel.value = checkingUsername;
+    statusLabel.style.color = PROGRESS_COLOR;
+      
+    // Check availability	
+    httpRequest.open('GET', url, true);
+    httpRequest.onreadystatechange = function() {
+      if (httpRequest.readyState == 4) {
+        if (httpRequest.status == 200) {
+          statusIcon.hidden = true;
+          statusLink.hidden = true;
+	      
+          if (httpRequest.responseText == 0) {
+            statusLabel.value = usernameTaken;
+            statusLabel.style.color = ERROR_COLOR;
+            wizard.canAdvance = false;
+            document.getElementById('create1-check').value = "false";
+            document.getElementById("username-verified").value = "false";
+          } 
+          else {
+            statusLabel.value = usernameAvailable;
+            statusLabel.style.color = SUCCESS_COLOR;
+            document.getElementById("username-verified").value = "true";
+          }
+        } 
+        else {
+          log.info("Error: received status " + httpRequest.status);
+          statusIcon.hidden = true;
+          statusLink.hidden = false;
+          // TODO: add more descriptive server errors in this case, we know what the status was
+          statusLabel.value = serverError;
+          statusLabel.style.color = SERVER_ERROR_COLOR;
+          wizard.canAdvance = false;
+          document.getElementById("username-verified").value = "false";
+          document.getElementById('create1-check').value = "false";
+        }
+      } };
+    httpRequest.send(null);	
+      
+    // In case the server is hanging...
+    setTimeout(function() {
+            if (statusLabel.value == checkingUsername) {
+              statusIcon.hidden = true;
+              statusLink.hidden = false;
+              statusLabel.value = serverTimeoutError;
+              statusLabel.style.color = SERVER_ERROR;
+            }
+      }, SERVER_TIMEOUT);
   },
   
-  /* checkAccountInput() - Called onadvance from password and passphrase entry screens.
+  /* checkEmail() - Called oncommand from email field in account creation. 
+   *  Checks validity and availability of email address. 
+   */
+  checkEmail: function SyncWizard_checkEmail() {
+    
+    let wizard = document.getElementById('sync-wizard');
+    let email       = document.getElementById('sync-email-create-field').value;
+    let statusLabel = document.getElementById('email-error');
+    let statusLink  = document.getElementById('email-error-link');
+    let statusIcon  = document.getElementById('email-icon');
+    
+    let log = this._log;
+    let httpRequest = new XMLHttpRequest();
+    let url = CHECK_EMAIL_URL + email;
+    let regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+      
+    // Status messages
+    let checkingEmail      = this._stringBundle.getString("email-progress.label");
+    let emailTaken         = this._stringBundle.getFormattedString("email-unavailable.label", [email]);
+    let emailOk            = this._stringBundle.getFormattedString("email-success.label", [email]);
+    let emailInvalid       = this._stringBundle.getString("email-invalid.label");
+    let serverError        = this._stringBundle.getString("serverError.label");
+    let serverTimeoutError = this._stringBundle.getString("serverTimeoutError.label");
+      
+    // Don't check if they haven't entered anything
+    if (!email) {
+      statusIcon.hidden = true;
+      statusLink.hidden = true;
+      statusLabel.value = "";
+      document.getElementById("email-verified").value = "false";
+	  wizard.canAdvance = false;
+      return false;
+    }
+      
+    if (!regex.test(email)) {
+      statusIcon.hidden = true;
+      statusLink.hidden = true;
+      statusLabel.value = emailInvalid; 
+      statusLabel.style.color = ERROR_COLOR;
+      document.getElementById("email-verified").value = "false";
+      wizard.canAdvance = false;
+      return false;
+    }
+      
+    // Show progress...
+    statusIcon.hidden = false;
+    statusLink.hidden = true;
+    statusLabel.value = checkingEmail;
+    statusLabel.style.color = PROGRESS_COLOR;
+      
+    httpRequest.open('GET', url, true);
+    httpRequest.onreadystatechange = function() {			
+      if (httpRequest.readyState == 4) {
+        if (httpRequest.status == 200) {
+          statusIcon.hidden = true;
+          statusLink.hidden = true;
+          if (httpRequest.responseText == 0) {
+            statusLabel.value = emailTaken;
+            statusLabel.style.color = ERROR_COLOR;
+            wizard.canAdvance = false;
+            document.getElementById("email-verified").value = "false";
+          }
+          else {
+            statusLabel.value = emailOk;
+            statusLabel.style.color = SUCCESS_COLOR;
+            document.getElementById("email-verified").value = "true";
+		  }
+		} 
+		else {
+		  log.info("Error: received status " + httpRequest.status);
+		  statusIcon.hidden = true;
+		  statusLink.hidden = false;
+		  statusLabel.value = serverError;
+		  statusLabel.style.color = SERVER_ERROR_COLOR;
+		}
+      }};
+    httpRequest.send(null);		
+      
+    // If the server is hanging...
+    setTimeout(function() {
+            if (document.getElementById("email-verified").value == "false") {
+              statusIcon.hidden = true;
+              statusLink.hidden = false;
+              statusLabel.value = serverTimeoutError;
+              statusLabel.style.color = SERVER_ERROR_COLOR;
+              }
+	  }, SERVER_TIMEOUT);
+      
+  },
+
+  
+  /* checkAccountInput() - Called oncommand from password and passphrase entry/reentry fields.
    *  Checks that password and passphrase reentry fields are the same, and that password
-   *  and passphrase are different values. Checks that all fields have values.
+   *  and passphrase are different values. 
    */
   checkAccountInput: function SyncWizard_checkAccountInput(field) {
     let wizard = document.getElementById('sync-wizard');
-    let username = document.getElementById("sync-username-create-field");
-    let password1 = document.getElementById("sync-password-create-field");
-    let password2 = document.getElementById("sync-reenter-password-field");
-    let passphrase1 = document.getElementById("sync-passphrase-create-field");
-    let passphrase2 = document.getElementById("sync-reenter-passphrase-field");
-    let email = document.getElementById('sync-email-create-field');
-
+    let username    = document.getElementById("sync-username-create-field").value;
+    let password1   = document.getElementById("sync-password-create-field").value;
+    let password2   = document.getElementById("sync-reenter-password-field").value;
+    let passphrase1 = document.getElementById("sync-passphrase-create-field").value;
+    let passphrase2 = document.getElementById("sync-reenter-passphrase-field").value;
       
     if (field == "password") {
-	  let passwordMatchError = document.getElementById("password-match-error");
+      let passwordMatchError = document.getElementById("password-match-error");
 	  
-	  // XXX temporarily disabled
-	  if(!gSyncWizard.checkUserPasswordFields())
-	    return false;
-
-	if (password1.value != password2.value)  {
-	  passwordMatchError.value = this._stringBundle.getString("passwordsUnmatched.label");
-	  passwordMatchError.style.color = ERROR_COLOR;
-	  wizard.canAdvance = false;
-	  document.getElementById('create1-check').value = "false";
-	  return false;
-    }
-	else 
-	  passwordMatchError.value = "";
-	  
-      if (!((document.getElementById("email-verified").value == "true") &&
-            (document.getElementById("username-verified").value == "true")))
-      {
-	    wizard.canAdvance = false;
-	    document.getElementById('create1-check').value = "false";
-	    return false;
+      // if the second password hasn't been entered yet, don't check
+      if (!password2) {
+        document.getElementById("password-verified").value = "false";
+        return false;
       }
-	  
-	  wizard.canAdvance = true;
-	  document.getElementById('create1-check').value = "true";
+
+      // check that the two passwords are the same
+      if (password1 != password2)  {
+        passwordMatchError.value = this._stringBundle.getString("passwordsUnmatched.label");
+        passwordMatchError.style.color = ERROR_COLOR;
+        wizard.canAdvance = false;
+        document.getElementById("password-verified").value = "false";
+        return false;
+      }
+
+      document.getElementById("password-verified").value = "true";
+      passwordMatchError.value = "";  
     }
     else if (field == "passphrase") {
       let passphraseError = document.getElementById("passphrase-match-error");
 	  
-	  if (!(passphrase1 && passphrase1.value && passphrase2 && passphrase2.value)) {
-	    wizard.canAdvance = false;
-	    document.getElementById('create2-check').value = "false";
-	    return false;
+	  // If the second passphrase hasn't been entered yet, don't check
+	  if (!passphrase2) {
+        document.getElementById("passphrase-verified").value = "false";
+        return false;
+      }
+      
+      // check that the two passphrases are the same
+      if (passphrase1 != passphrase2)  {
+        passphraseError.value = this._stringBundle.getString("passphrasesUnmatched.label");
+        passphraseError.style.color = ERROR_COLOR;
+        wizard.canAdvance = false;
+        document.getElementById("passphrase-verified").value = "false";
+        return false;
 	  }
-	  if (passphrase1.value != passphrase2.value)  {
-	    passphraseError.value = this._stringBundle.getString("passphrasesUnmatched.label");
-	    passphraseError.style.color = ERROR_COLOR;
-	    wizard.canAdvance = false;
-	    document.getElementById('create2-check').value = "false";
-	    return false;
-	  }
-	  if (passphrase1.value == password1.value) {
+	  
+	  // check that they haven't entered the same password and passphrase
+	  // TODO: check for this in the password case as well for the devious user case
+	  if (passphrase1 == password1) {
 	    passphraseError.value = this._stringBundle.getString("samePasswordAndPassphrase.label");
 	    passphraseError.style.color = ERROR_COLOR;
 	    wizard.canAdvance = false;
-	    document.getElementById('create2-check').value = "false";
+	    document.getElementById("passphrase-verified").value = "false";
 	    return false;
 	  }
-	  
-	  passphraseError.value = "";
-	  wizard.canAdvance = true;
-	  document.getElementById('create2-check').value = "true";
+
+      document.getElementById("passphrase-verified").value = "true";
+      passphraseError.value = "";
     }
-      
+    wizard.canAdvance = true;
     return true;
   },
   
   
+  /* checkCreationFields() - Called oninput from password entry fields.
+   *  Allows the wizard to continue if password fields have values and if an 
+   *  available username has been chosen.
+   */
+  checkCreationFields: function SyncWizard_checkUserPasswordFields() {
+    let wizard = document.getElementById("sync-wizard");
+      
+    let username  = document.getElementById("sync-username-create-field").value;
+    let password1 = document.getElementById("sync-password-create-field").value;
+    let password2 = document.getElementById("sync-reenter-password-field").value;
+    let email     = document.getElementById("sync-email-create-field").value;
+      
+    // check for empty fields
+    if (!(username && password1 && password2 && email)) {
+      wizard.canAdvance = false;
+      return false;
+    }
+      
+    // check that everything has been verified
+    if (document.getElementById("username-verified").value == "true" &&
+        document.getElementById("email-verified").value == "true" &&
+        document.getElementById("password-verified").value == "true") {
+      wizard.canAdvance = true;
+      document.getElementById("create1-check").value = "true";
+      return true;
+    }
+      
+    wizard.canAdvance = false;
+    document.getElementById("create1-check").value = "false";
+    return false;
+  },
   
+  /* checkPassphraseFields() - Called oninput from fields on passphrase / email entry screen.
+   *  Allows wizard to advance if all fields have a value.
+   */
+  checkPassphraseFields: function SyncWizard_checkPassphraseFields() {
+    let wizard = document.getElementById('sync-wizard');
+    
+    let passphrase1 = document.getElementById('sync-passphrase-create-field').value;
+    let passphrase2 = document.getElementById('sync-reenter-passphrase-field').value;
+      
+    // check for empty fields
+    if (!(passphrase1 && passphrase2)) {
+      wizard.canAdvance = false;
+      return false;
+    }
+    
+    // check that everything has been verified
+    if (document.getElementById("passphrase-verified").value == "true") {
+      wizard.canAdvance = true;
+      document.getElementById("create2-check").value = "true";
+      return true;
+    }
+    
+    wizard.canAdvance = false;
+    document.getElementById('create2-check').value = "false";
+    return false;
+  },
+
+
+    
   onLoadCaptcha: function SyncWizard_onLoadCaptcha() {
-      
-      let captchaImage = document.getElementById('captcha').contentDocument.getElementById('recaptcha_challenge_field').value;
-      document.getElementById('lastCaptchaChallenge').value = captchaImage;
-      document.getElementById('captchaImage').setAttribute("src", CAPTCHA_IMAGE_URL + "?c=" + captchaImage);   
-      
+    let captchaImage = document.getElementById('captcha').contentDocument.getElementById('recaptcha_challenge_field').value;
+    document.getElementById('lastCaptchaChallenge').value = captchaImage;
+    document.getElementById('captchaImage').setAttribute("src", CAPTCHA_IMAGE_URL + "?c=" + captchaImage);   
   },
   
   
@@ -795,101 +898,6 @@ SyncWizard.prototype = {
   },
   
   
-  /* checkEmail() - Called onchange from email field in account creation. 
-   *  Checks validity and availability of email address. 
-   */
-  checkEmail: function SyncWizard_checkEmail() {
-      let wizard = document.getElementById('sync-wizard');
-      let log = this._log;
-      
-      let httpRequest = new XMLHttpRequest();
-      let emailField = document.getElementById('sync-email-create-field');
-      let emailLabel = document.getElementById('email-error');
-      let emailLink = document.getElementById('email-error-link');
-      let emailIcon = document.getElementById('email-icon');
-      
-      let url = CHECK_EMAIL_URL + emailField.value;
-      
-      let regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
-      
-      let checkingEmail = this._stringBundle.getString("email-progress.label");
-      
-      let emailTaken = this._stringBundle.getFormattedString("email-unavailable.label", [emailField.value]);
-      let emailOk = this._stringBundle.getFormattedString("email-success.label", [emailField.value]);
-      let emailInvalid = this._stringBundle.getString("email-invalid.label");
-      
-      let serverError = this._stringBundle.getString("serverError.label");
-      let serverTimeoutError = this._stringBundle.getString("serverTimeoutError.label");
-      
-      if (!(emailField && emailField.value)) {
-	  emailIcon.hidden = true;
-	  emailLabel.value = "";
-	  wizard.canAdvance = true;
-          document.getElementById('create1-check').value = "true";
-	  return true;
-      }
-      
-      if (!regex.test(emailField.value)) {
-          emailIcon.hidden = true;
-	      emailLabel.value = emailInvalid; 
-          emailLabel.style.color = ERROR_COLOR;
-	      wizard.canAdvance = false;
-          document.getElementById('create1-check').value = "false";
-		  document.getElementById("email-verified").value = "false";
-	      return false;
-      }
-      
-      emailLabel.value = checkingEmail;
-      emailLabel.style.color = PROGRESS_COLOR;
-      emailIcon.hidden = false;
-      emailLink.hidden = true;
-      
-      httpRequest.open('GET', url, true);
-      httpRequest.onreadystatechange = function() {			
-	  if (httpRequest.readyState == 4) {
-	    if (httpRequest.status == 200) {
-	      emailLink.hidden = true;
-		  if (httpRequest.responseText == 0) {
-		      emailLabel.value = emailTaken;
-		      emailLabel.style.color = ERROR_COLOR;
-		      emailIcon.hidden = true;
-		      wizard.canAdvance = false;
-		      document.getElementById("email-verified").value = "false";
-		      document.getElementById('create1-check').value = "false";
-		  }
-		  else {
-		      emailLabel.value = emailOk;
-		      emailLabel.style.color = SUCCESS_COLOR;
-		      emailIcon.hidden = true;
-		      document.getElementById("email-verified").value = "true";
-		      // check that password fields are correct 
-		      // will also take care of advancing
-		      gSyncWizard.checkAccountInput("password");
-		  }
-	      } 
-	      else {
-		  log.info("Error: received status " + httpRequest.status);
-		  emailLabel.value = serverError;
-		  emailLabel.style.color = SERVER_ERROR_COLOR;
-		  emailIcon.hidden = true;
-		  emailLink.hidden = false;
-	      }
-	  }	
-      };
-      
-    httpRequest.send(null);		
-      
-      // Only wait a certain amount of time for the server
-      setTimeout(function() {
-              if (document.getElementById("email-verified").value == "false") {
-		  emailIcon.hidden = true;
-		  emailLabel.value = serverTimeoutError;
-		  emailLabel.style.color = SERVER_ERROR_COLOR;
-              }
-	  }, SERVER_TIMEOUT);
-      
-      return true;    
-  },
   
   /* reloadCaptcha() - Called onclick from "try another image" link.
    *  Refreshes captcha image. 
@@ -1036,48 +1044,56 @@ SyncWizard.prototype = {
     switch(topic) {
 
     case "weave:service:verify-login:success": {
-        this._log.info("Login verified");
-	    document.getElementById('login-verified').value = "true";
+      this._log.info("Login verify succeeded");
+      
+      document.getElementById('login-verified').value = "true";
         
-        let verifyIcon = document.getElementById('verify-account-icon');
-        let verifyLink = document.getElementById('verify-account-error-link');
-        let verifyStatus = document.getElementById('verify-account-error');        
-        verifyIcon.hidden = true;
-        verifyStatus.value = this._stringBundle.getString("verify-success.label");
-        verifyStatus.style.color = SUCCESS_COLOR;
-        verifyLink.hidden = true;
+      let statusIcon  = document.getElementById('verify-account-icon');
+      let statusLink  = document.getElementById('verify-account-error-link');
+      let statusLabel = document.getElementById('verify-account-error');        
+      
+      statusIcon.hidden = true;
+      statusLink.hidden = true;
+      statusLabel.value = this._stringBundle.getString("verify-success.label");
+      statusLabel.style.color = SUCCESS_COLOR;
         
-        // If the passphrase hasn't been verified, try doing so now.
-        // Its check may have been deferred until we had a valid login.
-        if (document.getElementById('passphrase-verified').value == "false") {
-          this._log.info("login verifed, so checking passphrase too");
-          this.verifyPassphrase();
-        }
+      // If the passphrase hasn't been verified, try doing so now.
+      // Its check may have been deferred until we had a valid login.
+      if (document.getElementById('passphrase-verified').value == "false") {
+        this._log.info("Checking passphrase after login verify");
+        this.verifyPassphrase();
+      }
+      
+      // Don't allow the wizard to advance here in case other fields weren't filled in
       break;
     }
+    
     case "weave:service:login:success":
-        this._log.info("Initial login succeeded");
+      this._log.info("Initial login succeeded");
       break;
 
     case "weave:service:login:error":
-        this._log.info("Initial login failed");
-        break;
+      this._log.info("Initial login failed");
+      break;
+        
     case "weave:service:verify-login:error": {
-      if (wizard.currentPage.pageid == "sync-wizard-verify") 
-        this._log.info("Login failed");
-        document.getElementById('login-verified').value = "false";
+      this._log.info("Login verify failed");
+      
+      document.getElementById('login-verified').value = "false";
 
-        let verifyIcon = document.getElementById('verify-account-icon');
-        let verifyLink = document.getElementById('verify-account-error-link');
-        let verifyStatus = document.getElementById('verify-account-error');        
-        verifyIcon.hidden = true;
-        verifyStatus.value = this._stringBundle.getString("verify-error.label");
-        verifyStatus.style.color = ERROR_COLOR;
-        verifyLink.hidden = true;
+      let statusIcon  = document.getElementById('verify-account-icon');
+      let statusLink  = document.getElementById('verify-account-error-link');
+      let statusLabel = document.getElementById('verify-account-error');        
+     
+      statusIcon.hidden = true;
+      statusLink.hidden = true;
+      statusLabel.value = this._stringBundle.getString("verify-error.label");
+      statusLabel.style.color = ERROR_COLOR;
 
-        wizard.canAdvance = false;
+      wizard.canAdvance = false;
       break;
     }
+    
     case "weave:service:logout:success":
       this._log.info("Logged out");
       break;
@@ -1097,9 +1113,9 @@ SyncWizard.prototype = {
       finalLink.hidden = true;
       
       wizard.advance('sync-wizard-thankyou');
-      }
       break;
-
+    }
+    
     case "weave:service:sync:error": {
       let syncStatus    = document.getElementById('final-sync-status');
       let finalStatus   = document.getElementById('final-status');
@@ -1113,8 +1129,9 @@ SyncWizard.prototype = {
       finalStatus.style.color = SERVER_ERROR_COLOR;
       finalLink.hidden = false;
       finalIcon.hidden = true;
-      }
+     
       break;
+    }
     
     default:
       this._log.warn("Unknown observer notification topic: " + topic);
