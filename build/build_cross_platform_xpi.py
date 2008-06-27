@@ -79,15 +79,16 @@ def ensure_xpis_are_consistent(canonical_xpi, src_xpis):
 
 def main():
     NEW_XPI = "sync.xpi"
+    BUILD_DIR = "__temp_build"
 
     nuke(NEW_XPI)
-    nuke("build")
+    nuke(BUILD_DIR)
 
     src_xpis = glob.glob("*.xpi")
     print "Combining these XPIs into a platform-independent XPI:"
     print "\n".join(src_xpis)
 
-    dir_util.mkpath("build")
+    dir_util.mkpath(BUILD_DIR)
     for filename in src_xpis:
         call("unzip",
              # Update existing files and create new ones if needed.
@@ -96,10 +97,10 @@ def main():
              "-o",
              "%s" % filename,
              # Extract to the build dir.
-             "-d", "build")
+             "-d", BUILD_DIR)
 
     print "Creating new XPI."
-    os.chdir("build")
+    os.chdir(BUILD_DIR)
     call(["zip",
           # Use optimal compression.
           "-9",
@@ -107,7 +108,7 @@ def main():
           "-r",
           "../%s" % NEW_XPI] + os.listdir("."))
     os.chdir("..")
-    dir_util.remove_tree("build")
+    dir_util.remove_tree(BUILD_DIR)
 
     print ("Ensuring the final XPI is consistent with its consitutent "
            "parts.")
