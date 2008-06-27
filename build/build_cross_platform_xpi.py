@@ -100,6 +100,12 @@ def ensure_xpis_are_consistent(canonical_xpi, src_xpis):
             for ifilename in inconsistencies:
                 if ifilename.endswith(".jar"):
                     print "Examining %s." % ifilename
+                    # It's possible that the two archives are different
+                    # but contain files that have the same contents;
+                    # this is because zip files contain metadata about
+                    # last modification dates, the system which
+                    # created the archive, and so on, all of which
+                    # are irrelevant for our purposes.
                     ensure_jars_are_identical(
                         canonical.read(ifilename),
                         zf.read(ifilename)
