@@ -7,7 +7,7 @@
 # called sync.xpi.
 #
 # The original platform-specific XPIs can be built by running
-# './build.sh xpi' in the root Weave directory.  This will only create
+# 'make xpi' in the root Weave directory.  This will only create
 # the XPI for the platform it's run on; the other platform-specific
 # XPIs will need to be run on their respective platforms and moved
 # over.
