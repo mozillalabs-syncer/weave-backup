@@ -24,9 +24,6 @@
 	    <menupopup id="sync-menu-popup"
 		       onpopupshowing="if (event.target == this) gSync.doPopup(event);"
 		       onpopuphiding="gSync.onMenuPopupHiding()">
-	        <menuitem id="sync-wizard"
-			  label="Run Setup Wizard"
-			  oncommand="gSync.doOpenSetupWizard();"/>
 		<menuitem id="sync-loginitem"
 			  hidden="false" disabled="false"
 			  checked="false" autocheck="false"
