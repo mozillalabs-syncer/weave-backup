@@ -407,9 +407,9 @@
       <richlistitem> <checkbox id="sync-wizard-bookmarks" checked="true" label="&bookmarks.label;"/> </richlistitem>
       <richlistitem> <checkbox id="sync-wizard-history" checked="true" label="&history.label;"/> </richlistitem>       
       <richlistitem> <checkbox id="sync-wizard-cookies" checked="false" label="&cookies.label;"/> </richlistitem>       
-      <richlistitem> <checkbox id="sync-wizard-passwords" checked="false" label="&passwords.label;"/> </richlistitem>       
+      <richlistitem> <checkbox disabled="true" id="sync-wizard-passwords" checked="false" label="&passwords.label;"/> </richlistitem>       
       <richlistitem> <checkbox id="sync-wizard-tabs" checked="false" label="&tabs.label;"/> </richlistitem>       
-      <richlistitem> <checkbox id="sync-wizard-forms" checked="false" label="&formdata.label;"/> </richlistitem>
+      <richlistitem> <checkbox disabled="true" id="sync-wizard-forms" checked="false" label="&formdata.label;"/> </richlistitem>
     </richlistbox>
     
   </wizardpage>
@@ -419,6 +419,9 @@
               onpageshow="gSyncWizard.onPageShow('sync-wizard-final');"
               next="sync-wizard-thankyou" 
               onpageadvanced="return gSyncWizard.completeInstallation();">
+    
+    <label hidden="true" id="installation-started" value="false"/>
+    <label hidden="true" id="sync-success" value="false"/>
     
     <description>&final.description;</description>
     <separator/>
@@ -461,7 +464,7 @@
       <spacer flex="1"/>
       <label id="final-status" />
       <hbox hidden="true" id="final-status-link"> <html:a href="#"
-                                                          onclick="gSyncWizard.completeInstallation();">
+            onclick="gSyncWizard.completeInstallation();">
           &tryAgain.text;
       </html:a> </hbox>
       <image hidden="true" id="final-status-icon" src="chrome://global/skin/icons/loading_16.png"/>

@@ -54,8 +54,6 @@ function SyncWizard() {
   this._init();
 }
 
-// TODO: Get license agreement text. Add screen for current users and force acceptance to install.
-
 SyncWizard.prototype = {
   
   __os: null,  
@@ -121,13 +119,10 @@ SyncWizard.prototype = {
         break;
       
       case "sync-wizard-welcome":
-        this._log.info("Wizard: Showing welcome page");
         wizard.canAdvance = false;
         break;
     
       case "sync-wizard-verify":
-        this._log.info("Wizard: Showing account verification page");
-        
         if (document.getElementById("verify-check").value == "true")
           wizard.canAdvance = true;
         else
@@ -135,8 +130,6 @@ SyncWizard.prototype = {
         break;
 
       case "sync-wizard-create1": 
-        this._log.info("Wizard: Showing username/password creation page");
-
         if (document.getElementById("create1-check").value == "true")
           wizard.canAdvance = true;
         else
@@ -144,17 +137,13 @@ SyncWizard.prototype = {
         break;
 
       case "sync-wizard-create2":
-        this._log.info("Wizard: Showing passphrase/email page");
-
         if (document.getElementById("create2-check").value == "true")
 	      wizard.canAdvance = true;
 	    else 
 	      wizard.canAdvance = false;
 	    break;
 
-      case "sync-wizard-create3": 
-        this._log.info("Wizard: Showing captcha/license agreement page");
-        
+      case "sync-wizard-create3":         
         if (document.getElementById("create3-check").value == "true") {
           //document.getElementById("captchaInput").value = "";
           wizard.canAdvance = true;
@@ -167,8 +156,6 @@ SyncWizard.prototype = {
         break;
 	
       case "sync-wizard-data": {      
-        this._log.info("Wizard: Showing data page");
-
         let deviceName = document.getElementById('sync-instanceName-field');
         let path = document.getElementById('path').value;
         let username;  
@@ -191,9 +178,7 @@ SyncWizard.prototype = {
         wizard.canAdvance = true;
         break;
       }
-      case "sync-wizard-final": {
-        this._log.info("Wizard: Showing final page");
-            
+      case "sync-wizard-final": {            
         // display the username
         let accountDetails = document.getElementById('final-account-details');
         let path = document.getElementById('path').value;
@@ -232,7 +217,12 @@ SyncWizard.prototype = {
         let syncDetails = document.getElementById('final-sync-details');
         syncDetails.value = this._stringBundle.getString("final-sync-value.label");
 
-        wizard.canAdvance = true;	
+        if (document.getElementById("sync-success").value == "true")
+          wizard.canAdvance = true;
+        else if (document.getElementById("installation-started").value == "false")
+          wizard.canAdvance = true;
+        else
+          wizard.canAdvance = false;	
         break;
       }
       default:
@@ -327,8 +317,7 @@ SyncWizard.prototype = {
    *  Asychronously tests the login on the server.
    */
   verifyLogin: function SyncWizard_verifyLogin() {
-    this._log.info("Verifying username/password...");
-    
+    let log = this._log;
     let wizard = document.getElementById("sync-wizard");
     let statusLabel = document.getElementById("verify-account-error");
     let statusLink  = document.getElementById("verify-account-error-link");
@@ -361,11 +350,13 @@ SyncWizard.prototype = {
       
     // The observer will handle success and failure notifications
     // checkVerificationFields() will take care of allowing advance if this works
+    log.info("Verifying username/password...");
     Weave.Service.verifyLogin(username, password);
     
     // In case the server is hanging... 
     setTimeout(function() {
             if (loginVerified.value == "false") {
+			  log.info("Server timeout (username/password verification)");
 		      statusIcon.hidden = true;
 		      statusLabel.value = this._stringBundle.getString("serverTimeoutError.label") ;
 		      statusLabel.style.color = SERVER_ERROR_COLOR;
@@ -377,7 +368,6 @@ SyncWizard.prototype = {
    * Eventually this should actually verify that the passphrase works. :-)
    */
   verifyPassphrase : function SyncWizard_verifyPassphrase() {
-    this._log.trace("verifyPassphrase called");
 
     // Don't allow advancing until we verify the passphrase.
     let wizard = document.getElementById('sync-wizard');
@@ -426,6 +416,7 @@ SyncWizard.prototype = {
 
     // Setting these properties (really getters) results in this data being
     // saved in the Firefox login manager.
+	this._log.info("Saving username, password, passphrase in login manager");
     Weave.Service.username = username;
     Weave.Service.password = password;
     Weave.Service.passphrase = passphrase;
@@ -511,6 +502,7 @@ SyncWizard.prototype = {
     // In case the server is hanging...
     setTimeout(function() {
             if (statusLabel.value == checkingUsername) {
+			  this._log.info("Server timeout (username check)");
               statusIcon.hidden = true;
               statusLink.hidden = false;
               statusLabel.value = serverTimeoutError;
@@ -600,6 +592,7 @@ SyncWizard.prototype = {
     // If the server is hanging...
     setTimeout(function() {
             if (document.getElementById("email-verified").value == "false") {
+              this._log.info("Server timeout (email verification)");
               statusIcon.hidden = true;
               statusLink.hidden = false;
               statusLabel.value = serverTimeoutError;
@@ -902,7 +895,18 @@ SyncWizard.prototype = {
     httpRequest.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
     httpRequest.setRequestHeader("Content-Length", message.length);
     httpRequest.send(message);		
-      
+    
+    // in case the server is hanging...
+	setTimeout(function() {
+      if (document.getElementById("create3-check").value == "false") {
+        this._log.info("Server timeout (account creation)");
+        statusIcon.hidden = true;
+        statusLink.hidden = false;
+        statusLabel.value = serverTimeoutError;
+        statusLabel.style.color = SERVER_ERROR_COLOR;
+      }
+	}, SERVER_TIMEOUT);
+  
     return false;
   },
   
@@ -933,12 +937,13 @@ SyncWizard.prototype = {
    *  Sets prefs, does final login, does an initial sync.
    */
   completeInstallation: function SyncWizard_completeInstallation() {
-    let prefStatus    = document.getElementById('final-pref-status');
-    let accountStatus = document.getElementById('final-account-status');
-    let syncStatus    = document.getElementById('final-sync-status');
-    let finalStatus   = document.getElementById('final-status');
-    let finalLink     = document.getElementById('final-status-link');
-    let finalIcon     = document.getElementById('final-status-icon');
+    let wizard        = document.getElementById("sync-wizard"); 
+    let prefStatus    = document.getElementById("final-pref-status");
+    let accountStatus = document.getElementById("final-account-status");
+    let syncStatus    = document.getElementById("final-sync-status");
+    let finalStatus   = document.getElementById("final-status");
+    let finalLink     = document.getElementById("final-status-link");
+    let finalIcon     = document.getElementById("final-status-icon");
     let prefsProgress = this._stringBundle.getString("initialPrefs-progress.label");
     let loginProgress = this._stringBundle.getString("initialLogin-progress.label");
     let syncProgress  = this._stringBundle.getString("initialSync-progress.label");
@@ -946,6 +951,19 @@ SyncWizard.prototype = {
     let syncError     = this._stringBundle.getString("initialSync-error.label");
 
     
+	// don't do anything if the sync has already happened
+	if (document.getElementById("sync-success").value == "true")
+	  return true;
+
+    // don't let them continue once continue has been clicked once
+	if (document.getElementById("installation-started").value == "true")
+	  return false;
+
+    // now set the value for the first time through
+    document.getElementById("installation-started").value = "true";
+    wizard.canAdvance = false;
+
+
     finalStatus.style.color = PROGRESS_COLOR;
     finalIcon.hidden = false;
     finalLink.hidden = true;
@@ -1113,6 +1131,8 @@ SyncWizard.prototype = {
       finalIcon.hidden = true;
       finalLink.hidden = true;
       
+      document.getElementById("sync-success").value = "true";
+      wizard.canAdvance = true;
       wizard.advance('sync-wizard-thankyou');
       break;
     }
@@ -1131,6 +1151,8 @@ SyncWizard.prototype = {
       finalLink.hidden = false;
       finalIcon.hidden = true;
      
+      //this will allow them to run completeInstallation() again (try again)
+      document.getElementById("installation-started").value = "false";
       break;
     }
     
