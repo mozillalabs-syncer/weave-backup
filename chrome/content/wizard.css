@@ -61,24 +61,37 @@ a {
   -moz-border-radius: 10px;
 }
 
+
 #leftVbox, #rightVbox {
-  margin-top: 10px;
-  height: 125px;
+  width: 210px;
+  margin-top: 20px;
+}
+#leftLabelHbox, #rightLabelHbox {
+  background-image: url("chrome://weave/skin/button-up.png");
+  background-repeat: no-repeat;
+  height: 85px;
+}
+#leftLabelHbox:hover, #rightLabelHbox:hover {
+  background-image: url("chrome://weave/skin/button-down.png");
+  background-repeat: no-repeat;
+  height: 85px;
 }
 
 #leftLabel, #rightLabel {
-  font-size: larger;
-  margin-left: 10px;
+  font-size: small;
+  margin-top: 30px;
+  width: 180px;
+  text-align: center;
 }
 #leftDescription, #rightDescription {
-  margin-left: 10px;
+  margin-top: 15px;
+  margin-left: 5px;
   margin-right: 10px;
-  width: 150px;
 }
 
 #leftSpacer, #rightSpacer {
-  width: 25px;
+  width: 35px;
 }
 #centerSpacer {
-  width: 30px;
+  width: 50px;
 }

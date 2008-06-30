@@ -7,7 +7,7 @@
 <wizard xmlns:html="http://www.w3.org/1999/xhtml"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         id="sync-wizard" title="&wizard.title;"
-        height="530" width="600"
+        height="550" width="600"
         onunload="gSyncWizard.onWizardShutdown();"
         windowtype="Sync:wizard">
   
@@ -27,13 +27,21 @@
               next="sync-wizard-eula"
               onpageshow="gSyncWizard.onPageShow('sync-wizard-intro');">
     <vbox align="left">
-      <image src="chrome://weave/skin/large-logo.png"/>
+      <image src="chrome://weave/skin/big-logo.png"/>
       <separator/>
       <description width="500">
-        &intro-weave.description;.
-        <html:a href="#" onclick="window.open('&intro-more.link;');">&intro-more.label;</html:a>
+        &intro-weave1.description;
+        <!--<html:a href="#" onclick="window.open('&intro-more.link;');">&intro-more.label;</html:a>-->
       </description>
-      <separator/><separator/><separator/>
+      <separator class="thin"/>
+      <description width="500">
+        &intro-weave2.description;
+      </description>
+      <separator class="thin"/>
+      <description width="500">
+        &intro-weave3.description;
+      </description>
+      <separator/><separator/>
       <hbox width="500">
         <html:strong>
           <description>&intro-warning.description;</description>
@@ -80,25 +88,25 @@
         <row>
           <spacer id="leftSpacer" flex="1"/>
           <hbox align="top">
-            <button id="leftButton" onclick="gSyncWizard.advanceTo('sync-wizard-verify');
-                                             gSyncWizard.setTitles('verify');">
-              <vbox id="leftVbox">
-                <label id="leftLabel" value="&curUser-title.label;"/>
-                <separator class="thin"/>
-                <description id="leftDescription">&curUser.description;</description>
-              </vbox>
-            </button>
-          </hbox>
-          <spacer id="centerSpacer" flex="1"/>
-          <hbox align="top">
-            <button id="rightButton" onclick="gSyncWizard.advanceTo('sync-wizard-create1');
-                                              gSyncWizard.setTitles('create');">
-              <vbox id="rightVbox">
-                <label id="rightLabel" value="&newUser-title.label;"/>
+            <!--<button id="rightButton" >-->
+              <vbox id="rightVbox" onclick="gSyncWizard.advanceTo('sync-wizard-create1');
+                                            gSyncWizard.setTitles('create');">
+                <hbox id="rightLabelHbox"><label id="rightLabel">&newUser-title.label;</label></hbox>
                 <separator class="thin"/>
                 <description id="rightDescription">&newUser.description;</description>
     	      </vbox>
-    	    </button>
+    	    <!--</button>-->
+          </hbox>
+          <spacer id="centerSpacer" flex="1"/>
+          <hbox align="top">
+            <!--<button id="leftButton" >-->
+              <vbox id="leftVbox" onclick="gSyncWizard.advanceTo('sync-wizard-verify');
+                                           gSyncWizard.setTitles('verify');">
+                <hbox id="leftLabelHbox"><label id="leftLabel">&curUser-title.label;</label></hbox>
+                <separator class="thin"/>
+                <description id="leftDescription">&curUser.description;</description>
+              </vbox>
+            <!--</button>-->
           </hbox>
           <spacer id="rightSpacer" flex="1"/>
         </row>
@@ -389,19 +397,26 @@
   <wizardpage pageid="sync-wizard-data" 
               next="sync-wizard-final" 
               onpageshow="gSyncWizard.onPageShow('sync-wizard-data');" >
-    
+    <vbox>
     <description>
       &instanceName.description;
     </description>
-    <hbox align="center" >
-      <label value="&instanceName.label;" control="sync-username-field"/>
-      <vbox width="100%">
-        <textbox flex="1" id="sync-instanceName-field" class="padded"/>
-        <label disabled="true" value="&examples.label;"/>
-      </vbox>
-    </hbox>
-    <separator/> <separator/>
-    <description value="&data.description;"/>
+    
+    <grid width="100%">
+      <rows>
+        <row align="center">
+          <label value="&instanceName.label;" control="sync-username-field"/>
+          <textbox width="100%" flex="1" id="sync-instanceName-field" class="padded"/>
+        </row>
+        <row>
+          <spacer flex="1"/>
+          <label width="100%" disabled="true" value="&examples.label;"/>
+        </row>
+      </rows>
+    </grid>
+
+    <separator/> 
+    <description>&data.description;</description>
     <separator class="thin"/>
     <richlistbox rows="5">
       <richlistitem> <checkbox id="sync-wizard-bookmarks" checked="true" label="&bookmarks.label;"/> </richlistitem>
@@ -411,7 +426,7 @@
       <richlistitem> <checkbox id="sync-wizard-tabs" checked="false" label="&tabs.label;"/> </richlistitem>       
       <richlistitem> <checkbox disabled="true" id="sync-wizard-forms" checked="false" label="&formdata.label;"/> </richlistitem>
     </richlistbox>
-    
+    </vbox>
   </wizardpage>
 
 
@@ -423,7 +438,9 @@
     <label hidden="true" id="installation-started" value="false"/>
     <label hidden="true" id="sync-success" value="false"/>
     
-    <description>&final.description;</description>
+    <description>&final1.description;</description>
+    <separator class="thin"/>
+    <description>&final2.description;</description>
     <separator/>
     <hbox>
       <label id="final-pref-status" value="&final-pref-title.description;"/>
@@ -480,9 +497,6 @@
     </description>
     <separator/>
     <separator/>
-    <description>
-      Want to get involved in Weave and other Labs projects? <html:a href="#">Click here</html:a> to find out more.
-    </description>
   </wizardpage>
   
 </wizard>
