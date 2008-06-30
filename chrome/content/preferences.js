@@ -67,11 +67,6 @@ WeavePrefs.prototype = {
          window.openDialog('chrome://weave/content/advanced.xul', '',
                       'chrome, dialog, modal, resizable=yes, ', null);
   },
-  
-  runSetupWizard: function WeavePrefs_runSetupWizard() {
-    window.openDialog('chrome://weave/content/wizard.xul', '',
-                      'chrome,centerscreen,dialog,resizable=yes', null);          
-  },
 
   doSignOn: function WeavePrefs_doSignOn() {
 
@@ -250,15 +245,8 @@ WeavePrefs.prototype = {
   },
 
   doCreateAccount: function WeavePrefs_doCreateAccount() {
-    let wm = Cc["@mozilla.org/appshell/window-mediator;1"].
-             getService(Ci.nsIWindowMediator);
-    let recentWindow = wm.getMostRecentWindow("navigator:browser");
-    // FIXME: should be based upon baseURL
-    var url = "https://sm-labs01.mozilla.org:81/";
-    if (recentWindow)
-      recentWindow.delayedOpenTab(url, null, null, null, null);
-    else
-      window.open(url);
+    window.openDialog('chrome://weave/content/wizard.xul', '',
+                      'chrome,centerscreen,dialog,resizable=yes', null);
   },
 
   resetLoginCredentials: function WeavePrefs_resetLoginCredentials() {
