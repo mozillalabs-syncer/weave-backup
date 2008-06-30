@@ -9,6 +9,7 @@ src/.*\.o
 src/.*\.dylib
 src/I.*\.h
 tests/.*/.*\.log$
+tests/unit/test_load_module_.*\.js$
 src/.*\.dll$
 src/.*\.rc$
 src/.*\.res$
