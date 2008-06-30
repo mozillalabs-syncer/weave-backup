@@ -8,6 +8,7 @@ import distutils.file_util
 import getnose
 import nose.plugins
 import nose.plugins.builtin
+import makeloadertests
 
 class JsTest(nose.plugins.Plugin):
     def options(self, parser, env=os.environ):
@@ -85,6 +86,9 @@ class JsTestCase(unittest.TestCase):
                     self.fail(diff)
 
 if __name__ == "__main__":
+    makeloadertests.remove_old_loader_tests()
+    makeloadertests.make_loader_tests()
+
     sys.argv.append("--with-jstest")
     nose.main(defaultTest=["scripts",
                            "tests/unit",

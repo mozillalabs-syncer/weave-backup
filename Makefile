@@ -77,6 +77,7 @@ platform:
 build: $(dotin_files) platform
 
 test: build
+	python scripts/makeloadertests.py
 	$(MAKE) -C src test-install
 	$(MAKE) -k -C tests/unit
 
