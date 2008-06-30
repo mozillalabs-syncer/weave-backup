@@ -78,8 +78,9 @@
     </statusbar>
 
     <menupopup id="goPopup">
-        <menu id="sync-tabs-menu" label="&syncTabsMenu.label;"
-              insertafter="historyUndoMenu" 
+        <menu id="sync-tabs-menu" class="menu-iconic"
+              insertafter="historyUndoMenu" label="&syncTabsMenu.label;"
+              image="chrome://weave/skin/sync-16x16.png"
               oncommand="gSync.onCommandTabsMenu(event);"
               onclick="checkForMiddleClick(this, event);">
             <menupopup id="sync-tabs-menu-popup" onpopupshowing="gSync.doInitTabsMenu(event);">
