@@ -391,15 +391,18 @@ Sync.prototype = {
     this._updateLastSyncItem();
   },
 
-  // FIXME: refactor this function with the identical one in the notification
-  // binding.
-  _getSortedVirtualTabs: function Sync__getSortedVirtualTabs() {
-    let virtualTabs = Weave.Engines.get("tabs").store.virtualTabs;
+  // FIXME: refactor this function with the identical one in notification.xml.
+  _getVirtualTabs: function Sync__getVirtualTabs() {
+    let tabStore = Weave.Engines.get("tabs").store;
+    let virtualTabs = tabStore.virtualTabs;
 
     // Convert the hash of virtual tabs indexed by ID into an array
     // of virtual tabs whose ID is stored in an ID property.
     virtualTabs =
       [(virtualTabs[id].id = id) && virtualTabs[id] for (id in virtualTabs)];
+
+    // Remove invalid tabs.
+    virtualTabs = virtualTabs.filter(tabStore.validateVirtualTab, tabStore);
 
     // Sort virtual tabs by their position in their windows.
     // Note: we don't actually group by window first, so all first tabs
@@ -414,19 +417,13 @@ Sync.prototype = {
 
   doInitTabsMenu: function Sync_doInitTabsMenu() {
     let menu = document.getElementById("sync-tabs-menu");
-    let virtualTabs = this._getSortedVirtualTabs();
+    let virtualTabs = this._getVirtualTabs();
 
     while (menu.itemCount > 1)
       menu.removeItemAt(menu.itemCount - 1);
 
     for each (let virtualTab in virtualTabs) {
       let currentEntry = virtualTab.state.entries[virtualTab.state.index - 1];
-      if (!currentEntry || !currentEntry.url) {
-        this._log.warn("doInitTabsMenu: no current entry or no URL, can't " +
-                       "identify " + this._json.encode(virtualTab));
-        continue;
-      }
-
       let label = currentEntry.title ? currentEntry.title : currentEntry.url;
       let menuitem = menu.appendItem(label, virtualTab.id);
       // Make a tooltip that contains either or both of the title and URL.
@@ -461,7 +458,7 @@ Sync.prototype = {
   },
 
   _onVirtualTabsChanged: function Sync__onVirtualTabsChanged() {
-    let virtualTabs = Weave.Engines.get("tabs").store.virtualTabs;
+    let virtualTabs = this._getVirtualTabs();
 
     // Get the (first, which should also be the only) notification, if any.
     let [existingNotification] =
@@ -470,8 +467,8 @@ Sync.prototype = {
 
     // As long as there is at least one virtual tab that hasn't previously been
     // disposed of by the user, notify the user about available tabs.
-    for (id in virtualTabs) {
-      if (!virtualTabs[id]._disposed) {
+    for each (let virtualTab in virtualTabs) {
+      if (!virtualTab._disposed) {
         // If there's an existing tabs notification, update it.
         // FIXME: make tabs notifications automatically update themselves.
         let newNotification = new Weave.TabsNotification();

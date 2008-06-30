@@ -208,14 +208,18 @@
       </field>
 
       <!-- FIXME: refactor this function with the identical one in sync.js. -->
-      <method name="_getSortedVirtualTabs">
+      <method name="_getVirtualTabs">
         <body><![CDATA[
-          var virtualTabs = Weave.Engines.get("tabs").store.virtualTabs;
+          var tabStore = Weave.Engines.get("tabs").store;
+          var virtualTabs = tabStore.virtualTabs;
 
           // Convert the hash of virtual tabs indexed by ID into an array
           // of virtual tabs whose ID is stored in an ID property.
           virtualTabs =
             [(virtualTabs[id].id = id) && virtualTabs[id] for (id in virtualTabs)];
+
+          // Remove invalid tabs.
+          virtualTabs = virtualTabs.filter(tabStore.validateVirtualTab, tabStore);
 
           // Sort virtual tabs by their position in their windows.
           // Note: we don't actually group by window first, so all first tabs
@@ -233,7 +237,7 @@
         <body><![CDATA[
           var list = document.getAnonymousElementByAttribute(this, "anonid", "sync-tabs-list");
 
-          var virtualTabs = this._getSortedVirtualTabs();
+          var virtualTabs = this._getVirtualTabs();
       
           // Remove virtual tabs that have previously been disposed of by the user.
           virtualTabs = virtualTabs.filter(function(v) !v._disposed);
@@ -244,12 +248,6 @@
           var numItems = 0;
           for each (var virtualTab in virtualTabs) {
             var currentEntry = virtualTab.state.entries[virtualTab.state.index - 1];
-            if (!currentEntry || !currentEntry.url) {
-              this._log.warn("doInitTabsPanel: no current entry or no URL, can't " +
-                             "identify " + this._json.encode(virtualTab));
-              continue;
-            }
-      
             var label = currentEntry.title ? currentEntry.title : currentEntry.url;
             var listitem = list.appendItem(label, virtualTab.id);
             listitem.setAttribute("type", "checkbox");
