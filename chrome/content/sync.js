@@ -56,7 +56,7 @@ function Sync() {
     document.getElementById("sync-syncnowitem").setAttribute("hidden", false);
 
   if (Weave.Utils.prefs.getCharPref("lastversion") == "firstrun") {
-    let url = "http://sm-labs01.mozilla.org/projects/weave/firstrun/?version=" +
+    let url = "http://services.mozilla.com/projects/weave/firstrun/?version=" +
                 Weave.WEAVE_VERSION;
     setTimeout(function() { window.openUILinkIn(url, "tab"); }, 500);
   } else
@@ -66,7 +66,7 @@ function Sync() {
   }
 
   if (Weave.Utils.prefs.getCharPref("lastversion") != Weave.WEAVE_VERSION) {
-    let url = "http://sm-labs01.mozilla.org/projects/weave/updated/?version=" +
+    let url = "http://services.mozilla.com/projects/weave/updated/?version=" +
                 Weave.WEAVE_VERSION;
     setTimeout(function() { window.openUILinkIn(url, "tab"); }, 500);
   }
