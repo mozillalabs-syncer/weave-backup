@@ -170,7 +170,7 @@ BookmarksEventHandler.onPopupShowing = function BT_onPopupShowing_new(event) {
       Weave.Service.shareData("bookmarks",
 			      false, // turn share off
                               null, // no callback needed
-                              selectedMenuFolder,
+                              selectedMenuFolder.node.id,
                               username);
     } else {
       // Pop the dialog box for sharing the selected folder:
