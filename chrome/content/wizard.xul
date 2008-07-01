@@ -7,7 +7,7 @@
 <wizard xmlns:html="http://www.w3.org/1999/xhtml"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         id="sync-wizard" title="&wizard.title;"
-        height="550" width="600"
+        height="575" width="600"
         onunload="gSyncWizard.onWizardShutdown();"
         windowtype="Sync:wizard">
   
@@ -27,7 +27,7 @@
               next="sync-wizard-eula"
               onpageshow="gSyncWizard.onPageShow('sync-wizard-intro');">
     <vbox align="left">
-      <image src="chrome://weave/skin/big-logo.png"/>
+      <image src="chrome://weave/skin/large-logo.png"/>
       <separator/>
       <description width="500">
         &intro-weave1.description;
@@ -41,7 +41,7 @@
       <description width="500">
         &intro-weave3.description;
       </description>
-      <separator/><separator/>
+      <separator/>
       <hbox width="500">
         <html:strong>
           <description>&intro-warning.description;</description>
@@ -422,9 +422,9 @@
       <richlistitem> <checkbox id="sync-wizard-bookmarks" checked="true" label="&bookmarks.label;"/> </richlistitem>
       <richlistitem> <checkbox id="sync-wizard-history" checked="true" label="&history.label;"/> </richlistitem>       
       <richlistitem> <checkbox id="sync-wizard-cookies" checked="false" label="&cookies.label;"/> </richlistitem>       
-      <richlistitem> <checkbox disabled="true" id="sync-wizard-passwords" checked="false" label="&passwords.label;"/> </richlistitem>       
+      <richlistitem> <checkbox id="sync-wizard-passwords" checked="false" label="&passwords.label;"/> </richlistitem>       
       <richlistitem> <checkbox id="sync-wizard-tabs" checked="false" label="&tabs.label;"/> </richlistitem>       
-      <richlistitem> <checkbox disabled="true" id="sync-wizard-forms" checked="false" label="&formdata.label;"/> </richlistitem>
+      <richlistitem> <checkbox id="sync-wizard-forms" checked="false" label="&formdata.label;"/> </richlistitem>
     </richlistbox>
     </vbox>
   </wizardpage>
@@ -440,8 +440,8 @@
     
     <description>&final1.description;</description>
     <separator class="thin"/>
-    <description>&final2.description;</description>
-    <separator/>
+    <!--<description>&final2.description;</description>
+    <separator/>-->
     <hbox>
       <label id="final-pref-status" value="&final-pref-title.description;"/>
       <image id="final-pref-icon" hidden="true" src="chrome://global/skin/icons/loading_16.png"/>

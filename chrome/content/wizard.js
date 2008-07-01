@@ -84,6 +84,8 @@ SyncWizard.prototype = {
     this._os.addObserver(this, "weave:service:login:error", false);
     this._os.addObserver(this, "weave:service:verify-login:success", false);
     this._os.addObserver(this, "weave:service:verify-login:error", false);
+    this._os.addObserver(this, "weave:service:verify-passphrase:success", false);
+    this._os.addObserver(this, "weave:service:verify-passphrase:error", false);
     this._os.addObserver(this, "weave:service:logout:success", false);
     this._os.addObserver(this, "weave:service:sync:start", false);
     this._os.addObserver(this, "weave:service:sync:success", false);
@@ -97,6 +99,8 @@ SyncWizard.prototype = {
     this._os.removeObserver(this, "weave:service:login:error");
     this._os.removeObserver(this, "weave:service:verify-login:success");
     this._os.removeObserver(this, "weave:service:verify-login:error");
+    this._os.removeObserver(this, "weave:service:verify-passphrase:success", false);
+    this._os.removeObserver(this, "weave:service:verify-passphrase:error", false);
     this._os.removeObserver(this, "weave:service:logout:success");
     this._os.removeObserver(this, "weave:service:sync:start");
     this._os.removeObserver(this, "weave:service:sync:success");
@@ -301,8 +305,8 @@ SyncWizard.prototype = {
     // Make sure the login has been verified
     // user could quickly enter an incorrect password and advance if malicious:)
     // to prevent this, add a call to Weave.Service.login(), but this is redundant for now
-    // TODO: && document.getElementById('passphrase-verified').value == "true"
-    if (document.getElementById('login-verified').value == "true") {
+    if (document.getElementById('login-verified').value == "true" && 
+        document.getElementById('passphrase-verified').value == "true") {
 	  wizard.canAdvance = true;
       document.getElementById('verify-check').value = "true";
 	  return true; 
@@ -368,32 +372,52 @@ SyncWizard.prototype = {
    * Eventually this should actually verify that the passphrase works. :-)
    */
   verifyPassphrase : function SyncWizard_verifyPassphrase() {
+    let log = this._log;
+    let wizard = document.getElementById("sync-wizard");
+    let statusLabel = document.getElementById("verify-passphrase-error");
+    let statusLink  = document.getElementById("verify-passphrase-error-link");
+    let statusIcon  = document.getElementById("verify-passphrase-icon");
 
-    // Don't allow advancing until we verify the passphrase.
-    let wizard = document.getElementById('sync-wizard');
+    let username = document.getElementById("sync-username-field").value;
+    let password = document.getElementById("sync-password-field").value;
+    let passphrase = document.getElementById("sync-passphrase-field").value;
+
+    let progress = this._stringBundle.getString("passphrase-progress.label");
+
+    let passphraseVerified = document.getElementById("passphrase-verified");
+
+    // Don't allow advancing until we verify the account.
 	wizard.canAdvance = false;
-	document.getElementById('passphrase-verified').value = "false";
+	document.getElementById("passphrase-verified").value = "false";
 
-    // If the login hasn't been verified yet, we can't login to fetch the private key.
-	if (document.getElementById('login-verified').value == "false") {
-       this._log.info("deferring passphrase verification until login checked");
-       return;
+    // Check for empty passphrase field
+    if (!passphrase) {
+      statusIcon.hidden = true;
+      statusLabel.value = "";
+      return;
     }
 
-    let username   = document.getElementById('sync-username-field').value;
-    let password   = document.getElementById('sync-password-field').value;
-    let passphrase = document.getElementById('sync-passphrase-field').value;
-
-    // XXX at this point we should kick off an async fetch of the wrapped
-    // private key from the server, and try unwrapping it with the passphrase.
-    // If that's good, allow advancing. If not, the passphrase is bad.
-    //
-    // For now, just assume the passphrase is good if non-empty.
-
-    if (passphrase) {
-      wizard.canAdvance = true;
-	  document.getElementById('passphrase-verified').value = "true";
-    }
+    // Ok to verify, set the status and throbber
+    statusIcon.hidden  = false;
+    statusLink.hidden  = true;
+    statusLabel.hidden = false;
+    statusLabel.value  = progress;
+    statusLabel.style.color = PROGRESS_COLOR;
+      
+    // The observer will handle success and failure notifications
+    // checkVerificationFields() will take care of allowing advance if this works
+    log.info("Verifying passphrase...");
+    Weave.Service.verifyPassphrase(username, password, passphrase);
+    
+    // In case the server is hanging... 
+    setTimeout(function() {
+            if (passphraseVerified.value == "false") {
+			  log.info("Server timeout (passphrase verification)");
+		      statusIcon.hidden = true;
+		      statusLabel.value = this._stringBundle.getString("serverTimeoutError.label") ;
+		      statusLabel.style.color = SERVER_ERROR_COLOR;
+            }
+	  }, SERVER_TIMEOUT);
   },
   
   /* acceptExistingAccount() - Sets Weave properties so they are stored in login manager
@@ -1083,6 +1107,25 @@ SyncWizard.prototype = {
         this.verifyPassphrase();
       }
       
+      gSyncWizard.checkVerificationFields();
+      // Don't allow the wizard to advance here in case other fields weren't filled in
+      break;
+    }
+    case "weave:service:verify-passphrase:success": {
+      this._log.info("Passphrase verify succeeded");
+      
+      document.getElementById('passphrase-verified').value = "true";
+        
+      let statusIcon  = document.getElementById('verify-passphrase-icon');
+      let statusLink  = document.getElementById('verify-passphrase-error-link');
+      let statusLabel = document.getElementById('verify-passphrase-error');        
+      
+      statusIcon.hidden = true;
+      statusLink.hidden = true;
+      statusLabel.value = this._stringBundle.getString("passphrase-success.label");
+      statusLabel.style.color = SUCCESS_COLOR;
+              
+      gSyncWizard.checkVerificationFields();
       // Don't allow the wizard to advance here in case other fields weren't filled in
       break;
     }
@@ -1113,6 +1156,24 @@ SyncWizard.prototype = {
       break;
     }
     
+    case "weave:service:verify-passphrase:error": {
+      this._log.info("Passphrase verify failed");
+      
+      document.getElementById('passphrase-verified').value = "false";
+
+      let statusIcon  = document.getElementById('verify-passphrase-icon');
+      let statusLink  = document.getElementById('verify-passphrase-error-link');
+      let statusLabel = document.getElementById('verify-passphrase-error');        
+     
+      statusIcon.hidden = true;
+      statusLink.hidden = true;
+      statusLabel.value = this._stringBundle.getString("passphrase-error.label");
+      statusLabel.style.color = ERROR_COLOR;
+
+      wizard.canAdvance = false;
+      break;
+    }
+
     case "weave:service:logout:success":
       this._log.info("Logged out");
       break;
