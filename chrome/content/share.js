@@ -73,7 +73,7 @@ Share.prototype = {
     Weave.Service.shareData("bookmarks",
 			    true, // turn share on
                             function(ret) { self.shareCb(ret); },
-                            this._selectedMenuFolder.node.id,
+                            this._selectedMenuFolder.node.itemId,
                             this._username);
     this.shareCb( true );
   },
