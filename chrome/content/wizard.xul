@@ -7,7 +7,7 @@
 <wizard xmlns:html="http://www.w3.org/1999/xhtml"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         id="sync-wizard" title="&wizard.title;"
-        height="575" width="600"
+        height="560" width="600"
         onunload="gSyncWizard.onWizardShutdown();"
         windowtype="Sync:wizard">
   
