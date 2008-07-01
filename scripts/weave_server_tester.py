@@ -82,7 +82,9 @@ class WeaveSession(object):
         cmd = {"version" : 1,
                "directory" : path,
                "share_to_users" : users}
-        postdata = urllib.urlencode({"cmd" : json.write(cmd)})
+        postdata = urllib.urlencode({"cmd" : json.write(cmd),
+                                     "uid" : self.username,
+                                     "password" : self.__password})
         req = urllib2.Request(url, postdata)
         result = self.__opener.open(req).read()
         if result != "OK":
