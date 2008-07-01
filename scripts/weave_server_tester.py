@@ -10,7 +10,6 @@ import httplib
 
 import json
 
-DEFAULT_SERVER = "sm-labs01.mozilla.org:81"
 DEFAULT_REALM = "services.mozilla.com - proxy"
 
 class DavRequest(urllib2.Request):
@@ -22,7 +21,7 @@ class DavRequest(urllib2.Request):
         return self.__method
 
 class WeaveSession(object):
-    def __init__(self, username, password, server = DEFAULT_SERVER,
+    def __init__(self, username, password, server,
                  realm = DEFAULT_REALM):
         self.username = username
         self.server = server
@@ -83,7 +82,9 @@ class WeaveSession(object):
         cmd = {"version" : 1,
                "directory" : path,
                "share_to_users" : users}
-        postdata = urllib.urlencode({"cmd" : json.write(cmd)})
+        postdata = urllib.urlencode({"cmd" : json.write(cmd),
+                                     "uid" : self.username,
+                                     "password" : self.__password})
         req = urllib2.Request(url, postdata)
         result = self.__opener.open(req).read()
         if result != "OK":
@@ -100,17 +101,18 @@ def ensure_weave_disallows_php(session):
 
 if __name__ == "__main__":
     args = sys.argv[1:]
-    if len(args) < 4:
-        print ("usage: %s <username-1> <password-1> "
+    if len(args) < 5:
+        print ("usage: %s <server> <username-1> <password-1> "
                "<username-2> <password-2>" % sys.argv[0])
         sys.exit(1)
 
-    username_1 = args[0]
-    password_1 = args[1]
-    username_2 = args[2]
-    password_2 = args[3]
-    session_1 = WeaveSession(username_1, password_1)
-    session_2 = WeaveSession(username_2, password_2)
+    server = args[0]
+    username_1 = args[1]
+    password_1 = args[2]
+    username_2 = args[3]
+    password_2 = args[4]
+    session_1 = WeaveSession(username_1, password_1, server)
+    session_2 = WeaveSession(username_2, password_2, server)
 
     print "Creating directory."
     session_1.create_dir("blargle")
