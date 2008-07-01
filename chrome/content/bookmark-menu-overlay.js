@@ -165,10 +165,13 @@ BookmarksEventHandler.onPopupShowing = function BT_onPopupShowing_new(event) {
     if ( isFolderSharedOutgoing( selectedMenuFolder ) ) {
       // Un-share the selected folder:
       let username = getUsernameFromSharedFolder(selectedMenuFolder);
-      Weave.Service.stopSharingData("bookmarks",
-                                    null, // no callback needed
-                                    selectedMenuFolder,
-                                    username);
+      dump( "In bookmark-menu-overlay.js: type of selectedMenuFolder is ");
+      dump( typeof selectedMenuFolder );
+      Weave.Service.shareData("bookmarks",
+			      false, // turn share off
+                              null, // no callback needed
+                              selectedMenuFolder,
+                              username);
     } else {
       // Pop the dialog box for sharing the selected folder:
       let type = "Sync:Share";

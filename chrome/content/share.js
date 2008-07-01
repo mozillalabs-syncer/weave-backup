@@ -71,6 +71,7 @@ Share.prototype = {
        the user specified in the "username' input field. */
     this._username = document.getElementById("username").value;
     Weave.Service.shareData("bookmarks",
+			    true, // turn share on
                             function(ret) { self.shareCb(ret); },
                             this._selectedMenuFolder,
                             this._username);
