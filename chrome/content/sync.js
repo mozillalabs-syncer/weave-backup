@@ -71,10 +71,11 @@ function Sync() {
       Weave.Utils.prefs.getCharPref("lastversion") == "0.1.32" ||
       Weave.Utils.prefs.getCharPref("lastversion") == "0.1.33" ||
       Weave.Utils.prefs.getCharPref("lastversion") == "0.1.34") {
+    this._prefSvc.setCharPref("extensions.weave.username", "nobody");
     setTimeout(function() {
-      alert("Due to server changes you will need to create a new " +
-            " Weave account to continue.");
-      gSync.doOpenSetupWizard();
+      alert("Due to server changes you need to re-run the setup wizard.\n" +
+            "If this is the first computer you upgrade to version " +
+            Weave.WEAVE_VERSION + ", you MUST create a new account.");
     }, 500);
   }
 
