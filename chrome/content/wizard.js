@@ -38,9 +38,9 @@
 
 const SYNC_NS_ERROR_LOGIN_ALREADY_EXISTS = 2153185310;
 
-const REGISTER_URL       = "https://services.mozilla.com/0.2/api/register/new/";
-const CHECK_USERNAME_URL = "https://services.mozilla.com/0.2/api/register/check/";
-const CHECK_EMAIL_URL    = "https://services.mozilla.com/0.2/api/register/chkmail/";
+const REGISTER_URL       = "https://services.mozilla.com/api/register/new/";
+const CHECK_USERNAME_URL = "https://services.mozilla.com/api/register/check/";
+const CHECK_EMAIL_URL    = "https://services.mozilla.com/api/register/chkmail/";
 const CAPTCHA_IMAGE_URL  = "http://api.recaptcha.net/image";
 
 const PROGRESS_COLOR     = "black";
@@ -48,7 +48,7 @@ const ERROR_COLOR        = "red";
 const SERVER_ERROR_COLOR = "black";
 const SUCCESS_COLOR      = "blue";
 
-const SERVER_TIMEOUT = 10000;
+const SERVER_TIMEOUT = 30000;
 
 function SyncWizard() {
   this._init();
