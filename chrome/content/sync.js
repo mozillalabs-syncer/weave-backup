@@ -56,19 +56,26 @@ function Sync() {
     document.getElementById("sync-syncnowitem").setAttribute("hidden", false);
 
   if (Weave.Utils.prefs.getCharPref("lastversion") == "firstrun") {
-    let url = "http://services.mozilla.com/projects/weave/firstrun/?version=" +
-                Weave.WEAVE_VERSION;
+    let url = "http://services.mozilla.com/firstrun/?version=" +
+      Weave.WEAVE_VERSION;
     setTimeout(function() { window.openUILinkIn(url, "tab"); }, 500);
-  } else
-  if (Weave.Utils.prefs.getCharPref("lastversion") == "0.1.30") {
-      setTimeout(function() { alert("Due to server changes you will need to create a new Weave account to continue.");
-	      gSync.doOpenSetupWizard(); }, 500);
+
+  } else if (Weave.Utils.prefs.getCharPref("lastversion") != Weave.WEAVE_VERSION) {
+    let url = "http://services.mozilla.com/updated/?version=" +
+      Weave.WEAVE_VERSION;
+    setTimeout(function() { window.openUILinkIn(url, "tab"); }, 500);
   }
 
-  if (Weave.Utils.prefs.getCharPref("lastversion") != Weave.WEAVE_VERSION) {
-    let url = "http://services.mozilla.com/projects/weave/updated/?version=" +
-                Weave.WEAVE_VERSION;
-    setTimeout(function() { window.openUILinkIn(url, "tab"); }, 500);
+  // FIXME: hack
+  if (Weave.Utils.prefs.getCharPref("lastversion") == "0.1.30" ||
+      Weave.Utils.prefs.getCharPref("lastversion") == "0.1.32" ||
+      Weave.Utils.prefs.getCharPref("lastversion") == "0.1.33" ||
+      Weave.Utils.prefs.getCharPref("lastversion") == "0.1.34") {
+    setTimeout(function() {
+      alert("Due to server changes you will need to create a new " +
+            " Weave account to continue.");
+      gSync.doOpenSetupWizard();
+    }, 500);
   }
 
   Weave.Utils.prefs.setCharPref("lastversion", Weave.WEAVE_VERSION);
