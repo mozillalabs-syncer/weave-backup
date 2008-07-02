@@ -7,15 +7,20 @@
 
 from wsgiref.simple_server import make_server
 import httplib
-
-import json
+import base64
 
 DEFAULT_PORT = 8000
+DEFAULT_REALM = "services.mozilla.com - proxy"
 
 class HttpResponse(object):
     def __init__(self, code, content = "", content_type = "text/plain"):
         self.status = "%s %s" % (code, httplib.responses[code])
         self.headers = [("Content-type", content_type)]
+        if code == httplib.UNAUTHORIZED:
+            self.headers +=  [("WWW-Authenticate",
+                               "Basic realm=\"%s\"" % DEFAULT_REALM)]
+        if not content:
+            content = self.status
         self.content = content
 
 class HttpRequest(object):
@@ -28,6 +33,37 @@ class HttpRequest(object):
         else:
             self.contents = ""
 
+class Perms(object):
+    # Special identifier to indicate 'everyone' instead of a
+    # particular user.
+    EVERYONE = 0
+
+    def __init__(self, readers=None, writers=None):
+        if not readers:
+            readers = []
+        if not writers:
+            writers = []
+
+        self.readers = readers
+        self.writers = writers
+
+    def __is_privileged(self, user, access_list):
+        return (user in access_list or self.EVERYONE in access_list)
+
+    def can_read(self, user):
+        return self.__is_privileged(user, self.readers)
+
+    def can_write(self, user):
+        return self.__is_privileged(user, self.writers)
+
+def requires_read_access(function):
+    function._requires_read_access = True
+    return function
+
+def requires_write_access(function):
+    function._requires_write_access = True
+    return function
+
 class WeaveApp(object):
     """
     WSGI app for the Weave server.
@@ -35,6 +71,24 @@ class WeaveApp(object):
 
     def __init__(self):
         self.contents = {}
+        self.dir_perms = {"/" : Perms(readers=[Perms.EVERYONE])}
+        self.passwords = {}
+
+    def add_user(self, username, password):
+        home_dir = "/user/%s/" % username
+        public_dir = home_dir + "public/"
+        self.dir_perms[home_dir] = Perms(readers=[username],
+                                         writers=[username])
+        self.dir_perms[public_dir] = Perms(readers=[Perms.EVERYONE],
+                                           writers=[username])
+        self.passwords[username] = password
+
+    def __get_perms_for_path(self, path):
+        possible_perms = [dirname for dirname in self.dir_perms
+                          if path.startswith(dirname)]
+        possible_perms.sort(key = len)
+        perms = possible_perms[-1]
+        return self.dir_perms[perms]
 
     def __get_files_in_dir(self, path):
         return [filename for filename in self.contents
@@ -42,9 +96,11 @@ class WeaveApp(object):
 
     # HTTP method handlers
 
+    @requires_write_access
     def _handle_MKCOL(self, path):
         return HttpResponse(httplib.OK)
 
+    @requires_write_access
     def _handle_PUT(self, path):
         self.contents[path] = self.request.contents
         return HttpResponse(httplib.OK)
@@ -52,6 +108,7 @@ class WeaveApp(object):
     def _handle_POST(self, path):
         return HttpResponse(httplib.OK)
 
+    @requires_write_access
     def _handle_DELETE(self, path):
         response = HttpResponse(httplib.OK)
         if path.endswith("/"):
@@ -66,11 +123,39 @@ class WeaveApp(object):
                 del self.contents[path]
         return response
 
+    @requires_read_access
     def _handle_GET(self, path):
         if path in self.contents:
             return HttpResponse(httplib.OK, self.contents[path])
         else:
             return HttpResponse(httplib.NOT_FOUND)
+
+    def __process_handler(self, handler):
+        response = None
+        auth = self.request.environ.get("HTTP_AUTHORIZATION")
+        if auth:
+            user, password = base64.b64decode(auth.split()[1]).split(":")
+            if self.passwords.get(user) != password:
+                response = HttpResponse(httplib.UNAUTHORIZED)
+        else:
+            user = Perms.EVERYONE
+
+        if response is None:
+            path = self.request.environ["PATH_INFO"]
+            perms = self.__get_perms_for_path(path)
+            checks = []
+            if hasattr(handler, "_requires_read_access"):
+                checks.append(perms.can_read)
+            if hasattr(handler, "_requires_write_access"):
+                checks.append(perms.can_write)
+            for check in checks:
+                if not check(user):
+                    response = HttpResponse(httplib.UNAUTHORIZED)
+
+        if response is None:
+            response = handler(path)
+
+        return response
 
     def __call__(self, environ, start_response):
         """
@@ -84,7 +169,8 @@ class WeaveApp(object):
         # <method> is the name of the HTTP method to call.  If we do,
         # then call it.
         if hasattr(self, method):
-            response = getattr(self, method)(environ["PATH_INFO"])
+            handler = getattr(self, method)
+            response = self.__process_handler(handler)
         else:
             response = HttpResponse(
                 httplib.METHOD_NOT_ALLOWED,
@@ -97,5 +183,8 @@ class WeaveApp(object):
 if __name__ == "__main__":
     print __import__("__main__").__doc__
     print "Serving on port %d." % DEFAULT_PORT
-    httpd = make_server('', DEFAULT_PORT, WeaveApp())
+    app = WeaveApp()
+    app.add_user("foo", "test123")
+    app.add_user("bar", "test123")
+    httpd = make_server('', DEFAULT_PORT, app)
     httpd.serve_forever()
