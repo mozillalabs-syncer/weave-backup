@@ -142,16 +142,20 @@ class WeaveApp(object):
         # TODO: This is a canned response, we need to actually
         # implement it.
         response = """<?xml version="1.0" encoding="utf-8"?>
-                   <D:multistatus xmlns:D="DAV:" xmlns:ns0="DAV:">
-                   <D:response>
-                   <D:href>%s</D:href>
-                   <D:propstat>
-                   <D:prop>
-                   </D:prop>
-                   <D:status>HTTP/1.1 200 OK</D:status>
-                   </D:propstat>
-                   </D:response>
-                   </D:multistatus>""" % path
+                   <D:multistatus xmlns:D="DAV:" xmlns:ns0="DAV:">"""
+
+        path_template = """<D:response>
+                           <D:href>%s</D:href>
+                           <D:propstat>
+                           <D:prop>
+                           </D:prop>
+                           <D:status>HTTP/1.1 200 OK</D:status>
+                           </D:propstat>"""
+
+        response += path_template % path
+
+        response += """</D:response>
+                       </D:multistatus>"""
         return HttpResponse(httplib.MULTI_STATUS, response)
 
     @requires_write_access
