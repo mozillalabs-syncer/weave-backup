@@ -10,8 +10,8 @@ import httplib
 from urlparse import urlsplit
 
 import json
-
-DEFAULT_REALM = "services.mozilla.com - proxy"
+import weave_server
+import threading
 
 class DavRequest(urllib2.Request):
     def __init__(self, method, *args, **kwargs):
@@ -23,7 +23,7 @@ class DavRequest(urllib2.Request):
 
 class WeaveSession(object):
     def __init__(self, username, password, server_url,
-                 realm = DEFAULT_REALM):
+                 realm = weave_server.DEFAULT_REALM):
         self.username = username
         self.server_url = server_url
         self.server = urlsplit(server_url).netloc
@@ -101,6 +101,92 @@ def ensure_weave_disallows_php(session):
     finally:
         session.delete_file("phptest.php")
 
+def _do_test(session_1, session_2):
+    print "Creating directory."
+    session_1.create_dir("blargle")
+
+    try:
+        print "Creating temporary file."
+        session_1.put_file("blargle/bloop", "hai2u!")
+        try:
+            assert session_1.get_file("blargle/bloop") == "hai2u!"
+            session_1.share_with_users("blargle", [])
+            try:
+                print "Ensuring user 2 can't read user 1's file."
+                session_2.get_file("blargle/bloop", session_1.username)
+            except urllib2.HTTPError, e:
+                if e.code != httplib.UNAUTHORIZED:
+                    raise
+            print "Sharing directory with user 2."
+            session_1.share_with_users("blargle", [session_2.username])
+            print "Ensuring user 2 can read user 1's file."
+            assert session_2.get_file("blargle/bloop",
+                                      session_1.username) == "hai2u!"
+            print "Sharing directory with everyone."
+            session_1.share_with_users("blargle", ["all"])
+            print "Ensuring user 2 can read user 1's file."
+            assert session_2.get_file("blargle/bloop",
+                                      session_1.username) == "hai2u!"
+        finally:
+            session_1.delete_file("blargle/bloop")
+    finally:
+        print "Removing directory."
+        session_1.remove_dir("blargle")
+
+    ensure_weave_disallows_php(session_1)
+
+    print "Test complete."
+
+def redirect_stdio(func):
+    def wrapper(*args, **kwargs):
+        from cStringIO import StringIO
+        old_stdio = [sys.stdout, sys.stderr]
+        stream = StringIO()
+        sys.stderr = sys.stdout = stream
+        try:
+            try:
+                return func(*args, **kwargs)
+            except Exception, e:
+                import traceback
+                traceback.print_exc()
+                raise Exception("Test failed:\n\n%s" % stream.getvalue())
+        finally:
+            sys.stderr, sys.stdout = old_stdio
+
+    wrapper.__name__ = func.__name__
+    return wrapper
+
+@redirect_stdio
+def test_weave_server():
+    server_url = "http://127.0.0.1:%d" % weave_server.DEFAULT_PORT
+    username_1 = "foo"
+    password_1 = "test123"
+    username_2 = "bar"
+    password_2 = "test1234"
+
+    start_event = threading.Event()
+
+    def run_server():
+        app = weave_server.WeaveApp()
+        app.add_user(username_1, password_1)
+        app.add_user(username_2, password_2)
+        httpd = weave_server.make_server('', weave_server.DEFAULT_PORT, app)
+        start_event.set()
+        while 1:
+            request, client_address = httpd.socket.accept()
+            httpd.process_request(request, client_address)
+
+    thread = threading.Thread(target=run_server)
+    thread.setDaemon(True)
+    thread.start()
+
+    start_event.wait()
+
+    session_1 = WeaveSession(username_1, password_1, server_url)
+    session_2 = WeaveSession(username_2, password_2, server_url)
+
+    _do_test(session_1, session_2)
+
 if __name__ == "__main__":
     args = sys.argv[1:]
     if len(args) < 5:
@@ -116,35 +202,4 @@ if __name__ == "__main__":
     session_1 = WeaveSession(username_1, password_1, server_url)
     session_2 = WeaveSession(username_2, password_2, server_url)
 
-    print "Creating directory."
-    session_1.create_dir("blargle")
-
-    try:
-        print "Creating temporary file."
-        session_1.put_file("blargle/bloop", "hai2u!")
-        try:
-            assert session_1.get_file("blargle/bloop") == "hai2u!"
-            session_1.share_with_users("blargle", [])
-            try:
-                print "Ensuring user 2 can't read user 1's file."
-                session_2.get_file("blargle/bloop", username_1)
-            except urllib2.HTTPError, e:
-                if e.code != httplib.UNAUTHORIZED:
-                    raise
-            print "Sharing directory with user 2."
-            session_1.share_with_users("blargle", [username_2])
-            print "Ensuring user 2 can read user 1's file."
-            assert session_2.get_file("blargle/bloop", username_1) == "hai2u!"
-            print "Sharing directory with everyone."
-            session_1.share_with_users("blargle", ["all"])
-            print "Ensuring user 2 can read user 1's file."
-            assert session_2.get_file("blargle/bloop", username_1) == "hai2u!"
-        finally:
-            session_1.delete_file("blargle/bloop")
-    finally:
-        print "Removing directory."
-        session_1.remove_dir("blargle")
-
-    ensure_weave_disallows_php(session_1)
-
-    print "Test complete."
+    _do_test(session_1, session_2)

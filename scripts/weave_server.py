@@ -213,7 +213,5 @@ if __name__ == "__main__":
     print __import__("__main__").__doc__
     print "Serving on port %d." % DEFAULT_PORT
     app = WeaveApp()
-    app.add_user("foo", "test123")
-    app.add_user("bar", "test123")
     httpd = make_server('', DEFAULT_PORT, app)
     httpd.serve_forever()
