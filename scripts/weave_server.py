@@ -141,7 +141,7 @@ class WeaveApp(object):
                        </D:activelock>
                      </D:lockdiscovery>
                    </D:prop>""" % token
-        return HttpResponse(httplib.OK, response)
+        return HttpResponse(httplib.OK, response, content_type="text/xml")
 
     @requires_write_access
     def _handle_UNLOCK(self, path):
@@ -201,7 +201,8 @@ class WeaveApp(object):
                                              "props" : ""}
 
         response += """</D:multistatus>"""
-        return HttpResponse(httplib.MULTI_STATUS, response)
+        return HttpResponse(httplib.MULTI_STATUS, response,
+                            content_type="text/xml")
 
     @requires_write_access
     def _handle_DELETE(self, path):
