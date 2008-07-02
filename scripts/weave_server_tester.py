@@ -106,6 +106,48 @@ class WeaveSession(object):
         req = DavRequest("DELETE", self._get_user_url(path))
         self._enact_dav_request(req)
 
+    def lock_file(self, path):
+        headers = {"Content-type" : "text/xml; charset=\"utf-8\"",
+                   "Depth" : "infinity",
+                   "Timeout": "Second-600"}
+        xml_data = ("<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n"
+                    "<D:lockinfo xmlns:D=\"DAV:\">\n"
+                    "  <D:locktype><D:write/></D:locktype>\n"
+                    "  <D:lockscope><D:exclusive/></D:lockscope>\n"
+                    "</D:lockinfo>")
+        req = DavRequest("LOCK", self._get_user_url(path), xml_data,
+                         headers = headers)
+        result_xml = self._enact_dav_request(req).read()
+
+        response = ET.XML(result_xml)
+        token = response.find(".//{DAV:}locktoken/{DAV:}href").text
+        return token
+
+    def unlock_file(self, path, token):
+        headers = {"Lock-Token" : "<%s>" % token}
+        req = DavRequest("UNLOCK", self._get_user_url(path),
+                         headers = headers)
+        self._enact_dav_request(req)
+
+    def ensure_unlock_file(self, path):
+        xml_data = ("<?xml version=\"1.0\" encoding=\"utf-8\" ?>"
+                    "<D:propfind xmlns:D='DAV:'>"
+                    "<D:prop><D:lockdiscovery/></D:prop></D:propfind>")
+
+        url = self._get_user_url(path)
+        headers = {"Content-type" : "text/xml; charset=\"utf-8\"",
+                   "Depth" : "0"}
+        req = DavRequest("PROPFIND", url, xml_data, headers = headers)
+        try:
+            result_xml = self._enact_dav_request(req).read()
+        except urllib2.HTTPError, e:
+            return
+
+        multistatus = ET.XML(result_xml)
+        href = multistatus.find(".//{DAV:}locktoken/{DAV:}href")
+        if href is not None:
+            self.unlock_file(path, href.text)
+
     def share_with_users(self, path, users):
         url = "%s/api/share/" % (self.server_url)
         cmd = {"version" : 1,
@@ -129,6 +171,30 @@ def ensure_weave_disallows_php(session):
         session.delete_file("phptest.php")
 
 def _do_test(session_1, session_2):
+    print "Ensuring that file is not locked."
+    session_1.ensure_unlock_file("test_lock")
+
+    print "Locking file"
+    session_1.lock_file("test_lock")
+
+    print "Unlocking file by querying for its token"
+    session_1.ensure_unlock_file("test_lock")
+
+    print "Locking file again"
+    token = session_1.lock_file("test_lock")
+
+    try:
+        print "Ensuring that we can't re-lock the file."
+        session_1.lock_file("test_lock")
+    except urllib2.HTTPError, e:
+        if e.code != httplib.LOCKED:
+            raise
+    else:
+        raise AssertionError("We can re-lock the file!")
+
+    print "Unlocking file"
+    session_1.unlock_file("test_lock", token)
+
     print "Ensuring that PROPFIND on the user's home dir works."
     files = session_1.list_files("")
 
@@ -158,6 +224,8 @@ def _do_test(session_1, session_2):
             except urllib2.HTTPError, e:
                 if e.code != httplib.UNAUTHORIZED:
                     raise
+            else:
+                raise AssertionError("User 2 can read user 1's file!")
             print "Sharing directory with user 2."
             session_1.share_with_users("blargle", [session_2.username])
             print "Ensuring user 2 can read user 1's file."
