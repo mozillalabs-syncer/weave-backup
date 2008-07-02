@@ -153,9 +153,12 @@ class WeaveApp(object):
         return response
 
     @requires_read_access
-    def _handle_GET(self, path):            
+    def _handle_GET(self, path):
         if path in self.contents:
             return HttpResponse(httplib.OK, self.contents[path])
+        elif path.endswith("/"):
+            # TODO: Add directory listing.
+            return HttpResponse(httplib.OK)
         else:
             return HttpResponse(httplib.NOT_FOUND)
 

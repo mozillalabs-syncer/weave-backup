@@ -105,6 +105,9 @@ def _do_test(session_1, session_2):
     print "Creating directory."
     session_1.create_dir("blargle")
 
+    print "Ensuring that directory indexes don't raise errors."
+    session_1.get_file("")
+
     try:
         print "Creating temporary file."
         session_1.put_file("blargle/bloop", "hai2u!")
