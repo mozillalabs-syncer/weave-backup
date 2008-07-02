@@ -147,6 +147,8 @@ def _do_test(session_1, session_2):
     try:
         print "Creating temporary file."
         session_1.put_file("blargle/bloop", "hai2u!")
+        print "Verifying that temporary file is listed."
+        assert "bloop" in session_1.list_files("blargle/")
         try:
             assert session_1.get_file("blargle/bloop") == "hai2u!"
             session_1.share_with_users("blargle", [])

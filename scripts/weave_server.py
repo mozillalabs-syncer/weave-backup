@@ -150,12 +150,16 @@ class WeaveApp(object):
                            <D:prop>
                            </D:prop>
                            <D:status>HTTP/1.1 200 OK</D:status>
-                           </D:propstat>"""
+                           </D:propstat>
+                           </D:response>"""
 
         response += path_template % path
 
-        response += """</D:response>
-                       </D:multistatus>"""
+        for filename in self.__get_files_in_dir(path):
+            response += path_template % filename
+
+        response += """</D:multistatus>"""
+        print response
         return HttpResponse(httplib.MULTI_STATUS, response)
 
     @requires_write_access
