@@ -14,7 +14,7 @@ DEFAULT_REALM = "services.mozilla.com - proxy"
 
 class HttpResponse(object):
     def __init__(self, code, content = "", content_type = "text/plain"):
-        self.status = "%s %s" % (code, httplib.responses[code])
+        self.status = "%s %s" % (code, httplib.responses.get(code, ""))
         self.headers = [("Content-type", content_type)]
         if code == httplib.UNAUTHORIZED:
             self.headers +=  [("WWW-Authenticate",
@@ -136,6 +136,23 @@ class WeaveApp(object):
             return self.__api_share(path)
         else:
             return HttpResponse(httplib.NOT_FOUND)
+
+    @requires_write_access
+    def _handle_PROPFIND(self, path):
+        # TODO: This is a canned response, we need to actually
+        # implement it.
+        response = """<?xml version="1.0" encoding="utf-8"?>
+                   <D:multistatus xmlns:D="DAV:" xmlns:ns0="DAV:">
+                   <D:response>
+                   <D:href>%s</D:href>
+                   <D:propstat>
+                   <D:prop>
+                   </D:prop>
+                   <D:status>HTTP/1.1 200 OK</D:status>
+                   </D:propstat>
+                   </D:response>
+                   </D:multistatus>""" % path
+        return HttpResponse(httplib.MULTI_STATUS, response)
 
     @requires_write_access
     def _handle_DELETE(self, path):

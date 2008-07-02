@@ -8,6 +8,7 @@ import urllib
 import urllib2
 import httplib
 from urlparse import urlsplit
+from xml.etree import cElementTree as ET
 
 import json
 import weave_server
@@ -21,6 +22,22 @@ class DavRequest(urllib2.Request):
     def get_method(self):
         return self.__method
 
+class DavHandler(urllib2.BaseHandler):
+    def _normal_response(self, req, fp, code, msg, headers):
+        return fp
+
+    # Multi-status
+    http_error_207 = _normal_response
+
+    # Created
+    http_error_201 = _normal_response
+
+    # Accepted
+    http_error_202 = _normal_response
+
+    # No content
+    http_error_204 = _normal_response
+
 class WeaveSession(object):
     def __init__(self, username, password, server_url,
                  realm = weave_server.DEFAULT_REALM):
@@ -32,12 +49,13 @@ class WeaveSession(object):
         self._make_opener()
 
     def _make_opener(self):
+        davHandler = DavHandler()
         authHandler = urllib2.HTTPBasicAuthHandler()
         authHandler.add_password(self.realm,
                                  self.server,
                                  self.username,
                                  self.__password)
-        self.__opener = urllib2.build_opener(authHandler)
+        self.__opener = urllib2.build_opener(authHandler, davHandler)
 
     def _get_user_url(self, path, user = None):
         if not user:
@@ -50,13 +68,22 @@ class WeaveSession(object):
         return url
 
     def _enact_dav_request(self, request):
-        try:
-            self.__opener.open(request)
-        except urllib2.HTTPError, e:
-            if e.code not in (httplib.CREATED,
-                              httplib.ACCEPTED,
-                              httplib.NO_CONTENT):
-                raise
+        return self.__opener.open(request)
+
+    def list_files(self, path):
+        xml_data = ("<?xml version=\"1.0\" encoding=\"utf-8\" ?>"
+                    "<D:propfind xmlns:D='DAV:'><D:prop/></D:propfind>")
+
+        url = self._get_user_url(path)
+        headers = {"Content-type" : "text/xml; charset=\"utf-8\"",
+                   "Depth" : "1"}
+        req = DavRequest("PROPFIND", url, xml_data, headers = headers)
+        result_xml = self._enact_dav_request(req).read()
+
+        multistatus = ET.XML(result_xml)
+        hrefs = multistatus.findall(".//{DAV:}href")
+        root = hrefs[0].text
+        return [href.text[len(root):] for href in hrefs[1:]]
 
     def create_dir(self, path):
         req = DavRequest("MKCOL", self._get_user_url(path))
@@ -102,6 +129,15 @@ def ensure_weave_disallows_php(session):
         session.delete_file("phptest.php")
 
 def _do_test(session_1, session_2):
+    print "Ensuring that PROPFIND on the user's home dir works."
+    files = session_1.list_files("")
+
+    print "Cleaning up any files left over from a failed previous test."
+    if "blargle/bloop" in files:
+        session_1.delete_file("blargle/bloop")
+    if "blargle/" in files:
+        session_1.remove_dir("blargle")
+
     print "Creating directory."
     session_1.create_dir("blargle")
 
