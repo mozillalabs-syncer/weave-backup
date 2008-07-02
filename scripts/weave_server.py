@@ -73,6 +73,8 @@ class WeaveApp(object):
         self.contents = {}
         self.dir_perms = {"/" : Perms(readers=[Perms.EVERYONE])}
         self.passwords = {}
+        self.locks = {}
+        self._tokenIds = 0
 
     def add_user(self, username, password):
         home_dir = "/user/%s/" % username
@@ -123,6 +125,35 @@ class WeaveApp(object):
     # HTTP method handlers
 
     @requires_write_access
+    def _handle_LOCK(self, path):
+        if path in self.locks:
+            return HttpResponse(httplib.LOCKED)
+        token = "opaquelocktoken:%d" % self._tokenIds
+        self._tokenIds += 1
+        self.locks[path] = token
+        response = """<?xml version="1.0" encoding="utf-8"?>
+                   <D:prop xmlns:D="DAV:">
+                     <D:lockdiscovery>
+                       <D:activelock>
+                         <D:locktoken>
+                           <D:href>%s</D:href>
+                         </D:locktoken>
+                       </D:activelock>
+                     </D:lockdiscovery>
+                   </D:prop>""" % token
+        return HttpResponse(httplib.OK, response)
+
+    @requires_write_access
+    def _handle_UNLOCK(self, path):
+        token = self.request.environ["HTTP_LOCK_TOKEN"]
+        if path not in self.locks:
+            return HttpResponse(httplib.BAD_REQUEST)
+        if token == "<%s>" % self.locks[path]:
+            del self.locks[path]
+            return HttpResponse(httplib.NO_CONTENT)
+        return HttpResponse(httplib.BAD_REQUEST)
+
+    @requires_write_access
     def _handle_MKCOL(self, path):
         return HttpResponse(httplib.OK)
 
@@ -145,18 +176,29 @@ class WeaveApp(object):
                    <D:multistatus xmlns:D="DAV:" xmlns:ns0="DAV:">"""
 
         path_template = """<D:response>
-                           <D:href>%s</D:href>
+                           <D:href>%(href)s</D:href>
                            <D:propstat>
                            <D:prop>
+                           %(props)s
                            </D:prop>
                            <D:status>HTTP/1.1 200 OK</D:status>
                            </D:propstat>
                            </D:response>"""
 
-        response += path_template % path
+        if path in self.locks:
+            props = "<D:locktoken><D:href>%s</D:href></D:locktoken>" % (
+                self.locks[path]
+                )
+        else:
+            props = ""
 
-        for filename in self.__get_files_in_dir(path):
-            response += path_template % filename
+        response += path_template % {"href": path,
+                                     "props": props}
+
+        if path.endswith("/"):
+            for filename in self.__get_files_in_dir(path):
+                response += path_template % {"href" : filename,
+                                             "props" : ""}
 
         response += """</D:multistatus>"""
         return HttpResponse(httplib.MULTI_STATUS, response)
