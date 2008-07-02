@@ -7,6 +7,7 @@ import sys
 import urllib
 import urllib2
 import httplib
+from urlparse import urlsplit
 
 import json
 
@@ -21,10 +22,11 @@ class DavRequest(urllib2.Request):
         return self.__method
 
 class WeaveSession(object):
-    def __init__(self, username, password, server,
+    def __init__(self, username, password, server_url,
                  realm = DEFAULT_REALM):
         self.username = username
-        self.server = server
+        self.server_url = server_url
+        self.server = urlsplit(server_url).netloc
         self.realm = realm
         self.__password = password
         self._make_opener()
@@ -42,9 +44,9 @@ class WeaveSession(object):
             user = self.username
         if path.startswith("/"):
             path = path[1:]
-        url = "https://%s/user/%s/%s" % (self.server,
-                                         user,
-                                         path)
+        url = "%s/user/%s/%s" % (self.server_url,
+                                 user,
+                                 path)
         return url
 
     def _enact_dav_request(self, request):
@@ -78,7 +80,7 @@ class WeaveSession(object):
         self._enact_dav_request(req)
 
     def share_with_users(self, path, users):
-        url = "https://%s/api/share/" % (self.server)
+        url = "%s/api/share/" % (self.server_url)
         cmd = {"version" : 1,
                "directory" : path,
                "share_to_users" : users}
@@ -102,17 +104,17 @@ def ensure_weave_disallows_php(session):
 if __name__ == "__main__":
     args = sys.argv[1:]
     if len(args) < 5:
-        print ("usage: %s <server> <username-1> <password-1> "
+        print ("usage: %s <server-url> <username-1> <password-1> "
                "<username-2> <password-2>" % sys.argv[0])
         sys.exit(1)
 
-    server = args[0]
+    server_url = args[0]
     username_1 = args[1]
     password_1 = args[2]
     username_2 = args[3]
     password_2 = args[4]
-    session_1 = WeaveSession(username_1, password_1, server)
-    session_2 = WeaveSession(username_2, password_2, server)
+    session_1 = WeaveSession(username_1, password_1, server_url)
+    session_2 = WeaveSession(username_2, password_2, server_url)
 
     print "Creating directory."
     session_1.create_dir("blargle")
