@@ -159,7 +159,6 @@ class WeaveApp(object):
             response += path_template % filename
 
         response += """</D:multistatus>"""
-        print response
         return HttpResponse(httplib.MULTI_STATUS, response)
 
     @requires_write_access
