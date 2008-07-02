@@ -84,6 +84,7 @@ class WeaveApp(object):
         self.passwords[username] = password
 
     def __get_perms_for_path(self, path):
+        print path
         possible_perms = [dirname for dirname in self.dir_perms
                           if path.startswith(dirname)]
         possible_perms.sort(key = len)
@@ -93,6 +94,31 @@ class WeaveApp(object):
     def __get_files_in_dir(self, path):
         return [filename for filename in self.contents
                 if filename.startswith(path)]
+
+    def __api_share(self, path):
+        import cgi
+        params = cgi.parse_qs(self.request.contents)
+        user = params["uid"][0]
+        password = params["password"][0]
+        if self.passwords.get(user) != password:
+            return HttpResponse(httplib.UNAUTHORIZED)
+        else:
+            import json
+            cmd = json.read(params["cmd"][0])
+            dirname = "/user/%s/%s" % (user, cmd["directory"])
+            if not dirname.endswith("/"):
+                dirname += "/"
+            readers = []
+            for reader in cmd["share_to_users"]:
+                if reader == "all":
+                    readers.append(Perms.EVERYONE)
+                else:
+                    readers.append(reader)
+            if user not in readers:
+                readers.append(user)
+            self.dir_perms[dirname] = Perms(readers = readers,
+                                            writers = [user])
+            return HttpResponse(httplib.OK, "OK")
 
     # HTTP method handlers
 
@@ -106,7 +132,10 @@ class WeaveApp(object):
         return HttpResponse(httplib.OK)
 
     def _handle_POST(self, path):
-        return HttpResponse(httplib.OK)
+        if path == "/api/share/":
+            return self.__api_share(path)
+        else:
+            return HttpResponse(httplib.NOT_FOUND)
 
     @requires_write_access
     def _handle_DELETE(self, path):
@@ -124,7 +153,7 @@ class WeaveApp(object):
         return response
 
     @requires_read_access
-    def _handle_GET(self, path):
+    def _handle_GET(self, path):            
         if path in self.contents:
             return HttpResponse(httplib.OK, self.contents[path])
         else:
