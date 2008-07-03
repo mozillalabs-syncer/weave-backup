@@ -184,8 +184,6 @@ class WeaveApp(object):
 
     @requires_write_access
     def _handle_PROPFIND(self, path):
-        # TODO: This is a canned response, we need to actually
-        # implement it.
         response = """<?xml version="1.0" encoding="utf-8"?>
                    <D:multistatus xmlns:D="DAV:" xmlns:ns0="DAV:">"""
 
