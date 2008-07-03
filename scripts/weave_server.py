@@ -9,6 +9,7 @@ from wsgiref.simple_server import make_server
 import httplib
 import base64
 import logging
+import pprint
 
 DEFAULT_PORT = 8000
 DEFAULT_REALM = "services.mozilla.com - proxy"
@@ -56,6 +57,21 @@ class Perms(object):
 
     def can_write(self, user):
         return self.__is_privileged(user, self.writers)
+
+    def __acl_repr(self, acl):
+        items = []
+        for item in acl:
+            if item == self.EVERYONE:
+                items.append("Perms.EVERYONE")
+            else:
+                items.append(repr(item))
+        return "[" + ", ".join(items) + "]"
+
+    def __repr__(self):
+        return "Perms(readers=%s, writers=%s)" % (
+            self.__acl_repr(self.readers),
+            self.__acl_repr(self.writers)
+            )
 
 def requires_read_access(function):
     function._requires_read_access = True
@@ -235,6 +251,9 @@ class WeaveApp(object):
     def _handle_GET(self, path):
         if path in self.contents:
             return HttpResponse(httplib.OK, self.contents[path])
+        elif path == "/state/":
+            state_str = pprint.pformat(self.__getstate__())
+            return HttpResponse(httplib.OK, state_str)
         elif path.startswith("/api/register/check/"):
             return self.__api_register_check(path[20:], self.passwords)
         elif path.startswith("/api/register/chkmail/"):
@@ -243,6 +262,15 @@ class WeaveApp(object):
             return self.__show_index(path)
         else:
             return HttpResponse(httplib.NOT_FOUND)
+
+    def __getstate__(self):
+        state = {}
+        state.update(self.__dict__)
+        del state["request"]
+        return state
+
+    def __setstate__(self, state):
+        self.__dict__.update(state)
 
     def __show_index(self, path):
         output = []
