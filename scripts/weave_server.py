@@ -8,6 +8,7 @@
 from wsgiref.simple_server import make_server
 import httplib
 import base64
+import logging
 
 DEFAULT_PORT = 8000
 DEFAULT_REALM = "services.mozilla.com - proxy"
@@ -88,7 +89,6 @@ class WeaveApp(object):
         self.email[username] = email
 
     def __get_perms_for_path(self, path):
-        print path
         possible_perms = [dirname for dirname in self.dir_perms
                           if path.startswith(dirname)]
         possible_perms.sort(key = len)
@@ -267,7 +267,7 @@ class WeaveApp(object):
                 checks.append(perms.can_write)
             for check in checks:
                 if not check(user):
-                    response = HttpResponse(httplib.UNAUTHORIZED)
+                    response = HttpResponse(httplib.FORBIDDEN)
 
         if response is None:
             response = handler(path)
@@ -299,7 +299,8 @@ class WeaveApp(object):
 
 if __name__ == "__main__":
     print __import__("__main__").__doc__
-    print "Serving on port %d." % DEFAULT_PORT
+    logging.basicConfig(level=logging.DEBUG)
+    logging.info("Serving on port %d." % DEFAULT_PORT)
     app = WeaveApp()
     httpd = make_server('', DEFAULT_PORT, app)
     httpd.serve_forever()
