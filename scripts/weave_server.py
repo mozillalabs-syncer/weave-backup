@@ -73,10 +73,11 @@ class WeaveApp(object):
         self.contents = {}
         self.dir_perms = {"/" : Perms(readers=[Perms.EVERYONE])}
         self.passwords = {}
+        self.email = {}
         self.locks = {}
         self._tokenIds = 0
 
-    def add_user(self, username, password):
+    def add_user(self, username, password, email = "nobody@example.com"):
         home_dir = "/user/%s/" % username
         public_dir = home_dir + "public/"
         self.dir_perms[home_dir] = Perms(readers=[username],
@@ -84,6 +85,7 @@ class WeaveApp(object):
         self.dir_perms[public_dir] = Perms(readers=[Perms.EVERYONE],
                                            writers=[username])
         self.passwords[username] = password
+        self.email[username] = email
 
     def __get_perms_for_path(self, path):
         print path
@@ -121,6 +123,18 @@ class WeaveApp(object):
             self.dir_perms[dirname] = Perms(readers = readers,
                                             writers = [user])
             return HttpResponse(httplib.OK, "OK")
+    
+    # Registration API
+    def __api_register_check(self, what, where):
+        what = what.strip("/")
+        if what.strip() == "":
+            return HttpResponse(400, "-1")
+            
+        if what in where:
+            return HttpResponse(httplib.OK, "0")
+        else:
+            return HttpResponse(httplib.OK, "1")
+
 
     # HTTP method handlers
 
@@ -223,6 +237,10 @@ class WeaveApp(object):
     def _handle_GET(self, path):
         if path in self.contents:
             return HttpResponse(httplib.OK, self.contents[path])
+        elif path.startswith("/api/register/check/"):
+            return self.__api_register_check(path[20:], self.passwords)
+        elif path.startswith("/api/register/chkmail/"):
+            return self.__api_register_check(path[22:], self.email)
         elif path.endswith("/"):
             # TODO: Add directory listing.
             return HttpResponse(httplib.OK)
