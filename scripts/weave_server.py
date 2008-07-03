@@ -240,10 +240,17 @@ class WeaveApp(object):
         elif path.startswith("/api/register/chkmail/"):
             return self.__api_register_check(path[22:], self.email)
         elif path.endswith("/"):
-            # TODO: Add directory listing.
-            return HttpResponse(httplib.OK)
+            return self.__show_index(path)
         else:
             return HttpResponse(httplib.NOT_FOUND)
+
+    def __show_index(self, path):
+        output = []
+        for filename in self.__get_files_in_dir(path):
+            output.append("<p><a href=\"%s\">%s</a></p>" % (filename,
+                                                            filename))
+        output = "".join(output)
+        return HttpResponse(httplib.OK, output, content_type="text/html")
 
     def __process_handler(self, handler):
         response = None
