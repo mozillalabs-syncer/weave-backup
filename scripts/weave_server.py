@@ -265,7 +265,7 @@ class WeaveApp(object):
                 checks.append(perms.can_write)
             for check in checks:
                 if not check(user):
-                    response = HttpResponse(httplib.FORBIDDEN)
+                    response = HttpResponse(httplib.UNAUTHORIZED)
 
         if response is None:
             response = handler(path)
