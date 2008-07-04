@@ -8,6 +8,8 @@
 from wsgiref.simple_server import make_server
 import httplib
 import base64
+import logging
+import pprint
 
 DEFAULT_PORT = 8000
 DEFAULT_REALM = "services.mozilla.com - proxy"
@@ -56,6 +58,21 @@ class Perms(object):
     def can_write(self, user):
         return self.__is_privileged(user, self.writers)
 
+    def __acl_repr(self, acl):
+        items = []
+        for item in acl:
+            if item == self.EVERYONE:
+                items.append("Perms.EVERYONE")
+            else:
+                items.append(repr(item))
+        return "[" + ", ".join(items) + "]"
+
+    def __repr__(self):
+        return "Perms(readers=%s, writers=%s)" % (
+            self.__acl_repr(self.readers),
+            self.__acl_repr(self.writers)
+            )
+
 def requires_read_access(function):
     function._requires_read_access = True
     return function
@@ -88,7 +105,6 @@ class WeaveApp(object):
         self.email[username] = email
 
     def __get_perms_for_path(self, path):
-        print path
         possible_perms = [dirname for dirname in self.dir_perms
                           if path.startswith(dirname)]
         possible_perms.sort(key = len)
@@ -184,8 +200,6 @@ class WeaveApp(object):
 
     @requires_write_access
     def _handle_PROPFIND(self, path):
-        # TODO: This is a canned response, we need to actually
-        # implement it.
         response = """<?xml version="1.0" encoding="utf-8"?>
                    <D:multistatus xmlns:D="DAV:" xmlns:ns0="DAV:">"""
 
@@ -237,15 +251,38 @@ class WeaveApp(object):
     def _handle_GET(self, path):
         if path in self.contents:
             return HttpResponse(httplib.OK, self.contents[path])
+        elif path == "/state/":
+            state_str = pprint.pformat(self.__getstate__())
+            return HttpResponse(httplib.OK, state_str)
         elif path.startswith("/api/register/check/"):
             return self.__api_register_check(path[20:], self.passwords)
         elif path.startswith("/api/register/chkmail/"):
             return self.__api_register_check(path[22:], self.email)
         elif path.endswith("/"):
-            # TODO: Add directory listing.
-            return HttpResponse(httplib.OK)
+            return self.__show_index(path)
         else:
             return HttpResponse(httplib.NOT_FOUND)
+
+    def __getstate__(self):
+        state = {}
+        state.update(self.__dict__)
+        del state["request"]
+        return state
+
+    def __setstate__(self, state):
+        self.__dict__.update(state)
+
+    def __show_index(self, path):
+        output = []
+        for filename in self.__get_files_in_dir(path):
+            output.append("<p><a href=\"%s\">%s</a></p>" % (filename,
+                                                            filename))
+        if output:
+            output = "".join(output)
+        else:
+            output = ("<p>There are no files under the "
+                      "directory <tt>%s</tt>.</p>" % (path))
+        return HttpResponse(httplib.OK, output, content_type="text/html")
 
     def __process_handler(self, handler):
         response = None
@@ -299,7 +336,8 @@ class WeaveApp(object):
 
 if __name__ == "__main__":
     print __import__("__main__").__doc__
-    print "Serving on port %d." % DEFAULT_PORT
+    logging.basicConfig(level=logging.DEBUG)
+    logging.info("Serving on port %d." % DEFAULT_PORT)
     app = WeaveApp()
     httpd = make_server('', DEFAULT_PORT, app)
     httpd.serve_forever()
