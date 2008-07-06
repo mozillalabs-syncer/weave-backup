@@ -148,6 +148,24 @@ class WeaveSession(object):
         if href is not None:
             self.unlock_file(path, href.text)
 
+    def does_email_exist(self, email):
+        return self._does_entity_exist("chkmail", email)
+
+    def does_username_exist(self, username):
+        return self._does_entity_exist("check", username)
+
+    def _does_entity_exist(self, entity_kind, entity):
+        url = "%s/api/register/%s/%s" % (self.server_url,
+                                         entity_kind,
+                                         entity)
+        result = int(self.__opener.open(url).read())
+        if result == 0:
+            return True
+        elif result == 1:
+            return False
+        else:
+            raise Exception("Unexpected result code: %d" % result)
+
     def share_with_users(self, path, users):
         url = "%s/api/share/" % (self.server_url)
         cmd = {"version" : 1,
@@ -171,6 +189,12 @@ def ensure_weave_disallows_php(session):
         session.delete_file("phptest.php")
 
 def _do_test(session_1, session_2):
+    print "Ensuring that user '%s' exists." % session_1.username
+    assert session_1.does_username_exist(session_1.username)
+
+    print "Ensuring that user '%s' exists." % session_2.username
+    assert session_1.does_username_exist(session_2.username)
+
     print "Ensuring that file is not locked."
     session_1.ensure_unlock_file("test_lock")
 
