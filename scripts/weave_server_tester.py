@@ -48,6 +48,10 @@ class WeaveSession(object):
         self.password = password
         self._make_opener()
 
+    def clone(self):
+        return WeaveSession(self.username, self.password,
+                            self.server_url, self.realm)
+
     def _make_opener(self):
         davHandler = DavHandler()
         authHandler = urllib2.HTTPBasicAuthHandler()
@@ -206,9 +210,22 @@ def _do_test(session_1, session_2):
 
     print "Changing password of user '%s' to 'blarg'." % session_1.username
     old_pwd = session_1.password
+    old_session = session_1.clone()
     session_1.change_password("blarg")
 
-    print "Reverting that change."
+    try:
+        print "Ensuring we can't log in using old password."
+        old_session.change_password("fnarg")
+    except urllib2.HTTPError, e:
+        if e.code != httplib.BAD_REQUEST:
+            raise
+        content = e.read()
+        if content != weave_server.WeaveApp.ERR_INCORRECT_PASSWORD:
+            raise AssertionError("Bad return value: %s" % content)
+    else:
+        raise AssertionError("We could log in using the old password!")
+
+    print "Reverting back to old password."
     session_1.change_password(old_pwd)
 
     print "Ensuring that file is not locked."

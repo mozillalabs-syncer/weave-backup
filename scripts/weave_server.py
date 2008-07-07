@@ -151,28 +151,28 @@ class WeaveApp(object):
         what = what.strip("/")
         if what.strip() == "":
             return HttpResponse(400,
-                                str(self.ERR_WRONG_HTTP_METHOD))
+                                self.ERR_WRONG_HTTP_METHOD)
             
         if what in where:
             return HttpResponse(httplib.OK,
-                                str(self.ERR_UID_OR_EMAIL_IN_USE))
+                                self.ERR_UID_OR_EMAIL_IN_USE)
         else:
             return HttpResponse(httplib.OK,
-                                str(self.ERR_UID_OR_EMAIL_AVAILABLE))
+                                self.ERR_UID_OR_EMAIL_AVAILABLE)
 
-    ERR_UID_OR_EMAIL_AVAILABLE = 1
-    ERR_WRONG_HTTP_METHOD = -1
-    ERR_MISSING_UID = -2
-    ERR_INVALID_UID = -3
-    ERR_UID_OR_EMAIL_IN_USE = 0
-    ERR_EMAIL_IN_USE = -5
-    ERR_MISSING_PASSWORD = -8
-    ERR_MISSING_RECAPTCHA_CHALLENGE_FIELD = -6
-    ERR_MISSING_RECAPTCHA_RESPONSE_FIELD = -7
-    ERR_MISSING_NEW = -11
-    ERR_INCORRECT_PASSWORD = -12
-    ERR_ACCOUNT_CREATED_VERIFICATION_SENT = 2
-    ERR_ACCOUNT_CREATED = 3
+    ERR_UID_OR_EMAIL_AVAILABLE = "1"
+    ERR_WRONG_HTTP_METHOD = "-1"
+    ERR_MISSING_UID = "-2"
+    ERR_INVALID_UID = "-3"
+    ERR_UID_OR_EMAIL_IN_USE = "0"
+    ERR_EMAIL_IN_USE = "-5"
+    ERR_MISSING_PASSWORD = "-8"
+    ERR_MISSING_RECAPTCHA_CHALLENGE_FIELD = "-6"
+    ERR_MISSING_RECAPTCHA_RESPONSE_FIELD = "-7"
+    ERR_MISSING_NEW = "-11"
+    ERR_INCORRECT_PASSWORD = "-12"
+    ERR_ACCOUNT_CREATED_VERIFICATION_SENT = "2"
+    ERR_ACCOUNT_CREATED = "3"
 
     __REQUIRED_CHANGE_PASSWORD_FIELDS = ["uid", "password", "new"]
 
@@ -197,7 +197,7 @@ class WeaveApp(object):
         for name in required_fields:
             if not fields.get(name):
                 return HttpResponse(httplib.BAD_REQUEST,
-                                    str(self.__FIELD_ERRORS[name]))
+                                    self.__FIELD_ERRORS[name])
         return fields
 
     def __api_create_account(self, path):
@@ -206,11 +206,11 @@ class WeaveApp(object):
             return fields
         if fields["uid"] in self.passwords:
             return HttpResponse(httplib.BAD_REQUEST,
-                                str(self.ERR_UID_OR_EMAIL_IN_USE))
+                                self.ERR_UID_OR_EMAIL_IN_USE)
         if fields.get("mail"):
             if self.email.get(fields["mail"]):
                 return HttpResponse(httplib.BAD_REQUEST,
-                                    str(self.ERR_EMAIL_IN_USE))
+                                    self.ERR_EMAIL_IN_USE)
             # TODO: We're not actually sending an email...
             body_code = self.ERR_ACCOUNT_CREATED_VERIFICATION_SENT
         else:
@@ -218,7 +218,7 @@ class WeaveApp(object):
 
         self.add_user(fields["uid"], fields["password"],
                       fields.get("mail"))
-        return HttpResponse(httplib.CREATED, str(body_code))
+        return HttpResponse(httplib.CREATED, body_code)
 
     def __api_change_password(self, path):
         fields = self.__get_fields(self.__REQUIRED_CHANGE_PASSWORD_FIELDS)
@@ -229,7 +229,7 @@ class WeaveApp(object):
                                 self.ERR_INVALID_UID)
         if self.passwords[fields["uid"]] != fields["password"]:
             return HttpResponse(httplib.BAD_REQUEST,
-                                ERR_INCORRECT_PASSWORD)
+                                self.ERR_INCORRECT_PASSWORD)
         self.passwords[fields["uid"]] = fields["new"]
         return HttpResponse(httplib.OK)
 
