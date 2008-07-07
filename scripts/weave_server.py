@@ -1,10 +1,25 @@
 """
-    Weave Development Server
+    weave_server.py [options]
 
     This is a simple reference implementation for a Weave server,
     which can also be used to test the Weave client against.
 
-    Run this script with '-h' for usage information.
+    This server behaves like a standard Weave server, with the
+    following limitations and/or enhancements:
+
+      * Responses to CAPTCHA challenges during new user registration
+        are always accepted, with the exception that the magic word
+        'bad' always fails (this was added for testing purposes).
+
+      * Validation emails are not sent, though the server tells
+        clients that they are.
+
+      * The url at '/state/' can be accessed to retrieve a snapshot of
+        the current state of the server.  This data can be saved to a
+        file and restored later with the '--state' command-line
+        option.  The state is also just a Pythonic representation of
+        the server's state, and as such is relatively human-readable
+        and can be hand-edited if necessary.
 """
 
 from wsgiref.simple_server import make_server
@@ -432,11 +447,15 @@ class WeaveApp(object):
         return [response.content]
 
 if __name__ == "__main__":
-    print __import__("__main__").__doc__
-    parser = OptionParser()
+    usage = __import__("__main__").__doc__
+    parser = OptionParser(usage = usage)
     parser.add_option("-s", "--state", dest="state_filename",
-                      help="Retrieve server state from filename.")
+                      help="retrieve server state from filename")
     options, args = parser.parse_args()
+
+    print "Weave Development Server"
+    print
+    print "Run this script with '-h' for usage information."
 
     logging.basicConfig(level=logging.DEBUG)
 
