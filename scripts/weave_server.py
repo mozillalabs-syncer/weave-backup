@@ -3,9 +3,12 @@
 
     This is a simple reference implementation for a Weave server,
     which can also be used to test the Weave client against.
+
+    Run this script with '-h' for usage information.
 """
 
 from wsgiref.simple_server import make_server
+from optparse import OptionParser
 import httplib
 import base64
 import logging
@@ -89,13 +92,16 @@ class WeaveApp(object):
 
     __CAPTCHA_HTML = '<html><head></head><body><script type=\'text/javascript\'>var RecaptchaOptions = {theme: \'red\', lang: \'en\'};</script><script type="text/javascript" src="http://api.recaptcha.net/challenge?k=6Lc_HwIAAAAAACneEwAadA-wKZCOrjo36TFQv160"></script>\n\n\t<noscript>\n  \t\t<iframe src="http://api.recaptcha.net/noscript?k=6Lc_HwIAAAAAACneEwAadA-wKZCOrjo36TFQv160" height="300" width="500" frameborder="0"></iframe><br/>\n  \t\t<textarea name="recaptcha_challenge_field" rows="3" cols="40"></textarea>\n  \t\t<input type="hidden" name="recaptcha_response_field" value="manual_challenge"/>\n\t</noscript></body></html>'
 
-    def __init__(self):
+    def __init__(self, state=None):
         self.contents = {}
         self.dir_perms = {"/" : Perms(readers=[Perms.EVERYONE])}
         self.passwords = {}
         self.email = {}
         self.locks = {}
         self._tokenIds = 0
+
+        if state:
+            self.__setstate__(state)
 
     def add_user(self, username, password, email = None):
         assert username, "Username cannot be empty"
@@ -424,8 +430,22 @@ class WeaveApp(object):
 
 if __name__ == "__main__":
     print __import__("__main__").__doc__
+    parser = OptionParser()
+    parser.add_option("-s", "--state", dest="state_filename",
+                      help="Retrieve server state from filename.")
+    options, args = parser.parse_args()
+
     logging.basicConfig(level=logging.DEBUG)
+
+    if options.state_filename:
+        filename = options.state_filename
+        logging.info("Setting initial state from '%s'." % filename)
+        data = open(filename, "r").read()
+        state = eval(data)
+        app = WeaveApp(state)
+    else:
+        app = WeaveApp()
+
     logging.info("Serving on port %d." % DEFAULT_PORT)
-    app = WeaveApp()
     httpd = make_server('', DEFAULT_PORT, app)
     httpd.serve_forever()
