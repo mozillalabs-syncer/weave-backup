@@ -209,6 +209,12 @@ BookmarksEventHandler.onPopupShowing = function BT_onPopupShowing_new(event) {
      if weave is disabled: */
   if ( !Weave.Service.enabled || !Weave.Service.isLoggedIn) {
     target._endOptShareFolder.setAttribute( "disabled", "true" );
+    if (!Weave.Service.enabled) {
+      dump( "Menu item disabled because weave not enabled.\n");
+    }
+    if (!Weave.Service.isLoggedIn){
+      dump( "Menu item disabled because weave not logged in.\n");
+    }
   }
 
   // Set name and icon of menu item based on shared status:
