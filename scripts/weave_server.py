@@ -17,6 +17,7 @@ import cgi
 
 DEFAULT_PORT = 8000
 DEFAULT_REALM = "services.mozilla.com - proxy"
+CAPTCHA_FAILURE_MAGIC_WORD = "bad"
 
 class HttpResponse(object):
     def __init__(self, code, content = "", content_type = "text/plain"):
@@ -213,6 +214,8 @@ class WeaveApp(object):
         if fields["uid"] in self.passwords:
             return HttpResponse(httplib.BAD_REQUEST,
                                 self.ERR_UID_OR_EMAIL_IN_USE)
+        if fields["recaptcha_response_field"] == CAPTCHA_FAILURE_MAGIC_WORD:
+            return HttpResponse(httplib.EXPECTATION_FAILED)
         if fields.get("mail"):
             if self.email.get(fields["mail"]):
                 return HttpResponse(httplib.BAD_REQUEST,
