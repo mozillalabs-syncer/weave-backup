@@ -211,7 +211,19 @@ def _do_test(session_1, session_2):
     print "Changing password of user '%s' to 'blarg'." % session_1.username
     old_pwd = session_1.password
     old_session = session_1.clone()
-    session_1.change_password("blarg")
+    try:
+        session_1.change_password("blarg")
+    except urllib2.HTTPError, e:
+        if (e.code == httplib.BAD_REQUEST and 
+            e.read() == weave_server.WeaveApp.ERR_INCORRECT_PASSWORD):
+            print ("That didn't work; an old run of this test may "
+                   "have been aborted.  Trying to revert...")
+            session_1.password = "blarg"
+            session_1.change_password(old_pwd)
+            print "Revert successful, attempting to change password again."
+            session_1.change_password("blarg")
+        else:
+            raise
 
     try:
         print "Ensuring we can't log in using old password."
