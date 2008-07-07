@@ -10,8 +10,7 @@ import httplib
 import base64
 import logging
 import pprint
-
-CAPTCHA_HTML = '<html><head></head><body><script type=\'text/javascript\'>var RecaptchaOptions = {theme: \'red\', lang: \'en\'};</script><script type="text/javascript" src="http://api.recaptcha.net/challenge?k=6Lc_HwIAAAAAACneEwAadA-wKZCOrjo36TFQv160"></script>\n\n\t<noscript>\n  \t\t<iframe src="http://api.recaptcha.net/noscript?k=6Lc_HwIAAAAAACneEwAadA-wKZCOrjo36TFQv160" height="300" width="500" frameborder="0"></iframe><br/>\n  \t\t<textarea name="recaptcha_challenge_field" rows="3" cols="40"></textarea>\n  \t\t<input type="hidden" name="recaptcha_response_field" value="manual_challenge"/>\n\t</noscript></body></html>'
+import cgi
 
 DEFAULT_PORT = 8000
 DEFAULT_REALM = "services.mozilla.com - proxy"
@@ -88,6 +87,8 @@ class WeaveApp(object):
     WSGI app for the Weave server.
     """
 
+    __CAPTCHA_HTML = '<html><head></head><body><script type=\'text/javascript\'>var RecaptchaOptions = {theme: \'red\', lang: \'en\'};</script><script type="text/javascript" src="http://api.recaptcha.net/challenge?k=6Lc_HwIAAAAAACneEwAadA-wKZCOrjo36TFQv160"></script>\n\n\t<noscript>\n  \t\t<iframe src="http://api.recaptcha.net/noscript?k=6Lc_HwIAAAAAACneEwAadA-wKZCOrjo36TFQv160" height="300" width="500" frameborder="0"></iframe><br/>\n  \t\t<textarea name="recaptcha_challenge_field" rows="3" cols="40"></textarea>\n  \t\t<input type="hidden" name="recaptcha_response_field" value="manual_challenge"/>\n\t</noscript></body></html>'
+
     def __init__(self):
         self.contents = {}
         self.dir_perms = {"/" : Perms(readers=[Perms.EVERYONE])}
@@ -96,7 +97,7 @@ class WeaveApp(object):
         self.locks = {}
         self._tokenIds = 0
 
-    def add_user(self, username, password, email = "nobody@example.com"):
+    def add_user(self, username, password, email = None):
         home_dir = "/user/%s/" % username
         public_dir = home_dir + "public/"
         self.dir_perms[home_dir] = Perms(readers=[username],
@@ -104,7 +105,8 @@ class WeaveApp(object):
         self.dir_perms[public_dir] = Perms(readers=[Perms.EVERYONE],
                                            writers=[username])
         self.passwords[username] = password
-        self.email[username] = email
+        if email:
+            self.email[email] = username
 
     def __get_perms_for_path(self, path):
         possible_perms = [dirname for dirname in self.dir_perms
@@ -118,7 +120,6 @@ class WeaveApp(object):
                 if filename.startswith(path)]
 
     def __api_share(self, path):
-        import cgi
         params = cgi.parse_qs(self.request.contents)
         user = params["uid"][0]
         password = params["password"][0]
@@ -146,17 +147,27 @@ class WeaveApp(object):
     def __api_register_check(self, what, where):
         what = what.strip("/")
         if what.strip() == "":
-            return HttpResponse(400, "-1")
+            return HttpResponse(400,
+                                str(self.ERR_WRONG_HTTP_METHOD))
             
         if what in where:
-            return HttpResponse(httplib.OK, "0")
+            return HttpResponse(httplib.OK,
+                                str(self.ERR_UID_OR_EMAIL_IN_USE))
         else:
-            return HttpResponse(httplib.OK, "1")
+            return HttpResponse(httplib.OK,
+                                str(self.ERR_UID_OR_EMAIL_AVAILABLE))
 
-    ERR_MISSING_UID = -3
+    ERR_UID_OR_EMAIL_AVAILABLE = 1
+    ERR_WRONG_HTTP_METHOD = -1
+    ERR_MISSING_UID = -2
+    ERR_INVALID_UID = -3
+    ERR_UID_OR_EMAIL_IN_USE = 0
+    ERR_EMAIL_IN_USE = -5
     ERR_MISSING_PASSWORD = -8
     ERR_MISSING_RECAPTCHA_CHALLENGE_FIELD = -6
     ERR_MISSING_RECAPTCHA_RESPONSE_FIELD = -7
+    ERR_ACCOUNT_CREATED_VERIFICATION_SENT = 2
+    ERR_ACCOUNT_CREATED = 3
 
     __REQUIRED_NEW_ACCOUNT_FIELDS = {
         "uid" : ERR_MISSING_UID,
@@ -165,13 +176,29 @@ class WeaveApp(object):
         "recaptcha_response_field" : ERR_MISSING_RECAPTCHA_RESPONSE_FIELD
         }
 
-    __OPTIONAL_NEW_ACCOUNT_FIELDS = [
-        "mail",
-        ]
+    def __api_create_account(self, path):
+        params = cgi.parse_qs(self.request.contents)
+        fields = {}
+        for name in params:
+            fields[name] = params[name][0]
+        for name, errcode in self.__REQUIRED_NEW_ACCOUNT_FIELDS.items():
+            if not fields.get(name):
+                return HttpResponse(httplib.BAD_REQUEST, str(errcode))
+        if fields["uid"] in self.passwords:
+            return HttpResponse(httplib.BAD_REQUEST,
+                                str(self.ERR_UID_OR_EMAIL_IN_USE))
+        if fields.get("mail"):
+            if self.email.get(fields["mail"]):
+                return HttpResponse(httplib.BAD_REQUEST,
+                                    str(self.ERR_EMAIL_IN_USE))
+            # TODO: We're not actually sending an email...
+            body_code = self.ERR_ACCOUNT_CREATED_VERIFICATION_SENT
+        else:
+            body_code = self.ERR_ACCOUNT_CREATED
 
-    def __api_create_account(self, **kwargs):
-        # TODO: Implement this.
-        pass
+        self.add_user(fields["uid"], fields["password"],
+                      fields.get("mail"))
+        return HttpResponse(httplib.CREATED, str(body_code))
 
     # HTTP method handlers
 
@@ -216,6 +243,8 @@ class WeaveApp(object):
     def _handle_POST(self, path):
         if path == "/api/share/":
             return self.__api_share(path)
+        elif path == "/api/register/new/":
+            return self.__api_create_account(path)
         else:
             return HttpResponse(httplib.NOT_FOUND)
 
@@ -275,6 +304,9 @@ class WeaveApp(object):
         elif path == "/state/":
             state_str = pprint.pformat(self.__getstate__())
             return HttpResponse(httplib.OK, state_str)
+        elif path == "/api/register/new/":
+            return HttpResponse(httplib.OK, self.__CAPTCHA_HTML,
+                                content_type = "text/html")
         elif path.startswith("/api/register/check/"):
             return self.__api_register_check(path[20:], self.passwords)
         elif path.startswith("/api/register/chkmail/"):
