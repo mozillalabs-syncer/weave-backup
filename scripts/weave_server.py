@@ -11,6 +11,8 @@ import base64
 import logging
 import pprint
 
+CAPTCHA_HTML = '<html><head></head><body><script type=\'text/javascript\'>var RecaptchaOptions = {theme: \'red\', lang: \'en\'};</script><script type="text/javascript" src="http://api.recaptcha.net/challenge?k=6Lc_HwIAAAAAACneEwAadA-wKZCOrjo36TFQv160"></script>\n\n\t<noscript>\n  \t\t<iframe src="http://api.recaptcha.net/noscript?k=6Lc_HwIAAAAAACneEwAadA-wKZCOrjo36TFQv160" height="300" width="500" frameborder="0"></iframe><br/>\n  \t\t<textarea name="recaptcha_challenge_field" rows="3" cols="40"></textarea>\n  \t\t<input type="hidden" name="recaptcha_response_field" value="manual_challenge"/>\n\t</noscript></body></html>'
+
 DEFAULT_PORT = 8000
 DEFAULT_REALM = "services.mozilla.com - proxy"
 
@@ -151,6 +153,25 @@ class WeaveApp(object):
         else:
             return HttpResponse(httplib.OK, "1")
 
+    ERR_MISSING_UID = -3
+    ERR_MISSING_PASSWORD = -8
+    ERR_MISSING_RECAPTCHA_CHALLENGE_FIELD = -6
+    ERR_MISSING_RECAPTCHA_RESPONSE_FIELD = -7
+
+    __REQUIRED_NEW_ACCOUNT_FIELDS = {
+        "uid" : ERR_MISSING_UID,
+        "password" : ERR_MISSING_PASSWORD,
+        "recaptcha_challenge_field" : ERR_MISSING_RECAPTCHA_CHALLENGE_FIELD,
+        "recaptcha_response_field" : ERR_MISSING_RECAPTCHA_RESPONSE_FIELD
+        }
+
+    __OPTIONAL_NEW_ACCOUNT_FIELDS = [
+        "mail",
+        ]
+
+    def __api_create_account(self, **kwargs):
+        # TODO: Implement this.
+        pass
 
     # HTTP method handlers
 
