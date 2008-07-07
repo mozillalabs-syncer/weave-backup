@@ -98,6 +98,9 @@ class WeaveApp(object):
         self._tokenIds = 0
 
     def add_user(self, username, password, email = None):
+        assert username, "Username cannot be empty"
+        assert password, "Password cannot be empty"
+
         home_dir = "/user/%s/" % username
         public_dir = home_dir + "public/"
         self.dir_perms[home_dir] = Perms(readers=[username],
@@ -166,24 +169,41 @@ class WeaveApp(object):
     ERR_MISSING_PASSWORD = -8
     ERR_MISSING_RECAPTCHA_CHALLENGE_FIELD = -6
     ERR_MISSING_RECAPTCHA_RESPONSE_FIELD = -7
+    ERR_MISSING_NEW = -11
+    ERR_INCORRECT_PASSWORD = -12
     ERR_ACCOUNT_CREATED_VERIFICATION_SENT = 2
     ERR_ACCOUNT_CREATED = 3
 
-    __REQUIRED_NEW_ACCOUNT_FIELDS = {
+    __REQUIRED_CHANGE_PASSWORD_FIELDS = ["uid", "password", "new"]
+
+    __REQUIRED_NEW_ACCOUNT_FIELDS = ["uid",
+                                     "password",
+                                     "recaptcha_challenge_field",
+                                     "recaptcha_response_field"]
+
+    __FIELD_ERRORS = {
         "uid" : ERR_MISSING_UID,
         "password" : ERR_MISSING_PASSWORD,
+        "new" : ERR_MISSING_NEW,
         "recaptcha_challenge_field" : ERR_MISSING_RECAPTCHA_CHALLENGE_FIELD,
         "recaptcha_response_field" : ERR_MISSING_RECAPTCHA_RESPONSE_FIELD
         }
 
-    def __api_create_account(self, path):
+    def __get_fields(self, required_fields):
         params = cgi.parse_qs(self.request.contents)
         fields = {}
         for name in params:
             fields[name] = params[name][0]
-        for name, errcode in self.__REQUIRED_NEW_ACCOUNT_FIELDS.items():
+        for name in required_fields:
             if not fields.get(name):
-                return HttpResponse(httplib.BAD_REQUEST, str(errcode))
+                return HttpResponse(httplib.BAD_REQUEST,
+                                    str(self.__FIELD_ERRORS[name]))
+        return fields
+
+    def __api_create_account(self, path):
+        fields = self.__get_fields(self.__REQUIRED_NEW_ACCOUNT_FIELDS)
+        if isinstance(fields, HttpResponse):
+            return fields
         if fields["uid"] in self.passwords:
             return HttpResponse(httplib.BAD_REQUEST,
                                 str(self.ERR_UID_OR_EMAIL_IN_USE))
@@ -199,6 +219,19 @@ class WeaveApp(object):
         self.add_user(fields["uid"], fields["password"],
                       fields.get("mail"))
         return HttpResponse(httplib.CREATED, str(body_code))
+
+    def __api_change_password(self, path):
+        fields = self.__get_fields(self.__REQUIRED_CHANGE_PASSWORD_FIELDS)
+        if isinstance(fields, HttpResponse):
+            return fields
+        if not self.passwords.get(fields["uid"]):
+            return HttpResponse(httplib.BAD_REQUEST,
+                                self.ERR_INVALID_UID)
+        if self.passwords[fields["uid"]] != fields["password"]:
+            return HttpResponse(httplib.BAD_REQUEST,
+                                ERR_INCORRECT_PASSWORD)
+        self.passwords[fields["uid"]] = fields["new"]
+        return HttpResponse(httplib.OK)
 
     # HTTP method handlers
 
@@ -245,6 +278,8 @@ class WeaveApp(object):
             return self.__api_share(path)
         elif path == "/api/register/new/":
             return self.__api_create_account(path)
+        elif path == "/api/register/chpwd/":
+            return self.__api_change_password(path)
         else:
             return HttpResponse(httplib.NOT_FOUND)
 

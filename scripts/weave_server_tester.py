@@ -45,7 +45,7 @@ class WeaveSession(object):
         self.server_url = server_url
         self.server = urlsplit(server_url).netloc
         self.realm = realm
-        self.__password = password
+        self.password = password
         self._make_opener()
 
     def _make_opener(self):
@@ -54,7 +54,7 @@ class WeaveSession(object):
         authHandler.add_password(self.realm,
                                  self.server,
                                  self.username,
-                                 self.__password)
+                                 self.password)
         self.__opener = urllib2.build_opener(authHandler, davHandler)
 
     def _get_user_url(self, path, user = None):
@@ -166,6 +166,15 @@ class WeaveSession(object):
         else:
             raise Exception("Unexpected result code: %d" % result)
 
+    def change_password(self, new_password):
+        url = "%s/api/register/chpwd/" % (self.server_url)
+        postdata = urllib.urlencode({"uid" : self.username,
+                                     "password" : self.password,
+                                     "new" : new_password})
+        req = urllib2.Request(url, postdata)
+        self.__opener.open(req).read()
+        self.password = new_password
+
     def share_with_users(self, path, users):
         url = "%s/api/share/" % (self.server_url)
         cmd = {"version" : 1,
@@ -173,7 +182,7 @@ class WeaveSession(object):
                "share_to_users" : users}
         postdata = urllib.urlencode({"cmd" : json.write(cmd),
                                      "uid" : self.username,
-                                     "password" : self.__password})
+                                     "password" : self.password})
         req = urllib2.Request(url, postdata)
         result = self.__opener.open(req).read()
         if result != "OK":
@@ -194,6 +203,13 @@ def _do_test(session_1, session_2):
 
     print "Ensuring that user '%s' exists." % session_2.username
     assert session_1.does_username_exist(session_2.username)
+
+    print "Changing password of user '%s' to 'blarg'." % session_1.username
+    old_pwd = session_1.password
+    session_1.change_password("blarg")
+
+    print "Reverting that change."
+    session_1.change_password(old_pwd)
 
     print "Ensuring that file is not locked."
     session_1.ensure_unlock_file("test_lock")
