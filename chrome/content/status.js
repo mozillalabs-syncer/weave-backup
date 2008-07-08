@@ -50,7 +50,7 @@ let WeaveStatus = {
       this._log.info("waiting for current action to finish");
       this._existingSync = true;
       this._statusBox.setAttribute("status", "active");
-      this._statusText.value = this._stringBundle.getString("status.active");
+      this._statusText.value = this._stringBundle.getString("status.wait");
     } else {
       this.doSync();
     }
@@ -67,8 +67,13 @@ let WeaveStatus = {
   doSync: function WeaveStatus_doSync() {
     try {
       // XXX Should we set a timeout to cancel sync if it takes too long?
-      if (Weave.Service.isLoggedIn)
+      if (Weave.Service.isLoggedIn && Weave.Utils.prefs.getBoolPref("syncOnQuit.enabled")) {
+        this._statusText.value = this._stringBundle.getString("status.active");
         Weave.Service.sync();
+      } else {
+        this._log.info("We're not logged in, or syncOnQuit is disabled. Skipping quit sync.");
+        window.close();
+      }
     }
     catch(ex) {
       this._log.error("error starting quit sync: " + ex);
