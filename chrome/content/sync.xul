@@ -50,6 +50,11 @@
 			  checked="false" autocheck="false"
 			  label="&openLogItem.label;"
 			  oncommand="gSync.doOpenActivityLog(event);"/>
+		<menuitem id="sync-getincomingsharesitem"
+			  disabled="false"
+			  checked="false" autocheck="false"
+			  label="Sharing Inbox..."
+			  oncommand="gSync.doCheckForIncomingShares(event);"/>
 		<menuseparator/>
 		<menuitem id="sync-lastsyncitem"
 			  disabled="false" hidden="true"/>

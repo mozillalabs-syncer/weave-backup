@@ -64,6 +64,7 @@ var Ci = Components.interfaces;
 // Annotation to use for shared bookmark folders, incoming and outgoing:
 const INCOMING_SHARED_ANNO = "weave/shared-incoming";
 const OUTGOING_SHARED_ANNO = "weave/shared-outgoing";
+const INCOMING_SHARE_ROOT_ANNO = "weave/mounted-shares-folder";
 
 const UNSHARE_FOLDER_ICON = "chrome://weave/skin/unshare-folder-16x16.png";
 const SHARE_FOLDER_ICON = "chrome://weave/skin/shared-folder-16x16.png";
@@ -81,6 +82,18 @@ function isFolderSharedOutgoing( menuFolder ) {
   let annotations = PlacesUtils.getAnnotationsForItem( menuFolderId );
   for ( var x in annotations ) {
     if ( annotations[x].name == OUTGOING_SHARED_ANNO ) {
+      return ( annotations[x].value != '' );
+    }
+  }
+  return false;
+}
+
+function isFolderSharedIncoming( menuFolder ) {
+  let menuFolderId = menuFolder.node.itemId;
+  let annotations = PlacesUtils.getAnnotationsForItem( menuFolderId );
+  for ( var x in annotations ) {
+    if ( annotations[x].name == INCOMING_SHARED_ANNO ||
+       annotations[x].name == INCOMING_SHARE_ROOT_ANNO ) {
       return ( annotations[x].value != '' );
     }
   }
@@ -146,6 +159,13 @@ BookmarksEventHandler.onPopupShowing = function BT_onPopupShowing_new(event) {
   }
   let node = event.target.parentNode.node;
   if ( node.type != node.RESULT_TYPE_FOLDER ) {
+    return;
+  }
+
+  /* Don't add the command if this menu is part of one of the incoming
+   * bookmark folder shares!  That would be all kinds of weird recursion
+   * that make my head hurt. */
+  if (isFolderSharedIncoming( event.target.parentNode)) {
     return;
   }
 
@@ -218,10 +238,7 @@ BookmarksEventHandler.onPopupShowing = function BT_onPopupShowing_new(event) {
   }
 
   // Set name and icon of menu item based on shared status:
-  let isShared = false;
-  if ( event.target.parentNode.node != undefined ) {
-    isShared = isFolderSharedOutgoing( event.target.parentNode );
-  }
+  let isShared = isFolderSharedOutgoing( event.target.parentNode );
   if ( isShared ) {
     /* If the folder is shared already, the menu item is Un-Share Folder */
     let label = stringBundle.getString("unShareBookmark.menuItem");
@@ -233,4 +250,5 @@ BookmarksEventHandler.onPopupShowing = function BT_onPopupShowing_new(event) {
     target._endOptShareFolder.setAttribute( "label", label );
     target._endOptShareFolder.setAttribute( "image", SHARE_FOLDER_ICON );
   }
+
 }

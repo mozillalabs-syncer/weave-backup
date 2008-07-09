@@ -378,6 +378,10 @@ Sync.prototype = {
     this._openWindow('Sync:Share', 'chrome://weave/content/share.xul');
   },
 
+  doCheckForIncomingShares: function Sync_checkForIncomingShares(event) {
+    Weave.Service.checkForIncomingShares();
+  },
+
   doCancelSync: function Sync_doCancelSync(event) {
     this._log.error("cancel sync unimplemented");
   },
