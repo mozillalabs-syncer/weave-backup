@@ -46,6 +46,7 @@ let WeaveStatus = {
 
     // FIXME: we should set a timer to force quit in case there is a
     // stale local lock
+    // FIXME: abort any running sync here, once we have support for that
     if (Weave.DAV.locked) {
       this._log.info("waiting for current action to finish");
       this._existingSync = true;
@@ -71,7 +72,7 @@ let WeaveStatus = {
         this._statusText.value = this._stringBundle.getString("status.active");
         Weave.Service.sync();
       } else {
-        this._log.info("We're not logged in, or syncOnQuit is disabled. Skipping quit sync.");
+        this._log.info("Skipping quit sync");
         window.close();
       }
     }
