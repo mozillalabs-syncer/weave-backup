@@ -5,7 +5,7 @@
 
   <Description about="urn:mozilla:install-manifest">
     <em:id>{340c2bbc-ce74-4362-90b5-7c26312808ef}</em:id>
-    <em:version>0.2.1</em:version>
+    <em:version>0.2.2</em:version>
     <em:type>2</em:type>
 
     <em:targetPlatform>Darwin_x86-gcc3</em:targetPlatform>
