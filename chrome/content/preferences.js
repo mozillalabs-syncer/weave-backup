@@ -43,6 +43,9 @@ WeavePrefs.prototype = {
       syncUserName.setAttribute("value", signedInDescription);
       changePasswordForm.hidden = false;
    }
+   
+   if(Weave.DAV.locked)
+     syncNowButton.setAttribute("disabled", "true");
   },
 
   onPaneLoad: function WeavePrefs_onPaneLoad() {
@@ -61,6 +64,23 @@ WeavePrefs.prototype = {
        ww.openWindow(null, 'chrome://weave/content/log.xul', '',
                      'chrome,centerscreen,dialog,modal,resizable=yes', null);
      }
+  },
+
+  doSyncNow: function WeavePrefs_doSyncNow() {
+    let syncNowButton = document.getElementById('sync-syncnow-button');
+    syncNowButton.setAttribute("disabled", "true");
+    let wm = Cc["@mozilla.org/appshell/window-mediator;1"].
+      getService(Ci.nsIWindowMediator);
+    let window = wm.getMostRecentWindow("Sync:Status");
+    if (window)
+      window.focus();
+     else {
+       var ww = Cc["@mozilla.org/embedcomp/window-watcher;1"].
+         getService(Ci.nsIWindowWatcher);
+       let options = 'chrome,centerscreen,dialog,modal,resizable=yes';
+       ww.activeWindow.openDialog("chrome://weave/content/status.xul", '', options, null);
+     }
+    syncNowButton.setAttribute("disabled", "false");
   },
 
   openAdvancedPrefs: function WeavePrefs_openAdvancedPrefs() {

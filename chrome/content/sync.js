@@ -52,7 +52,7 @@ function Sync() {
   this._os.addObserver(this, "weave:store:tabs:virtual:created", false);
   this._os.addObserver(this, "weave:store:tabs:virtual:removed", false);
 
-  if (Weave.Utils.prefs.getBoolPref("ui.syncnow"))
+  if (Weave.Utils.prefs.getBoolPref("ui.syncnow")) 
     document.getElementById("sync-syncnowitem").setAttribute("hidden", false);
 
   if (Weave.Utils.prefs.getCharPref("lastversion") == "firstrun") {
@@ -230,14 +230,16 @@ Sync.prototype = {
 
   _onLoginError: function Sync__onLoginError() {
     this._setStatus("offline");
-
-    // TODO: We may want to just display a notification here that the user
-    // can deal with on their own time instead of forcing them to deal
-    // with an unsuccessful login immediately.
-    if (this._isTopBrowserWindow) {
-	  if (this._windowType != "Sync:wizard")
-        this._openWindow('Sync:Login', 'chrome://weave/content/login.xul');
-	}
+    
+    let title = this._stringBundle.getString("error.login.title");
+    let description =
+    this._stringBundle.getString("error.login.description");
+    let notification =
+    new Weave.Notification(title,
+                           description,
+                           null,
+                           Weave.Notifications.PRIORITY_WARNING);
+    Weave.Notifications.add(notification);
   },
 
   _onLogin: function Sync__onLogin() {
@@ -291,7 +293,11 @@ Sync.prototype = {
 
     let syncitem = document.getElementById("sync-syncnowitem");
     if(syncitem)
-      syncitem.setAttribute("active", "false");
+      syncitem.setAttribute("disabled", "true");
+
+    let logoutitem = document.getElementById("sync-logoutitem");
+    if(logoutitem) 
+      logoutitem.setAttribute("disabled", "true");
   },
 
   _onSyncEnd: function Sync_onSyncEnd(status) {
@@ -318,8 +324,12 @@ Sync.prototype = {
     }
 
     let syncitem = document.getElementById("sync-syncnowitem");
-    if (syncitem)
-      syncitem.setAttribute("active", "true");
+    if (syncitem) 
+      syncitem.setAttribute("disabled", "false");
+
+    let logoutitem = document.getElementById("sync-logoutitem");
+    if(logoutitem) 
+      logoutitem.setAttribute("disabled", "false");
 
     if (this._isTopBrowserWindow)
       this._prefSvc.setCharPref("extensions.weave.lastsync",
@@ -371,7 +381,7 @@ Sync.prototype = {
   },
 
   doSync: function Sync_doSync(event) {
-    Weave.Service.sync();
+    this._openWindow('Sync:Status', 'chrome://weave/content/status.xul');
   },
 
   doShare: function Sync_doShare(event) {
@@ -581,4 +591,3 @@ let gSync;
 
 window.addEventListener("load", function(e) { gSync = new Sync(); }, false);
 window.addEventListener("unload", function(e) { gSync.shutDown(e); }, false);
-

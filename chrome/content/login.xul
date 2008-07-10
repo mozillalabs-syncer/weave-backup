@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 
 <?xml-stylesheet href="chrome://global/skin/global.css" type="text/css"?>
+<?xml-stylesheet href="chrome://weave/content/login.css" type="text/css"?>
 
 <!DOCTYPE overlay SYSTEM "chrome://weave/locale/login.dtd">
 
@@ -8,9 +9,13 @@
         id="login-dialog" 
         windowtype="Weave:Login"
         title="&dialog.title;"
-        buttons="accept,cancel"
-        ondialogaccept="return gLogin.doOK();"
-        ondialogcancel="return gLogin.doCancel();">
+        buttons="cancel,extra2,extra1"
+        buttonlabelextra2="&dialog.login;"
+        buttonlabelextra1="&dialog.help;"
+        ondialogextra2="return Login.doOK();"
+        ondialogextra1="return Login.doHelp();"
+        ondialogcancel="return Login.doCancel();"
+        defaultButton="extra2">
     
   <script type="application/x-javascript"
           src="chrome://weave/content/load-weave.js"/>
@@ -21,9 +26,12 @@
     <stringbundle id="weaveStringBundle" src="chrome://weave/locale/login.properties"/>
   </stringbundleset>
 
-  <vbox>
-    <label value="&dialog.label;"/>
+  <hbox align="center">
+    <image id="loginIcon"/>
+    <label id="loginTitle" value="&dialog.title;"/>
+  </hbox>
 
+  <vbox>
     <grid>
       <columns>
         <column pack="left" align="right"/>
@@ -32,19 +40,19 @@
       <rows>
         <row align="center">
           <hbox flex="1" align="right">
-	    <label value="&username.label;"/>
+	    <label id="loginUsernameLabel" value="&username.label;"/>
 	  </hbox>
           <textbox id="username" preference="username"/>
         </row>
         <row align="center">
           <hbox flex="1" align="right">
-            <label value="&password.label;"/>
+            <label id="loginPasswordLabel" value="&password.label;"/>
 	  </hbox>
           <textbox id="password" type="password"/>
         </row>
         <row id="passphrase-ui" align="center">
           <hbox flex="1" align="right">
-            <label value="&encryptionPassphrase.label;"/>
+            <label id="loginPassphraseLabel" value="&encryptionPassphrase.label;"/>
 	  </hbox>
           <textbox id="passphrase" type="password"/>
         </row>
@@ -53,5 +61,11 @@
 
     <checkbox id="save-password-checkbox" label="&savePassword.label;"/>
     <checkbox id="autoconnect-checkbox" label="&autoconnect.label;"/>
+
+    <hbox id="loginStatusBox" align="center">
+      <image id="loginStatusIcon"/>
+      <label id="loginStatus"/>
+    </hbox>
+    
   </vbox>
 </dialog>
