@@ -1,0 +1,34 @@
+#loginIcon {
+  list-style-image: url("chrome://weave/skin/sync-32x32.png");
+}
+
+#loginTitle {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+#loginStatusBox {
+  margin-top: 10px;
+  height: 16px;
+  margin-bottom: 10px;
+}
+
+#loginUsernameLabel, #loginPasswordLabel, #loginPassphraseLabel {
+  font-weight: bold;
+}
+
+#loginStatus {
+  font-weight: bold;
+}
+
+#loginStatusIcon[status="active"] {
+  list-style-image: url("chrome://global/skin/icons/loading_16.png");
+}
+
+#loginStatusIcon[status="error"] {
+  list-style-image: url("chrome://global/skin/icons/error-16.png");
+}
+
+#loginStatusIcon[status="success"] {
+  list-style-image: url("chrome://global/skin/icons/information-16.png");
+}

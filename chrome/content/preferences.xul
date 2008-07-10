@@ -203,7 +203,7 @@
                 </vbox>
                 <spacer flex="1"/>
                 <button id="sync-syncnow-button" label="&syncNowButton.label;"
-                        oncommand="Weave.Service.sync();"/>
+                        oncommand="gWeavePrefs.doSyncNow()"/>
               </hbox>
 
               <separator/>

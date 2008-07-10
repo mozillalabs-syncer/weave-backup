@@ -5,23 +5,37 @@
 
 <!DOCTYPE overlay SYSTEM "chrome://weave/locale/status.dtd">
 
-<window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+<dialog xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        id="sync-status-dialog"
         title="&dialog.title;"
         windowtype="Weave:Status"
+        buttons="cancel"
+        ondialogcancel="return WeaveStatus.doCancel();"
         onload="WeaveStatus.onLoad()"
         onunload="WeaveStatus.onUnload()">
 
   <script type="application/x-javascript"
           src="chrome://weave/content/status.js"/>
-
+  
   <stringbundleset id="stringbundleset">
     <stringbundle id="weaveStringBundle"
                   src="chrome://weave/locale/status.properties"/>
   </stringbundleset>
-
-  <vbox id="statusBox" align="center">
-    <image id="statusIcon"/>
-    <label id="statusText" value="&status.idle;"/>
+  
+  <hbox align="center">
+    <image id="statusTitleIcon"/>
+    <label id="statusTitle" value="&dialog.title;"/>
+  </hbox>
+  
+  <vbox>
+    <progressmeter id="statusProgress" mode="determined" value="0"/>
+    <vbox id="statusBox">
+      <hbox id="statusBox">
+        <image id="statusIcon"/>
+        <label id="statusEngine"/>
+        <label id="statusText"/>
+      </hbox>
+    </vbox>
   </vbox>
-
-</window>
+  
+</dialog>
