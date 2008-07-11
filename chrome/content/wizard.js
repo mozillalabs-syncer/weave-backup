@@ -38,6 +38,7 @@
 
 const SYNC_NS_ERROR_LOGIN_ALREADY_EXISTS = 2153185310;
 
+const REGISTER_STATUS    = "api/register/regopen/";
 const REGISTER_URL       = "api/register/new/";
 const CHECK_USERNAME_URL = "api/register/check/";
 const CHECK_EMAIL_URL    = "api/register/chkmail/";
@@ -48,13 +49,15 @@ const ERROR_COLOR        = "red";
 const SERVER_ERROR_COLOR = "black";
 const SUCCESS_COLOR      = "blue";
 
-const SERVER_TIMEOUT = 30000;
+const SERVER_TIMEOUT = 10000;
 
 function SyncWizard() {
   this._init();
 }
 
 SyncWizard.prototype = {
+
+  registrationClosed: true,
 
   __os: null,
   get _os() {
@@ -95,6 +98,9 @@ SyncWizard.prototype = {
     this._os.addObserver(this, "weave:service:sync:start", false);
     this._os.addObserver(this, "weave:service:sync:success", false);
     this._os.addObserver(this, "weave:service:sync:error", false);
+
+    // Initial background request to check if registration is open or closed.
+    this.checkRegistrationStatus();
   },
 
   onWizardShutdown: function SyncWizard_onWizardshutdown() {
@@ -139,6 +145,17 @@ SyncWizard.prototype = {
         break;
 
       case "sync-wizard-create1":
+
+        // Check to see if registration is closed, and if so display a friendly message
+        // to the would be user and then push them back to the registration menu.
+        if (this.registrationClosed) {
+            let p = Cc["@mozilla.org/embedcomp/prompt-service;1"]
+                      .getService(Ci.nsIPromptService);
+            p.alert(null,this._stringBundle.getString("registration-closed.title"),
+                      this._stringBundle.getString("registration-closed.label"));
+            wizard.goTo("sync-wizard-welcome");
+        }
+
         if (document.getElementById("create1-check").value == "true")
           wizard.canAdvance = true;
         else
@@ -365,10 +382,10 @@ SyncWizard.prototype = {
     // In case the server is hanging...
     setTimeout(function() {
             if (loginVerified.value == "false") {
-			  log.info("Server timeout (username/password verification)");
-		      statusIcon.hidden = true;
-		      statusLabel.value = this._stringBundle.getString("serverTimeoutError.label") ;
-		      statusLabel.style.color = SERVER_ERROR_COLOR;
+              log.info("Server timeout (username/password verification)");
+	      statusIcon.hidden = true;
+	      statusLabel.value = this._stringBundle.getString("serverTimeoutError.label");
+	      statusLabel.style.color = SERVER_ERROR_COLOR;
             }
 	  }, SERVER_TIMEOUT);
   },
@@ -416,10 +433,10 @@ SyncWizard.prototype = {
 
     // In case the server is hanging...
     setTimeout(function() {
-            if (passphraseVerified.value == "false") {
-			  log.info("Server timeout (passphrase verification)");
+            if (statusLabel.value == progress) {
+	              log.info("Server timeout (passphrase verification)");
 		      statusIcon.hidden = true;
-		      statusLabel.value = this._stringBundle.getString("serverTimeoutError.label") ;
+                      statusLabel.value = this._stringBundle.getString("serverTimeoutError.label");
 		      statusLabel.style.color = SERVER_ERROR_COLOR;
             }
 	  }, SERVER_TIMEOUT);
@@ -451,6 +468,36 @@ SyncWizard.prototype = {
     Weave.Service.passphrase = passphrase;
 
     return true;
+  },
+
+  /* checkRegistrationStatus() - Called on Wizard load to see if registration is closed.
+   *   Sets boolean on gSyncWizard.registrationClosed.
+   */
+  checkRegistrationStatus: function SyncWizard_checkRegistrationStatus() {
+
+    let log = this._log;
+    let httpRequest = new XMLHttpRequest();
+    let url = this._serverURL + REGISTER_STATUS;
+
+    log.info("Checking registration status: " + url);
+    
+    httpRequest.open('GET', url, true);
+    httpRequest.onreadystatechange = function() {
+      if (httpRequest.readyState == 4) {
+        if (httpRequest.status == 200) {
+          if (httpRequest.responseText == 0) {
+            log.info("Registration closed");
+            gSyncWizard.registrationClosed = true;
+          } else {
+            log.info("Registration open");
+            gSyncWizard.registrationClosed = false;
+          }
+        } else {
+          log.info("checkRegistrationStatus error: received httpRequest.status " + httpRequest.status);
+        }
+      } 
+    };
+    httpRequest.send(null);
   },
 
   /////ACCOUNT CREATION - USERNAME, PASSWORD, PASSPHRASE/////
@@ -530,8 +577,8 @@ SyncWizard.prototype = {
 
     // In case the server is hanging...
     setTimeout(function() {
-            if (statusLabel.value == checkingUsername) {
-			  this._log.info("Server timeout (username check)");
+            if (statusLabel.value == checkingUsername) { 
+              this._log.info("Server timeout (username check)");
               statusIcon.hidden = true;
               statusLink.hidden = false;
               statusLabel.value = serverTimeoutError;
