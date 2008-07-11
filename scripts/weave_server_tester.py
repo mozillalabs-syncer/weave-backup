@@ -46,20 +46,20 @@ class WeaveSession(object):
         self.server = urlsplit(server_url).netloc
         self.realm = realm
         self.password = password
-        self._make_opener()
 
     def clone(self):
         return WeaveSession(self.username, self.password,
                             self.server_url, self.realm)
 
-    def _make_opener(self):
+    def _open(self, req):
         davHandler = DavHandler()
         authHandler = urllib2.HTTPBasicAuthHandler()
         authHandler.add_password(self.realm,
                                  self.server,
                                  self.username,
                                  self.password)
-        self.__opener = urllib2.build_opener(authHandler, davHandler)
+        opener = urllib2.build_opener(authHandler, davHandler)
+        return opener.open(req)
 
     def _get_user_url(self, path, user = None):
         if not user:
@@ -71,9 +71,6 @@ class WeaveSession(object):
                                  path)
         return url
 
-    def _enact_dav_request(self, request):
-        return self.__opener.open(request)
-
     def list_files(self, path):
         xml_data = ("<?xml version=\"1.0\" encoding=\"utf-8\" ?>"
                     "<D:propfind xmlns:D='DAV:'><D:prop/></D:propfind>")
@@ -82,7 +79,7 @@ class WeaveSession(object):
         headers = {"Content-type" : "text/xml; charset=\"utf-8\"",
                    "Depth" : "1"}
         req = DavRequest("PROPFIND", url, xml_data, headers = headers)
-        result_xml = self._enact_dav_request(req).read()
+        result_xml = self._open(req).read()
 
         multistatus = ET.XML(result_xml)
         hrefs = multistatus.findall(".//{DAV:}href")
@@ -91,7 +88,7 @@ class WeaveSession(object):
 
     def create_dir(self, path):
         req = DavRequest("MKCOL", self._get_user_url(path))
-        self._enact_dav_request(req)
+        self._open(req)
 
     def remove_dir(self, path):
         if not path[-1] == "/":
@@ -99,16 +96,16 @@ class WeaveSession(object):
         self.delete_file(path)
 
     def get_file(self, path, user = None):
-        obj = self.__opener.open(self._get_user_url(path, user))
+        obj = self._open(self._get_user_url(path, user))
         return obj.read()
 
     def put_file(self, path, data):
         req = DavRequest("PUT", self._get_user_url(path), data)
-        self._enact_dav_request(req)
+        self._open(req)
 
     def delete_file(self, path):
         req = DavRequest("DELETE", self._get_user_url(path))
-        self._enact_dav_request(req)
+        self._open(req)
 
     def lock_file(self, path):
         headers = {"Content-type" : "text/xml; charset=\"utf-8\"",
@@ -121,7 +118,7 @@ class WeaveSession(object):
                     "</D:lockinfo>")
         req = DavRequest("LOCK", self._get_user_url(path), xml_data,
                          headers = headers)
-        result_xml = self._enact_dav_request(req).read()
+        result_xml = self._open(req).read()
 
         response = ET.XML(result_xml)
         token = response.find(".//{DAV:}locktoken/{DAV:}href").text
@@ -131,7 +128,7 @@ class WeaveSession(object):
         headers = {"Lock-Token" : "<%s>" % token}
         req = DavRequest("UNLOCK", self._get_user_url(path),
                          headers = headers)
-        self._enact_dav_request(req)
+        self._open(req)
 
     def ensure_unlock_file(self, path):
         xml_data = ("<?xml version=\"1.0\" encoding=\"utf-8\" ?>"
@@ -143,7 +140,7 @@ class WeaveSession(object):
                    "Depth" : "0"}
         req = DavRequest("PROPFIND", url, xml_data, headers = headers)
         try:
-            result_xml = self._enact_dav_request(req).read()
+            result_xml = self._open(req).read()
         except urllib2.HTTPError, e:
             return
 
@@ -162,7 +159,7 @@ class WeaveSession(object):
         url = "%s/api/register/%s/%s" % (self.server_url,
                                          entity_kind,
                                          entity)
-        result = int(self.__opener.open(url).read())
+        result = int(self._open(url).read())
         if result == 0:
             return True
         elif result == 1:
@@ -176,7 +173,7 @@ class WeaveSession(object):
                                      "password" : self.password,
                                      "new" : new_password})
         req = urllib2.Request(url, postdata)
-        self.__opener.open(req).read()
+        self._open(req).read()
         self.password = new_password
 
     def share_with_users(self, path, users):
@@ -188,7 +185,7 @@ class WeaveSession(object):
                                      "uid" : self.username,
                                      "password" : self.password})
         req = urllib2.Request(url, postdata)
-        result = self.__opener.open(req).read()
+        result = self._open(req).read()
         if result != "OK":
             raise Exception("Share attempt failed: %s" % result)
 
