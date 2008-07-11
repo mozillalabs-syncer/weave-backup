@@ -49,7 +49,7 @@ const ERROR_COLOR        = "red";
 const SERVER_ERROR_COLOR = "black";
 const SUCCESS_COLOR      = "blue";
 
-const SERVER_TIMEOUT = 10000;
+const SERVER_TIMEOUT = 15000;
 
 function SyncWizard() {
   this._init();
