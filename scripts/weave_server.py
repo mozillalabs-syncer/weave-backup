@@ -31,7 +31,7 @@ import pprint
 import cgi
 
 DEFAULT_PORT = 8000
-DEFAULT_REALM = "services.mozilla.com - proxy"
+DEFAULT_REALM = "services.mozilla.com"
 CAPTCHA_FAILURE_MAGIC_WORD = "bad"
 
 class HttpResponse(object):
