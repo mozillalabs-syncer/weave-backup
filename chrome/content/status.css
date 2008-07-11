@@ -1,5 +1,5 @@
 #sync-status-dialog {
-  width: 400px;
+  width: 300px;
 }
 
 #statusTitleIcon {
@@ -7,16 +7,24 @@
 }
 
 #statusTitle {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: bold;
 }
 
 #statusBox {
-  padding: 5px;
+  padding-top: 5px;
 }
 
-#statusEngine, #statusText {
+#statusIcon {
+  height: 16px;
+  width: 16px;
+}
+
+#statusEngine {
   font-weight: bold;
+}
+
+#statusText {
 }
 
 #statusIcon[status="active"] {

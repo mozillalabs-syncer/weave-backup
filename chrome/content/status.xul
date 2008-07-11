@@ -29,13 +29,13 @@
   
   <vbox>
     <progressmeter id="statusProgress" mode="determined" value="0"/>
-    <vbox id="statusBox">
-      <hbox id="statusBox">
+      <hbox align="center" id="statusBox">
         <image id="statusIcon"/>
-        <label id="statusEngine"/>
-        <label id="statusText"/>
+        <vbox>
+          <label id="statusEngine"/>
+          <label id="statusText"/>
+        </vbox>
       </hbox>
-    </vbox>
   </vbox>
   
 </dialog>

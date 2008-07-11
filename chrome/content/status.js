@@ -108,7 +108,6 @@ let WeaveStatus = {
   doCancel: function WeaveStatus_doCancel() {
     this._statusText.value = this._stringBundle.getString("status.cancel");
     this._statusDialog.getButton("cancel").setAttribute("disabled", "true");
-    this._statusEngine.value = "";
     Weave.Service.cancelRequested = true;
     return false;
   },
@@ -147,7 +146,7 @@ let WeaveStatus = {
     
     case "weave:service:sync:engine:start":  
     this._statusText.value = this._stringBundle.getString("status.engine_start");
-    this._statusEngine.value = data + ":";
+    this._statusEngine.value = data;
     this._enginesCompleted++;
     this._statusProgress.value = this._enginesCompleted / (Weave.Engines.getEnabled().length + 1) * 100;
     break;
@@ -159,14 +158,13 @@ let WeaveStatus = {
     if (Weave.Service.cancelRequested) {
       Weave.Service.cancelRequested = false;
       this._statusIcon.setAttribute("status", "cancelled");
-      this._statusEngine.value = "";
       this._statusText.value = this._stringBundle.getString("status.cancelled");
     } else {   
       this._statusIcon.setAttribute("status", "success");
       this._statusProgress.value = "100";
-      this._statusEngine.value = "";
-      this._statusText.value = this._stringBundle.getString("status.success");
-      this._statusText.style.color = "blue";
+      this._statusEngine.value = this._stringBundle.getString("status.success");
+      this._statusEngine.style.color = "blue";
+      this._statusText.value = this._stringBundle.getString("status.closing");
     }
     // Delay closing the window for a couple seconds to give the user time
     // to see the result of the sync.
@@ -183,7 +181,6 @@ let WeaveStatus = {
       Weave.Service.cancelRequested = false;
     
     this._statusIcon.setAttribute("status", "error");
-    this._statusEngine.value = "";
     this._statusText.value = this._stringBundle.getString("status.error");
     this._statusText.style.color = "red";
 

@@ -1,9 +1,10 @@
 #loginIcon {
   list-style-image: url("chrome://weave/skin/sync-32x32.png");
+  padding-right: 5px;
 }
 
 #loginTitle {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: bold;
 }
 
