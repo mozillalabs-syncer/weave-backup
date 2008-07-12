@@ -357,8 +357,8 @@ SyncWizard.prototype = {
     let loginVerified = document.getElementById("login-verified");
 
     // Don't allow advancing until we verify the account.
-	wizard.canAdvance = false;
-	document.getElementById("login-verified").value = "false";
+    wizard.canAdvance = false;
+    document.getElementById("login-verified").value = "false";
 
     // Check for empty username or password fields
     if (!username || !password) {
@@ -377,7 +377,7 @@ SyncWizard.prototype = {
     // The observer will handle success and failure notifications
     // checkVerificationFields() will take care of allowing advance if this works
     log.info("Verifying username/password...");
-    Weave.Service.verifyLogin(username, password);
+    Weave.Service.verifyLogin(null, username, password);
 
     // In case the server is hanging...
     setTimeout(function() {
@@ -429,7 +429,7 @@ SyncWizard.prototype = {
     // The observer will handle success and failure notifications
     // checkVerificationFields() will take care of allowing advance if this works
     log.info("Verifying passphrase...");
-    Weave.Service.verifyPassphrase(username, password, passphrase);
+    Weave.Service.verifyPassphrase(null, username, password, passphrase);
 
     // In case the server is hanging...
     setTimeout(function() {
@@ -462,7 +462,7 @@ SyncWizard.prototype = {
 
     // Setting these properties (really getters) results in this data being
     // saved in the Firefox login manager.
-	this._log.info("Saving username, password, passphrase in login manager");
+    this._log.info("Saving username, password, passphrase in login manager");
     Weave.Service.username = username;
     Weave.Service.password = password;
     Weave.Service.passphrase = passphrase;
@@ -480,7 +480,7 @@ SyncWizard.prototype = {
     let url = this._serverURL + REGISTER_STATUS;
 
     log.info("Checking registration status: " + url);
-    
+
     httpRequest.open('GET', url, true);
     httpRequest.onreadystatechange = function() {
       if (httpRequest.readyState == 4) {
@@ -495,7 +495,7 @@ SyncWizard.prototype = {
         } else {
           log.info("checkRegistrationStatus error: received httpRequest.status " + httpRequest.status);
         }
-      } 
+      }
     };
     httpRequest.send(null);
   },
@@ -577,7 +577,7 @@ SyncWizard.prototype = {
 
     // In case the server is hanging...
     setTimeout(function() {
-            if (statusLabel.value == checkingUsername) { 
+            if (statusLabel.value == checkingUsername) {
               this._log.info("Server timeout (username check)");
               statusIcon.hidden = true;
               statusLink.hidden = false;
@@ -1027,13 +1027,13 @@ SyncWizard.prototype = {
     let syncError     = this._stringBundle.getString("initialSync-error.label");
 
 
-	// don't do anything if the sync has already happened
-	if (document.getElementById("sync-success").value == "true")
-	  return true;
+    // don't do anything if the sync has already happened
+    if (document.getElementById("sync-success").value == "true")
+      return true;
 
     // don't let them continue once continue has been clicked once
-	if (document.getElementById("installation-started").value == "true")
-	  return false;
+    if (document.getElementById("installation-started").value == "true")
+      return false;
 
     // now set the value for the first time through
     document.getElementById("installation-started").value = "true";
@@ -1045,7 +1045,7 @@ SyncWizard.prototype = {
     finalLink.hidden = true;
 
     // for server error case, only start at sync if login worked
-    if (Weave.Service.isLoggedIn) {
+    if (Weave.Service.isInitialized) {
       gSyncWizard.initialSync();
       return;
     }
@@ -1059,12 +1059,12 @@ SyncWizard.prototype = {
     finalStatus.value = loginProgress;
     finalIcon.hidden = false;
 
-	// adds username and password to manager
-	gSyncWizard.acceptExistingAccount();
+    // adds username and password to manager
+    gSyncWizard.acceptExistingAccount();
 
-	// login using those values
-    Weave.Service.login(function() {
-          if(Weave.Service.isLoggedIn) {
+    // login using those values
+    Weave.Service.loginAndInit(function() {
+          if(Weave.Service.isInitialized) {
             accountStatus.style.color = SUCCESS_COLOR;
             gSyncWizard.initialSync();
           }

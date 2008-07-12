@@ -227,12 +227,12 @@ BookmarksEventHandler.onPopupShowing = function BT_onPopupShowing_new(event) {
 
   /* Grey out the share folder item if we're not logged into weave or
      if weave is disabled: */
-  if ( !Weave.Service.enabled || !Weave.Service.isLoggedIn) {
+  if ( !Weave.Service.enabled || !Weave.Service.isInitialized) {
     target._endOptShareFolder.setAttribute( "disabled", "true" );
     if (!Weave.Service.enabled) {
       dump( "Menu item disabled because weave not enabled.\n");
     }
-    if (!Weave.Service.isLoggedIn){
+    if (!Weave.Service.isInitialized){
       dump( "Menu item disabled because weave not logged in.\n");
     }
   }

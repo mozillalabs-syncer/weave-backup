@@ -35,25 +35,25 @@ let Login = {
  onLoad: function Login_onLoad() {
     this._log = Log4Moz.Service.getLogger("Chrome.Login");
     this._log.trace("Sync login window opened");
-    
+
     this._os.addObserver(this, "weave:service:login:start", false);
     this._os.addObserver(this, "weave:service:login:error", false);
     this._os.addObserver(this, "weave:service:login:success", false);
-    
+
     if (Weave.Utils.prefs.getBoolPref("rememberpassword"))
       document.getElementById("save-password-checkbox").checked = true;
     if (Weave.Utils.prefs.getBoolPref("autoconnect"))
       document.getElementById("autoconnect-checkbox").checked = true;
-    
+
     document.getElementById("username").value = Weave.Service.username;
-    
+
     if (Weave.Service.password) {
       let password = document.getElementById("password");
       password.value = Weave.Service.password;
     }
-    
+
     let row = document.getElementById("passphrase-ui");
-    
+
     if ("none" == Weave.Utils.prefs.getCharPref("encryption")) {
       row.setAttribute("hidden", "true");
     } else {
@@ -64,12 +64,12 @@ let Login = {
       }
     }
   },
-  
+
   shutDown: function Login_shutDown() {
     this._os.removeObserver(this, "weave:service:login:start");
     this._os.removeObserver(this, "weave:service:login:error");
     this._os.removeObserver(this, "weave:service:login:success");
-    
+
     this._log.trace("Sync login window closed");
   },
 
@@ -91,7 +91,7 @@ let Login = {
 
     break;
     case "weave:service:login:success":
-    this._loginStatusIcon.setAttribute("status", "success");    
+    this._loginStatusIcon.setAttribute("status", "success");
     this._loginStatus.value = this._stringBundle.getString("loginSuccess.label");
     this._loginStatus.style.color = "blue";
     window.setTimeout(window.close, 1500);
@@ -114,8 +114,6 @@ let Login = {
 
     Weave.Utils.prefs.setBoolPref("rememberpassword", savePass.checked);
     Weave.Utils.prefs.setBoolPref("autoconnect", autoconnect.checked);
-
-    Weave.Service.username = username.value;
 
     if (!password.value) {
       alert(this._stringBundle.getString("noPassword.alert"));
@@ -144,7 +142,8 @@ let Login = {
       Weave.Service.passphrase = null;
     }
 
-    Weave.Service.login(null);
+    Weave.Service.loginAndInit(null, username.value,
+                               password.value, passphrase.value);
     return true;
   },
 
