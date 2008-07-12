@@ -156,6 +156,8 @@ let WeaveStatus = {
     if (this._existingSync)
       break;
 
+    this._statusDialog.getButton("cancel").setAttribute("disabled", "true");
+
     if (Weave.Service.cancelRequested) {
       Weave.Service.cancelRequested = false;
       this._statusIcon.setAttribute("status", "cancelled");

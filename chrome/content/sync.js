@@ -310,7 +310,7 @@ Sync.prototype = {
         new Weave.NotificationButton(
           this._stringBundle.getString("error.sync.tryAgainButton.label"),
           this._stringBundle.getString("error.sync.tryAgainButton.accesskey"),
-          function() { Weave.Service.sync(); return false; }
+          function() { gSync.doSync(); return true; }
         );
       let notification =
         new Weave.Notification(
