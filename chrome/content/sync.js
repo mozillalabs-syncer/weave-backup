@@ -303,7 +303,8 @@ Sync.prototype = {
   _onSyncEnd: function Sync_onSyncEnd(status) {
     this._setStatus("idle");
 
-    if (!status) {
+    if (!status &&
+        Weave.FaultTolerance.Service.lastException != "Could not acquire lock") {
       let title = this._stringBundle.getString("error.sync.title");
       let description = this._stringBundle.getString("error.sync.description");
       let tryAgainButton =
