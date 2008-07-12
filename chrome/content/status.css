@@ -42,3 +42,7 @@
 #statusIcon[status="cancelled"] {
   list-style-image: url("chrome://global/skin/icons/information-16.png");
 }
+
+#statusIcon[status="info"] {
+  list-style-image: url("chrome://global/skin/icons/information-16.png");
+}

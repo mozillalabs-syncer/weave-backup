@@ -156,6 +156,8 @@ let WeaveStatus = {
     if (this._existingSync)
       break;
 
+    this._statusDialog.getButton("cancel").setAttribute("disabled", "true");
+
     if (Weave.Service.cancelRequested) {
       Weave.Service.cancelRequested = false;
       this._statusIcon.setAttribute("status", "cancelled");
@@ -178,12 +180,24 @@ let WeaveStatus = {
     if (this._existingSync)
       break;
 
+    this._statusDialog.getButton("cancel").setAttribute("disabled", "true");
+
     if (Weave.Service.cancelRequested)
       Weave.Service.cancelRequested = false;
 
-    this._statusIcon.setAttribute("status", "error");
-    this._statusText.value = this._stringBundle.getString("status.error");
-    this._statusText.style.color = "red";
+    if (Weave.FaultTolerance.Service.lastException == "Could not acquire lock") {
+      this._statusIcon.setAttribute("status", "info");
+      this._statusEngine.value = this._stringBundle.getString("status.locked");
+      if (Weave.Service.isQuitting)
+        this._statusText.value = this._stringBundle.getString("status.closing");
+      else
+        this._statusText.value = this._stringBundle.getString("status.tryagain");
+    } else {
+      this._statusIcon.setAttribute("status", "error");
+      this._statusEngine.value = this._stringBundle.getString("status.error") + " (" + Weave.FaultTolerance.Service.lastException + ")";
+      this._statusText.value = this._stringBundle.getString("status.closing");
+      this._statusEngine.style.color = "red";
+    }
 
     // Delay closing the window for a couple seconds to give the user time
     // to see the result of the sync.
