@@ -10,6 +10,7 @@
 
     <em:targetPlatform>Darwin_x86-gcc3</em:targetPlatform>
     <em:targetPlatform>Linux_x86-gcc3</em:targetPlatform>
+    <em:targetPlatform>Linux_x86_64-gcc3</em:targetPlatform>
     <em:targetPlatform>WINNT_x86-msvc</em:targetPlatform>
    
     <!-- Target Application this extension can install into, 
