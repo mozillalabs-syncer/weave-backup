@@ -20,6 +20,10 @@
         option.  The state is also just a Pythonic representation of
         the server's state, and as such is relatively human-readable
         and can be hand-edited if necessary.
+
+      * Timeout values sent with HTTP LOCK requests are ignored.
+
+      * The server operates over HTTP, not HTTPS.
 """
 
 from wsgiref.simple_server import make_server
