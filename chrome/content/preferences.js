@@ -43,7 +43,7 @@ WeavePrefs.prototype = {
       syncUserName.setAttribute("value", signedInDescription);
       changePasswordForm.hidden = false;
    }
-   
+
    if(Weave.DAV.locked)
      syncNowButton.setAttribute("disabled", "true");
   },
@@ -140,7 +140,9 @@ WeavePrefs.prototype = {
     if (!newPassword.value || !newPasswordAgain.value)
       return;
 
-    if (newPassword.value != newPasswordAgain.value)
+    if (newPassword.value == Weave.Service.password)
+      this._setChangePasswordStatus("error", ["passwordSameAsPassphrase"]);
+    else if (newPassword.value != newPasswordAgain.value)
       this._setChangePasswordStatus("error", ["passwordsDoNotMatch"]);
     else
       this._setChangePasswordStatus("idle");
@@ -159,6 +161,8 @@ WeavePrefs.prototype = {
       errorCodes.push("-11");
     if (!oldPassword.value)
       errorCodes.push("-8");
+    if (newPassword.value == Weave.Service.password)
+      errorCodes.push("passwordSameAsPassphrase");
     if (newPassword.value != newPasswordAgain.value)
       errorCodes.push("passwordsDoNotMatch");
 
@@ -170,7 +174,7 @@ WeavePrefs.prototype = {
     let url = Weave.Utils.prefs.getCharPref("serverURL") +
 	      "api/register/chpwd/";
 
-    let data = "uid=" + encodeURIComponent(username) + 
+    let data = "uid=" + encodeURIComponent(username) +
                "&password=" + encodeURIComponent(oldPassword.value) +
 	       "&new=" + encodeURIComponent(newPassword.value);
 
@@ -227,7 +231,9 @@ WeavePrefs.prototype = {
 
 	  // We only have space to show one error message, so we check the codes
 	  // in order of importance and show the most important one.
-	  if (errorCodes.indexOf("passwordsDoNotMatch") != -1)
+	  if (errorCodes.indexOf("passwordSameAsPassphrase") != -1)
+            errorProperty = "change.password.status.passwordSameAsPassphrase";
+          else if (errorCodes.indexOf("passwordsDoNotMatch") != -1)
 	    errorProperty = "change.password.status.passwordsDoNotMatch";
 	  else if (errorCodes.indexOf("-12") != -1)
 	    errorProperty = "change.password.status.badOldPassword";
