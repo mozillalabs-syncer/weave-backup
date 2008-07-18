@@ -140,7 +140,7 @@ WeavePrefs.prototype = {
     if (!newPassword.value || !newPasswordAgain.value)
       return;
 
-    if (newPassword.value == Weave.Service.password)
+    if (newPassword.value == Weave.Service.passphrase)
       this._setChangePasswordStatus("error", ["passwordSameAsPassphrase"]);
     else if (newPassword.value != newPasswordAgain.value)
       this._setChangePasswordStatus("error", ["passwordsDoNotMatch"]);
@@ -161,7 +161,7 @@ WeavePrefs.prototype = {
       errorCodes.push("-11");
     if (!oldPassword.value)
       errorCodes.push("-8");
-    if (newPassword.value == Weave.Service.password)
+    if (newPassword.value == Weave.Service.passphrase)
       errorCodes.push("passwordSameAsPassphrase");
     if (newPassword.value != newPasswordAgain.value)
       errorCodes.push("passwordsDoNotMatch");
