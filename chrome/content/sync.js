@@ -52,6 +52,14 @@ function Sync() {
   this._os.addObserver(this, "weave:store:tabs:virtual:created", false);
   this._os.addObserver(this, "weave:store:tabs:virtual:removed", false);
 
+  if (!Weave.Crypto.checkModule()) {
+    setTimeout(function() {
+      alert("There has been a problem loading the Weave crypto component.\n" +
+            "Weave will not work correctly, apologies for the inconvenence.")
+    }, 500);
+    return;
+  }
+
   if (Weave.Utils.prefs.getBoolPref("ui.syncnow"))
     document.getElementById("sync-syncnowitem").setAttribute("hidden", false);
 
