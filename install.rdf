@@ -14,8 +14,10 @@
     <em:targetPlatform>Linux_x86_64-gcc3</em:targetPlatform>
     <em:targetPlatform>WINNT_x86-msvc</em:targetPlatform>
    
-    <!-- Target Application this extension can install into, 
+    <!-- Target Applications this extension can install into, 
          with minimum and maximum supported versions. --> 
+     
+    <!-- Firefox -->
     <em:targetApplication>
       <Description>
         <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
@@ -23,6 +25,14 @@
         <em:maxVersion>3.0.*</em:maxVersion>
       </Description>
     </em:targetApplication>
+
+    <!-- Thunderbird -->
+    <em:targetApplication>
+      <Description>
+        <em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id>
+        <em:minVersion>3.0a2pre</em:minVersion>
+        <em:maxVersion>3.0</em:maxVersion>
+      </Description> </em:targetApplication>
    
     <!-- Front End MetaData -->
     <em:name>Weave</em:name>

@@ -6,56 +6,62 @@
 <overlay id="sync-overlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
     <script type="application/x-javascript"
-            src="chrome://browser/content/places/utils.js"/>
-    <script type="application/x-javascript"
             src="chrome://weave/content/load-weave.js"/>
     <script type="application/x-javascript"
             src="chrome://weave/content/sync.js"/>
-    <script type="application/x-javascript"
-            src="chrome://weave/content/bookmark-menu-overlay.js"/>
     
     <stringbundleset id="stringbundleset">
-      <stringbundle id="weaveStringBundle" src="chrome://weave/locale/sync.properties"/>
+        <stringbundle id="weaveStringBundle"
+                      src="chrome://weave/locale/sync.properties"/>
     </stringbundleset>
 
+    <!-- For Firefox -->    
     <menupopup id="menu_ToolsPopup">
-	<menu id="sync-menu" class="menu-iconic" label="&syncMenu.label;"
-	      insertafter="menu_openAddons" image="chrome://weave/skin/sync-16x16.png">
-	    <menupopup id="sync-menu-popup"
-		       onpopupshowing="if (event.target == this) gSync.doPopup(event);"
-		       onpopuphiding="gSync.onMenuPopupHiding()">
-		<menuitem id="sync-loginitem"
-			  hidden="false" disabled="false"
-			  checked="false" autocheck="false"
-			  label="&logInItem.label;"
-			  oncommand="gSync.doLogin();"/>
-		<menuitem id="sync-logoutitem"
-			  hidden="true" disabled="false"
-			  checked="false" autocheck="false"
-			  label="&logOutItem.label;"
-			  oncommand="gSync.doLogout();"/>
-		<menuitem id="sync-syncnowitem"
-			  hidden="true" disabled="true"
-			  checked="false" autocheck="false"
-			  label="&syncNowItem.label;"
-			  oncommand="gSync.doSync(event);"/>
-		<menuseparator/>
-		<menuitem id="sync-openprefsitem"
-			  disabled="false"
-			  checked="false" autocheck="false"
-			  label="&openPrefsItem.label;"
-			  oncommand="gSync.doOpenPrefs(event);"/>
-		<menuitem id="sync-openlogitem"
-			  disabled="false"
-			  checked="false" autocheck="false"
-			  label="&openLogItem.label;"
-			  oncommand="gSync.doOpenActivityLog(event);"/>
-		<menuseparator/>
-		<menuitem id="sync-lastsyncitem"
-			  disabled="false" hidden="true"/>
-	    </menupopup>
-	</menu>
+        <menu id="sync-menu" insertafter="menu_openAddons"/>
     </menupopup>
+
+    <!-- For Thunderbird -->
+    <menupopup id="taskPopup">
+        <menu id="sync-menu" insertafter="addonsManager"/>
+    </menupopup>
+
+    <!-- This overlays onto the app-specific overlay point we just created -->
+    <menu id="sync-menu" class="menu-iconic" label="&syncMenu.label;"
+          insertafter="addonsManager" image="chrome://weave/skin/sync-16x16.png">
+        <menupopup id="sync-menu-popup"
+                   onpopupshowing="if (event.target == this) gSync.doPopup(event);"
+                   onpopuphiding="gSync.onMenuPopupHiding()">
+            <menuitem id="sync-loginitem"
+                      hidden="false" disabled="false"
+                      checked="false" autocheck="false"
+                      label="&logInItem.label;"
+                      oncommand="gSync.doLogin();"/>
+            <menuitem id="sync-logoutitem"
+                      hidden="true" disabled="false"
+                      checked="false" autocheck="false"
+                      label="&logOutItem.label;"
+                      oncommand="gSync.doLogout();"/>
+            <menuitem id="sync-syncnowitem"
+                      hidden="true" disabled="true"
+                      checked="false" autocheck="false"
+                      label="&syncNowItem.label;"
+                      oncommand="gSync.doSync(event);"/>
+            <menuseparator/>
+            <menuitem id="sync-openprefsitem"
+                      disabled="false"
+                      checked="false" autocheck="false"
+                      label="&openPrefsItem.label;"
+                      oncommand="gSync.doOpenPrefs(event);"/>
+            <menuitem id="sync-openlogitem"
+                      disabled="false"
+                      checked="false" autocheck="false"
+                      label="&openLogItem.label;"
+                      oncommand="gSync.doOpenActivityLog(event);"/>
+            <menuseparator/>
+            <menuitem id="sync-lastsyncitem"
+                      disabled="false" hidden="true"/>
+        </menupopup>
+    </menu>
 
     <statusbar id="status-bar">
         <statusbarpanel id="sync-menu-button"
@@ -77,17 +83,4 @@
         </panel>
     </statusbar>
 
-    <menupopup id="goPopup">
-        <menu id="sync-tabs-menu" class="menu-iconic"
-              insertafter="historyUndoMenu" label="&syncTabsMenu.label;"
-              image="chrome://weave/skin/sync-16x16.png"
-              oncommand="gSync.onCommandTabsMenu(event);"
-              onclick="checkForMiddleClick(this, event);">
-            <menupopup id="sync-tabs-menu-popup" onpopupshowing="gSync.doInitTabsMenu(event);">
-                <menuitem id="sync-no-tabs-menu-item"
-                          label="&syncNoTabsMenuItem.label;"
-                          disabled="true"/>
-            </menupopup>
-        </menu>
-    </menupopup>
 </overlay>
