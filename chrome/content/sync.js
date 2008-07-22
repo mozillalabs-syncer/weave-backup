@@ -20,6 +20,7 @@
  * Contributor(s):
  *  Dan Mills <thunder@mozilla.com>
  *  Chris Beard <cbeard@mozilla.com>
+ *  Dan Mosedale <dmose@mozilla.org>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -35,6 +36,9 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+var Cc = Components.classes;
+var Ci = Components.interfaces;
+
 function Sync() {
   this._log = Log4Moz.Service.getLogger("Chrome.Window");
 
@@ -49,8 +53,6 @@ function Sync() {
   this._os.addObserver(this, "weave:service:sync:error", false);
   this._os.addObserver(this, "weave:notification:added", false);
   this._os.addObserver(this, "weave:notification:removed", false);
-  this._os.addObserver(this, "weave:store:tabs:virtual:created", false);
-  this._os.addObserver(this, "weave:store:tabs:virtual:removed", false);
 
   if (!Weave.Crypto.checkModule()) {
     setTimeout(function() {
@@ -101,9 +103,6 @@ function Sync() {
     this._onLogin();
 
   Weave.Service.onWindowOpened();
-
-  // Display a tabs notification if there are any virtual tabs.
-  this._onVirtualTabsChanged();
 }
 Sync.prototype = {
   get _isTopBrowserWindow() {
@@ -173,19 +172,6 @@ Sync.prototype = {
     this.__defineGetter__("_stringBundle",
                           function() { return stringBundle; });
     return this._stringBundle;
-  },
-
-  get _sessionStore() {
-    let sessionStore = Cc["@mozilla.org/browser/sessionstore;1"].
-		       getService(Ci.nsISessionStore);
-    this.__defineGetter__("_sessionStore", function() sessionStore);
-    return this._sessionStore;
-  },
-
-  get _json() {
-    let json = Cc["@mozilla.org/dom/json;1"].createInstance(Ci.nsIJSON);
-    this.__defineGetter__("_json", function() json);
-    return this._json;
   },
 
   get _windowType() {
@@ -358,8 +344,6 @@ Sync.prototype = {
     this._os.removeObserver(this, "weave:service:sync:error");
     this._os.removeObserver(this, "weave:notification:added");
     this._os.removeObserver(this, "weave:notification:removed");
-    this._os.removeObserver(this, "weave:store:tabs:virtual:created");
-    this._os.removeObserver(this, "weave:store:tabs:virtual:removed");
   },
 
   doLoginPopup : function Sync_doLoginPopup(event) {
@@ -402,7 +386,11 @@ Sync.prototype = {
   },
 
   doOpenPrefs: function Sync_doOpenPrefs(event) {
-    openPreferences("sync-prefpane");
+    try {  
+      openPreferences("sync-prefpane");  // firefox
+    } catch (ex) {
+      openOptionsDialog("sync-prefpane");  // thunderbird
+    }
   },
 
   onOpenPrefs : function Sync_onOpenPrefs(event) {
@@ -417,64 +405,7 @@ Sync.prototype = {
   doPopup: function Sync_doPopup(event) {
     this._updateLastSyncItem();
   },
-
-  // FIXME: refactor this function with the identical one in notification.xml.
-  _getVirtualTabs: function Sync__getVirtualTabs() {
-    let tabStore = Weave.Engines.get("tabs").store;
-    let virtualTabs = tabStore.virtualTabs;
-
-    // Convert the hash of virtual tabs indexed by ID into an array
-    // of virtual tabs whose ID is stored in an ID property.
-    virtualTabs =
-      [(virtualTabs[id].id = id) && virtualTabs[id] for (id in virtualTabs)];
-
-    // Remove invalid tabs.
-    virtualTabs = virtualTabs.filter(tabStore.validateVirtualTab, tabStore);
-
-    // Sort virtual tabs by their position in their windows.
-    // Note: we don't actually group by window first, so all first tabs
-    // will appear first in the list, followed by all second tabs, and so on.
-    // FIXME: group by window, even though we aren't opening them up that way,
-    // so the list better resembles the pattern the user remembers.
-    virtualTabs.sort(function(a, b) a.position > b.position ?  1 :
-                                    a.position < b.position ? -1 : 0);
-
-    return virtualTabs;
-  },
-
-  doInitTabsMenu: function Sync_doInitTabsMenu() {
-    let menu = document.getElementById("sync-tabs-menu");
-    let virtualTabs = this._getVirtualTabs();
-
-    while (menu.itemCount > 1)
-      menu.removeItemAt(menu.itemCount - 1);
-
-    for each (let virtualTab in virtualTabs) {
-      let currentEntry = virtualTab.state.entries[virtualTab.state.index - 1];
-      let label = currentEntry.title ? currentEntry.title : currentEntry.url;
-      let menuitem = menu.appendItem(label, virtualTab.id);
-      // Make a tooltip that contains either or both of the title and URL.
-      menuitem.tooltipText =
-        [currentEntry.title, currentEntry.url].filter(function(v) v).join("\n");
-    }
-
-    document.getElementById("sync-no-tabs-menu-item").hidden =
-      (menu.itemCount > 1);
-  },
-
-  onCommandTabsMenu: function Sync_onCommandTabsMenu(event) {
-    let tabID = event.target.value;
-    let virtualTabs = Weave.Engines.get("tabs").store.virtualTabs;
-    let virtualTab = virtualTabs[tabID];
-
-    let tab = gBrowser.addTab("about:blank");
-    this._sessionStore.setTabState(tab, this._json.encode(virtualTab.state));
-    gBrowser.selectedTab = tab;
-    delete virtualTabs[tabID];
-
-    // FIXME: update a notification that lists the opened tab, if any.
-  },
-
+  
   _onNotificationAdded: function Sync__onNotificationAdded() {
     document.getElementById("sync-notifications-button").hidden = false;
   },
@@ -482,36 +413,6 @@ Sync.prototype = {
   _onNotificationRemoved: function Sync__onNotificationRemoved() {
     if (Weave.Notifications.notifications.length == 0)
       document.getElementById("sync-notifications-button").hidden = true;
-  },
-
-  _onVirtualTabsChanged: function Sync__onVirtualTabsChanged() {
-    let virtualTabs = this._getVirtualTabs();
-
-    // Get the (first, which should also be the only) notification, if any.
-    let [existingNotification] =
-      Weave.Notifications.notifications.
-      filter(function(v) v.constructor.name == "TabsNotification");
-
-    // As long as there is at least one virtual tab that hasn't previously been
-    // disposed of by the user, notify the user about available tabs.
-    for each (let virtualTab in virtualTabs) {
-      if (!virtualTab._disposed) {
-        // If there's an existing tabs notification, update it.
-        // FIXME: make tabs notifications automatically update themselves.
-        let newNotification = new Weave.TabsNotification();
-        if (existingNotification)
-          Weave.Notifications.replace(existingNotification, newNotification);
-        else
-          Weave.Notifications.add(newNotification);
-
-        return;
-      }
-    }
-
-    // If we've gotten this far, it means there are no tabs left to notify
-    // the user about, so remove the existing notification, if any.
-    if (existingNotification)
-      Weave.Notifications.remove(existingNotification);
   },
 
   _updateLastSyncItem: function Sync__updateLastSyncItem() {
@@ -582,12 +483,6 @@ Sync.prototype = {
       break;
     case "weave:notification:removed":
       this._onNotificationRemoved();
-      break;
-    case "weave:store:tabs:virtual:created":
-      this._onVirtualTabsChanged();
-      break;
-    case "weave:store:tabs:virtual:removed":
-      this._onVirtualTabsChanged();
       break;
     default:
       this._log.warn("Unknown observer notification topic: " + topic);

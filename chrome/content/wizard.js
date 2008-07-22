@@ -51,6 +51,9 @@ const SUCCESS_COLOR      = "blue";
 
 const SERVER_TIMEOUT = 15000;
 
+var Cc = Components.classes;
+var Ci = Components.interfaces;
+
 function SyncWizard() {
   this._init();
 }
@@ -432,11 +435,12 @@ SyncWizard.prototype = {
     Weave.Service.verifyPassphrase(null, username, password, passphrase);
 
     // In case the server is hanging...
+    let stringBundle = this._stringBundle;
     setTimeout(function() {
             if (statusLabel.value == progress) {
 	              log.info("Server timeout (passphrase verification)");
 		      statusIcon.hidden = true;
-                      statusLabel.value = this._stringBundle.getString("serverTimeoutError.label");
+                      statusLabel.value = stringBundle.getString("serverTimeoutError.label");
 		      statusLabel.style.color = SERVER_ERROR_COLOR;
             }
 	  }, SERVER_TIMEOUT);
