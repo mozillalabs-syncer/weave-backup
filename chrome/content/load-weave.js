@@ -31,6 +31,12 @@ Components.utils.import("resource://weave/wrap.js", {});
 Components.utils.import("resource://weave/stores.js", {});
 Components.utils.import("resource://weave/syncCores.js", {});
 Components.utils.import("resource://weave/engines.js", {});
+Components.utils.import("resource://weave/engines/cookies.js", {});
+Components.utils.import("resource://weave/engines/bookmarks.js", {});
+Components.utils.import("resource://weave/engines/history.js", {});
+Components.utils.import("resource://weave/engines/passwords.js", {});
+Components.utils.import("resource://weave/engines/forms.js", {});
+Components.utils.import("resource://weave/engines/tabs.js", {});
 Components.utils.import("resource://weave/service.js", {});
 
 // These are the only ones we *really* need in this file.
