@@ -30,6 +30,7 @@ Components.utils.import("resource://weave/remote.js", {});
 Components.utils.import("resource://weave/wrap.js", {});
 Components.utils.import("resource://weave/stores.js", {});
 Components.utils.import("resource://weave/syncCores.js", {});
+Components.utils.import("resource://weave/clientData.js", {});
 Components.utils.import("resource://weave/engines.js", {});
 Components.utils.import("resource://weave/engines/cookies.js", {});
 Components.utils.import("resource://weave/engines/bookmarks.js", {});
