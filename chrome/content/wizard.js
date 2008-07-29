@@ -60,7 +60,7 @@ function SyncWizard() {
 
 SyncWizard.prototype = {
 
-  registrationClosed: true,
+  registrationClosed: false,
 
   __os: null,
   get _os() {
@@ -103,7 +103,7 @@ SyncWizard.prototype = {
     this._os.addObserver(this, "weave:service:sync:error", false);
 
     // Initial background request to check if registration is open or closed.
-    this.checkRegistrationStatus();
+    // this.checkRegistrationStatus();
   },
 
   onWizardShutdown: function SyncWizard_onWizardshutdown() {
@@ -970,7 +970,8 @@ SyncWizard.prototype = {
       "&password=" + encodeURIComponent(password) +
       "&mail=" + encodeURIComponent(mail) +
       "&recaptcha_response_field=" + encodeURIComponent(response) +
-      "&recaptcha_challenge_field=" + encodeURIComponent(challenge);
+      "&recaptcha_challenge_field=" + encodeURIComponent(challenge) +
+      "&token=3419b5893291d055";
 
     httpRequest.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
     httpRequest.setRequestHeader("Content-Length", message.length);
