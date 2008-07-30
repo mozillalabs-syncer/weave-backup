@@ -55,7 +55,7 @@ function FxWeaveGlue() {
     // Register engines
     for (let i = 0; i < engines.length; i++)
       Weave.Engines.register(engines[i]);
-    
+
     // Display a tabs notification if there are any virtual tabs.
     this._onVirtualTabsChanged();
 
@@ -87,16 +87,12 @@ FxWeaveGlue.prototype = {
 
   // FIXME: refactor this function with the identical one in notification.xml.
   _getVirtualTabs: function FxWeaveGlue__getVirtualTabs() {
-    let tabStore = Weave.Engines.get("tabs").store;
-    let virtualTabs = tabStore.virtualTabs;
+    let virtualTabs = Weave.Engines.get("tabs").virtualTabs;
 
     // Convert the hash of virtual tabs indexed by ID into an array
     // of virtual tabs whose ID is stored in an ID property.
     virtualTabs =
       [(virtualTabs[id].id = id) && virtualTabs[id] for (id in virtualTabs)];
-
-    // Remove invalid tabs.
-    virtualTabs = virtualTabs.filter(tabStore.validateVirtualTab, tabStore);
 
     // Sort virtual tabs by their position in their windows.
     // Note: we don't actually group by window first, so all first tabs
@@ -117,6 +113,7 @@ FxWeaveGlue.prototype = {
       menu.removeItemAt(menu.itemCount - 1);
 
     for each (let virtualTab in virtualTabs) {
+      this._log.debug("TAB: " + uneval(virtualTab));
       let currentEntry = virtualTab.state.entries[virtualTab.state.index - 1];
       let label = currentEntry.title ? currentEntry.title : currentEntry.url;
       let menuitem = menu.appendItem(label, virtualTab.id);
@@ -131,9 +128,10 @@ FxWeaveGlue.prototype = {
 
   onCommandTabsMenu: function FxWeaveGlue_onCommandTabsMenu(event) {
     let tabID = event.target.value;
-    let virtualTabs = Weave.Engines.get("tabs").store.virtualTabs;
+    let virtualTabs = Weave.Engines.get("tabs").virtualTabs;
     let virtualTab = virtualTabs[tabID];
 
+    this._log.debug("tab id = " + tabID);
     this._log.debug("onCommandTabsMenu: virtualTab = " + virtualTab);
     let tab = gBrowser.addTab("about:blank");
     this._sessionStore.setTabState(tab, this._json.encode(virtualTab.state));
@@ -145,7 +143,7 @@ FxWeaveGlue.prototype = {
 
   _onVirtualTabsChanged: function Sync__onVirtualTabsChanged() {
     let virtualTabs = this._getVirtualTabs();
-    
+
     // Get the (first, which should also be the only) notification, if any.
     let [existingNotification] =
       Weave.Notifications.notifications.

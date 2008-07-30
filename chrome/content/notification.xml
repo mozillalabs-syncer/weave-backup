@@ -210,16 +210,12 @@
       <!-- FIXME: refactor this function with the identical one in sync.js. -->
       <method name="_getVirtualTabs">
         <body><![CDATA[
-          var tabStore = Weave.Engines.get("tabs").store;
-          var virtualTabs = tabStore.virtualTabs;
+          var virtualTabs = Weave.Engines.get("tabs").virtualTabs;
 
           // Convert the hash of virtual tabs indexed by ID into an array
           // of virtual tabs whose ID is stored in an ID property.
           virtualTabs =
             [(virtualTabs[id].id = id) && virtualTabs[id] for (id in virtualTabs)];
-
-          // Remove invalid tabs.
-          virtualTabs = virtualTabs.filter(tabStore.validateVirtualTab, tabStore);
 
           // Sort virtual tabs by their position in their windows.
           // Note: we don't actually group by window first, so all first tabs
@@ -269,7 +265,7 @@
       <method name="_doSyncTabs">
         <body><![CDATA[
           var list = document.getAnonymousElementByAttribute(this, "anonid", "sync-tabs-list");
-          var virtualTabs = Weave.Engines.get("tabs").store.virtualTabs;
+          var virtualTabs = Weave.Engines.get("tabs").virtualTabs;
 
           for (var i = 0; i < list.childNodes.length; i++) {
             var listitem = list.childNodes[i];
@@ -295,7 +291,7 @@
             }
           }
 
-          Weave.Engines.get("tabs").store.virtualTabs = virtualTabs;
+          //Weave.Engines.get("tabs").store.virtualTabs = virtualTabs;
         ]]></body>
       </method>
 
