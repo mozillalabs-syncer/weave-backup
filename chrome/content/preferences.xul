@@ -84,6 +84,7 @@
       <tabs>
         <tab id="accountTab" label="&accountTab.label;" helpTopic="prefs-sync-account"/>
         <tab id="syncTab" label="&syncTab.label;" helpTopic="prefs-sync-sync"/>
+        <tab id="clientsTab" label="&clientsTab.label;" helpTopic="prefs-sync-clients"/>
         <tab id="serviceaddonsTab" label="&addonsTab.label;" helpTopic="prefs-sync-serviceaddons"/>
         <tab id="advancedTab" label="&advancedTab.label;" helpTopic="prefs-advanced-advanced"/>
       </tabs>
@@ -303,6 +304,15 @@
                             preference="extensions.weave.engine.microformats"/>
               </richlistitem>
 
+            </richlistbox>
+          </groupbox>
+        </tabpanel>
+
+        <!-- Clients -->
+        <tabpanel id="serviceclientsTab">
+          <groupbox id="sync-clients-group" flex="1">
+            <richlistbox id="sync-clients-list">
+            
             </richlistbox>
           </groupbox>
         </tabpanel>

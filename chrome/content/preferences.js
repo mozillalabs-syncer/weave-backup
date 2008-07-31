@@ -16,6 +16,20 @@ WeavePrefs.prototype = {
   _init : function WeavePrefs__init() {
   },
 
+  _checkClientInfo: function WeavePrefs__checkClientInfo() {
+    let richlistbox = document.getElementById('sync-clients-list');
+    let clients = Weave.ClientData.clients();
+    for (let guid in clients) {
+      let richlistitem = document.createElement('richlistitem');
+      let label = document.createElement('label');
+
+      label.setAttribute("value", clients[guid].name);      
+
+      richlistitem.appendChild(label);
+      richlistbox.appendChild(richlistitem);
+    }
+  },
+
   _checkAccountInfo: function WeavePrefs__checkAccountInfo() {
     let signOnButton = document.getElementById('sync-signon-button');
     let signOutButton = document.getElementById('sync-signout-button');
@@ -50,6 +64,7 @@ WeavePrefs.prototype = {
 
   onPaneLoad: function WeavePrefs_onPaneLoad() {
     this._checkAccountInfo();
+    this._checkClientInfo();
   },
 
   openActivityLog: function WeavePrefs_openActivityLog() {
@@ -286,6 +301,7 @@ WeavePrefs.prototype = {
       Weave.Service.passphrase = null;
       Weave.Service.username = null;
       this._checkAccountInfo();
+      this._checkClientInfo();
     }
   },
 
