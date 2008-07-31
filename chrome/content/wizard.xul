@@ -401,16 +401,23 @@
     </description>
     
     <grid width="100%">
-      <rows>
-        <row align="center">
-          <label value="&instanceName.label;" control="sync-username-field"/>
-          <textbox width="100%" flex="1" id="sync-instanceName-field" class="padded"/>
-        </row>
-        <row>
-          <spacer flex="1"/>
-          <label width="100%" disabled="true" value="&examples.label;"/>
-        </row>
-      </rows>
+              <rows>
+                <row align="center">
+                  <label value="&instanceName.label;" control="sync-username-field"/>
+                  <textbox width="100%" flex="1" id="sync-instanceName-field" class="padded"/>
+                  <menulist id="sync-instanceType-field">
+                    <menupopup>
+                      <menuitem label="Desktop" value="desktop"/>
+                      <menuitem label="Laptop" value="laptop"/>
+                      <menuitem label="Mobile" value="mobile"/>
+                    </menupopup>
+                  </menulist>
+                </row>
+                <row>
+                  <spacer flex="1"/>
+                  <label width="100%" disabled="true" value="&examples.label;"/>
+                </row>
+              </rows>
     </grid>
 
     <separator/> 

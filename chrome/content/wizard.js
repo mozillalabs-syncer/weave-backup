@@ -186,6 +186,7 @@ SyncWizard.prototype = {
 
       case "sync-wizard-data": {
         let deviceName = document.getElementById('sync-instanceName-field');
+        let deviceType = document.getElementById('sync-instanceType-field');
         let path = document.getElementById('path').value;
         let username;
 
@@ -203,6 +204,12 @@ SyncWizard.prototype = {
         document.getElementById('sync-wizard-passwords').checked = branch.getBoolPref("passwords");
         document.getElementById('sync-wizard-tabs').checked = branch.getBoolPref("tabs");
         document.getElementById('sync-wizard-forms').checked = branch.getBoolPref("forms");
+
+	if(deviceName) 
+          branch.setCharPref("client.name") = deviceName;
+
+        if(deviceType)
+          branch.setCharPref("client.type") = deviceType;
 
         wizard.canAdvance = true;
         break;
