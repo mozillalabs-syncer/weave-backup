@@ -33,6 +33,12 @@
     </stringbundleset>
 
     <preferences>
+      <preference id="extensions.weave.client.name"
+                  name="extensions.weave.client.name"
+                  type="string"/>
+      <preference id="extensions.weave.client.type"
+                  name="extensions.weave.client.type"
+                  type="string"/>
       <preference id="extensions.weave.username"
                   name="extensions.weave.username"
                   type="string"/>
@@ -113,6 +119,27 @@
           <button id="signOutButton" label="&signOutButton.label;"
                          oncommand="gWeavePrefs.doSignOut()"/>
               </hbox>
+
+            <grid width="100%">
+              <rows>
+                <row align="center">
+                  <label value="&instanceName.label;" control="sync-username-field"/>
+                  <textbox width="100%" flex="1" id="sync-instanceName-field" preference="extensions.weave.client.name" class="padded"/>
+                  <menulist preference="extensions.weave.client.type">
+                    <menupopup>
+                      <menuitem label="Desktop" value="desktop"/>
+                      <menuitem label="Laptop" value="laptop"/>
+                      <menuitem label="Mobile" value="mobile"/>
+                    </menupopup>
+                  </menulist>
+                </row>
+                <row>
+                  <spacer flex="1"/>
+                  <label width="100%" disabled="true" value="&examples.label;"/>
+                </row>
+              </rows>
+            </grid>
+            
      </groupbox>
 
             <!-- Change Password -->
