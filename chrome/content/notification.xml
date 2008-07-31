@@ -214,9 +214,10 @@
 
           // Convert the hash of virtual tabs indexed by ID into an array
           // of virtual tabs whose ID is stored in an ID property.
-          virtualTabs =
-            [(virtualTabs[id].id = id) && virtualTabs[id] for (id in virtualTabs)];
-
+          virtualTabs = [tab for each (tab in virtualTabs)];
+          for (var i = 0; i < virtualTabs.length; i++)
+            virtualTabs[i].id = i;
+      
           // Sort virtual tabs by their position in their windows.
           // Note: we don't actually group by window first, so all first tabs
           // will appear first in the list, followed by all second tabs, and so on.
@@ -231,12 +232,12 @@
 
       <method name="_initTabsPanel">
         <body><![CDATA[
-          var list = document.getAnonymousElementByAttribute(this, "anonid", "sync-tabs-list");
-
+          var list = document.getAnonymousElementByAttribute(this, "anonid",
+                                                             "sync-tabs-list");
           var virtualTabs = this._getVirtualTabs();
       
           // Remove virtual tabs that have previously been disposed of by the user.
-          virtualTabs = virtualTabs.filter(function(v) !v._disposed);
+          //virtualTabs = virtualTabs.filter(function(v) !v._disposed);
       
           while (list.hasChildNodes())
             list.removeChild(list.lastChild);
@@ -244,8 +245,12 @@
           var numItems = 0;
           for each (var virtualTab in virtualTabs) {
             var currentEntry = virtualTab.state.entries[virtualTab.state.index - 1];
+            if (!currentEntry)
+              continue;
             var label = currentEntry.title ? currentEntry.title : currentEntry.url;
             var listitem = list.appendItem(label, virtualTab.id);
+            listitem.label = label;
+            listitem.value = virtualTab.id;
             listitem.setAttribute("type", "checkbox");
             // Make a tooltip that contains either or both of the title and URL.
             listitem.tooltipText =
@@ -264,8 +269,9 @@
 
       <method name="_doSyncTabs">
         <body><![CDATA[
-          var list = document.getAnonymousElementByAttribute(this, "anonid", "sync-tabs-list");
-          var virtualTabs = Weave.Engines.get("tabs").virtualTabs;
+          var list = document.getAnonymousElementByAttribute(this, "anonid",
+                                                             "sync-tabs-list");
+          var virtualTabs = this._getVirtualTabs();
 
           for (var i = 0; i < list.childNodes.length; i++) {
             var listitem = list.childNodes[i];

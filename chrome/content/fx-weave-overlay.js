@@ -37,29 +37,29 @@
  * ***** END LICENSE BLOCK ***** */
 
 function FxWeaveGlue() {
-    this._log = Log4Moz.Service.getLogger("Chrome.Window");
+  this._log = Log4Moz.Service.getLogger("Chrome.Window");
 
-    this._log.info("Initializing Firefox Weave embedding");
+  this._log.info("Initializing Firefox Weave embedding");
 
-    this._os.addObserver(this, "weave:store:tabs:virtual:created", false);
-    this._os.addObserver(this, "weave:store:tabs:virtual:removed", false);
-    var engines = [
-        new Weave.BookmarksEngine(),
-        new Weave.HistoryEngine(),
-        new Weave.CookieEngine(),
-        new Weave.PasswordEngine(),
-        new Weave.FormEngine(),
-        new Weave.TabEngine()
-      ];
+  this._os.addObserver(this, "weave:service:tabs-engine:sync:success", false);
+  var engines = [
+    new Weave.BookmarksEngine(),
+    new Weave.HistoryEngine(),
+    new Weave.CookieEngine(),
+    new Weave.PasswordEngine(),
+    new Weave.FormEngine(),
+    new Weave.TabEngine()
+  ];
 
-    // Register engines
-    for (let i = 0; i < engines.length; i++)
-      Weave.Engines.register(engines[i]);
+  // Register engines
+  for (let i = 0; i < engines.length; i++)
+    Weave.Engines.register(engines[i]);
 
-    // Display a tabs notification if there are any virtual tabs.
-    this._onVirtualTabsChanged();
+  // Display a tabs notification if there are any virtual tabs.
+  // FIXME this won't do anything, because virtualTabs get loaded
+  this._onVirtualTabsChanged();
 
-    return;
+  return;
 }
 FxWeaveGlue.prototype = {
   _log: null,
@@ -91,8 +91,9 @@ FxWeaveGlue.prototype = {
 
     // Convert the hash of virtual tabs indexed by ID into an array
     // of virtual tabs whose ID is stored in an ID property.
-    virtualTabs =
-      [(virtualTabs[id].id = id) && virtualTabs[id] for (id in virtualTabs)];
+    virtualTabs = [tab for each (tab in virtualTabs)];
+    for (let i = 0; i < virtualTabs.length; i++)
+      virtualTabs[i].id = i;
 
     // Sort virtual tabs by their position in their windows.
     // Note: we don't actually group by window first, so all first tabs
@@ -113,10 +114,14 @@ FxWeaveGlue.prototype = {
       menu.removeItemAt(menu.itemCount - 1);
 
     for each (let virtualTab in virtualTabs) {
-      this._log.debug("TAB: " + uneval(virtualTab));
       let currentEntry = virtualTab.state.entries[virtualTab.state.index - 1];
+      if (!currentEntry)
+        continue;
       let label = currentEntry.title ? currentEntry.title : currentEntry.url;
       let menuitem = menu.appendItem(label, virtualTab.id);
+      menuitem.label = label;
+      menuitem.value = virtualTab.id;
+
       // Make a tooltip that contains either or both of the title and URL.
       menuitem.tooltipText =
         [currentEntry.title, currentEntry.url].filter(function(v) v).join("\n");
@@ -128,11 +133,8 @@ FxWeaveGlue.prototype = {
 
   onCommandTabsMenu: function FxWeaveGlue_onCommandTabsMenu(event) {
     let tabID = event.target.value;
-    let virtualTabs = Weave.Engines.get("tabs").virtualTabs;
+    let virtualTabs = this._getVirtualTabs();
     let virtualTab = virtualTabs[tabID];
-
-    this._log.debug("tab id = " + tabID);
-    this._log.debug("onCommandTabsMenu: virtualTab = " + virtualTab);
     let tab = gBrowser.addTab("about:blank");
     this._sessionStore.setTabState(tab, this._json.encode(virtualTab.state));
     gBrowser.selectedTab = tab;
@@ -174,8 +176,7 @@ FxWeaveGlue.prototype = {
   // nsIObserver
   observe: function FxWeaveGlue__observe(subject, topic, data) {
     switch(topic) {
-    case "weave:store:tabs:virtual:created":
-    case "weave:store:tabs:virtual:removed":
+    case "weave:service:tabs-engine:sync:success":
       this._onVirtualTabsChanged();
       break;
     default:
@@ -184,8 +185,7 @@ FxWeaveGlue.prototype = {
   },
 
   shutdown: function FxWeaveGlue__shutdown() {
-    this._os.removeObserver(this, "weave:store:tabs:virtual:created");
-    this._os.removeObserver(this, "weave:store:tabs:virtual:removed");
+    this._os.removeObserver(this, "weave:service:tabs-engine:sync:success");
   }
 }
 
