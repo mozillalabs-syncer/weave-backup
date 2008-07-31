@@ -125,7 +125,11 @@
               <rows>
                 <row align="center">
                   <label value="&instanceName.label;" control="sync-username-field"/>
-                  <textbox width="100%" flex="1" id="sync-instanceName-field" preference="extensions.weave.client.name" class="padded"/>
+                  <textbox id="sync-instanceName-field"
+                           class="padded" width="100%" flex="1"
+                           type="timed" timeout="600"
+                           oncommand="Weave.ClientData.refresh();"
+                           preference="extensions.weave.client.name"/>
                   <menulist preference="extensions.weave.client.type">
                     <menupopup>
                       <menuitem label="Desktop" value="desktop"/>
