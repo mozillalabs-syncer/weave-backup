@@ -24,12 +24,14 @@ var gOAuth = {
   
   init: function() {
     // Listen for webpage loads
-    gBrowser.addProgressListener(Weave_urlBarListener,
+    if (typeof(gBrowser) != "undefined")
+	    gBrowser.addProgressListener(Weave_urlBarListener,
         Components.interfaces.nsIWebProgress.NOTIFY_STATE_DOCUMENT);
   },
   
   uninit: function() {
-    gBrowser.removeProgressListener(Weave_urlBarListener);
+    if (typeof(gBrowser) != "undefined")
+      gBrowser.removeProgressListener(Weave_urlBarListener);
   },
 
   processNewURL: function(aURI) {
