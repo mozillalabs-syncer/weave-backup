@@ -206,10 +206,10 @@ SyncWizard.prototype = {
         document.getElementById('sync-wizard-forms').checked = branch.getBoolPref("forms");
 
 	if(deviceName) 
-          branch.setCharPref("client.name") = deviceName;
+          branch.setCharPref("client.name", deviceName);
 
         if(deviceType)
-          branch.setCharPref("client.type") = deviceType;
+          branch.setCharPref("client.type", deviceType);
 
         wizard.canAdvance = true;
         break;
