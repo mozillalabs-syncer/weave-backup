@@ -78,6 +78,9 @@
       <preference id="extensions.weave.engine.tabs"
                   name="extensions.weave.engine.tabs"
                   type="bool"/>
+      <preference id="extensions.weave.engine.input"
+                  name="extensions.weave.engine.input"
+                  type="bool"/>
     </preferences>
 
     <tabbox id="sync-tabbox" flex="1">
@@ -282,6 +285,12 @@
                   <checkbox id="sync-forms-checkbox"
                             label="&formsCheckbox.label;"
                             preference="extensions.weave.engine.forms"/>
+              </richlistitem>
+              
+              <richlistitem>
+                  <checkbox id="sync-input-checkbox"
+                            label="&inputCheckbox.label;"
+                            preference="extensions.weave.engine.input"/>
               </richlistitem>
 
               <richlistitem>
