@@ -48,7 +48,8 @@ function FxWeaveGlue() {
     new Weave.CookieEngine(),
     new Weave.PasswordEngine(),
     new Weave.FormEngine(),
-    new Weave.TabEngine()
+    new Weave.TabEngine(),
+    new Weave.InputEngine()
   ];
 
   // Register engines
