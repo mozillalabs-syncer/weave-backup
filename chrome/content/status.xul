@@ -32,8 +32,9 @@
       <hbox align="center" id="statusBox">
         <image id="statusIcon"/>
         <vbox>
-          <label id="statusEngine"/>
-          <label id="statusText"/>
+          <!-- empty values are required to preallocate space for the label -->
+          <label id="statusEngine" value=""/>
+          <label id="statusText" value=""/>
         </vbox>
       </hbox>
   </vbox>
