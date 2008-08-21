@@ -14,3 +14,5 @@ overlay chrome://messenger/content/preferences/preferences.xul chrome://weave/co
 
 @unpacked@locale weave en-US chrome/locale/en-US/
 @jar@locale weave en-US jar:chrome/sync.jar!/locale/en-US/
+
+resource weave modules/
