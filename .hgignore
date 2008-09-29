@@ -2,8 +2,6 @@
 chrome.manifest
 chrome/sync.jar
 sync.*.xpi
-platform/*
-components/*
 src/.*\.xpt
 src/.*\.o
 src/.*\.dylib
