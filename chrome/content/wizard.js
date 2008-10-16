@@ -127,10 +127,6 @@ SyncWizard.prototype = {
 
     switch(pageId) {
       case "sync-wizard-intro":
-        wizard.canAdvance = true;
-        break;
-
-      case "sync-wizard-eula":
         let radio = document.getElementById("acceptOrDecline");
         radio.value = "false";
         wizard.canAdvance = false;
@@ -267,9 +263,9 @@ SyncWizard.prototype = {
     }
   },
 
-  /////EULA SCREEN/////
+  /////INTRO SCREEN/////
 
-  onChangeEULARadio: function SyncWizard_onChangeEULARadio() {
+  onChangeTermsRadio: function SyncWizard_onChangeEULARadio() {
     let wizard = document.getElementById('sync-wizard');
     let radio = document.getElementById("acceptOrDecline");
 
