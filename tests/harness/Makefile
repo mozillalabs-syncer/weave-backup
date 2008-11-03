@@ -76,4 +76,4 @@ $(tests:.js=): $(tests)
 # fixme: hiding commands here means they can't be copy-and-pasted to run by hand
 $(tests:.js=-interactive): $(tests)
 	@NATIVE_TOPSRCDIR="$(native_topsrcdir)" TOPSRCDIR="$(topsrcdir)" \
-	@$(xpcshell) -s $(head) -f $(@:-interactive=).js $(tail) -i 2>&1
+	$(xpcshell) -s $(head) -f $(@:-interactive=).js $(tail) -i 2>&1
