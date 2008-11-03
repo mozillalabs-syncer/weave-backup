@@ -54,7 +54,7 @@ OAuthWizard.prototype = {
   },
 
   _init: function OAuthWizard__init() {
-    this._log = Log4Moz.Service.getLogger("Chrome.OAuthWizard");
+    this._log = Log4Moz.repository.getLogger("Chrome.OAuthWizard");
     this._log.info("Intializing OAuth wizard");
     
     this._os.addObserver(this, "weave:service:verify-passphrase:success", false);

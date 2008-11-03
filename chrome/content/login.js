@@ -33,7 +33,7 @@ let Login = {
   },
 
  onLoad: function Login_onLoad() {
-    this._log = Log4Moz.Service.getLogger("Chrome.Login");
+    this._log = Log4Moz.repository.getLogger("Chrome.Login");
     this._log.trace("Sync login window opened");
 
     this._os.addObserver(this, "weave:service:login:start", false);

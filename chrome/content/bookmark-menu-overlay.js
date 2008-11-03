@@ -75,7 +75,7 @@ var oldOnPopupShowingFunc = BookmarksEventHandler.onPopupShowing;
 
 var prefs = Cc["@mozilla.org/preferences-service;1"].
             getService(Ci.nsIPrefService).getBranch( "extensions.weave." );
-var log = Log4Moz.Service.getLogger("Share.Menu");
+var log = Log4Moz.repository.getLogger("Share.Menu");
 
 function isFolderSharedOutgoing( menuFolder ) {
   let menuFolderId = menuFolder.node.itemId;

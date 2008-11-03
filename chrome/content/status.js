@@ -24,7 +24,7 @@ let WeaveStatus = {
 
   get _log() {
     delete this._log;
-    return this._log = Log4Moz.Service.getLogger("Sync.Status");
+    return this._log = Log4Moz.repository.getLogger("Sync.Status");
   },
 
   get _stringBundle() {
