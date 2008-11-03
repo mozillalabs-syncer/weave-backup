@@ -20,56 +20,37 @@
   <stringbundleset id="stringbundleset">
     <stringbundle id="weaveStringBundle" src="chrome://weave/locale/wizard.properties"/>
   </stringbundleset>
-  
+
   <wizardpage label="&intro.title;" pageid="sync-wizard-intro"
-              next="sync-wizard-eula"
+              next="sync-wizard-welcome"
               onpageshow="gSyncWizard.onPageShow('sync-wizard-intro');">
     <vbox align="left">
       <image src="chrome://weave/skin/large-logo.png"/>
-      <separator/>
       <description width="500">
-        &intro-weave1.description;
-        <!--<html:a href="#" onclick="window.open('&intro-more.link;');">&intro-more.label;</html:a>-->
-      </description>
-      <separator class="thin"/>
-      <description width="500">
-        &intro-weave2.description;
-      </description>
-      <separator class="thin"/>
-      <description width="500">
-        &intro-weave3.description;
+        &intro.label;
+        <html:a href="#" onclick="window.open('&intro-more.link;');">
+          &intro-more.label;
+        </html:a>
       </description>
       <separator/>
       <hbox width="500">
         <html:strong>
-          <description>&intro-warning.description;</description>
+          <description width="500">
+            &intro-terms1.label;
+            <html:a href="#" onclick="window.open('&intro-terms2.link;');">
+              &intro-terms2.label;
+            </html:a>
+            &intro-terms3.label;
+          </description>
         </html:strong>
+        <separator/>
+        <radiogroup id="acceptOrDecline"
+                    oncommand="gSyncWizard.onChangeTermsRadio();">
+          <radio value="true" label="&intro-terms.accept;"/>
+          <radio value="false" label="&intro-terms.decline;"/>
+        </radiogroup>
       </hbox>
     </vbox>
-  </wizardpage>
-
-  
-  <wizardpage label="&eula.title;" pageid="sync-wizard-eula"
-              next="sync-wizard-welcome"
-              onpageshow="gSyncWizard.onPageShow('sync-wizard-eula');">
-    
-    <description>&eula.description;</description>
-    
-    <separator class="thin"/>
-    
-    <vbox id="EULAText" flex="1">
-      <iframe style="min-height: 14em" id="EULATextFrame" type="content" flex="1"
-              src="chrome://weave/content/EULA.xhtml"/>
-    </vbox>
-    
-    <separator class="thin"/>
-    
-    <radiogroup id="acceptOrDecline"
-                oncommand="gSyncWizard.onChangeEULARadio();">
-      <radio value="true" label="&eula.accept;"/>
-      <radio value="false" label="&eula.decline;"/>
-    </radiogroup>
-    
   </wizardpage>
   
 
