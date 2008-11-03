@@ -37,19 +37,13 @@
  * ***** END LICENSE BLOCK ***** */
 
 function FxWeaveGlue() {
-  this._log = Log4Moz.Service.getLogger("Chrome.Window");
+  this._log = Log4Moz.repository.getLogger("Chrome.Window");
 
   this._log.info("Initializing Firefox Weave embedding");
 
   this._os.addObserver(this, "weave:service:tabs-engine:sync:success", false);
   var engines = [
-    new Weave.BookmarksEngine(),
-    new Weave.HistoryEngine(),
-    new Weave.CookieEngine(),
-    new Weave.PasswordEngine(),
-    new Weave.FormEngine(),
-    new Weave.TabEngine(),
-    new Weave.InputEngine()
+    new Weave.BookmarksEngine()
   ];
 
   // Register engines
