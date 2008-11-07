@@ -39,6 +39,21 @@
 var Cc = Components.classes;
 var Ci = Components.interfaces;
 
+function checkCryptoModule() {
+  let ok = false;
+
+  try {
+    let svc = Cc["@labs.mozilla.com/Weave/Crypto;1"].
+      createInstance(Ci.IWeaveCrypto);
+    let iv = svc.generateRandomIV();
+    if (iv.length == 24)
+      ok = true;
+
+  } catch (e) {}
+
+  return ok;
+}
+
 function Sync() {
   this._log = Log4Moz.repository.getLogger("Chrome.Window");
 
@@ -54,7 +69,7 @@ function Sync() {
   this._os.addObserver(this, "weave:notification:added", false);
   this._os.addObserver(this, "weave:notification:removed", false);
 
-  if (!Weave.Crypto.checkModule()) {
+  if (!checkCryptoModule()) {
     setTimeout(function() {
       alert("There has been a problem loading the Weave crypto component.\n" +
             "Weave will not work correctly, apologies for the inconvenence.")
