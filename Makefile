@@ -66,15 +66,13 @@ dotin_files := $(shell find . -type f -name \*.in)
 dotin_files := $(dotin_files:.in=)
 
 all: test
-.PHONY: build platform test xpi clean $(dotin_files)
+.PHONY: build test xpi clean $(dotin_files)
 
 $(dotin_files): $(dotin_files:=.in)
 	./build/subst.pl $@ $(substitutions)
 
-platform:
+build: $(dotin_files)
 	$(MAKE) -C src install
-
-build: $(dotin_files) platform
 
 test: build
 	python scripts/makeloadertests.py
