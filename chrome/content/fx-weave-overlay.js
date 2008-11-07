@@ -52,7 +52,7 @@ function FxWeaveGlue() {
 
   // Display a tabs notification if there are any virtual tabs.
   // FIXME this won't do anything, because virtualTabs get loaded
-  this._onVirtualTabsChanged();
+  //this._onVirtualTabsChanged();
 
   return;
 }
@@ -79,7 +79,7 @@ FxWeaveGlue.prototype = {
       this.__defineGetter__("_json", function() json);
       return this._json;
   },
-
+/*
   // FIXME: refactor this function with the identical one in notification.xml.
   _getVirtualTabs: function FxWeaveGlue__getVirtualTabs() {
     let virtualTabs = Weave.Engines.get("tabs").virtualTabs;
@@ -167,12 +167,12 @@ FxWeaveGlue.prototype = {
     if (existingNotification)
       Weave.Notifications.remove(existingNotification);
   },
-
+*/
   // nsIObserver
   observe: function FxWeaveGlue__observe(subject, topic, data) {
     switch(topic) {
     case "weave:service:tabs-engine:sync:success":
-      this._onVirtualTabsChanged();
+      //this._onVirtualTabsChanged();
       break;
     default:
       break;
