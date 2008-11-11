@@ -13,7 +13,7 @@ let Login = {
 
   get _stringBundle() {
     let stringBundle = document.getElementById("weaveStringBundle");
-    this.__defineGetter__("_stringBundle", function() { return stringBundle });
+    this.__defineGetter__("_stringBundle", function() { return stringBundle; });
     return this._stringBundle;
   },
 
