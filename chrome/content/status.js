@@ -83,7 +83,7 @@ let WeaveStatus = {
     // FIXME: we should set a timer to force quit in case there is a
     // stale local lock
     // FIXME: abort any running sync here, once we have support for that
-    if (Weave.DAV.locked) {
+    if (Weave.Service.locked) {
       this._log.info("Waiting for current sync to finish");
       this._existingSync = true;
       this._statusIcon.setAttribute("status", "active");
@@ -115,9 +115,9 @@ let WeaveStatus = {
   doSync: function WeaveStatus_doSync() {
     try {
       // XXX Should we set a timeout to cancel sync if it takes too long?
-      if(Weave.Service.isInitialized && !Weave.Service.isQuitting) {
+      if(Weave.Service.isLoggedIn && !Weave.Service.isQuitting) {
         Weave.Service.sync();
-      } else if(Weave.Service.isInitialized && Weave.Service.isQuitting &&
+      } else if(Weave.Service.isLoggedIn && Weave.Service.isQuitting &&
                 Weave.Utils.prefs.getBoolPref("syncOnQuit.enabled")) {
         Weave.Service.sync();
       } else {
@@ -209,7 +209,7 @@ let WeaveStatus = {
 
     case "weave:service:global:success":
     case "weave:service:global:error":
-    if (this._existingSync && !Weave.DAV.locked) {
+    if (this._existingSync && !Weave.Service.locked) {
       this._log.info("Existing action finished, starting modal sync.");
       this._existingSync = false;
       this.doSync();
