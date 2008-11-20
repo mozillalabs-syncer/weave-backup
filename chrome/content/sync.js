@@ -72,7 +72,7 @@ function Sync() {
   if (!checkCryptoModule()) {
     setTimeout(function() {
       alert("There has been a problem loading the Weave crypto component.\n" +
-            "Weave will not work correctly, apologies for the inconvenence.")
+            "Weave will not work correctly, apologies for the inconvenence.");
     }, 500);
     return;
   }
@@ -91,19 +91,6 @@ function Sync() {
     setTimeout(function() { window.openUILinkIn(url, "tab"); }, 500);
   }
 
-  // FIXME: hack
-  if (Weave.Utils.prefs.getCharPref("lastversion") == "0.1.30" ||
-      Weave.Utils.prefs.getCharPref("lastversion") == "0.1.32" ||
-      Weave.Utils.prefs.getCharPref("lastversion") == "0.1.33" ||
-      Weave.Utils.prefs.getCharPref("lastversion") == "0.1.34") {
-    this._prefSvc.setCharPref("extensions.weave.username", "nobody");
-    setTimeout(function() {
-      alert("Due to server changes you need to re-run the setup wizard.\n" +
-            "If this is the first computer you upgrade to version " +
-            Weave.WEAVE_VERSION + ", you MUST create a new account.");
-    }, 500);
-  }
-
   Weave.Utils.prefs.setCharPref("lastversion", Weave.WEAVE_VERSION);
 
   let username = this._prefSvc.getCharPref("extensions.weave.username");
@@ -111,10 +98,15 @@ function Sync() {
       setTimeout(function() { gSync.doOpenSetupWizard(); }, 500);
   }
 
+  // FIXME this means the last window opened gets these...
+  // and if it's closed, they are lost?
+  Weave.Service.onGetPassword = Weave.Utils.bind2(this, this._onGetPassword);
+  Weave.Service.onGetPassphrase = Weave.Utils.bind2(this, this._onGetPassphrase);
+
   // TODO: This is a fix for the general case of bug 436936.  It will
   // not support marginal cases such as when a new browser window is
   // opened in the middle of signing-in or syncing.
-  if (Weave.Service.isInitialized)
+  if (Weave.Service.isLoggedIn)
     this._onLogin();
 
   Weave.Service.onWindowOpened();
@@ -295,6 +287,19 @@ Sync.prototype = {
     let syncnowitem = document.getElementById("sync-syncnowitem");
     if (syncnowitem)
       syncnowitem.setAttribute("disabled", "true");
+  },
+
+  _onGetPassword: function Sync_onGetPassword(identity) {
+    let self = yield;
+    this._log.info("getting password...");
+    self.done();
+  },
+
+  _onGetPassphrase: function Sync_onGetPassphrase(identity) {
+    let self = yield;
+    this._log.info("getting passphrase...");
+//    this._openWindow('Sync:Login', 'chrome://weave/content/login.xul');
+    self.done();
   },
 
   _onSyncStart: function Sync_onSyncStart() {
