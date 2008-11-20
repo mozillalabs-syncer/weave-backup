@@ -117,7 +117,7 @@ OAuthWizard.prototype = {
       let pwd = document.getElementById('oauth-intro-pwd');
       
       Weave.OAuth.setUser(uid.value, pwd.value, pas.value);
-      Weave.Service.loginAndInit(null, uid.value, pwd.value, pas.value);
+      Weave.Service.login(null, uid.value, pwd.value, pas.value);
     } else {
       Weave.OAuth.setUser(Weave.Service.username, Weave.Service.password, pas.value);
       Weave.Service.verifyPassphrase(null, Weave.Service.username, Weave.Service.password, pas.value);

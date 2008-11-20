@@ -142,8 +142,8 @@ let Login = {
       Weave.Service.passphrase = null;
     }
 
-    Weave.Service.loginAndInit(null, username.value,
-                               password.value, passphrase.value);
+    Weave.Service.login(null, username.value, password.value, 
+                        passphrase.value);
     return true;
   },
 
