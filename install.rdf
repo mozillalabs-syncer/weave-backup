@@ -33,6 +33,16 @@
         <em:minVersion>3.0a2pre</em:minVersion>
         <em:maxVersion>3.0</em:maxVersion>
       </Description> </em:targetApplication>
+
+    <!-- Fennec -->
+    <em:targetApplication>
+      <Description>
+	<em:id>{a23983c0-fd0e-11dc-95ff-0800200c9a66}</em:id>
+	<em:minVersion>1.0a1</em:minVersion>
+        <em:maxVersion>1.0.*</em:maxVersion>
+      </Description>
+    </em:targetApplication>
+	
    
     <!-- Front End MetaData -->
     <em:name>Weave</em:name>
