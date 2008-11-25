@@ -21,9 +21,6 @@
     <richpref pref="extensions.weave.passphrase" title="&extensions.weave.passphrase.title;" type="text">
       &extensions.weave.passphrase.description;
     </richpref>
-    <richpref pref="extensions.weave.tos" title="&extensions.weave.tos.title;" type="bool">
-      &extensions.weave.tos.description;
-    </richpref>
     <richpref pref="extensions.weave.client.name" title="&extensions.weave.client.name.title;" type="text">
       &extensions.weave.client.name.description;
     </richpref>
