@@ -55,7 +55,8 @@ ifeq ($(buildid),)
   $(error)
 endif
 
-substitutions := 'buildid=$(buildid)'
+appname := 'fx'
+substitutions = 'buildid=$(buildid)' 'appname=$(appname)'
 ifeq ($(MAKECMDGOALS),xpi)
   substitutions += 'unpacked=\# ' 'jar='
 else
@@ -66,6 +67,7 @@ dotin_files := $(shell find . -type f -name \*.in)
 dotin_files := $(dotin_files:.in=)
 
 all: test
+
 .PHONY: build test xpi clean $(dotin_files)
 
 $(dotin_files): $(dotin_files:=.in)
@@ -88,6 +90,12 @@ chrome_files := chrome/content/* chrome/skin/* chrome/locale/*
 # fixme: use explicit file list instead of glob?
 chrome/sync.jar: $(chrome_files)
 	cd chrome; zip -9 -ur sync.jar *; cd ..
+
+# issue 'make xpi-fennec' to build a fennec-specific xpi,
+# or 'make xpi' to build the one for firefox.
+# (either xpi file will work on thunderbird.)
+xpi-fennec: appname := 'fennec'
+xpi-fennec: xpi
 
 xpi: build chrome/sync.jar $(xpi_files)
 	zip -9 -ur $(xpi_name) $(xpi_files)
