@@ -94,7 +94,9 @@ function Sync() {
   Weave.Utils.prefs.setCharPref("lastversion", Weave.WEAVE_VERSION);
 
   let username = this._prefSvc.getCharPref("extensions.weave.username");
-  if (!username || username == 'nobody') {
+  let server = this._prefSvc.getCharPref("extensions.weave.serverURL");
+  if ((!username || username == 'nobody') &&
+      server == 'https://services.mozilla.com/') {
       setTimeout(function() { gSync.doOpenSetupWizard(); }, 500);
   }
 
@@ -371,12 +373,13 @@ Sync.prototype = {
   },
 
   doLogin: function Sync_doLogin(event) {
-    if (Weave.Service.isInitialized)
-      return; // already logged in
+    if (Weave.Service.isLoggedIn)
+      return;
 
     let username = this._prefSvc.getCharPref("extensions.weave.username");
-
-    if (!username || username == 'nobody') {
+    let server = this._prefSvc.getCharPref("extensions.weave.serverURL");
+    if ((!username || username == 'nobody') &&
+        server == 'https://services.mozilla.com/') {
       this.doOpenSetupWizard();
       return;
     }
