@@ -42,13 +42,16 @@ function FxWeaveGlue() {
   this._log.info("Initializing Firefox Weave embedding");
 
   this._os.addObserver(this, "weave:service:tabs-engine:sync:success", false);
-  var engines = [
-    new Weave.BookmarksEngine()
-  ];
 
-  // Register engines
-  for (let i = 0; i < engines.length; i++)
-    Weave.Engines.register(engines[i]);
+  try {
+    Cu.import("resource://weave/engines/bookmarks.js");
+    Cu.import("resource://weave/engines/history.js");
+
+    Weave.Engines.register(new HistoryEngine());
+    Weave.Engines.register(new BookmarksEngine());
+  } catch (e) {
+    this._log.error("Could not initialize engine: " + (e.message? e.message : e));
+  }
 
   // Display a tabs notification if there are any virtual tabs.
   // FIXME this won't do anything, because virtualTabs get loaded
