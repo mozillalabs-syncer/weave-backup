@@ -12,6 +12,7 @@
     <richpref pref="extensions.weave.enabled" title="&extensions.weave.enabled.title;" type="bool">
       &extensions.weave.enabled.description;
     </richpref>
+    <!--
     <richpref pref="extensions.weave.username" title="&extensions.weave.username.title;" type="text">
       &extensions.weave.username.description;
     </richpref>
@@ -27,5 +28,6 @@
     <richpref pref="extensions.weave.serverURL" title="&extensions.weave.serverURL.title;" type="text">
       &extensions.weave.serverURL.description;
     </richpref>
+    -->
   </scrollbox>
 </overlay>
