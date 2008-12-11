@@ -6,6 +6,36 @@
   <script type="text/javascript" src="prefkeys.js"></script>
   
   <title>Weave Account Settings</title>
+<script type="application/x-javascript">
+Components.utils.import("resource://weave/service.js");
+
+function changePassword() {
+  // TODO implement this
+}
+
+function changeClientName() {
+  // TODO implement this
+}
+
+function updateCheckBoxes() {
+  // TODO implement this
+}
+
+function onLoad() {
+  var prefService = Components.classes["@mozilla.org/preferences-service;1"]
+     .getService(Components.interfaces.nsIPrefBranch);
+  var serverUrl = prefService.getCharPref("extensions.weave.serverURL");
+  var username = prefService.getCharPref("extensions.weave.username");
+  document.getElementById("username").value = username;
+  document.getElementById("server-url").value = serverUrl;
+
+  // TODO set values of checkboxes based on current preferences.
+}
+
+window.addEventListener("load", onLoad, false);
+
+</script>
+
 </head>
 
 <body style="font-size:1.5em">
@@ -14,48 +44,57 @@
 chrome://weave/content/fennec-prefs.html.-->
  <h2>Weave Account Settings</h2>
  <form>
+    <input type="button" value="Sync Now" onclick="gFennecWeaveGlue.syncNow();"/>
     <table style="font-size:1em">
     <tr><td>
     <fieldset>
-
       <legend>Synchronize These Data Types:</legend>
       <table style="font-size:1em">
-       <tr><td>Bookmarks</td><td><input type="checkbox" checked></td></tr>
-       <tr><td>Cookies</td><td><input type="checkbox" checked></td></tr>
-       <tr><td>Browsing History</td><td><input type="checkbox" checked></td></tr>
-       <tr><td>Tabs</td><td><input type="checkbox" checked></td></tr>
-
-       <tr><td>Passwords</td><td><input type="checkbox" checked></td></tr>
-       <tr><td>Saved Form Data</td><td><input type="checkbox" checked></td></tr>
+       <tr><td>Bookmarks</td><td><input type="checkbox"
+	 id="bookmarks-check" onclick="updateCheckBoxes();"></td></tr>
+       <tr><td>Cookies</td><td><input type="checkbox"
+	 id="cookies-check" onclick="updateCheckBoxes();></td></tr>
+       <tr><td>Browsing History</td><td><input type="checkbox"
+	 id="history-check" onclick="updateCheckBoxes();></td></tr>
+       <tr><td>Tabs</td><td><input type="checkbox"
+	 id="tabs-check" onclick="updateCheckBoxes();></td></tr>
+       <tr><td>Passwords</td><td><input type="checkbox"
+	 id="passwords-check" onclick="updateCheckBoxes();></td></tr>
+       <tr><td>Saved Form Data</td><td><input type="checkbox"
+	 id="forms-check" onclick="updateCheckBoxes();></td></tr>
       </table>
     </fieldset>
     </td><td>
     <fieldset>
       <legend>Change your Client Name:</legend>
-
-      Client name: <input type="text" value="FennecPhone"><input type="submit" value="Change">
+      Client name: <input type="text" value="FennecPhone">
+      <input type="button" value="Change" onclick="changeClientName();"/>
     </fieldset>
     <fieldset>
       <legend>Change your Password:</legend>
       <table>
-      <tr><td>Enter Old Password:</td><td><input type="text"></td></tr>
-      <tr><td>Enter New Password:</td><td><input type="text"></td></tr>
-
-      <tr><td colspan="2"><input type="submit" value="Change"></td></tr>
+	<tr><td>Enter Old Password:</td>
+	<td><input type="text" id="old-password-input"></td></tr>
+	<tr><td>Enter New Password:</td>
+	<td><input type="text" id="new-password-input"></td></tr>
+	<tr><td colspan="2">
+	  <input type="button" value="Change" onclick="changePassword();">
+	</td></tr>
       </table>
     </fieldset>
     </td></tr></table>
 
     <fieldset>
       <legend>Reset Lost Password:</legend>
-      <p>Lost your password?  <a href="">Click here to have an email sent to you</a> containing instructions for resetting your password.</p>
+      <p>Lost your password?  <a href="">Have an email sent to you</a> containing instructions for resetting your password.</p>
 
     </fieldset>
     <fieldset>
       <legend>Use A Different Account or Server:</legend>
-      <p>You are currently logged in to Weave as user <strong><span id="username"></span></strong>
+      <p>You are currently logged in to Weave
+         as user <strong><span id="username"></span></strong>
          on server <strong><span id="server-url"></span></strong>.
-      <a href="fennec-connect.html">Click here to use a different account or server</a>.  (You will be asked to re-enter your password and passphrase.)</p>
+      <a href="fennec-connect.html">Use a different account or server</a>.  (You will be asked to re-enter your password and passphrase.)</p>
 
     </fieldset>
  </form>

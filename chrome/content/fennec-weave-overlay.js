@@ -40,11 +40,11 @@ function FennecWeaveGlue() {
   this._log.info("Initializing Fennec Weave embedding");
 
   try {
-    //Cu.import("resource://weave/engines/bookmarks.js");
+    Cu.import("resource://weave/engines/bookmarks.js");
     Cu.import("resource://weave/engines/history.js");
 
-    Weave.Engines.register(new HistoryEngine());
-    //Weave.Engines.register(new BookmarksEngine());
+    //Weave.Engines.register(new HistoryEngine());
+    Weave.Engines.register(new BookmarksEngine());
   } catch (e) {
     this._log.error("Could not initialize engine: " + (e.message? e.message : e));
   }
@@ -62,7 +62,32 @@ FennecWeaveGlue.prototype = {
    * Try doing Weave.Service.username = , .password=, .passphrase = .
    */
 
-  // TODO probably also want a Sync Now button, just for testing/dev.
+  syncNow: function FennecWeaveGlue__syncNow() {
+    /* Makes a sync happen immediately.
+       Just for dev/debug; probably not an exposed UI feature in the finished
+       version. */
+    if (!Weave.Service.isLoggedIn) {
+      dump("Can't sync, weave service not logged in.\n");
+      return;
+    }
+    if (Weave.Service.isQuitting) {
+      dump("Can't sync, I'm quitting.\n");
+      return;
+    }
+    Weave.Service.sync();
+    // If we need debugging help with this, set up observers:
+    // (from status.js)
+    /*     this._os.addObserver(this, "weave:service:sync:start", true);
+    this._os.addObserver(this, "weave:service:sync:engine:start", true);
+    this._os.addObserver(this, "weave:service:sync:status", true);
+    this._os.addObserver(this, "weave:service:sync:success", true);
+    this._os.addObserver(this, "weave:service:sync:error", true);
+
+    this._os.addObserver(this, "weave:service:global:success", true);
+    this._os.addObserver(this, "weave:service:global:error", true);
+   */
+
+  },
 
   openPrefs: function FennecWeaveGlue__openPrefs() {
     /*var ios = Cc["@mozilla.org/network/io-service;1"]
