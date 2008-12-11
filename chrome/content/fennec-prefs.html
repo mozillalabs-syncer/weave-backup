@@ -40,6 +40,14 @@ function syncNowButton() {
     // As I expected, it's not logged in. Probably because of the wbo.js thing?
     if (!Weave.Service.isLoggedIn) {
       dump("Can't sync, weave service not logged in.\n");
+      Weave.Service.login( function() {
+                          dump("Login Complete.  Calling sync...\n");
+                          Weave.Service.sync();
+                          dump("Called sync.\n");
+                          },
+			 Weave.Service.username,
+			 Weave.Service.password,
+			 Weave.Service.passphrase);
       return;
     }
     if (Weave.Service.isQuitting) {

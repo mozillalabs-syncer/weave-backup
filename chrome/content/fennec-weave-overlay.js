@@ -48,6 +48,20 @@ function FennecWeaveGlue() {
   } catch (e) {
     this._log.error("Could not initialize engine: " + (e.message? e.message : e));
   }
+
+  if (Weave.Service.username && Weave.Service.password && Weave.Service.passphrase) {
+    // Try to login on startup...
+    Weave.Service.login( function() {dump("Login Complete.\n");},
+			 Weave.Service.username,
+			 Weave.Service.password,
+			 Weave.Service.passphrase);
+    // Interesting: this gets a "Could not acquire lock".
+  } else {
+    dump("FennecWeaveGlue.init: Can't login.\n");
+    dump("Username: " + Weave.Service.username + "\n");
+    dump("Password: " + Weave.Service.password + "\n");
+    dump("Passphrase: " + Weave.Service.passphrase + "\n");
+  }
 }
 FennecWeaveGlue.prototype = {
   shutdown: function FennecWeaveGlue__shutdown() {
@@ -67,6 +81,13 @@ FennecWeaveGlue.prototype = {
    * Chrome.Window ERROR Could not initialize engine: Cc['@mozilla.org/microsummary/service;1'] is undefined
    *
    * Probably going to have to fake a Login next...
+   *
+   * New error is
+   * 2008-12-11 15:01:07	Service.Main	ERROR
+   * Could not upload keys: Could not PUT resource
+   * https://63.245.209.84/weave/0.3/jdicarlo/keys/pubkey (0)
+   * (JS frame :: file:///Users/jonathandicarlo/Library/Application%20Support/Fennec/Profiles/x1njv4a4.default/extensions/%7B340c2bbc-ce74-4362-90b5-7c26312808ef%7D
+   * /modules/resource.js :: Res__request :: line 273)
    */
 
   openPrefs: function FennecWeaveGlue__openPrefs() {
@@ -91,6 +112,8 @@ FennecWeaveGlue.prototype = {
       Browser.currentBrowser.loadURI("chrome://weave/content/fennec-prefs.html");
     } else {
       Browser.currentBrowser.loadURI("chrome://weave/content/fennec-connect.html");
+      // TODO ideally, it would log you in after you're done filling out the
+      // connect page.
     }
 
     /*Also: defaults for prefs being different on fennec than on ffox?
