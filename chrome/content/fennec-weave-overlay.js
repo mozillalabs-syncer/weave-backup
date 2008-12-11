@@ -62,32 +62,12 @@ FennecWeaveGlue.prototype = {
    * Try doing Weave.Service.username = , .password=, .passphrase = .
    */
 
-  syncNow: function FennecWeaveGlue__syncNow() {
-    /* Makes a sync happen immediately.
-       Just for dev/debug; probably not an exposed UI feature in the finished
-       version. */
-    if (!Weave.Service.isLoggedIn) {
-      dump("Can't sync, weave service not logged in.\n");
-      return;
-    }
-    if (Weave.Service.isQuitting) {
-      dump("Can't sync, I'm quitting.\n");
-      return;
-    }
-    Weave.Service.sync();
-    // If we need debugging help with this, set up observers:
-    // (from status.js)
-    /*     this._os.addObserver(this, "weave:service:sync:start", true);
-    this._os.addObserver(this, "weave:service:sync:engine:start", true);
-    this._os.addObserver(this, "weave:service:sync:status", true);
-    this._os.addObserver(this, "weave:service:sync:success", true);
-    this._os.addObserver(this, "weave:service:sync:error", true);
-
-    this._os.addObserver(this, "weave:service:global:success", true);
-    this._os.addObserver(this, "weave:service:global:error", true);
+  /* More errors:
+   * Service.Main ERROR Could not upload keys: wbo.uri is null (module:wbo.js:97 :: TypeError)
+   * Chrome.Window ERROR Could not initialize engine: Cc['@mozilla.org/microsummary/service;1'] is undefined
+   *
+   * Probably going to have to fake a Login next...
    */
-
-  },
 
   openPrefs: function FennecWeaveGlue__openPrefs() {
     /*var ios = Cc["@mozilla.org/network/io-service;1"]

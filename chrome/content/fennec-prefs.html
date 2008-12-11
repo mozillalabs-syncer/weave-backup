@@ -32,6 +32,38 @@ function onLoad() {
   // TODO set values of checkboxes based on current preferences.
 }
 
+function syncNowButton() {
+    /* Makes a sync happen immediately.
+       Just for dev/debug; probably not an exposed UI feature in the finished
+       version. */
+
+    // As I expected, it's not logged in. Probably because of the wbo.js thing?
+    if (!Weave.Service.isLoggedIn) {
+      dump("Can't sync, weave service not logged in.\n");
+      return;
+    }
+    if (Weave.Service.isQuitting) {
+      dump("Can't sync, I'm quitting.\n");
+      return;
+    }
+    dump("Calling sync...\n");
+    Weave.Service.sync();
+    dump("Called sync.\n");
+
+    // If we need debugging help with this, set up observers:
+    // (from status.js)
+    /*     this._os.addObserver(this, "weave:service:sync:start", true);
+    this._os.addObserver(this, "weave:service:sync:engine:start", true);
+    this._os.addObserver(this, "weave:service:sync:status", true);
+    this._os.addObserver(this, "weave:service:sync:success", true);
+    this._os.addObserver(this, "weave:service:sync:error", true);
+
+    this._os.addObserver(this, "weave:service:global:success", true);
+    this._os.addObserver(this, "weave:service:global:error", true);
+   */
+
+}
+
 window.addEventListener("load", onLoad, false);
 
 </script>
@@ -44,7 +76,7 @@ window.addEventListener("load", onLoad, false);
 chrome://weave/content/fennec-prefs.html.-->
  <h2>Weave Account Settings</h2>
  <form>
-    <input type="button" value="Sync Now" onclick="gFennecWeaveGlue.syncNow();"/>
+    <input type="button" value="Sync Now" onclick="syncNowButton();"/>
     <table style="font-size:1em">
     <tr><td>
     <fieldset>
@@ -53,15 +85,15 @@ chrome://weave/content/fennec-prefs.html.-->
        <tr><td>Bookmarks</td><td><input type="checkbox"
 	 id="bookmarks-check" onclick="updateCheckBoxes();"></td></tr>
        <tr><td>Cookies</td><td><input type="checkbox"
-	 id="cookies-check" onclick="updateCheckBoxes();></td></tr>
+	 id="cookies-check" onclick="updateCheckBoxes();"></td></tr>
        <tr><td>Browsing History</td><td><input type="checkbox"
 	 id="history-check" onclick="updateCheckBoxes();></td></tr>
        <tr><td>Tabs</td><td><input type="checkbox"
-	 id="tabs-check" onclick="updateCheckBoxes();></td></tr>
+	 id="tabs-check" onclick="updateCheckBoxes();"></td></tr>
        <tr><td>Passwords</td><td><input type="checkbox"
-	 id="passwords-check" onclick="updateCheckBoxes();></td></tr>
+	 id="passwords-check" onclick="updateCheckBoxes();"></td></tr>
        <tr><td>Saved Form Data</td><td><input type="checkbox"
-	 id="forms-check" onclick="updateCheckBoxes();></td></tr>
+	 id="forms-check" onclick="updateCheckBoxes();"></td></tr>
       </table>
     </fieldset>
     </td><td>
