@@ -88,6 +88,8 @@ FennecWeaveGlue.prototype = {
    * https://63.245.209.84/weave/0.3/jdicarlo/keys/pubkey (0)
    * (JS frame :: file:///Users/jonathandicarlo/Library/Application%20Support/Fennec/Profiles/x1njv4a4.default/extensions/%7B340c2bbc-ce74-4362-90b5-7c26312808ef%7D
    * /modules/resource.js :: Res__request :: line 273)
+   *
+   * looks like setting log to Debug or even Trace will help solve this one
    */
 
   openPrefs: function FennecWeaveGlue__openPrefs() {

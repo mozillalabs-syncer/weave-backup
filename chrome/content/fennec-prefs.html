@@ -18,7 +18,26 @@ function changeClientName() {
 }
 
 function updateCheckBoxes() {
-  // TODO implement this
+  var prefService = Components.classes["@mozilla.org/preferences-service;1"]
+     .getService(Components.interfaces.nsIPrefBranch);
+  var checked;
+  checked = document.getElementById("bookmarks-check").value;
+  prefService.setBoolPref("extensions.weave.engine.bookmarks", checked);
+  
+  checked = document.getElementById("cookiess-check").value;
+  prefService.setBoolPref("extensions.weave.engine.cookies", checked);
+
+  checked = document.getElementById("history-check").value;
+  prefService.setBoolPref("extensions.weave.engine.history", checked);
+
+  checked = document.getElementById("tabs-check").value;
+  prefService.setBoolPref("extensions.weave.engine.tabs", checked);
+
+  checked = document.getElementById("passwords-check").value;
+  prefService.setBoolPref("extensions.weave.engine.passwords", checked);
+
+  checked = document.getElementById("forms-check").value;
+  prefService.setBoolPref("extensions.weave.engine.forms", checked);
 }
 
 function onLoad() {
@@ -26,10 +45,23 @@ function onLoad() {
      .getService(Components.interfaces.nsIPrefBranch);
   var serverUrl = prefService.getCharPref("extensions.weave.serverURL");
   var username = prefService.getCharPref("extensions.weave.username");
-  document.getElementById("username").value = username;
-  document.getElementById("server-url").value = serverUrl;
+  document.getElementById("username").innerHTML = username;
+  document.getElementById("server-url").innerHTML = serverUrl;
 
-  // TODO set values of checkboxes based on current preferences.
+  var checked;
+  checked = prefService.getBoolPref("extensions.weave.engine.bookmarks");
+  document.getElementById("bookmarks-check").value = checked;
+  checked = prefService.getBoolPref("extensions.weave.engine.cookies");
+  document.getElementById("cookiess-check").value = checked;
+  checked = prefService.getBoolPref("extensions.weave.engine.history");
+  document.getElementById("history-check").value = checked;
+  checked = prefService.getBoolPref("extensions.weave.engine.tabs");
+  document.getElementById("tabs-check").value = checked;
+  checked = prefService.getBoolPref("extensions.weave.engine.passwords");
+  document.getElementById("passwords-check").value = checked;
+  checked = prefService.getBoolPref("extensions.weave.engine.forms");
+  document.getElementById("forms-check").value = checked;
+
 }
 
 function syncNowButton() {
