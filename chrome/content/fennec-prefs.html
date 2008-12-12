@@ -21,22 +21,22 @@ function updateCheckBoxes() {
   var prefService = Components.classes["@mozilla.org/preferences-service;1"]
      .getService(Components.interfaces.nsIPrefBranch);
   var checked;
-  checked = document.getElementById("bookmarks-check").value;
+  checked = document.getElementById("bookmarks-check").checked;
   prefService.setBoolPref("extensions.weave.engine.bookmarks", checked);
   
-  checked = document.getElementById("cookiess-check").value;
+  checked = document.getElementById("cookies-check").checked;
   prefService.setBoolPref("extensions.weave.engine.cookies", checked);
 
-  checked = document.getElementById("history-check").value;
+  checked = document.getElementById("history-check").checked;
   prefService.setBoolPref("extensions.weave.engine.history", checked);
 
-  checked = document.getElementById("tabs-check").value;
+  checked = document.getElementById("tabs-check").checked;
   prefService.setBoolPref("extensions.weave.engine.tabs", checked);
 
-  checked = document.getElementById("passwords-check").value;
+  checked = document.getElementById("passwords-check").checked;
   prefService.setBoolPref("extensions.weave.engine.passwords", checked);
 
-  checked = document.getElementById("forms-check").value;
+  checked = document.getElementById("forms-check").checked;
   prefService.setBoolPref("extensions.weave.engine.forms", checked);
 }
 
@@ -50,17 +50,17 @@ function onLoad() {
 
   var checked;
   checked = prefService.getBoolPref("extensions.weave.engine.bookmarks");
-  document.getElementById("bookmarks-check").value = checked;
+  document.getElementById("bookmarks-check").checked = checked;
   checked = prefService.getBoolPref("extensions.weave.engine.cookies");
-  document.getElementById("cookiess-check").value = checked;
+  document.getElementById("cookies-check").checked = checked;
   checked = prefService.getBoolPref("extensions.weave.engine.history");
-  document.getElementById("history-check").value = checked;
+  document.getElementById("history-check").checked = checked;
   checked = prefService.getBoolPref("extensions.weave.engine.tabs");
-  document.getElementById("tabs-check").value = checked;
+  document.getElementById("tabs-check").checked = checked;
   checked = prefService.getBoolPref("extensions.weave.engine.passwords");
-  document.getElementById("passwords-check").value = checked;
+  document.getElementById("passwords-check").checked = checked;
   checked = prefService.getBoolPref("extensions.weave.engine.forms");
-  document.getElementById("forms-check").value = checked;
+  document.getElementById("forms-check").checked = checked;
 
 }
 
@@ -123,34 +123,34 @@ chrome://weave/content/fennec-prefs.html.-->
       <legend>Synchronize These Data Types:</legend>
       <table style="font-size:1em">
        <tr><td>Bookmarks</td><td><input type="checkbox"
-	 id="bookmarks-check" onclick="updateCheckBoxes();"></td></tr>
+	 id="bookmarks-check" onclick="updateCheckBoxes();"/></td></tr>
        <tr><td>Cookies</td><td><input type="checkbox"
-	 id="cookies-check" onclick="updateCheckBoxes();"></td></tr>
+	 id="cookies-check" onclick="updateCheckBoxes();"/></td></tr>
        <tr><td>Browsing History</td><td><input type="checkbox"
-	 id="history-check" onclick="updateCheckBoxes();></td></tr>
+	 id="history-check" onclick="updateCheckBoxes();"/></td></tr>
        <tr><td>Tabs</td><td><input type="checkbox"
-	 id="tabs-check" onclick="updateCheckBoxes();"></td></tr>
+	 id="tabs-check" onclick="updateCheckBoxes();"/></td></tr>
        <tr><td>Passwords</td><td><input type="checkbox"
-	 id="passwords-check" onclick="updateCheckBoxes();"></td></tr>
+	 id="passwords-check" onclick="updateCheckBoxes();"/></td></tr>
        <tr><td>Saved Form Data</td><td><input type="checkbox"
-	 id="forms-check" onclick="updateCheckBoxes();"></td></tr>
+	 id="forms-check" onclick="updateCheckBoxes();"/></td></tr>
       </table>
     </fieldset>
     </td><td>
     <fieldset>
       <legend>Change your Client Name:</legend>
-      Client name: <input type="text" value="FennecPhone">
+      Client name: <input type="text" value="FennecPhone"/>
       <input type="button" value="Change" onclick="changeClientName();"/>
     </fieldset>
     <fieldset>
       <legend>Change your Password:</legend>
       <table>
 	<tr><td>Enter Old Password:</td>
-	<td><input type="text" id="old-password-input"></td></tr>
+	<td><input type="text" id="old-password-input"/></td></tr>
 	<tr><td>Enter New Password:</td>
-	<td><input type="text" id="new-password-input"></td></tr>
+	<td><input type="text" id="new-password-input"/></td></tr>
 	<tr><td colspan="2">
-	  <input type="button" value="Change" onclick="changePassword();">
+	  <input type="button" value="Change" onclick="changePassword();"/>
 	</td></tr>
       </table>
     </fieldset>
