@@ -14,7 +14,10 @@ function changePassword() {
 }
 
 function changeClientName() {
-  // TODO implement this
+  var prefService = Components.classes["@mozilla.org/preferences-service;1"]
+     .getService(Components.interfaces.nsIPrefBranch);
+  var clientName = document.getElementById("client-name").value;
+  prefService.setCharPref("extensions.weave.client.name");
 }
 
 function updateCheckBoxes() {
@@ -45,8 +48,10 @@ function onLoad() {
      .getService(Components.interfaces.nsIPrefBranch);
   var serverUrl = prefService.getCharPref("extensions.weave.serverURL");
   var username = prefService.getCharPref("extensions.weave.username");
+  var clientName = prefService.getCharPref("extensions.weave.client.name");
   document.getElementById("username").innerHTML = username;
   document.getElementById("server-url").innerHTML = serverUrl;
+  document.getElementById("client-name").value = clientName;
 
   var checked;
   checked = prefService.getBoolPref("extensions.weave.engine.bookmarks");
@@ -61,7 +66,6 @@ function onLoad() {
   document.getElementById("passwords-check").checked = checked;
   checked = prefService.getBoolPref("extensions.weave.engine.forms");
   document.getElementById("forms-check").checked = checked;
-
 }
 
 function syncNowButton() {
@@ -139,7 +143,7 @@ chrome://weave/content/fennec-prefs.html.-->
     </td><td>
     <fieldset>
       <legend>Change your Client Name:</legend>
-      Client name: <input type="text" value="FennecPhone"/>
+      Client name: <input type="text" value="FennecPhone" id="client-name"/>
       <input type="button" value="Change" onclick="changeClientName();"/>
     </fieldset>
     <fieldset>

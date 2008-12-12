@@ -10,7 +10,7 @@ function doSaveSettings() {
   var passphraseInput = document.getElementById("passphrase-input").value;
   var serverUrlInput = document.getElementById("server-url-input").value;
   var tosAccepted = document.getElementById("accept-tos-check").checked; 
-
+  var clientName = document.getElementById("client-name").value;
   if (tosAccepted) {
     document.getElementById("err-msg").innerHTML = "Accepted Terms of Service" +
                     ", username is " + usernameInput;
@@ -18,7 +18,7 @@ function doSaveSettings() {
       .getService(Components.interfaces.nsIPrefBranch);
     prefService.setCharPref("extensions.weave.serverURL", serverUrlInput);
     prefService.setCharPref("extensions.weave.username", usernameInput);
-    
+    prefService.setCharPref("extensions.weave.client.name", clientName);
     Weave.Service.password = passwordInput;
     Weave.Service.passphrase = passphraseInput;
 
@@ -33,9 +33,10 @@ function onLoad() {
      .getService(Components.interfaces.nsIPrefBranch);
   var serverUrl = prefService.getCharPref("extensions.weave.serverURL");
   var username = prefService.getCharPref("extensions.weave.username");
+  var clientName = prefService.getCharPref("extensions.weave.client.name");
   document.getElementById("username-input").value = username;
   document.getElementById("server-url-input").value = serverUrl;
-
+  document.getElementById("client-name-input").value = clientName;
   document.getElementById("passphrase-input").value = Weave.Service.passphrase;
   document.getElementById("password-input").value = Weave.Service.password;
 }
