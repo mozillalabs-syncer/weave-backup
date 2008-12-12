@@ -8,9 +8,9 @@
     <command id="cmd_weave_prefs" name="&openPrefsCmd.label;" oncommand="gFennecWeaveGlue.openPrefs();"/>
   </commandset>
   <scrollbox id="pref-list">
-    <vbox class="prefsection">
+    <!--<vbox class="prefsection">
       <label value="&prefpane.label;" crop="end" flex="1"/>
-    </vbox>
+    </vbox>-->
     <richpref pref="extensions.weave.enabled" title="&extensions.weave.enabled.title;" type="bool">
       &extensions.weave.enabled.description;
       <button label="&openPrefsButton.label;" command="cmd_weave_prefs"/>

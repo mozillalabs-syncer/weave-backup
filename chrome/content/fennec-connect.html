@@ -10,7 +10,7 @@ function doSaveSettings() {
   var passphraseInput = document.getElementById("passphrase-input").value;
   var serverUrlInput = document.getElementById("server-url-input").value;
   var tosAccepted = document.getElementById("accept-tos-check").checked; 
-  var clientName = document.getElementById("client-name").value;
+  var clientName = document.getElementById("client-name-input").value;
   if (tosAccepted) {
     document.getElementById("err-msg").innerHTML = "Accepted Terms of Service" +
                     ", username is " + usernameInput;
