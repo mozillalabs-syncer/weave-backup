@@ -8,28 +8,18 @@
 
   <script type="application/x-javascript"
           src="chrome://weave/content/load-weave.js"/>
+  <!--All this *really* does is to load log4moz.js and service.js.
+  service.js defines WeaveSvc() but does not instantiate?
+  No wait, it does, using Utils.lazy.  Which puts it in the Weave
+  namespace as Weave.Service ??? maybe? 
+   It sets up the timer when onStartup is called.  That is called
+  in components/Weave.js.-->
   <script type="application/x-javascript"
-          src="chrome://weave/content/bookmark-menu-overlay.js"/>
-  <script type="application/x-javascript"
-          src="chrome://weave/content/fx-weave-overlay.js"/>
+          src="chrome://weave/content/fennec-weave-overlay.js"/>
 
   <stringbundleset id="stringbundleset">
     <stringbundle id="weaveStringBundle"
                   src="chrome://weave/locale/sync.properties"/>
   </stringbundleset>
-
-  <menupopup id="goPopup">
-    <menu id="sync-tabs-menu" class="menu-iconic"
-          insertafter="historyUndoMenu" label="&syncTabsMenu.label;"
-          image="chrome://weave/skin/sync-16x16.png"
-          oncommand="gFxWeaveGlue.onCommandTabsMenu(event);"
-          onclick="checkForMiddleClick(this, event);">
-      <menupopup id="sync-tabs-menu-popup"
-                 onpopupshowing="gFxWeaveGlue.doInitTabsMenu(event);">
-        <menuitem id="sync-no-tabs-menu-item" label="&syncNoTabsMenuItem.label;"
-                  disabled="true"/>
-      </menupopup>
-    </menu>
-  </menupopup>
 
 </overlay>

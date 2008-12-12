@@ -3,6 +3,7 @@ overlay chrome://browser/content/browser.xul chrome://weave/content/fx-weave-ove
 overlay chrome://browser/content/preferences/preferences.xul chrome://weave/content/fx-preferences.xul application={ec8030f7-c20a-464f-9b0e-13a3a9e97384}
 
 overlay chrome://browser/content/browser.xul chrome://weave/content/fennec-preferences.xul application={a23983c0-fd0e-11dc-95ff-0800200c9a66}
+overlay chrome://browser/content/browser.xul chrome://weave/content/fennec-weave-overlay.xul application={a23983c0-fd0e-11dc-95ff-0800200c9a66}
 
 overlay chrome://messenger/content/messenger.xul chrome://weave/content/sync.xul
 overlay chrome://messenger/content/messenger.xul chrome://weave/content/tb-weave-overlay.xul

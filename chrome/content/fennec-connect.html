@@ -1,0 +1,70 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html> <head>
+<title>Weave: Setup This Device With Existing Account</title>
+<script type="application/x-javascript">
+Components.utils.import("resource://weave/service.js");
+
+function doSaveSettings() {
+  var usernameInput = document.getElementById("username-input").value;
+  var passwordInput = document.getElementById("password-input").value;
+  var passphraseInput = document.getElementById("passphrase-input").value;
+  var serverUrlInput = document.getElementById("server-url-input").value;
+  var tosAccepted = document.getElementById("accept-tos-check").checked; 
+  var clientName = document.getElementById("client-name-input").value;
+  if (tosAccepted) {
+    document.getElementById("err-msg").innerHTML = "Accepted Terms of Service" +
+                    ", username is " + usernameInput;
+    var prefService = Components.classes["@mozilla.org/preferences-service;1"]
+      .getService(Components.interfaces.nsIPrefBranch);
+    prefService.setCharPref("extensions.weave.serverURL", serverUrlInput);
+    prefService.setCharPref("extensions.weave.username", usernameInput);
+    prefService.setCharPref("extensions.weave.client.name", clientName);
+    Weave.Service.password = passwordInput;
+    Weave.Service.passphrase = passphraseInput;
+
+    document.getElementById("err-msg").innerHTML = "Complete!";
+  } else {
+    document.getElementById("err-msg").innerHTML = "Please read the Terms of Service and check the check box.";
+  }
+}
+
+function onLoad() {
+  var prefService = Components.classes["@mozilla.org/preferences-service;1"]
+     .getService(Components.interfaces.nsIPrefBranch);
+  var serverUrl = prefService.getCharPref("extensions.weave.serverURL");
+  var username = prefService.getCharPref("extensions.weave.username");
+  var clientName = prefService.getCharPref("extensions.weave.client.name");
+  document.getElementById("username-input").value = username;
+  document.getElementById("server-url-input").value = serverUrl;
+  document.getElementById("client-name-input").value = clientName;
+  document.getElementById("passphrase-input").value = Weave.Service.passphrase;
+  document.getElementById("password-input").value = Weave.Service.password;
+}
+
+window.addEventListener("load", onLoad, false);
+
+</script>
+</head>
+<body style="font-size:1.5em">
+ <h1>Connect Your Weave Account</h1>
+ <p id="err-msg"></p>
+ <p>If you don't have a Weave account yet, you should <a href="fennec-create.html">create one here</a>.</p>
+ <form>
+
+    <legend>Required Information</legend>
+     <table style="font-size:1em">
+     <tr><td>Username:</td><td><input type="text" id="username-input"></td></tr>
+     <tr><td>Password:</td><td><input type="text" id="password-input"></td></tr>
+     <tr><td>Passphrase:</td><td><input type="text" size="120" id="passphrase-input"></td></tr>
+     </table>
+     <input type="checkbox" id="accept-tos-check">Check this box to accept the <a href="">terms of service</a>.<br/>
+
+   </fieldset>
+   <fieldset>
+     <legend>You can probably leave this stuff alone:</legend>
+     Client name: <input type="text" value="FennecPhone" id="client-name-input"><br/>
+     Server: <input type="text" value="services.mozilla.org" id="server-url-input"><br/>  
+   </fieldset>
+   <input type="button" value="Connect To Your Account" onclick="doSaveSettings();"/>
+ </form>
+</body> </html>

@@ -4,14 +4,18 @@
 
 <overlay id="sync-preferences"
          xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
-
+  <commandset id="cmdset_main">
+    <command id="cmd_weave_prefs" name="&openPrefsCmd.label;" oncommand="gFennecWeaveGlue.openPrefs();"/>
+  </commandset>
   <scrollbox id="pref-list">
-    <vbox class="prefsection">
+    <!--<vbox class="prefsection">
       <label value="&prefpane.label;" crop="end" flex="1"/>
-    </vbox>
+    </vbox>-->
     <richpref pref="extensions.weave.enabled" title="&extensions.weave.enabled.title;" type="bool">
       &extensions.weave.enabled.description;
+      <button label="&openPrefsButton.label;" command="cmd_weave_prefs"/>
     </richpref>
+    <!--
     <richpref pref="extensions.weave.username" title="&extensions.weave.username.title;" type="text">
       &extensions.weave.username.description;
     </richpref>
@@ -27,5 +31,6 @@
     <richpref pref="extensions.weave.serverURL" title="&extensions.weave.serverURL.title;" type="text">
       &extensions.weave.serverURL.description;
     </richpref>
+    -->
   </scrollbox>
 </overlay>
