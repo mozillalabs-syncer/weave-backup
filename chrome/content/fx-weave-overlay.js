@@ -46,7 +46,9 @@ function FxWeaveGlue() {
   try {
     Cu.import("resource://weave/engines/bookmarks.js");
     Cu.import("resource://weave/engines/history.js");
+    Cu.import("resource://weave/engines/forms.js");
 
+    Weave.Engines.register(new FormEngine());
     Weave.Engines.register(new HistoryEngine());
     Weave.Engines.register(new BookmarksEngine());
   } catch (e) {
