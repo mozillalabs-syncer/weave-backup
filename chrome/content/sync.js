@@ -92,7 +92,7 @@ function Sync() {
   }
 
   Weave.Utils.prefs.setCharPref("lastversion", Weave.WEAVE_VERSION);
-
+/*
   let username = this._prefSvc.getCharPref("extensions.weave.username");
   let server = this._prefSvc.getCharPref("extensions.weave.serverURL");
   if ((!username || username == 'nobody') &&
@@ -104,7 +104,7 @@ function Sync() {
   // and if it's closed, they are lost?
   Weave.Service.onGetPassword = Weave.Utils.bind2(this, this._onGetPassword);
   Weave.Service.onGetPassphrase = Weave.Utils.bind2(this, this._onGetPassphrase);
-
+*/
   // TODO: This is a fix for the general case of bug 436936.  It will
   // not support marginal cases such as when a new browser window is
   // opened in the middle of signing-in or syncing.
