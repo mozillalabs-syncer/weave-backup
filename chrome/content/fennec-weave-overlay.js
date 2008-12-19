@@ -35,10 +35,12 @@
  * ***** END LICENSE BLOCK ***** */
 
 function FennecWeaveGlue() {
-  // Log4Moz works on fennec?
+  // Yes, Log4Moz works fine on fennec.
   this._log = Log4Moz.repository.getLogger("Chrome.Window");
   this._log.info("Initializing Fennec Weave embedding");
 
+  /* By this point, if we have the login info set correctly,
+   the Weave Service should already have logged in to the server. */
   try {
     // TODO Use the preferences to decide which engines to
     // initialize.
@@ -51,19 +53,6 @@ function FennecWeaveGlue() {
     this._log.error("Could not initialize engine: " + (e.message? e.message : e));
   }
 
-  if (Weave.Service.username && Weave.Service.password && Weave.Service.passphrase) {
-    // Try to login on startup...
-    Weave.Service.login( function() {dump("Login Complete.\n");},
-			 Weave.Service.username,
-			 Weave.Service.password,
-			 Weave.Service.passphrase);
-    // Interesting: this gets a "Could not acquire lock".
-  } else {
-    dump("FennecWeaveGlue.init: Can't login.\n");
-    dump("Username: " + Weave.Service.username + "\n");
-    dump("Password: " + Weave.Service.password + "\n");
-    dump("Passphrase: " + Weave.Service.passphrase + "\n");
-  }
 }
 FennecWeaveGlue.prototype = {
   shutdown: function FennecWeaveGlue__shutdown() {
@@ -72,22 +61,16 @@ FennecWeaveGlue.prototype = {
 
 
   openPrefs: function FennecWeaveGlue__openPrefs() {
-    /*var ios = Cc["@mozilla.org/network/io-service;1"]
-      .getService(Ci.nsIIOService);
-    var uri = ios.newURI("chrome://weave/content/fennec-connect.html");*/
-
     var prefService = Cc["@mozilla.org/preferences-service;1"]
       .getService(Ci.nsIPrefBranch);
     var serverUrl = prefService.getCharPref("extensions.weave.serverURL");
-    dump("Server URL is " + serverUrl + "\n");
+    this._log.debug("Server URL is " + serverUrl);
     var username = prefService.getCharPref("extensions.weave.username");
-    dump("Username is " + username + "\n");
-    // Try this... password and passphrase will be stored in the password
-    // manager and accessible through Weave.Service getters and setters...
+    this._log.debug("Username is " + username);
     var password = Weave.Service.password;
-    dump("Password is " + password + "\n");
+    this._log.debug("Password is " + password);
     var passphrase = Weave.Service.passphrase;
-    dump("Passphrase is " + passphrase + "\n");
+    this._log.debug("Passphrase is " + passphrase);
 
     if (username && password && passphrase && username != "nobody") {
       Browser.currentBrowser.loadURI("chrome://weave/content/fennec-prefs.html");
@@ -97,6 +80,10 @@ FennecWeaveGlue.prototype = {
       // connect page.
     }
 
+   /* This gets an error like:
+    Error: uncaught exception: [Exception... "Component returned failure code: 0x80070057 (NS_ERROR_ILLEGAL_VALUE) [nsIIOService.newURI]"  nsresult: "0x80070057 (NS_ERROR_ILLEGAL_VALUE)"  location: "JS frame :: chrome://browser/content/browser-ui.js :: anonymous :: line 155"  data: no]
+    Possibly because 'weave' isn't a registered chrome package. */
+
     /*Also: defaults for prefs being different on fennec than on ffox?
        E.G. rememberpassword default to true, syncOnQuit default to false
        (but syncOnStart default to true...)  Pref defaults can be set
@@ -104,10 +91,6 @@ FennecWeaveGlue.prototype = {
      with something like:
      defaults = this._prefSvc.getDefaultBranch(null);
      defaults.setCharPref(name, val);*/
-
- /* This gets an error like:
-    Error: uncaught exception: [Exception... "Component returned failure code: 0x80070057 (NS_ERROR_ILLEGAL_VALUE) [nsIIOService.newURI]"  nsresult: "0x80070057 (NS_ERROR_ILLEGAL_VALUE)"  location: "JS frame :: chrome://browser/content/browser-ui.js :: anonymous :: line 155"  data: no]
-    Possibly because 'weave' isn't a registered chrome package. */
   }
 };
 
