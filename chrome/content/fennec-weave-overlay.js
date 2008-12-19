@@ -40,10 +40,12 @@ function FennecWeaveGlue() {
   this._log.info("Initializing Fennec Weave embedding");
 
   try {
+    // TODO Use the preferences to decide which engines to
+    // initialize.
     Cu.import("resource://weave/engines/bookmarks.js");
     Cu.import("resource://weave/engines/history.js");
 
-    //Weave.Engines.register(new HistoryEngine());
+    Weave.Engines.register(new HistoryEngine());
     Weave.Engines.register(new BookmarksEngine());
   } catch (e) {
     this._log.error("Could not initialize engine: " + (e.message? e.message : e));
@@ -68,29 +70,6 @@ FennecWeaveGlue.prototype = {
     // Anything that needs shutting down can go here.
   },
 
-  /* TODO getting errors like this:
-   * 2008-12-10 11:41:55	Service.Main	WARN	Could not get encryption passphrase
-   * Which means that the timer is set up and weave is actually trying to
-   * connect; need to make sure that we put the password/passphrase in the
-   * right place!!  Ah yes that's right, it goes in ID.get('WeaveCryptoID')
-   * Try doing Weave.Service.username = , .password=, .passphrase = .
-   */
-
-  /* More errors:
-   * Service.Main ERROR Could not upload keys: wbo.uri is null (module:wbo.js:97 :: TypeError)
-   * Chrome.Window ERROR Could not initialize engine: Cc['@mozilla.org/microsummary/service;1'] is undefined
-   *
-   * Probably going to have to fake a Login next...
-   *
-   * New error is
-   * 2008-12-11 15:01:07	Service.Main	ERROR
-   * Could not upload keys: Could not PUT resource
-   * https://63.245.209.84/weave/0.3/jdicarlo/keys/pubkey (0)
-   * (JS frame :: file:///Users/jonathandicarlo/Library/Application%20Support/Fennec/Profiles/x1njv4a4.default/extensions/%7B340c2bbc-ce74-4362-90b5-7c26312808ef%7D
-   * /modules/resource.js :: Res__request :: line 273)
-   *
-   * looks like setting log to Debug or even Trace will help solve this one
-   */
 
   openPrefs: function FennecWeaveGlue__openPrefs() {
     /*var ios = Cc["@mozilla.org/network/io-service;1"]
