@@ -59,7 +59,6 @@ FennecWeaveGlue.prototype = {
     // Anything that needs shutting down can go here.
   },
 
-
   openPrefs: function FennecWeaveGlue__openPrefs() {
     var prefService = Cc["@mozilla.org/preferences-service;1"]
       .getService(Ci.nsIPrefBranch);
@@ -76,8 +75,6 @@ FennecWeaveGlue.prototype = {
       Browser.currentBrowser.loadURI("chrome://weave/content/fennec-prefs.html");
     } else {
       Browser.currentBrowser.loadURI("chrome://weave/content/fennec-connect.html");
-      // TODO ideally, it would log you in after you're done filling out the
-      // connect page.
     }
 
    /* This gets an error like:
@@ -91,6 +88,13 @@ FennecWeaveGlue.prototype = {
      with something like:
      defaults = this._prefSvc.getDefaultBranch(null);
      defaults.setCharPref(name, val);*/
+  },
+
+  onSignupComplete: function FennecWeaveGlue__onSignupComplete() {
+    /* Called by fennec-connect.html when you finish filling out the form
+     * to connect to your Weave account; will attempt to log you in.
+     * If login fails, returns an error message; if it succeeds, returns
+     * nothing. */
   }
 };
 
