@@ -39,8 +39,6 @@ function FennecWeaveGlue() {
   this._log = Log4Moz.repository.getLogger("Chrome.Window");
   this._log.info("Initializing Fennec Weave embedding");
 
-  /* By this point, if we have the login info set correctly,
-   the Weave Service should already have logged in to the server. */
   try {
     // TODO Use the preferences to decide which engines to
     // initialize.
@@ -52,6 +50,14 @@ function FennecWeaveGlue() {
   } catch (e) {
     this._log.error("Could not initialize engine: " + (e.message? e.message : e));
   }
+
+  // startup Weave service after a delay, so that it will happen after the
+  // UI is loaded.
+  let self = this;
+  setTimeout( function() {
+		self._log.info("Timeout done, starting Weave service.\n");
+		Weave.Service.onStartup();
+	      }, 3000);
 
 }
 FennecWeaveGlue.prototype = {
