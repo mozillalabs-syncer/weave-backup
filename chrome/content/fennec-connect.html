@@ -8,63 +8,108 @@ function doSaveSettings() {
   var usernameInput = document.getElementById("username-input").value;
   var passwordInput = document.getElementById("password-input").value;
   var passphraseInput = document.getElementById("passphrase-input").value;
-  var serverUrlInput = document.getElementById("server-url-input").value;
-  var tosAccepted = document.getElementById("accept-tos-check").checked; 
-  var clientName = document.getElementById("client-name-input").value;
-  if (tosAccepted) {
-    document.getElementById("err-msg").innerHTML = "Accepted Terms of Service" +
-                    ", username is " + usernameInput;
-    var prefService = Components.classes["@mozilla.org/preferences-service;1"]
-      .getService(Components.interfaces.nsIPrefBranch);
-    prefService.setCharPref("extensions.weave.serverURL", serverUrlInput);
-    prefService.setCharPref("extensions.weave.username", usernameInput);
-    prefService.setCharPref("extensions.weave.client.name", clientName);
-    Weave.Service.password = passwordInput;
-    Weave.Service.passphrase = passphraseInput;
+  //var serverUrlInput = document.getElementById("server-url-input").value;
 
-    document.getElementById("err-msg").innerHTML = "Complete!";
-  } else {
-    document.getElementById("err-msg").innerHTML = "Please read the Terms of Service and check the check box.";
-  }
+  //var clientName = document.getElementById("client-name-input").value;
+
+  document.getElementById("err-msg").innerHTML = "Accepted Terms of Service" +
+                  ", username is " + usernameInput;
+  var prefService = Components.classes["@mozilla.org/preferences-service;1"]
+    .getService(Components.interfaces.nsIPrefBranch);
+  //prefService.setCharPref("extensions.weave.serverURL", serverUrlInput);
+  prefService.setCharPref("extensions.weave.username", usernameInput);
+  //prefService.setCharPref("extensions.weave.client.name", clientName);
+  Weave.Service.password = passwordInput;
+  Weave.Service.passphrase = passphraseInput;
+
+  // Attempt to log in with weave service:
+  
+  document.getElementById("err-msg").innerHTML = "Complete!";
 }
 
 function onLoad() {
   var prefService = Components.classes["@mozilla.org/preferences-service;1"]
      .getService(Components.interfaces.nsIPrefBranch);
-  var serverUrl = prefService.getCharPref("extensions.weave.serverURL");
+  //var serverUrl = prefService.getCharPref("extensions.weave.serverURL");
   var username = prefService.getCharPref("extensions.weave.username");
-  var clientName = prefService.getCharPref("extensions.weave.client.name");
-  document.getElementById("username-input").value = username;
-  document.getElementById("server-url-input").value = serverUrl;
-  document.getElementById("client-name-input").value = clientName;
-  document.getElementById("passphrase-input").value = Weave.Service.passphrase;
-  document.getElementById("password-input").value = Weave.Service.password;
+  //var clientName = prefService.getCharPref("extensions.weave.client.name");
+  if (username && username != "nobody")
+    document.getElementById("username-input").value = username;
+  else
+    document.getElementById("username-input").value = "Your Username Here";
+  //document.getElementById("server-url-input").value = serverUrl;
+  //document.getElementById("client-name-input").value = clientName;
+  if (Weave.Service.passphrase)
+    document.getElementById("passphrase-input").value = Weave.Service.passphrase;
+  else
+    document.getElementById("passphrase-input").value = "Your Passphrase Here";
+  if (Weave.Service.password)
+    document.getElementById("password-input").value = Weave.Service.password;
+  else
+    document.getElementById("password-input").value = "Your Password Here";
+}
+
+function setRocker(value) {
+  if (value) {
+    document.getElementById("giant-checkbox").setAttribute("class", "check-on");
+    doSaveSettings();
+  }
+}
+
+function doHide() {
+  var passwordHidden = document.getElementById("hide-password").checked;
+
+  var passwordField = document.getElementById("password-input");
+  var passphraseField = document.getElementById("passphrase-input");
+  if (passwordHidden) {
+    passwordField.type="password";
+    passphraseField.type="password";
+  } else {
+    passwordField.type="text";
+    passphraseField.type="text";
+  }
 }
 
 window.addEventListener("load", onLoad, false);
 
 </script>
+<style type="text/css">
+  input.embiggened {width: 100%; text-align: left; font-size:24pt}
+  #password-input {width:90%;}
+  p {font-size: 12pt; text-align: center;}
+  h1 {font-size: 24pt; text-align: center;}
+  #err-msg {color: red; font-weight: bold}
+  p.left { text-align: left }
+
+  .check-off {background-color: light-grey; }
+  .check-on {background-color: blue; }
+
+  #lower-left {width: 60%; float: left; text-align: left;}
+  #lower-right {width: 40%; float: right; font-size:18pt; margin-top: 10px}
+  #giant-checkbox {width: 32px; height: 32px; border-style: solid; float: left; text-valign: middle;}
+
+</style>
 </head>
-<body style="font-size:1.5em">
- <h1>Connect Your Weave Account</h1>
+<body>
  <p id="err-msg"></p>
- <p>If you don't have a Weave account yet, you should <a href="fennec-create.html">create one here</a>.</p>
- <form>
+ <p>If you have a Weave account, enter your info below to connect to
+     it with this device.</p>
+<input type="text" class="embiggened" id="username-input"/><br/><br/>
+<input type="text" class="embiggened" id="password-input"/>
+  <input type="checkbox" id="hide-password" onclick="doHide();"/><br/><br/>
+<input type="text" class="embiggened" size="120" id="passphrase-input">
 
-    <legend>Required Information</legend>
-     <table style="font-size:1em">
-     <tr><td>Username:</td><td><input type="text" id="username-input"></td></tr>
-     <tr><td>Password:</td><td><input type="text" id="password-input"></td></tr>
-     <tr><td>Passphrase:</td><td><input type="text" size="120" id="passphrase-input"></td></tr>
-     </table>
-     <input type="checkbox" id="accept-tos-check">Check this box to accept the <a href="">terms of service</a>.<br/>
+<div id="bounding-box">
+<div id="lower-left">
+   <p class="left">Please <a href="">Read the Weave Terms of Service</a>.<br/>
+   By clicking the box at right, you agree to these terms.</p>
+</div>
 
-   </fieldset>
-   <fieldset>
-     <legend>You can probably leave this stuff alone:</legend>
-     Client name: <input type="text" value="FennecPhone" id="client-name-input"><br/>
-     Server: <input type="text" value="services.mozilla.org" id="server-url-input"><br/>  
-   </fieldset>
-   <input type="button" value="Connect To Your Account" onclick="doSaveSettings();"/>
- </form>
+<div id="lower-right">
+  <div id="giant-checkbox" class="check-off" onclick="setRocker(true);">
+  </div>
+  &nbsp;I Agree
+</div>
+</div>
+
 </body> </html>

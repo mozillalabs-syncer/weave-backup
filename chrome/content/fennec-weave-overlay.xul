@@ -6,14 +6,9 @@
 <overlay id="fx-weave-overlay"
          xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
+  <!-- Loading and initializing Weave Service -->
   <script type="application/x-javascript"
           src="chrome://weave/content/load-weave.js"/>
-  <!--All this *really* does is to load log4moz.js and service.js.
-  service.js defines WeaveSvc() but does not instantiate?
-  No wait, it does, using Utils.lazy.  Which puts it in the Weave
-  namespace as Weave.Service ??? maybe? 
-   It sets up the timer when onStartup is called.  That is called
-  in components/Weave.js.-->
   <script type="application/x-javascript"
           src="chrome://weave/content/fennec-weave-overlay.js"/>
 
@@ -21,5 +16,15 @@
     <stringbundle id="weaveStringBundle"
                   src="chrome://weave/locale/sync.properties"/>
   </stringbundleset>
+
+  <!-- Bookmark list overlay UI -->
+  <vbox id="urllist-container">
+    <hbox id="weave-bookmark-hack">
+      <button label="Foo" oncommand="gFennecWeaveGlue.doFoo();"/>
+      <button label="Bar" oncommand="gFennecWeaveGlue.doBar();"/>
+      <label value="Search" for="bookmark-list-search"/>
+      <textbox id="bookmark-list-search"/>
+    </hbox>
+  </vbox>
 
 </overlay>

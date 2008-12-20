@@ -48,10 +48,10 @@ function onLoad() {
      .getService(Components.interfaces.nsIPrefBranch);
   var serverUrl = prefService.getCharPref("extensions.weave.serverURL");
   var username = prefService.getCharPref("extensions.weave.username");
-  var clientName = prefService.getCharPref("extensions.weave.client.name");
+  //var clientName = prefService.getCharPref("extensions.weave.client.name");
   document.getElementById("username").innerHTML = username;
   document.getElementById("server-url").innerHTML = serverUrl;
-  document.getElementById("client-name").value = clientName;
+  //document.getElementById("client-name").value = clientName;
 
   var checked;
   checked = prefService.getBoolPref("extensions.weave.engine.bookmarks");
