@@ -4,6 +4,8 @@
 <script type="application/x-javascript">
 Components.utils.import("resource://weave/service.js");
 
+var gPasswordHidden = false;
+
 function doSaveSettings() {
   var usernameInput = document.getElementById("username-input").value;
   var passwordInput = document.getElementById("password-input").value;
@@ -57,16 +59,20 @@ function setRocker(value) {
 }
 
 function doHide() {
-  var passwordHidden = document.getElementById("hide-password").checked;
+  gPasswordHidden = !gPasswordHidden;
+  //var passwordHidden = document.getElementById("hide-password").checked;
 
   var passwordField = document.getElementById("password-input");
   var passphraseField = document.getElementById("passphrase-input");
-  if (passwordHidden) {
+  var lockIcon = document.getElementById("hide-password");
+  if (gPasswordHidden) {
     passwordField.type="password";
     passphraseField.type="password";
+    lockIcon.src="chrome://weave/skin/lock-closed.png";
   } else {
     passwordField.type="text";
     passphraseField.type="text";
+    lockIcon.src="chrome://weave/skin/lock-open.png";
   }
 }
 
@@ -96,7 +102,7 @@ window.addEventListener("load", onLoad, false);
      it with this device.</p>
 <input type="text" class="embiggened" id="username-input"/><br/><br/>
 <input type="text" class="embiggened" id="password-input"/>
-  <input type="checkbox" id="hide-password" onclick="doHide();"/><br/><br/>
+<img width="32" height="32" src="chrome://weave/skin/lock-open.png" id="hide-password" onclick="doHide();"/><br/><br/>
 <input type="text" class="embiggened" size="120" id="passphrase-input">
 
 <div id="bounding-box">
