@@ -59,6 +59,12 @@ function FennecWeaveGlue() {
     this._log.error("Could not initialize engine: " + (e.message? e.message : e));
   }
 
+  /* Generating keypairs is an expensive operation, and we should never
+   have to do it on Fennec because we don't support creating a Weave account
+   from Fennec (yet). */
+
+  Weave.Service.keyGenEnabled = false;
+
   // startup Weave service after a delay, so that it will happen after the
   // UI is loaded.
   let self = this;
