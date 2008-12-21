@@ -76,7 +76,7 @@ function FennecWeaveGlue() {
 }
 FennecWeaveGlue.prototype = {
   __prefService: null,
-  _pfs: function() {
+  get _pfs() {
     if (!this.__prefService) {
       this.__prefService = Cc["@mozilla.org/preferences-service;1"]
       .getService(Ci.nsIPrefBranch);
