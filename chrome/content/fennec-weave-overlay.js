@@ -111,12 +111,28 @@ FennecWeaveGlue.prototype = {
      defaults.setCharPref(name, val);*/
   },
 
-  onSignupComplete: function FennecWeaveGlue__onSignupComplete( callback ) {
+  onSignupComplete: function FennecWeaveGlue__onSignupComplete(callback) {
     /* Called by fennec-connect.html when you finish filling out the form
      * to connect to your Weave account; will attempt to log you in.
      * If login fails, returns an error message; if it succeeds, returns
      * nothing. */
 
+    // TODO if we're already logged in, log out then re-log in with new info.
+    try {
+      // Report on success or failure...
+      Weave.Service.login( function() { callback("Login complete.\n");} );
+    } catch(e) {
+      // Report on failure
+      callback(Utils.exceptionStr(e));
+    }
+
+  },
+
+  turnWeaveOff: function FennecWeaveGlue__turnWeaveOff() {
+
+  },
+
+  turnWeaveOn: function FennecWeaveGlue__turnWeaveOn() {
   }
 };
 
