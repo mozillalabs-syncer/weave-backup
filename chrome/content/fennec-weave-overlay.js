@@ -40,13 +40,21 @@ function FennecWeaveGlue() {
   this._log.info("Initializing Fennec Weave embedding");
 
   try {
-    // TODO Use the preferences to decide which engines to
-    // initialize.
     Cu.import("resource://weave/engines/bookmarks.js");
     Cu.import("resource://weave/engines/history.js");
+    Cu.import("resource://weave/engines/forms.js");
+    /*Cu.import("resource://weave/engines/passwords.js");
+    Cu.import("resource://weave/engines/cookies.js");
+    Cu.import("resource://weave/engines/input.js");
+    Cu.import("resource://weave/engines/tabs.js");*/
 
     Weave.Engines.register(new HistoryEngine());
     Weave.Engines.register(new BookmarksEngine());
+    Weave.Engines.register(new FormEngine());
+    /*Weave.Engines.register(new PasswordEngine());
+    Weave.Engines.register(new CookieEngine());
+    Weave.Engines.register(new InputEngine());
+    Weave.Engines.register(new TabEngine());*/
   } catch (e) {
     this._log.error("Could not initialize engine: " + (e.message? e.message : e));
   }
@@ -61,16 +69,23 @@ function FennecWeaveGlue() {
 
 }
 FennecWeaveGlue.prototype = {
+  __prefService: null,
+  _pfs: function() {
+    if (!this.__prefService) {
+      this.__prefService = Cc["@mozilla.org/preferences-service;1"]
+      .getService(Ci.nsIPrefBranch);
+    }
+    return this.__prefService;
+  },
+
   shutdown: function FennecWeaveGlue__shutdown() {
     // Anything that needs shutting down can go here.
   },
 
   openPrefs: function FennecWeaveGlue__openPrefs() {
-    var prefService = Cc["@mozilla.org/preferences-service;1"]
-      .getService(Ci.nsIPrefBranch);
-    var serverUrl = prefService.getCharPref("extensions.weave.serverURL");
+    var serverUrl = this._pfs.getCharPref("extensions.weave.serverURL");
     this._log.debug("Server URL is " + serverUrl);
-    var username = prefService.getCharPref("extensions.weave.username");
+    var username = this._pfs.getCharPref("extensions.weave.username");
     this._log.debug("Username is " + username);
     var password = Weave.Service.password;
     this._log.debug("Password is " + password);
@@ -96,11 +111,12 @@ FennecWeaveGlue.prototype = {
      defaults.setCharPref(name, val);*/
   },
 
-  onSignupComplete: function FennecWeaveGlue__onSignupComplete() {
+  onSignupComplete: function FennecWeaveGlue__onSignupComplete( callback ) {
     /* Called by fennec-connect.html when you finish filling out the form
      * to connect to your Weave account; will attempt to log you in.
      * If login fails, returns an error message; if it succeeds, returns
      * nothing. */
+
   }
 };
 
