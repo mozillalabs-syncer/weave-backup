@@ -267,23 +267,23 @@
               </richlistitem>
               <richlistitem>
                   <checkbox id="sync-cookies-checkbox"
-                            label="&cookiesCheckbox.label;"
+                            label="&cookiesCheckbox.label;" disabled="true"
                             preference="extensions.weave.engine.cookies"/>
               </richlistitem>
               <richlistitem>
                   <checkbox id="sync-passwords-checkbox"
-                            label="&passwordsCheckbox.label;"
+                            label="&passwordsCheckbox.label;" disabled="true"
                             preference="extensions.weave.engine.passwords"/>
               </richlistitem>
               <richlistitem>
                   <checkbox id="sync-tabs-checkbox"
-                            label="&tabsCheckbox.label;"
+                            label="&tabsCheckbox.label;" disabled="true"
                             preference="extensions.weave.engine.tabs"/>
               </richlistitem>
 
               <richlistitem>
                   <checkbox id="sync-forms-checkbox"
-                            label="&formsCheckbox.label;"
+                            label="&formsCheckbox.label;" disabled="true"
                             preference="extensions.weave.engine.forms"/>
               </richlistitem>
               
@@ -368,11 +368,6 @@
               <label value="&openActivityLogButton.description;" flex="1"/>
               <button label="&openActivityLogButton.label;"
                       oncommand="gWeavePrefs.openActivityLog()"/>
-            </hbox>
-            <hbox>
-              <spacer flex="1"/>
-              <button label="&advancedDialogButton.label;"
-                      oncommand="gWeavePrefs.openAdvancedPrefs()"/>
             </hbox>
           </groupbox>
 
