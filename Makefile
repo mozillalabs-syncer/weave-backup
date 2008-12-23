@@ -80,8 +80,7 @@ test: build
 	$(MAKE) -C src test-install
 	$(MAKE) -k -C tests/unit
 
-# fixme: version or build id in the xpi name?
-xpi_name := weave-`uname -s`.xpi
+xpi_name := weave-`grep "em:version" install.rdf | sed -e 's/^.*>\(.*\)<.*$$/\1/'`.xpi
 xpi_files := chrome/sync.jar defaults components modules platform \
              install.rdf chrome.manifest
 chrome_files := chrome/content/* chrome/skin/* chrome/locale/*
