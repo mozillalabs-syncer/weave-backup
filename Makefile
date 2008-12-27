@@ -45,6 +45,14 @@ ifeq ($(sdkdir),)
   $(error)
 endif
 
+ifeq ($(release_build),)
+  weave_version := 0.2.93
+  update_url := https://people.mozilla.com/~cbeard/sync/dist/update-dev.rdf
+else
+  weave_version := 0.2.93
+  update_url := https://people.mozilla.com/~cbeard/sync/dist/update.rdf
+endif
+
 buildid ?= ${WEAVE_BUILDID}
 ifeq ($(buildid),)
   buildid:=$(shell build/gen-buildid.sh)
@@ -55,12 +63,16 @@ ifeq ($(buildid),)
   $(error)
 endif
 
-substitutions := 'buildid=$(buildid)'
 ifeq ($(MAKECMDGOALS),xpi)
-  substitutions += 'unpacked=\# ' 'jar='
+  unpacked =\# 
+  jar=
 else
-  substitutions += 'unpacked=' 'jar=\# '
+  unpacked=
+  jar=\# 
 endif
+
+subst_names := weave_version buildid update_url unpacked jar
+substitutions := $(foreach s,$(subst_names),'$(s)=$($(s))')
 
 dotin_files := $(shell find . -type f -name \*.in)
 dotin_files := $(dotin_files:.in=)
@@ -80,7 +92,7 @@ test: build
 	$(MAKE) -C src test-install
 	$(MAKE) -k -C tests/unit
 
-xpi_name := weave-`grep "em:version" install.rdf | sed -e 's/^.*>\(.*\)<.*$$/\1/'`.xpi
+xpi_name := weave-$(weave_version).xpi
 xpi_files := chrome/sync.jar defaults components modules platform \
              install.rdf chrome.manifest
 chrome_files := chrome/content/* chrome/skin/* chrome/locale/*
@@ -95,3 +107,17 @@ xpi: build chrome/sync.jar $(xpi_files)
 clean:
 	$(MAKE) -C src clean
 	rm -f $(dotin_files) $(xpi_name)
+
+help:
+	@echo Targets:
+	@echo build
+	@echo "test (default; implies build)"
+	@echo "xpi (sets manifest to use jars, make build to undo)"
+	@echo clean
+	@echo
+	@echo Variables:
+	@echo sdkdir
+	@echo "release_build (set to 1 when not building a snapshot)"
+	@echo
+	@echo Substitutions for .in files:
+	@echo $(subst_names)
