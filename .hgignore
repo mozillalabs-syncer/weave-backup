@@ -15,3 +15,5 @@ src/fake\.exp$
 src/fake\.lib$
 .*\.pyc
 nose-.*
+install.rdf
+modules/constants.js
