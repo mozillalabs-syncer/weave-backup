@@ -242,7 +242,7 @@ Sync.prototype = {
                            description,
                            null,
                            Weave.Notifications.PRIORITY_WARNING);
-    Weave.Notifications.add(notification);
+    Weave.Notifications.replaceTitle(notification);
   },
 
   _onLogin: function Sync__onLogin() {
@@ -378,7 +378,7 @@ Sync.prototype = {
 
     let username = this._prefSvc.getCharPref("extensions.weave.username");
     let server = this._prefSvc.getCharPref("extensions.weave.serverURL");
-    if ((!username || username == 'nobody') &&
+    if (false && (!username || username == 'nobody') && // XXX tmp disabled as registrations are closed
         server == 'https://services.mozilla.com/') {
       this.doOpenSetupWizard();
       return;
