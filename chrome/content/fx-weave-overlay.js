@@ -47,8 +47,8 @@ function FxWeaveGlue() {
     Cu.import("resource://weave/engines/bookmarks.js");
     Weave.Engines.register(new BookmarksEngine());
 
-    //Cu.import("resource://weave/engines/history.js");
-    //Weave.Engines.register(new HistoryEngine());
+    Cu.import("resource://weave/engines/history.js");
+    Weave.Engines.register(new HistoryEngine());
   } catch (e) {
     dump("Could not initialize engine: " + (e.message? e.message : e) + "\n");
     this._log.error("Could not initialize engine: " + (e.message? e.message : e));
