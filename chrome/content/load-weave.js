@@ -19,7 +19,6 @@ Components.utils.import("resource://weave/resource.js", {});
 Components.utils.import("resource://weave/base_records/crypto.js", {});
 Components.utils.import("resource://weave/base_records/keys.js", {});
 Components.utils.import("resource://weave/base_records/wbo.js", {});
-Components.utils.import("resource://weave/clientData.js", {});
 Components.utils.import("resource://weave/stores.js", {});
 Components.utils.import("resource://weave/syncCores.js", {});
 Components.utils.import("resource://weave/trackers.js", {});
