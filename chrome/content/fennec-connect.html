@@ -7,20 +7,11 @@ Components.utils.import("resource://weave/service.js");
 var gPasswordHidden = false;
 
 function doSaveSettings() {
-  var usernameInput = document.getElementById("username-input").value;
-  var passwordInput = document.getElementById("password-input").value;
-  var passphraseInput = document.getElementById("passphrase-input").value;
   //var serverUrlInput = document.getElementById("server-url-input").value;
 
   //var clientName = document.getElementById("client-name-input").value;
-
-  var prefService = Components.classes["@mozilla.org/preferences-service;1"]
-    .getService(Components.interfaces.nsIPrefBranch);
   //prefService.setCharPref("extensions.weave.serverURL", serverUrlInput);
-  prefService.setCharPref("extensions.weave.username", usernameInput);
   //prefService.setCharPref("extensions.weave.client.name", clientName);
-  Weave.Service.password = passwordInput;
-  Weave.Service.passphrase = passphraseInput;
 }
 
 function onLoad() {
@@ -50,20 +41,41 @@ function submit() {
   //gFennecWeaveGlue.onSignupComplete();
 
   var err = document.getElementById("err-msg");
+
+  var usernameInput = document.getElementById("username-input").value;
+  var passwordInput = document.getElementById("password-input").value;
+  var passphraseInput = document.getElementById("passphrase-input").value;
+  if (usernameInput == "") {
+    err.innerHTML = "You must enter a Weave username.";
+    return;
+  }
+  if (passwordInput == "") {
+    err.innerHTML = "You must enter a Weave password.";
+    return;
+  }
+  if (passphraseInput == "") {
+    err.innerHTML = "You must enter a Weave passphrase.";
+    return;
+  }
+
   err.innerHTML = "Logging you in...";
+
   if (Weave.Service.isLoggedIn)
     Weave.Service.logout();
 
-  doSaveSettings();
+  var prefService = Components.classes["@mozilla.org/preferences-service;1"]
+    .getService(Components.interfaces.nsIPrefBranch);
+  prefService.setCharPref("extensions.weave.username", usernameInput);
+  Weave.Service.password = passwordInput;
+  Weave.Service.passphrase = passphraseInput;
 
   Weave.Service.login( function(success) {
-                         err.innerHTML = "Login success result is " + success;
-                         /*if (success) {
+                         if (success) {
                            err.innerHTML = "Login Succeeded!";
                            location.href = "fennec-prefs.html";
                          } else {
-                           err.innerHTML = "Login Failed!!!";
-                         }*/
+                           err.innerHTML = "Login Failed!  Double-check your username and password.";
+                         }
                        });
 }
 
@@ -121,15 +133,6 @@ window.addEventListener("load", onLoad, false);
 <img width="32" height="32" src="chrome://weave/skin/lock-open.png" id="hide-password" onclick="doHide();"/><br/><br/>
 <input type="text" class="embiggened" size="120" id="passphrase-input"
         onclick="selectField('passphrase-input')"/>
-
-<div id="bounding-box">
-<div id="lower-left">
-   <p class="left">Please <a href="">Read the Weave Terms of Service</a>.<br/>
-   By clicking the box at right, you agree to these terms.</p>
-</div>
-
-<div id="lower-right">
-  <input type="button" value="Connect" onclick="submit();"
-          class="big-button"/>
-</div>
+<input type="button" value="Connect" onclick="submit();"
+        class="big-button"/>
 </body> </html>
