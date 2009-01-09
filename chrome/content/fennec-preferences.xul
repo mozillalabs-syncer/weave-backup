@@ -1,4 +1,7 @@
 <?xml version="1.0"?>
+
+<?xml-stylesheet href="chrome://browser/skin/browser.css" type="text/css"?>
+<?xml-stylesheet href="chrome://browser/content/browser.css" type="text/css"?>
 <!DOCTYPE overlay SYSTEM "chrome://weave/locale/preferences.dtd">
 
 <overlay id="sync-preferences"
@@ -32,4 +35,11 @@
     </richpref>
     -->
   </scrollbox>
+
+  <deck id="panel-items">
+    <vbox id="weave-detail-prefs-pane" hidden="true" style="-moz-stack-sizing: ignore;" top="0" left="0">
+      <label value="YOU ARE MY PANTS"/>
+      <button id="weave-prefs-close" oncommand="BrowserUI.show(UIMODE_NONE)"/>
+    </vbox>
+  </deck>
 </overlay>

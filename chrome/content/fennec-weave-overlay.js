@@ -115,14 +115,15 @@ FennecWeaveGlue.prototype = {
   },
 
   openPrefs: function FennecWeaveGlue__openPrefs() {
+    //try BrowserUI.show() and BrowserUI.switchPane() and BrowserUI.goToURI
+    //BrowserUI.switchPane("weave-detail-prefs-pane");
+    // overlay #panel-items with #weave-detail-prefs-pane.
+    //  <deck id="panel-items" flex="1" selectedIndex="2">
+
     var serverUrl = this._pfs.getCharPref("extensions.weave.serverURL");
-    this._log.debug("Server URL is " + serverUrl);
     var username = this._pfs.getCharPref("extensions.weave.username");
-    this._log.debug("Username is " + username);
     var password = Weave.Service.password;
-    this._log.debug("Password is " + password);
     var passphrase = Weave.Service.passphrase;
-    this._log.debug("Passphrase is " + passphrase);
 
     if (username && password && passphrase && username != "nobody") {
       Browser.currentBrowser.loadURI("chrome://weave/content/fennec-prefs.html");
