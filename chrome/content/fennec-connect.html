@@ -14,8 +14,6 @@ function doSaveSettings() {
 
   //var clientName = document.getElementById("client-name-input").value;
 
-  document.getElementById("err-msg").innerHTML = "Accepted Terms of Service" +
-                  ", username is " + usernameInput;
   var prefService = Components.classes["@mozilla.org/preferences-service;1"]
     .getService(Components.interfaces.nsIPrefBranch);
   //prefService.setCharPref("extensions.weave.serverURL", serverUrlInput);
@@ -23,10 +21,6 @@ function doSaveSettings() {
   //prefService.setCharPref("extensions.weave.client.name", clientName);
   Weave.Service.password = passwordInput;
   Weave.Service.passphrase = passphraseInput;
-
-  // Attempt to log in with weave service:
-  
-  document.getElementById("err-msg").innerHTML = "Complete!";
 }
 
 function onLoad() {
@@ -54,11 +48,28 @@ function onLoad() {
 function submit() {
   // Signup to Weave, then redirect to prefs page.
   //gFennecWeaveGlue.onSignupComplete();
-  
-  location.href = "fennec-prefs.html";
+
+  var err = document.getElementById("err-msg");
+  err.innerHTML = "Logging you in...";
+  if (Weave.Service.isLoggedIn)
+    Weave.Service.logout();
+
+  doSaveSettings();
+
+  Weave.Service.login( function(success) {
+                         err.innerHTML = "Login success result is " + success;
+                         /*if (success) {
+                           err.innerHTML = "Login Succeeded!";
+                           location.href = "fennec-prefs.html";
+                         } else {
+                           err.innerHTML = "Login Failed!!!";
+                         }*/
+                       });
 }
 
 function doHide() {
+  // TODO store hiddenness of password in a preference so it's
+  // persistent across reloads of this page.
   gPasswordHidden = !gPasswordHidden;
   //var passwordHidden = document.getElementById("hide-password").checked;
 
