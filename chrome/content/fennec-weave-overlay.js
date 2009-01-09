@@ -34,10 +34,12 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+const EXPORTED_SYMBOLS = ['gFennecWeaveGlue'];
+
 function FennecWeaveGlue() {
   // Yes, Log4Moz works fine on fennec.
   this._log = Log4Moz.repository.getLogger("Chrome.Window");
-  this._log.info("Initializing Fennec Weave embedding");
+  this._pfs.addObserver("", this, false);
 
   try {
     Cu.import("resource://weave/engines/bookmarks.js");
@@ -56,13 +58,13 @@ function FennecWeaveGlue() {
     Weave.Engines.register(new InputEngine());
     Weave.Engines.register(new TabEngine());*/
   } catch (e) {
+    dump("Could not initialize engine!\n");
     this._log.error("Could not initialize engine: " + (e.message? e.message : e));
   }
 
   /* Generating keypairs is an expensive operation, and we should never
    have to do it on Fennec because we don't support creating a Weave account
    from Fennec (yet). */
-
   Weave.Service.keyGenEnabled = false;
 
   // startup Weave service after a delay, so that it will happen after the
@@ -84,8 +86,32 @@ FennecWeaveGlue.prototype = {
     return this.__prefService;
   },
 
+  __os: null,
+  get _os() {
+    if (!this.__os)
+      this.__os = Cc["@mozilla.org/observer-service;1"]
+        .getService(Ci.nsIObserverService);
+    return this.__os;
+  },
+
   shutdown: function FennecWeaveGlue__shutdown() {
     // Anything that needs shutting down can go here.
+  },
+
+  observe: function FennecWeaveGlue__observe(subject, topic, data) {
+    switch (topic) {
+      case "nsPref:changed":
+        switch (data) {
+          case "extensions.weave.enabled":
+	  if (this._pfs.getBoolPref("extensions.weave.enabled")) {
+	    this._turnWeaveOn();
+	  } else {
+	    this._turnWeaveOff();
+	  }
+            break;
+        }
+        break;
+    }
   },
 
   openPrefs: function FennecWeaveGlue__openPrefs() {
@@ -118,30 +144,43 @@ FennecWeaveGlue.prototype = {
   },
 
   onSignupComplete: function FennecWeaveGlue__onSignupComplete(callback) {
-    /* Called by fennec-connect.html when you finish filling out the form
-     * to connect to your Weave account; will attempt to log you in.
-     * If login fails, returns an error message; if it succeeds, returns
-     * nothing. */
+    this._log.info("onSignupComplete called.");
+    this._turnWeaveOff();
+    // turnWeaveOff completes immediately and doesn't do any
+    // asynchronous trickery.
+    this._turnWeaveOn();
+  },
 
-    // TODO if we're already logged in, log out then re-log in with new info.
-    try {
-      // Report on success or failure...
-      Weave.Service.login( function() { callback("Login complete.\n");} );
-    } catch(e) {
-      // Report on failure
-      callback(Utils.exceptionStr(e));
+  _turnWeaveOff: function FennecWeaveGlue__turnWeaveOff() {
+    this._log.info("Turning Weave off...");
+    if (Weave.Service.isLoggedIn) {
+      Weave.Service.logout();
     }
-
   },
 
-  turnWeaveOff: function FennecWeaveGlue__turnWeaveOff() {
+  _turnWeaveOn: function FennecWeaveGlue__turnWeaveOn() {
+    this._log.info("Turning Weave on...");
+    var log = this._log;
+    if (!Weave.Service.isLoggedIn) {
+      try {
+	// Report on success or failure...
+        Weave.Service.login( function(success) {
+			       // TODO make success or failure user-visible
+			       log.info("Weave login callback called with x=");
+			       log.info(success);
+			     } );
+      } catch(e) {
+	log.info("Exception caught when calling Weave.Service.login:");
+	log.info(e);
+      }
 
+    }
   },
 
-  turnWeaveOn: function FennecWeaveGlue__turnWeaveOn() {
+  getWeaveStatus: function FennecWeaveGlue__getWeaveStatus() {
+    //TODO implement this.
   }
 };
-
 
 let gFennecWeaveGlue;
 window.addEventListener("load", function(e) {

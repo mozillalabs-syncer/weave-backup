@@ -20,10 +20,7 @@
   <!-- Bookmark list overlay UI -->
   <vbox id="urllist-container">
     <hbox id="weave-bookmark-hack">
-      <button label="Foo" oncommand="gFennecWeaveGlue.doFoo();"/>
-      <button label="Bar" oncommand="gFennecWeaveGlue.doBar();"/>
-      <label value="Search" for="bookmark-list-search"/>
-      <textbox id="bookmark-list-search"/>
+      <!-- TODO -->
     </hbox>
   </vbox>
 

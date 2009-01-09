@@ -51,11 +51,11 @@ function onLoad() {
     document.getElementById("password-input").value = "Your Password Here";
 }
 
-function setRocker(value) {
-  if (value) {
-    document.getElementById("giant-checkbox").setAttribute("class", "check-on");
-    doSaveSettings();
-  }
+function submit() {
+  // Signup to Weave, then redirect to prefs page.
+  //gFennecWeaveGlue.onSignupComplete();
+  
+  location.href = "fennec-prefs.html";
 }
 
 function doHide() {
@@ -76,6 +76,12 @@ function doHide() {
   }
 }
 
+function selectField(id) {
+  var field = document.getElementById(id);
+  field.focus();
+  field.select();
+}
+
 window.addEventListener("load", onLoad, false);
 
 </script>
@@ -85,25 +91,25 @@ window.addEventListener("load", onLoad, false);
   p {font-size: 12pt; text-align: center;}
   h1 {font-size: 24pt; text-align: center;}
   #err-msg {color: red; font-weight: bold}
-  p.left { text-align: left }
-
-  .check-off {background-color: light-grey; }
-  .check-on {background-color: blue; }
+  p.left {text-align: left}
 
   #lower-left {width: 60%; float: left; text-align: left;}
   #lower-right {width: 40%; float: right; font-size:18pt; margin-top: 10px}
-  #giant-checkbox {width: 32px; height: 32px; border-style: solid; float: left; text-valign: middle;}
 
+  big-button {width: 400px; height: 100px; font-size: 24pt}
 </style>
 </head>
 <body>
  <p id="err-msg"></p>
  <p>If you have a Weave account, enter your info below to connect to
      it with this device.</p>
-<input type="text" class="embiggened" id="username-input"/><br/><br/>
-<input type="text" class="embiggened" id="password-input"/>
+<input type="text" class="embiggened" id="username-input"
+        onclick="selectField('username-input')"/><br/><br/>
+<input type="text" class="embiggened" id="password-input"
+        onclick="selectField('password-input')"/>
 <img width="32" height="32" src="chrome://weave/skin/lock-open.png" id="hide-password" onclick="doHide();"/><br/><br/>
-<input type="text" class="embiggened" size="120" id="passphrase-input">
+<input type="text" class="embiggened" size="120" id="passphrase-input"
+        onclick="selectField('passphrase-input')"/>
 
 <div id="bounding-box">
 <div id="lower-left">
@@ -112,10 +118,7 @@ window.addEventListener("load", onLoad, false);
 </div>
 
 <div id="lower-right">
-  <div id="giant-checkbox" class="check-off" onclick="setRocker(true);">
-  </div>
-  &nbsp;I Agree
+  <input type="button" value="Connect" onclick="submit();"
+          class="big-button"/>
 </div>
-</div>
-
 </body> </html>
