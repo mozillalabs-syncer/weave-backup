@@ -37,9 +37,41 @@
   </scrollbox>
 
   <deck id="panel-items">
-    <vbox id="weave-detail-prefs-pane" hidden="true" style="-moz-stack-sizing: ignore;" top="0" left="0">
-      <label value="YOU ARE MY PANTS"/>
-      <button id="weave-prefs-close" oncommand="BrowserUI.show(UIMODE_NONE)"/>
+    <!-- what does flex=1 mean?? -->
+    <!-- hidden="false" style="-moz-stack-sizing: ignore;" top="0" left="0"-->
+    <vbox id="weave-detail-connect-pane" flex="1">
+      <hbox pack="center" id="stuff">
+	<scrollbox orient="vertical" id="weave-detail-pref-list" seltype="single" flex="1">
+	  <vbox class="prefsection">
+	    <label value="Connect this device to your Weave account:"/>
+	    <label value="" id="err-msg-label"/>
+	  </vbox>
+	  <vbox>
+	    <hbox>
+	      <label value="Username"/>
+	      <textbox class="embiggened" id="username-input" onclick="gFennecWeaveGlue.selectField('username-input');"/>
+	    </hbox>
+	    <hbox>
+	      <label value="Password"/>
+	      <textbox class="embiggened" id="password-input" onclick="gFennecWeaveGlue.selectField('password-input');"/>
+	      <image src="chrome://weave/skin/lock-open.png" id="hide-password-button" onclick="gFennecWeaveGlue.showHidePasswordFields();"/>
+	    </hbox>
+	    <hbox>
+	      <textbox size="48" class="embiggened" id="passphrase-input" onclick="gFennecWeaveGlue.selectField('passphrase-input');"/>
+	    </hbox>
+	    <button label="Connect" onclick="gFennecWeaveGlue.submitConnectForm('err-msg-label');"/>
+	  </vbox>
+	  <vbox align="end">
+	    <hbox align="end">
+	      <button id="weave-prefs-close" label="Close" oncommand="BrowserUI.show(UIMODE_NONE)"/>
+	    </hbox>
+	  </vbox>
+	</scrollbox>
+      </hbox>
     </vbox>
+
+    <vbox id="weave-detail-prefs-pane" flex="1" hidden="true">
+    </vbox>
+
   </deck>
 </overlay>
