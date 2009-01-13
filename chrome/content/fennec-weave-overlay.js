@@ -94,6 +94,8 @@ FennecWeaveGlue.prototype = {
     return this.__os;
   },
 
+  _passwordsHidden: false,
+
   shutdown: function FennecWeaveGlue__shutdown() {
     // Anything that needs shutting down can go here.
   },
@@ -114,22 +116,68 @@ FennecWeaveGlue.prototype = {
     }
   },
 
-  openPrefs: function FennecWeaveGlue__openPrefs() {
-    //try BrowserUI.show() and BrowserUI.switchPane() and BrowserUI.goToURI
-    //BrowserUI.switchPane("weave-detail-prefs-pane");
-    // overlay #panel-items with #weave-detail-prefs-pane.
-    //  <deck id="panel-items" flex="1" selectedIndex="2">
+  showHidePasswordFields: function FennecWeaveGlue__showHidePassFields() {
+    var passwordField = document.getElementById("password-input");
+    var passphraseField = document.getElementById("passphrase-input");
+    var lockIcon = document.getElementById("hide-password-button");
 
-    var serverUrl = this._pfs.getCharPref("extensions.weave.serverURL");
+    this._passwordsHidden = !this._passwordsHidden;
+    if (this._passwordsHidden) {
+      passwordField.type = "password";
+      passphraseField.type = "password";
+      lockIcon.src="chrome://weave/skin/lock-closed.png";
+    } else {
+      passwordField.type = "";
+      passphraseField.type = "";
+      lockIcon.src="chrome://weave/skin/lock-open.png";
+    }
+  },
+
+  openPrefs: function FennecWeaveGlue__openPrefs() {
+    /* See richpref.xml ( an XBL document) for the semantics of the
+     richpref tags in browser.xul, and browser.css to see how this
+     definition is associated with the tags.  One approach would be
+     to define a richpref-text to go along with the others (there
+     is currently no richpref-text) and then use that for all the
+     fields we need. */
+
+    //try BrowserUI.show() and BrowserUI.switchPane() and BrowserUI.goToURI
+
+    // this works with the prefs stuff defined in the overlay to
+    // deck id="panel-items" in fennec-preferences.xul.
+    // Let's move all of the js to here
+
     var username = this._pfs.getCharPref("extensions.weave.username");
     var password = Weave.Service.password;
     var passphrase = Weave.Service.passphrase;
+
+    BrowserUI.switchPane("weave-detail-connect-pane");
+    if (username && username != "nobody") {
+      document.getElementById("username-input").value = username;
+    } else {
+      document.getElementById("username-input").value = "Your Username Here";
+    }
+    if (password) {
+      document.getElementById("password-input").value = password;
+    } else {
+      document.getElementById("password-input").value = "Your Password Here";
+    }
+    if (passphrase) {
+      document.getElementById("passphrase-input").value = passphrase;
+    } else {
+      document.getElementById("passphrase-input").value = "Your Passphrase Here";
+    }
+
+
+    // or weave-detail-prefs-pane
+
+    /*var serverUrl = this._pfs.getCharPref("extensions.weave.serverURL");
 
     if (username && password && passphrase && username != "nobody") {
       Browser.currentBrowser.loadURI("chrome://weave/content/fennec-prefs.html");
     } else {
       Browser.currentBrowser.loadURI("chrome://weave/content/fennec-connect.html");
-    }
+    }*/
 
    /* This gets an error like:
     Error: uncaught exception: [Exception... "Component returned failure code: 0x80070057 (NS_ERROR_ILLEGAL_VALUE) [nsIIOService.newURI]"  nsresult: "0x80070057 (NS_ERROR_ILLEGAL_VALUE)"  location: "JS frame :: chrome://browser/content/browser-ui.js :: anonymous :: line 155"  data: no]
@@ -144,12 +192,43 @@ FennecWeaveGlue.prototype = {
      defaults.setCharPref(name, val);*/
   },
 
-  onSignupComplete: function FennecWeaveGlue__onSignupComplete(callback) {
-    this._log.info("onSignupComplete called.");
-    this._turnWeaveOff();
-    // turnWeaveOff completes immediately and doesn't do any
-    // asynchronous trickery.
-    this._turnWeaveOn();
+  submitConnectForm: function FennecWeaveGlue__submitConnect(errFieldId) {
+    this._log.info("connection form submitted...");
+
+    var usernameInput = document.getElementById("username-input").value;
+    var passwordInput = document.getElementById("password-input").value;
+    var passphraseInput = document.getElementById("passphrase-input").value;
+    var errField = document.getElementById(errFieldId);
+    if (usernameInput == "") {
+      errField.value = "You must enter a Weave username.";
+      return;
+    }
+    if (passwordInput == "") {
+      errField.value = "You must enter a Weave password.";
+      return;
+    }
+    if (passphraseInput == "") {
+      errField.value = "You must enter a Weave passphrase.";
+      return;
+    }
+
+    errField.innerHTML = "Logging you in...";
+
+    if (Weave.Service.isLoggedIn)
+      Weave.Service.logout();
+
+    this._pfs.setCharPref("extensions.weave.username", usernameInput);
+    Weave.Service.password = passwordInput;
+    Weave.Service.passphrase = passphraseInput;
+
+    Weave.Service.login( function(success) {
+                         if (success) {
+                           errField.value = "Login Succeeded!";
+			   // TODO and then redirect to the prefs...
+                         } else {
+                           errField.value = "Login Failed!  Double-check your username and password.";
+                         }
+                       });
   },
 
   _turnWeaveOff: function FennecWeaveGlue__turnWeaveOff() {
@@ -176,6 +255,12 @@ FennecWeaveGlue.prototype = {
       }
 
     }
+  },
+
+  selectField: function FennecWeaveGlue__selectField(id) {
+    var field = document.getElementById(id);
+    field.focus();
+    field.select();
   },
 
   getWeaveStatus: function FennecWeaveGlue__getWeaveStatus() {
