@@ -39,7 +39,10 @@ const EXPORTED_SYMBOLS = ['gFennecWeaveGlue'];
 function FennecWeaveGlue() {
   // Yes, Log4Moz works fine on fennec.
   this._log = Log4Moz.repository.getLogger("Chrome.Window");
-  this._pfs.addObserver("", this, false);
+  //this._pfs.addObserver("", this, false);
+  this._os.addObserver(this, "weave:service:sync:start", false);
+  this._os.addObserver(this, "weave:service:sync:success", false);
+  this._os.addObserver(this, "weave:service:sync:error", false);
 
   try {
     Cu.import("resource://weave/engines/bookmarks.js");
@@ -67,6 +70,15 @@ function FennecWeaveGlue() {
    from Fennec (yet). */
   Weave.Service.keyGenEnabled = false;
 
+  /* Figure out what weave's status is, and set the status message
+   * appropriately:
+   */
+  if (this._pfs.getBoolPref("extensions.weave.enabled")) {
+    this.setWeaveStatusField("Weave is trying to log in...");
+  } else {
+    this.setWeaveStatusField("Weave is turned off.");
+  }
+
   // startup Weave service after a delay, so that it will happen after the
   // UI is loaded.
   let self = this;
@@ -74,6 +86,8 @@ function FennecWeaveGlue() {
 		self._log.info("Timeout done, starting Weave service.\n");
 		Weave.Service.onStartup();
 	      }, 3000);
+  // TODO: after onStartup succeeds or fails, set the status field to
+  // "logged in", "errored", or "needs info from you".
 
 }
 FennecWeaveGlue.prototype = {
@@ -98,9 +112,16 @@ FennecWeaveGlue.prototype = {
 
   shutdown: function FennecWeaveGlue__shutdown() {
     // Anything that needs shutting down can go here.
+    this._os.removeObserver(this, "weave:service:sync:start");
+    this._os.removeObserver(this, "weave:service:sync:success");
+    this._os.removeObserver(this, "weave:service:sync:error");
   },
 
   observe: function FennecWeaveGlue__observe(subject, topic, data) {
+    // observe for "sync", "foo-engine:sync", and...
+    // weave:service:sync:start
+    // Event: weave:service:sync:success
+
     switch (topic) {
       case "nsPref:changed":
         switch (data) {
@@ -113,6 +134,15 @@ FennecWeaveGlue.prototype = {
             break;
         }
         break;
+      case "weave:service:sync:start":
+	this.setWeaveStatusField("Syncing Now!");
+      break;
+      case "weave:service:sync:success":
+	this.setWeaveStatusField("Sync completed successfully!");
+      break;
+      case "weave:service:sync:success":
+	this.setWeaveStatusField("Hit an error while syncing!");
+      break;
     }
   },
 
@@ -236,22 +266,25 @@ FennecWeaveGlue.prototype = {
     if (Weave.Service.isLoggedIn) {
       Weave.Service.logout();
     }
+    this.setWeaveStatusField("Weave is turned off.");
   },
 
   _turnWeaveOn: function FennecWeaveGlue__turnWeaveOn() {
     this._log.info("Turning Weave on...");
     var log = this._log;
+    var setStatus = this.setWeaveStatusField;
     if (!Weave.Service.isLoggedIn) {
       try {
 	// Report on success or failure...
         Weave.Service.login( function(success) {
-			       // TODO make success or failure user-visible
-			       log.info("Weave login callback called with x=");
-			       log.info(success);
+			       if (success)
+				 setStatus("Weave is logged in.");
+			       else
+				 setStatus("Weave had an error when trying to log in.");
 			     } );
       } catch(e) {
-	log.info("Exception caught when calling Weave.Service.login:");
-	log.info(e);
+	log.warn("Exception caught when logging in: " + e);
+	setStatus("Weave had an error when trying to log in.");
       }
 
     }
@@ -263,9 +296,13 @@ FennecWeaveGlue.prototype = {
     field.select();
   },
 
-  getWeaveStatus: function FennecWeaveGlue__getWeaveStatus() {
-    //TODO implement this.
+  setWeaveStatusField: function FennecWeaveGlue__setWeaveStatusField(text) {
+    var elem = document.getElementById("fennec-weave-quick-status");
+    if (elem) {
+      elem.value = text;
+    }
   }
+
 };
 
 let gFennecWeaveGlue;

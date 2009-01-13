@@ -1,21 +1,19 @@
 <?xml version="1.0"?>
 
-<?xml-stylesheet href="chrome://browser/skin/browser.css" type="text/css"?>
-<?xml-stylesheet href="chrome://browser/content/browser.css" type="text/css"?>
 <!DOCTYPE overlay SYSTEM "chrome://weave/locale/preferences.dtd">
 
 <overlay id="sync-preferences"
          xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
   <commandset id="cmdset_main">
-    <command id="cmd_weave_prefs" name="&openPrefsCmd.label;" oncommand="gFennecWeaveGlue.openPrefs();"/>
+    <command id="cmd_weave_prefs" name="&fennecOpenPrefsCmd.label;" oncommand="gFennecWeaveGlue.openPrefs();"/>
   </commandset>
   <scrollbox id="pref-list">
     <!--<vbox class="prefsection">
       <label value="&prefpane.label;" crop="end" flex="1"/>
     </vbox>-->
-    <richpref pref="extensions.weave.enabled" title="&extensions.weave.enabled.title;" type="bool">
-      &extensions.weave.enabled.description;
-      <button label="&openPrefsButton.label;" command="cmd_weave_prefs"/>
+    <richpref title="&fennecPrefsHeader.title;" type="button" insertafter="plugins.enabled">
+      <label value="&fennecPrefsHeader.description;" id="fennec-weave-quick-status"/>
+      <button label="&fennecOpenPrefsButton.label;" command="cmd_weave_prefs"/>
     </richpref>
     <!--
     <richpref pref="extensions.weave.username" title="&extensions.weave.username.title;" type="text">
@@ -37,8 +35,6 @@
   </scrollbox>
 
   <deck id="panel-items">
-    <!-- what does flex=1 mean?? -->
-    <!-- hidden="false" style="-moz-stack-sizing: ignore;" top="0" left="0"-->
     <vbox id="weave-detail-connect-pane" flex="1">
       <hbox pack="center" id="stuff">
 	<scrollbox orient="vertical" id="weave-detail-pref-list" seltype="single" flex="1">
@@ -46,21 +42,29 @@
 	    <label value="Connect this device to your Weave account:"/>
 	    <label value="" id="err-msg-label"/>
 	  </vbox>
-	  <vbox>
-	    <hbox>
+
+	  <hbox>
+	    <vbox equalsize="always">
 	      <label value="Username"/>
-	      <textbox class="embiggened" id="username-input" onclick="gFennecWeaveGlue.selectField('username-input');"/>
-	    </hbox>
-	    <hbox>
 	      <label value="Password"/>
-	      <textbox class="embiggened" id="password-input" onclick="gFennecWeaveGlue.selectField('password-input');"/>
-	      <image src="chrome://weave/skin/lock-open.png" id="hide-password-button" onclick="gFennecWeaveGlue.showHidePasswordFields();"/>
-	    </hbox>
-	    <hbox>
-	      <textbox size="48" class="embiggened" id="passphrase-input" onclick="gFennecWeaveGlue.selectField('passphrase-input');"/>
-	    </hbox>
+	    </vbox>
+	    <vbox equalsize="always">
+	      <textbox class="embiggened" id="username-input" onclick="gFennecWeaveGlue.selectField('username-input');"/>
+	      <hbox>
+		<textbox class="embiggened" id="password-input" onclick="gFennecWeaveGlue.selectField('password-input');"/>
+		<image src="chrome://weave/skin/lock-open.png" id="hide-password-button" onclick="gFennecWeaveGlue.showHidePasswordFields();"/>
+	      </hbox>
+	    </vbox>
+	  </hbox>
+
+	  <vbox>
+	    <textbox size="48" class="embiggened" id="passphrase-input" onclick="gFennecWeaveGlue.selectField('passphrase-input');"/>
+	  </vbox>
+
+	  <vbox>
 	    <button label="Connect" onclick="gFennecWeaveGlue.submitConnectForm('err-msg-label');"/>
 	  </vbox>
+
 	  <vbox align="end">
 	    <hbox align="end">
 	      <button id="weave-prefs-close" label="Close" oncommand="BrowserUI.show(UIMODE_NONE)"/>
