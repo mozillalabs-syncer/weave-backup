@@ -66,8 +66,8 @@ function FennecWeaveGlue() {
   }
 
   /* Generating keypairs is an expensive operation, and we should never
-   have to do it on Fennec because we don't support creating a Weave account
-   from Fennec (yet). */
+   have to do it on Fennec because we don't support creating a Weave
+   account from Fennec (yet). */
   Weave.Service.keyGenEnabled = false;
 
   /* Figure out what weave's status is, and set the status message
@@ -77,6 +77,7 @@ function FennecWeaveGlue() {
     this.setWeaveStatusField("Weave is trying to log in...");
   } else {
     this.setWeaveStatusField("Weave is turned off.");
+    // TODO if weave is turned off, should we not call onStartup?
   }
 
   // startup Weave service after a delay, so that it will happen after the
@@ -84,11 +85,8 @@ function FennecWeaveGlue() {
   let self = this;
   setTimeout( function() {
 		self._log.info("Timeout done, starting Weave service.\n");
-		Weave.Service.onStartup();
+		Weave.Service.onStartup( self.showLoginStatus );
 	      }, 3000);
-  // TODO: after onStartup succeeds or fails, set the status field to
-  // "logged in", "errored", or "needs info from you".
-
 }
 FennecWeaveGlue.prototype = {
   __prefService: null,
@@ -123,7 +121,7 @@ FennecWeaveGlue.prototype = {
     // Event: weave:service:sync:success
 
     switch (topic) {
-      case "nsPref:changed":
+      /*case "nsPref:changed":
         switch (data) {
           case "extensions.weave.enabled":
 	  if (this._pfs.getBoolPref("extensions.weave.enabled")) {
@@ -133,7 +131,7 @@ FennecWeaveGlue.prototype = {
 	  }
             break;
         }
-        break;
+        break;*/
       case "weave:service:sync:start":
 	this.setWeaveStatusField("Syncing Now!");
       break;
@@ -171,7 +169,7 @@ FennecWeaveGlue.prototype = {
      is currently no richpref-text) and then use that for all the
      fields we need. */
 
-    //try BrowserUI.show() and BrowserUI.switchPane() and BrowserUI.goToURI
+    // try BrowserUI.show() and BrowserUI.switchPane() and BrowserUI.goToURI
 
     // this works with the prefs stuff defined in the overlay to
     // deck id="panel-items" in fennec-preferences.xul.
@@ -181,21 +179,25 @@ FennecWeaveGlue.prototype = {
     var password = Weave.Service.password;
     var passphrase = Weave.Service.passphrase;
 
-    BrowserUI.switchPane("weave-detail-connect-pane");
-    if (username && username != "nobody") {
-      document.getElementById("username-input").value = username;
+    if ( username && password && passphrase && username != "nobody") {
+      BrowserUI.switchPane("weave-detail-prefs-pane");
     } else {
-      document.getElementById("username-input").value = "Your Username Here";
-    }
-    if (password) {
-      document.getElementById("password-input").value = password;
-    } else {
-      document.getElementById("password-input").value = "Your Password Here";
-    }
-    if (passphrase) {
-      document.getElementById("passphrase-input").value = passphrase;
-    } else {
-      document.getElementById("passphrase-input").value = "Your Passphrase Here";
+      BrowserUI.switchPane("weave-detail-connect-pane");
+      if (username && username != "nobody") {
+	document.getElementById("username-input").value = username;
+      } else {
+	document.getElementById("username-input").value = "Your Username Here";
+      }
+      if (password) {
+	document.getElementById("password-input").value = password;
+      } else {
+	document.getElementById("password-input").value = "Your Password Here";
+      }
+      if (passphrase) {
+	document.getElementById("passphrase-input").value = passphrase;
+      } else {
+	document.getElementById("passphrase-input").value = "Your Passphrase Here";
+      }
     }
 
 
@@ -293,6 +295,22 @@ FennecWeaveGlue.prototype = {
     var field = document.getElementById(id);
     field.focus();
     field.select();
+  },
+
+  showLoginStatus: function FennecWeaveGlue__updateStatusMessage() {
+    if (Weave.Service.isLoggedIn) {
+      this.setWeaveStatusField("Weave is logged in and idle.");
+    } else {
+      // Not logged in?  Why not?
+      var pass = Weave.Service.password;
+      var phrase = Weave.Service.passphrase;
+      var user = this._pfs.getCharPref("extensions.weave.username");
+      if (!pass || pass == "" || !user || user == "" || !phrase || phrase == "") {
+	this.setWeaveStatusField("Weave needs more info from you to get started.");
+      } else {
+	this.setWeaveStatusField("Weave encountered an error when trying to log you in.");
+      }
+    }
   },
 
   setWeaveStatusField: function FennecWeaveGlue__setWeaveStatusField(text) {

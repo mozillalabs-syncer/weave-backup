@@ -38,59 +38,94 @@
     <vbox id="weave-detail-connect-pane" flex="1">
       <button id="weave-prefs-close" label="Close"
 	      oncommand="BrowserUI.show(UIMODE_NONE)"/>
-      <hbox pack="center" id="stuff">
-	<scrollbox orient="vertical" id="weave-detail-pref-list" seltype="single" flex="1">
-	  <vbox class="prefsection">
-	    <label value="Connect this device to your Weave account:"/>
-	    <label value="" id="err-msg-label"/>
-	  </vbox>
+      <vbox class="prefsection">
+	<label value="Connect this device to your Weave account:"/>
+	<label value="" id="err-msg-label"/>
+      </vbox>
 
-	  <grid>
-	    <columns>
-	      <column flex="1"/>
-	      <column flex="1"/>
-	      <column flex="0"/>
-	    </columns>
-	    <rows>
-	      <row>
-		<label value="Username"/>
-		<textbox class="embiggened" id="username-input" 
-			 onclick="gFennecWeaveGlue.selectField('username-input');"/>
-		<box/>
-	      </row>
-	      <row>
-		<label value="Password"/>
-		<textbox class="embiggened" id="password-input" 
-			 onclick="gFennecWeaveGlue.selectField('password-input');"/>
-		<image src="chrome://weave/skin/lock-open.png"
-		       id="hide-password-button" 
-		       onclick="gFennecWeaveGlue.showHidePasswordFields();"/>
-	      </row>
-	      <row>
-		<label value="Passphrase"/>
-		<box/>
-		<box/>
-	      </row>
-	      
-	      <textbox size="48" class="embiggened" id="passphrase-input"
-		       onclick="gFennecWeaveGlue.selectField('passphrase-input');"/>
-	      <row>
-		<box/>
-		<button label="Connect" onclick="gFennecWeaveGlue.submitConnectForm('err-msg-label');"/>
-		<box/>
-	      </row>
-	    </rows>
-	  </grid>
-	</scrollbox>
-      </hbox>
+      <grid>
+	<columns>
+	  <column flex="1"/>
+	  <column flex="1"/>
+	  <column flex="0"/>
+	</columns>
+	<rows>
+	  <row>
+	    <label value="Username"/>
+	    <textbox class="embiggened" id="username-input" 
+		     onclick="gFennecWeaveGlue.selectField('username-input');"/>
+	    <box/>
+	  </row>
+	  <row>
+	    <label value="Password"/>
+	    <textbox class="embiggened" id="password-input" 
+		     onclick="gFennecWeaveGlue.selectField('password-input');"/>
+	    <image src="chrome://weave/skin/lock-open.png"
+		   id="hide-password-button" 
+		   onclick="gFennecWeaveGlue.showHidePasswordFields();"/>
+	  </row>
+	  <row>
+	    <label value="Passphrase"/>
+	    <box/>
+	    <box/>
+	  </row>
+	  
+	  <textbox size="48" class="embiggened" id="passphrase-input"
+		   onclick="gFennecWeaveGlue.selectField('passphrase-input');"/>
+	  <row>
+	    <box/>
+	    <button label="Connect" onclick="gFennecWeaveGlue.submitConnectForm('err-msg-label');"/>
+	    <box/>
+	  </row>
+	</rows>
+      </grid>
     </vbox>
 
-    <vbox id="weave-detail-prefs-pane" flex="1" hidden="true">
+    <vbox id="weave-detail-prefs-pane" flex="1">
       <button id="weave-prefs-close" label="Close"
 	      oncommand="BrowserUI.show(UIMODE_NONE)"/>
-      <hbox pack="cener" id="stuff">
-	  <button label="Turn Weave Off" id="weave-on-off-button" onclick="gFennecWeaveGlue.toggleWeaveOnOff();"/>
-      </hbox>
+
+      <grid>
+	<columns>
+	  <column flex="1"/>
+	  <column flex="2"/>
+	  <column flex="3"/>
+	</columns>
+	<rows>
+	  <row>
+	    <box/>
+	    <box/>
+	    <button label="Turn Weave Off" id="weave-on-off-button" onclick="gFennecWeaveGlue.toggleWeaveOnOff();"/>
+	  </row>
+	  <vbox class="prefection">
+	    <label value="Weave Preferences:"/>
+	    <label value="" id="fennec-weave-full-status"/>
+	  </vbox>
+	  <richpref pref="extensions.weave.engine.bookmarks" title="Bookmarks" type="bool">
+	    Sync bookmarks
+	  </richpref>
+	  <richpref pref="extensions.weave.engine.cookies" title="Cookies" type="bool">
+	    Sync cookies
+	  </richpref>
+	  <richpref pref="extensions.weave.engine.history" title="History" type="bool">
+	    Sync history
+	  </richpref>
+	  <richpref pref="extensions.weave.engine.tabs" title="Tabs" type="bool">
+	    Sync tabs
+	  </richpref>
+	  <richpref pref="extensions.weave.engine.passwords" title="Passwords" type="bool">
+	    Sync passwords
+	  </richpref>
+	  <richpref pref="extensions.weave.engine.forms" title="Forms" type="bool">
+	    Sync forms
+	  </richpref>
+	  <richpref pref="extensions.weave.engine.input" title="Input" type="bool">
+	    Sync input
+	  </richpref>
+
+	</rows>
+      </grid>
+
     </vbox>
 
   </deck>
