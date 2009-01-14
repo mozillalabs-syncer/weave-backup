@@ -301,6 +301,16 @@ FennecWeaveGlue.prototype = {
     if (elem) {
       elem.value = text;
     }
+  },
+
+  toggleWeaveOnOff: function FennecWeaveGlue_toggleWeave() {
+    if (this._pfs.getBoolPref("extensions.weave.enabled")) {
+      this._pfs.setBoolPref("extensions.weave.enabled", false);
+      this._turnWeaveOff();
+    } else {
+      this._pfs.setBoolPref("extensions.weave.enabled", true);
+      this._turnWeaveOn();
+    }
   }
 
 };

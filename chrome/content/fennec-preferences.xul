@@ -42,7 +42,7 @@
 	    <label value="Connect this device to your Weave account:"/>
 	    <label value="" id="err-msg-label"/>
 	  </vbox>
-
+	  <button label="Turn Weave Off" id="weave-on-off-button" onclick="gFennecWeaveGlue.toggleWeaveOnOff();"/>
 	  <hbox>
 	    <vbox equalsize="always">
 	      <label value="Username"/>
