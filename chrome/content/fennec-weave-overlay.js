@@ -242,23 +242,15 @@ FennecWeaveGlue.prototype = {
       return;
     }
 
-    errField.innerHTML = "Logging you in...";
-
-    if (Weave.Service.isLoggedIn)
-      Weave.Service.logout();
+    this._turnWeaveOff();
 
     this._pfs.setCharPref("extensions.weave.username", usernameInput);
     Weave.Service.password = passwordInput;
     Weave.Service.passphrase = passphraseInput;
 
-    Weave.Service.login( function(success) {
-                         if (success) {
-                           errField.value = "Login Succeeded!";
-			   // TODO and then redirect to the prefs...
-                         } else {
-                           errField.value = "Login Failed!  Double-check your username and password.";
-                         }
-                       });
+    this._turnWeaveOn( function() {
+			 // TODO redirect you to the full prefs page here
+		       } );
   },
 
   _turnWeaveOff: function FennecWeaveGlue__turnWeaveOff() {
@@ -269,18 +261,25 @@ FennecWeaveGlue.prototype = {
     this.setWeaveStatusField("Weave is turned off.");
   },
 
-  _turnWeaveOn: function FennecWeaveGlue__turnWeaveOn() {
+  _turnWeaveOn: function FennecWeaveGlue__turnWeaveOn( onSuccess ) {
+    // onSuccess is an optional callback function that gets called
+    // when login completes successfully.
     this._log.info("Turning Weave on...");
     var log = this._log;
     var setStatus = this.setWeaveStatusField;
+    setStatus("Weave is logging in...");
     if (!Weave.Service.isLoggedIn) {
       try {
 	// Report on success or failure...
         Weave.Service.login( function(success) {
-			       if (success)
+			       if (success) {
 				 setStatus("Weave is logged in.");
-			       else
+				 if (onSuccess) {
+				   onSuccess();
+				 }
+			       } else {
 				 setStatus("Weave had an error when trying to log in.");
+			       }
 			     } );
       } catch(e) {
 	log.warn("Exception caught when logging in: " + e);
@@ -301,15 +300,21 @@ FennecWeaveGlue.prototype = {
     if (elem) {
       elem.value = text;
     }
+    var elem2 = document.getElementById("fennec-weave-full-status");
+    if (elem) {
+      elem.value = text;
+    }
   },
 
   toggleWeaveOnOff: function FennecWeaveGlue_toggleWeave() {
     if (this._pfs.getBoolPref("extensions.weave.enabled")) {
       this._pfs.setBoolPref("extensions.weave.enabled", false);
       this._turnWeaveOff();
+      // TODO set the text label of the button to "turn weave on"
     } else {
       this._pfs.setBoolPref("extensions.weave.enabled", true);
       this._turnWeaveOn();
+      // TODO set the text label of the button to "turn weave off"
     }
   }
 
