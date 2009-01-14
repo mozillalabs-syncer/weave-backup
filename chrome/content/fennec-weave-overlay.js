@@ -186,6 +186,14 @@ FennecWeaveGlue.prototype = {
 
   openPrefsPane: function FennecWeaveGlue__openPrefsPane() {
     BrowserUI.switchPane("weave-detail-prefs-pane");
+
+    var theButton = document.getElementById("weave-on-off-button");
+    if (this._pfs.getBoolPref("extensions.weave.enabled")) {
+      theButton.label = "Turn Weave Off";
+    } else {
+      theButton.label = "Turn Weave On";
+    }
+
   },
 
   openWeavePane: function FennecWeaveGlue__openWeavePane() {
@@ -193,7 +201,7 @@ FennecWeaveGlue.prototype = {
      * passphrase are set and uses that to determine whether setup is
      * required; opens connect pane if setup is required, prefs pane
      * if not.*/
-
+    
     // this works with the prefs stuff defined in the overlay to
     // deck id="panel-items" in fennec-preferences.xul.
     var username = this._pfs.getCharPref("extensions.weave.username");
@@ -323,14 +331,19 @@ FennecWeaveGlue.prototype = {
   },
 
   toggleWeaveOnOff: function FennecWeaveGlue_toggleWeave() {
+    var theButton = document.getElementById("weave-on-off-button");
     if (this._pfs.getBoolPref("extensions.weave.enabled")) {
       this._pfs.setBoolPref("extensions.weave.enabled", false);
       this._turnWeaveOff();
-      // TODO set the text label of the button to "turn weave on"
+      theButton.label = "Turn Weave On";
     } else {
       this._pfs.setBoolPref("extensions.weave.enabled", true);
-      this._turnWeaveOn();
-      // TODO set the text label of the button to "turn weave off"
+      theButton.label = "Turning Weave On...";
+      theButton.enabled = false;
+      this._turnWeaveOn( function() {
+			   theButton.enabled = true;
+			   theButton.label = "Turn Weave Off";
+			 });
     }
   }
 
