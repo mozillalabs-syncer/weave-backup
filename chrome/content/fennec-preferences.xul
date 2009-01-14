@@ -137,23 +137,28 @@
 	      Sync tabs
 	    </richpref>
 	    <box/>
-	    <box/>
+	    <button label="Sync Now (Debug)"
+		    onclick="gFennecWeaveGlue.syncNow();"/>
 	  </row>
 	  <row>
 	    <richpref pref="extensions.weave.engine.passwords" 
 		      title="Passwords" type="bool">
 	      Sync passwords
 	    </richpref>
-	    <box/>
-	    <box/>
+	    <!-- TODO replace the following with richpref type="text"-->
+	    <label value="Weave Server is"/>
+	    <textbox id="server-url-input"
+		     onclick="gFennecWeaveGlue.selectField('server-url-input');"/>
 	  </row>
 	  <row>
 	    <richpref pref="extensions.weave.engine.forms" 
 		      title="Forms" type="bool">
 	      Sync forms
 	    </richpref>
-	    <box/>
-	    <box/>
+	    <!-- TODO replace the following with richpref type="text"-->
+	    <label value="This Client's name is"/>
+	    <textbox id="client-name-input"
+		     onclick="gFennecWeaveGlue.selectField('client-name-input');"/>
 	  </row>
 	  <row>
 	    <richpref pref="extensions.weave.engine.input"

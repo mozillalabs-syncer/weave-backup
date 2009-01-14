@@ -186,6 +186,8 @@ FennecWeaveGlue.prototype = {
 
   openPrefsPane: function FennecWeaveGlue__openPrefsPane() {
     BrowserUI.switchPane("weave-detail-prefs-pane");
+    var clientName = this._pfs.getCharPref("extensions.weave.client.name");
+    var serverUrl = this._pfs.getCharPref("extensions.weave.serverURL");
 
     var theButton = document.getElementById("weave-on-off-button");
     if (this._pfs.getBoolPref("extensions.weave.enabled")) {
@@ -193,7 +195,10 @@ FennecWeaveGlue.prototype = {
     } else {
       theButton.label = "Turn Weave On";
     }
-
+    document.getElementById("client-name-input").value = clientName;
+    document.getElementById("server-url-input").value = serverUrl;
+    // TODO update client name and server URL when user changes value
+    // in checkboxes.
   },
 
   openWeavePane: function FennecWeaveGlue__openWeavePane() {
@@ -201,7 +206,7 @@ FennecWeaveGlue.prototype = {
      * passphrase are set and uses that to determine whether setup is
      * required; opens connect pane if setup is required, prefs pane
      * if not.*/
-    
+
     // this works with the prefs stuff defined in the overlay to
     // deck id="panel-items" in fennec-preferences.xul.
     var username = this._pfs.getCharPref("extensions.weave.username");
@@ -344,6 +349,18 @@ FennecWeaveGlue.prototype = {
 			   theButton.enabled = true;
 			   theButton.label = "Turn Weave Off";
 			 });
+    }
+  },
+
+  syncNow: function FennecWeaveGlue_syncNow() {
+    if (Weave.Service.isLoggedIn) {
+      if (!Weave.Service.isQuitting) {
+	Weave.Service.sync();
+      } else {
+	dump("Can't sync, Weave is quitting.");
+      }
+    } else {
+      dump("Can't sync, Weave is not logged in.");
     }
   }
 
