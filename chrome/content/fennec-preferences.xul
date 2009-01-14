@@ -5,15 +5,19 @@
 <overlay id="sync-preferences"
          xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
   <commandset id="cmdset_main">
-    <command id="cmd_weave_prefs" name="&fennecOpenPrefsCmd.label;" oncommand="gFennecWeaveGlue.openPrefs();"/>
+    <command id="cmd_weave_prefs" name="&fennecOpenPrefsCmd.label;" 
+	     oncommand="gFennecWeaveGlue.openWeavePane();"/>
   </commandset>
   <scrollbox id="pref-list">
     <!--<vbox class="prefsection">
       <label value="&prefpane.label;" crop="end" flex="1"/>
     </vbox>-->
-    <richpref title="&fennecPrefsHeader.title;" type="button" insertafter="plugins.enabled">
-      <label value="&fennecPrefsHeader.description;" id="fennec-weave-quick-status"/>
-      <button label="&fennecOpenPrefsButton.label;" command="cmd_weave_prefs"/>
+    <richpref title="&fennecPrefsHeader.title;" type="button"
+	      insertafter="plugins.enabled">
+      <label value="&fennecPrefsHeader.description;"
+	     id="fennec-weave-quick-status"/>
+      <button label="&fennecOpenPrefsButton.label;"
+	      command="cmd_weave_prefs"/>
     </richpref>
     <!--
     <richpref pref="extensions.weave.username" title="&extensions.weave.username.title;" type="text">
@@ -87,42 +91,78 @@
 
       <grid>
 	<columns>
-	  <column flex="1"/>
 	  <column flex="2"/>
-	  <column flex="3"/>
+	  <column flex="1"/>
+	  <column flex="1"/>
 	</columns>
 	<rows>
 	  <row>
 	    <box/>
 	    <box/>
-	    <button label="Turn Weave Off" id="weave-on-off-button" onclick="gFennecWeaveGlue.toggleWeaveOnOff();"/>
+	    <button label="Turn Weave Off" id="weave-on-off-button" 
+		    onclick="gFennecWeaveGlue.toggleWeaveOnOff();"/>
 	  </row>
 	  <vbox class="prefection">
 	    <label value="Weave Preferences:"/>
 	    <label value="" id="fennec-weave-full-status"/>
 	  </vbox>
-	  <richpref pref="extensions.weave.engine.bookmarks" title="Bookmarks" type="bool">
-	    Sync bookmarks
-	  </richpref>
-	  <richpref pref="extensions.weave.engine.cookies" title="Cookies" type="bool">
-	    Sync cookies
-	  </richpref>
-	  <richpref pref="extensions.weave.engine.history" title="History" type="bool">
-	    Sync history
-	  </richpref>
-	  <richpref pref="extensions.weave.engine.tabs" title="Tabs" type="bool">
-	    Sync tabs
-	  </richpref>
-	  <richpref pref="extensions.weave.engine.passwords" title="Passwords" type="bool">
-	    Sync passwords
-	  </richpref>
-	  <richpref pref="extensions.weave.engine.forms" title="Forms" type="bool">
-	    Sync forms
-	  </richpref>
-	  <richpref pref="extensions.weave.engine.input" title="Input" type="bool">
-	    Sync input
-	  </richpref>
-
+	  <row>
+	    <richpref pref="extensions.weave.engine.bookmarks" 
+		      title="Bookmarks" type="bool">
+	      Sync bookmarks
+	    </richpref>
+	    <box/>
+	    <button label="Change Account"
+		    onclick = "gFennecWeaveGlue.openConnectPane();"/>
+	  </row>
+	  <row>
+	    <richpref pref="extensions.weave.engine.cookies" 
+		      title="Cookies" type="bool">
+	      Sync cookies
+	    </richpref>
+	    <box/>
+	    <box/>
+	  </row>
+	  <row>
+	    <richpref pref="extensions.weave.engine.history"
+		      title="History" type="bool">
+	      Sync history
+	    </richpref>
+	    <box/>
+	    <box/>
+	  </row>
+	  <row>
+	    <richpref pref="extensions.weave.engine.tabs" 
+		      title="Tabs" type="bool">
+	      Sync tabs
+	    </richpref>
+	    <box/>
+	    <box/>
+	  </row>
+	  <row>
+	    <richpref pref="extensions.weave.engine.passwords" 
+		      title="Passwords" type="bool">
+	      Sync passwords
+	    </richpref>
+	    <box/>
+	    <box/>
+	  </row>
+	  <row>
+	    <richpref pref="extensions.weave.engine.forms" 
+		      title="Forms" type="bool">
+	      Sync forms
+	    </richpref>
+	    <box/>
+	    <box/>
+	  </row>
+	  <row>
+	    <richpref pref="extensions.weave.engine.input"
+		      title="Input" type="bool">
+	      Sync input
+	    </richpref>
+	    <box/>
+	    <box/>
+	  </row>
 	</rows>
       </grid>
 

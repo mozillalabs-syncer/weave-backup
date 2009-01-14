@@ -161,60 +161,60 @@ FennecWeaveGlue.prototype = {
     }
   },
 
-  openPrefs: function FennecWeaveGlue__openPrefs() {
+  openConnectPane: function FennecWeaveGlue__openConnectPane() {
+    var username = this._pfs.getCharPref("extensions.weave.username");
+    var password = Weave.Service.password;
+    var passphrase = Weave.Service.passphrase;
+
+    BrowserUI.switchPane("weave-detail-connect-pane");
+    if (username && username != "nobody") {
+      document.getElementById("username-input").value = username;
+    } else {
+      document.getElementById("username-input").value = "Your Username Here";
+    }
+    if (password) {
+      document.getElementById("password-input").value = password;
+    } else {
+      document.getElementById("password-input").value = "Your Password Here";
+    }
+    if (passphrase) {
+      document.getElementById("passphrase-input").value = passphrase;
+    } else {
+      document.getElementById("passphrase-input").value = "Your Passphrase Here";
+    }
+  },
+
+  openPrefsPane: function FennecWeaveGlue__openPrefsPane() {
+    BrowserUI.switchPane("weave-detail-prefs-pane");
+  },
+
+  openWeavePane: function FennecWeaveGlue__openWeavePane() {
+    /* Looks at whether username/password/
+     * passphrase are set and uses that to determine whether setup is
+     * required; opens connect pane if setup is required, prefs pane
+     * if not.*/
+
+    // this works with the prefs stuff defined in the overlay to
+    // deck id="panel-items" in fennec-preferences.xul.
+    var username = this._pfs.getCharPref("extensions.weave.username");
+    var password = Weave.Service.password;
+    var passphrase = Weave.Service.passphrase;
+
+    if ( username && password && passphrase && username != "nobody") {
+      this.openPrefsPane();
+    } else {
+      this.openConnectPane();
+    }
+  },
+
+  // Notes:
+    // try BrowserUI.show() and BrowserUI.switchPane() and BrowserUI.goToURI
     /* See richpref.xml ( an XBL document) for the semantics of the
      richpref tags in browser.xul, and browser.css to see how this
      definition is associated with the tags.  One approach would be
      to define a richpref-text to go along with the others (there
      is currently no richpref-text) and then use that for all the
      fields we need. */
-
-    // try BrowserUI.show() and BrowserUI.switchPane() and BrowserUI.goToURI
-
-    // this works with the prefs stuff defined in the overlay to
-    // deck id="panel-items" in fennec-preferences.xul.
-    // Let's move all of the js to here
-
-    var username = this._pfs.getCharPref("extensions.weave.username");
-    var password = Weave.Service.password;
-    var passphrase = Weave.Service.passphrase;
-
-    if ( username && password && passphrase && username != "nobody") {
-      BrowserUI.switchPane("weave-detail-prefs-pane");
-    } else {
-      BrowserUI.switchPane("weave-detail-connect-pane");
-      if (username && username != "nobody") {
-	document.getElementById("username-input").value = username;
-      } else {
-	document.getElementById("username-input").value = "Your Username Here";
-      }
-      if (password) {
-	document.getElementById("password-input").value = password;
-      } else {
-	document.getElementById("password-input").value = "Your Password Here";
-      }
-      if (passphrase) {
-	document.getElementById("passphrase-input").value = passphrase;
-      } else {
-	document.getElementById("passphrase-input").value = "Your Passphrase Here";
-      }
-    }
-
-
-    // or weave-detail-prefs-pane
-
-    /*var serverUrl = this._pfs.getCharPref("extensions.weave.serverURL");
-
-    if (username && password && passphrase && username != "nobody") {
-      Browser.currentBrowser.loadURI("chrome://weave/content/fennec-prefs.html");
-    } else {
-      Browser.currentBrowser.loadURI("chrome://weave/content/fennec-connect.html");
-    }*/
-
-   /* This gets an error like:
-    Error: uncaught exception: [Exception... "Component returned failure code: 0x80070057 (NS_ERROR_ILLEGAL_VALUE) [nsIIOService.newURI]"  nsresult: "0x80070057 (NS_ERROR_ILLEGAL_VALUE)"  location: "JS frame :: chrome://browser/content/browser-ui.js :: anonymous :: line 155"  data: no]
-    Possibly because 'weave' isn't a registered chrome package. */
-
     /*Also: defaults for prefs being different on fennec than on ffox?
        E.G. rememberpassword default to true, syncOnQuit default to false
        (but syncOnStart default to true...)  Pref defaults can be set
@@ -222,7 +222,7 @@ FennecWeaveGlue.prototype = {
      with something like:
      defaults = this._prefSvc.getDefaultBranch(null);
      defaults.setCharPref(name, val);*/
-  },
+
 
   submitConnectForm: function FennecWeaveGlue__submitConnect(errFieldId) {
     this._log.info("connection form submitted...");
@@ -250,9 +250,8 @@ FennecWeaveGlue.prototype = {
     Weave.Service.password = passwordInput;
     Weave.Service.passphrase = passphraseInput;
 
-    this._turnWeaveOn( function() {
-			 // TODO redirect you to the full prefs page here
-		       } );
+    // redirect you to the full prefs page if login succeeds.
+    this._turnWeaveOn( this.openPrefsPane );
   },
 
   _turnWeaveOff: function FennecWeaveGlue__turnWeaveOff() {
@@ -287,7 +286,6 @@ FennecWeaveGlue.prototype = {
 	log.warn("Exception caught when logging in: " + e);
 	setStatus("Weave had an error when trying to log in.");
       }
-
     }
   },
 
