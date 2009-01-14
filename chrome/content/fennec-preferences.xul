@@ -43,19 +43,26 @@
 	    <label value="" id="err-msg-label"/>
 	  </vbox>
 	  <button label="Turn Weave Off" id="weave-on-off-button" onclick="gFennecWeaveGlue.toggleWeaveOnOff();"/>
-	  <hbox>
-	    <vbox equalsize="always">
-	      <label value="Username"/>
-	      <label value="Password"/>
-	    </vbox>
-	    <vbox equalsize="always">
-	      <textbox class="embiggened" id="username-input" onclick="gFennecWeaveGlue.selectField('username-input');"/>
-	      <hbox>
+
+	  <grid>
+	    <columns>
+	      <column flex="1"/>
+	      <column flex="1"/>
+	      <column flex="1"/>
+	    </columns>
+	    <rows>
+	      <row>
+		<label value="Username"/>
+		<textbox class="embiggened" id="username-input" 
+			 onclick="gFennecWeaveGlue.selectField('username-input');"/>
+	      </row>
+	      <row>
+		<label value="Password"/>
 		<textbox class="embiggened" id="password-input" onclick="gFennecWeaveGlue.selectField('password-input');"/>
 		<image src="chrome://weave/skin/lock-open.png" id="hide-password-button" onclick="gFennecWeaveGlue.showHidePasswordFields();"/>
-	      </hbox>
-	    </vbox>
-	  </hbox>
+	      </row>
+	    </rows>
+	  </grid>
 
 	  <vbox>
 	    <textbox size="48" class="embiggened" id="passphrase-input" onclick="gFennecWeaveGlue.selectField('passphrase-input');"/>
