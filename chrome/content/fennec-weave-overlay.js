@@ -85,7 +85,9 @@ function FennecWeaveGlue() {
   let self = this;
   setTimeout( function() {
 		self._log.info("Timeout done, starting Weave service.\n");
-		Weave.Service.onStartup( self.showLoginStatus );
+		Weave.Service.onStartup( function() {
+					   self.showLoginStatus();
+					 });
 	      }, 3000);
 }
 FennecWeaveGlue.prototype = {
@@ -186,6 +188,7 @@ FennecWeaveGlue.prototype = {
 
   openPrefsPane: function FennecWeaveGlue__openPrefsPane() {
     BrowserUI.switchPane("weave-detail-prefs-pane");
+    // TODO the line below is another place with a closure problem.
     var clientName = this._pfs.getCharPref("extensions.weave.client.name");
     var serverUrl = this._pfs.getCharPref("extensions.weave.serverURL");
 
@@ -264,7 +267,10 @@ FennecWeaveGlue.prototype = {
     Weave.Service.passphrase = passphraseInput;
 
     // redirect you to the full prefs page if login succeeds.
-    this._turnWeaveOn( this.openPrefsPane );
+    var self = this;
+    this._turnWeaveOn( function() {
+			 self.openPrefsPane();
+		       });
   },
 
   _turnWeaveOff: function FennecWeaveGlue__turnWeaveOff() {
@@ -310,6 +316,7 @@ FennecWeaveGlue.prototype = {
 
   showLoginStatus: function FennecWeaveGlue__updateStatusMessage() {
     if (Weave.Service.isLoggedIn) {
+      // TODO this is one of the two places with a closure problem.
       this.setWeaveStatusField("Weave is logged in and idle.");
     } else {
       // Not logged in?  Why not?

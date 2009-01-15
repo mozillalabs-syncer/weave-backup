@@ -40,8 +40,6 @@
 
   <deck id="panel-items">
     <vbox id="weave-detail-connect-pane" flex="1">
-      <button id="weave-prefs-close" label="Close"
-	      oncommand="BrowserUI.show(UIMODE_NONE)"/>
       <vbox class="prefsection">
 	<label value="Connect this device to your Weave account:"/>
 	<label value="" id="err-msg-label"/>
@@ -86,9 +84,6 @@
     </vbox>
 
     <vbox id="weave-detail-prefs-pane" flex="1">
-      <button id="weave-prefs-close" label="Close"
-	      oncommand="BrowserUI.show(UIMODE_NONE)"/>
-
       <grid>
 	<columns>
 	  <column flex="2"/>
