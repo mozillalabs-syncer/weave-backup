@@ -47,16 +47,15 @@ function FennecWeaveGlue() {
   try {
     Cu.import("resource://weave/engines/bookmarks.js");
     Cu.import("resource://weave/engines/history.js");
-    Cu.import("resource://weave/engines/forms.js");
-    /*Cu.import("resource://weave/engines/passwords.js");
+    /*Cu.import("resource://weave/engines/forms.js");
+    Cu.import("resource://weave/engines/passwords.js");
     Cu.import("resource://weave/engines/cookies.js");
     Cu.import("resource://weave/engines/input.js");
     Cu.import("resource://weave/engines/tabs.js");*/
-
     Weave.Engines.register(new HistoryEngine());
     Weave.Engines.register(new BookmarksEngine());
-    Weave.Engines.register(new FormEngine());
-    /*Weave.Engines.register(new PasswordEngine());
+    /*Weave.Engines.register(new FormEngine());
+    Weave.Engines.register(new PasswordEngine());
     Weave.Engines.register(new CookieEngine());
     Weave.Engines.register(new InputEngine());
     Weave.Engines.register(new TabEngine());*/
@@ -298,6 +297,8 @@ FennecWeaveGlue.prototype = {
 				   onSuccess();
 				 }
 			       } else {
+				 // TODO nothing gets displayed on the
+				 // connect page if a problem happens here.
 				 setStatus("Weave had an error when trying to log in.");
 			       }
 			     } );
@@ -316,7 +317,6 @@ FennecWeaveGlue.prototype = {
 
   showLoginStatus: function FennecWeaveGlue__updateStatusMessage() {
     if (Weave.Service.isLoggedIn) {
-      // TODO this is one of the two places with a closure problem.
       this.setWeaveStatusField("Weave is logged in and idle.");
     } else {
       // Not logged in?  Why not?
