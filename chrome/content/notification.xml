@@ -31,7 +31,7 @@
         const Cr = Components.results;
         const Cu = Components.utils;
 
-        Cu.import("resource://weave/Observers.js");
+        Cu.import("resource://weave/ext/Observers.js");
         Cu.import("resource://weave/notifications.js");
         Cu.import("resource://weave/service.js");
 

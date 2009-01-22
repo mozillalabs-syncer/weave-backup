@@ -5,8 +5,8 @@
 // namespace.
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm", {});
 
-Components.utils.import("resource://weave/Observers.js", {});
-Components.utils.import("resource://weave/Preferences.js", {});
+Components.utils.import("resource://weave/ext/Observers.js", {});
+Components.utils.import("resource://weave/ext/Preferences.js", {});
 Components.utils.import("resource://weave/log4moz.js", {});
 
 Components.utils.import("resource://weave/constants.js", {});
