@@ -57,9 +57,6 @@ WeavePrefs.prototype = {
       syncUserName.setAttribute("value", signedInDescription);
       changePasswordForm.hidden = false;
    }
-
-   if(Weave.DAV.locked)
-     syncNowButton.setAttribute("disabled", "true");
   },
 
   onPaneLoad: function WeavePrefs_onPaneLoad() {
