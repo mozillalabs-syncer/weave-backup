@@ -235,13 +235,11 @@ Sync.prototype = {
     this._setStatus("offline");
 
     let title = this._stringBundle.getString("error.login.title");
+    let reason = this._stringBundle.getString("error.login.reason.unknown");
     let description =
-    this._stringBundle.getString("error.login.description");
-    let notification =
-    new Weave.Notification(title,
-                           description,
-                           null,
-                           Weave.Notifications.PRIORITY_WARNING);
+      this._stringBundle.getFormattedString("error.login.description", [reason]);
+    let notification = new Weave.Notification(title, description, null,
+					      Weave.Notifications.PRIORITY_WARNING);
     Weave.Notifications.replaceTitle(notification);
   },
 
@@ -409,7 +407,7 @@ Sync.prototype = {
   },
 
   doOpenPrefs: function Sync_doOpenPrefs(event) {
-    try {  
+    try {
       openPreferences("sync-prefpane");  // firefox
     } catch (ex) {
       openOptionsDialog("sync-prefpane");  // thunderbird
@@ -428,7 +426,7 @@ Sync.prototype = {
   doPopup: function Sync_doPopup(event) {
     this._updateLastSyncItem();
   },
-  
+
   _onNotificationAdded: function Sync__onNotificationAdded() {
     document.getElementById("sync-notifications-button").hidden = false;
   },
