@@ -3,27 +3,25 @@ var Cc = Components.classes;
 var Cr = Components.results;
 
 function WeavePrefs() {
-  this._init();
+  this._log = Log4Moz.repository.getLogger("Chrome.Prefs");
+  this._log.level = Log4Moz.Level["Debug"];
 }
-
 WeavePrefs.prototype = {
   get _stringBundle() {
     let stringBundle = document.getElementById("weaveStringBundle");
-    this.__defineGetter__("_stringBundle", function() { return stringBundle });
+    this.__defineGetter__("_stringBundle", function() { return stringBundle; });
     return this._stringBundle;
-  },
-
-  _init : function WeavePrefs__init() {
   },
 
   _checkClientInfo: function WeavePrefs__checkClientInfo() {
     let richlistbox = document.getElementById('sync-clients-list');
-    let clients = Weave.ClientData.clients();
+    let clients = Weave.Clients.getClients();
+
     for (let guid in clients) {
       let richlistitem = document.createElement('richlistitem');
       let label = document.createElement('label');
 
-      label.setAttribute("value", clients[guid].name);      
+      label.setAttribute("value", clients[guid].name + " (" + clients[guid].type + ")");
 
       richlistitem.appendChild(label);
       richlistbox.appendChild(richlistitem);
