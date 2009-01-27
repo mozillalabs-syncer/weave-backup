@@ -232,6 +232,7 @@ Sync.prototype = {
   },
 
   _onLoginError: function Sync__onLoginError() {
+    this._log.info("Login Error");
     this._setStatus("offline");
 
     let title = this._stringBundle.getString("error.login.title");
