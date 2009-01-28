@@ -57,7 +57,7 @@ else
 xpcshell = $(sdkdir)/bin/xpcshell -v 180
 endif
 
-head := -f $(harnessdir)/head.js $(patsubst %,-f %,$(wildcard head*.js))
+head := -f $(harnessdir)/head.js -f head.js $(patsubst %,-f %,$(wildcard head_*.js))
 tail := $(patsubst %,-f %,$(wildcard tail*.js)) -f $(harnessdir)/tail.js
 tests := $(wildcard test*.js)
 
