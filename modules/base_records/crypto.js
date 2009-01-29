@@ -50,12 +50,6 @@ Cu.import("resource://weave/base_records/keys.js");
 
 Function.prototype.async = Async.sugar;
 
-Utils.lazy(this, 'CryptoMetas', RecordManager);
-
-// fixme: global, ugh
-let json = Cc["@mozilla.org/dom/json;1"].createInstance(Ci.nsIJSON);
-let crypto = Cc["@labs.mozilla.com/Weave/Crypto;1"].createInstance(Ci.IWeaveCrypto);
-
 function CryptoWrapper(uri) {
   this._CryptoWrap_init(uri);
 }
@@ -90,13 +84,21 @@ CryptoWrapper.prototype = {
   _encrypt: function CryptoWrap__encrypt(passphrase) {
     let self = yield;
 
+    // Don't encrypt empty payloads
+    if (!this.cleartext) {
+      this.ciphertext = this.cleartext;
+      self.done();
+      return;
+    }
+
     let pubkey = yield PubKeys.getDefaultKey(self.cb);
     let privkey = yield PrivKeys.get(self.cb, pubkey.privateKeyUri);
 
     let meta = yield CryptoMetas.get(self.cb, this.encryption);
     let symkey = yield meta.getKey(self.cb, privkey, passphrase);
 
-    this.ciphertext = crypto.encrypt(json.encode([this.cleartext]), symkey, meta.bulkIV);
+    this.ciphertext = Svc.Crypto.encrypt(Svc.Json.encode([this.cleartext]),
+					 symkey, meta.bulkIV);
     this.cleartext = null;
 
     self.done();
@@ -108,6 +110,13 @@ CryptoWrapper.prototype = {
   _decrypt: function CryptoWrap__decrypt(passphrase) {
     let self = yield;
 
+    // Empty payloads aren't encrypted
+    if (!this.ciphertext) {
+      this.cleartext = this.ciphertext;
+      self.done();
+      return;
+    }
+
     let pubkey = yield PubKeys.getDefaultKey(self.cb);
     let privkey = yield PrivKeys.get(self.cb, pubkey.privateKeyUri);
 
@@ -115,7 +124,8 @@ CryptoWrapper.prototype = {
     let symkey = yield meta.getKey(self.cb, privkey, passphrase);
 
     // note: payload is wrapped in an array, see _encrypt
-    this.cleartext = json.decode(crypto.decrypt(this.ciphertext, symkey, meta.bulkIV))[0];
+    this.cleartext = Svc.Json.decode(Svc.Crypto.decrypt(this.ciphertext,
+							symkey, meta.bulkIV))[0];
     this.ciphertext = null;
 
     self.done(this.cleartext);
@@ -129,7 +139,7 @@ CryptoWrapper.prototype = {
       "  parent: " + this.parentid + "\n" +
       "  depth: " + this.depth + ", index: " + this.sortindex + "\n" +
       "  modified: " + this.modified + "\n" +
-      "  payload: " + json.encode(this.cleartext) + " }";
+      "  payload: " + Svc.Json.encode(this.cleartext) + " }";
   }
 };
 
@@ -149,7 +159,7 @@ CryptoMeta.prototype = {
   },
 
   generateIV: function CryptoMeta_generateIV() {
-    this.bulkIV = crypto.generateRandomIV();
+    this.bulkIV = Svc.Crypto.generateRandomIV();
   },
 
   get bulkIV() this.data.payload.bulkIV,
@@ -170,7 +180,7 @@ CryptoMeta.prototype = {
     if (!wrapped_key)
       throw "keyring doesn't contain a key for " + pubkeyUri;
 
-    let ret = crypto.unwrapSymmetricKey(wrapped_key, privkey.keyData,
+    let ret = Svc.Crypto.unwrapSymmetricKey(wrapped_key, privkey.keyData,
                                         passphrase, privkey.salt, privkey.iv);
     self.done(ret);
   },
@@ -202,87 +212,17 @@ CryptoMeta.prototype = {
     }
 
     this.payload.keyring[new_pubkey.uri.spec] =
-      crypto.wrapSymmetricKey(symkey, new_pubkey.keyData);
+      Svc.Crypto.wrapSymmetricKey(symkey, new_pubkey.keyData);
   },
   addUnwrappedKey: function CryptoMeta_addUnwrappedKey(onComplete, new_pubkey, symkey) {
     this._addUnwrappedKey.async(this, onComplete, new_pubkey, symkey);
   }
 };
 
-function RecordManager() {
-  this._init();
-}
-RecordManager.prototype = {
-  _recordType: CryptoMeta,
-  _logName: "RecordMgr",
+Utils.lazy(this, 'CryptoMetas', CryptoRecordManager);
 
-  _init: function RegordMgr__init() {
-    this._log = Log4Moz.repository.getLogger(this._logName);
-    this._records = {};
-    this._aliases = {};
-  },
-
-  _import: function RegordMgr__import(url) {
-    let self = yield;
-    let rec;
-
-    this._log.trace("Importing record: " + (url.spec? url.spec : url));
-
-    try {
-      rec = new this._recordType(url);
-      yield rec.get(self.cb);
-      this.set(url, rec);
-    } catch (e) {
-      this._log.debug("Failed to import record: " + e);
-      rec = null;
-    }
-    self.done(rec);
-  },
-  import: function RegordMgr_import(onComplete, url) {
-    this._import.async(this, onComplete, url);
-  },
-
-  _get: function RegordMgr__get(url) {
-    let self = yield;
-
-    let rec = null;
-    if (url in this._aliases)
-      url = this._aliases[url];
-    if (url in this._records)
-      rec = this._records[url];
-
-    if (!rec)
-      rec = yield this.import(self.cb, url);
-
-    self.done(rec);
-  },
-  get: function RegordMgr_get(onComplete, url) {
-    this._get.async(this, onComplete, url);
-  },
-
-  set: function RegordMgr_set(url, record) {
-    this._records[url] = record;
-  },
-
-  contains: function RegordMgr_contains(url) {
-    let record = null;
-    if (url in this._aliases)
-      url = this._aliases[url];
-    if (url in this._records)
-      return true;
-    return false;
-  },
-
-  del: function RegordMgr_del(url) {
-    delete this._records[url];
-  },
-  getAlias: function RegordMgr_getAlias(alias) {
-    return this._aliases[alias];
-  },
-  setAlias: function RegordMgr_setAlias(url, alias) {
-    this._aliases[alias] = url;
-  },
-  delAlias: function RegordMgr_delAlias(alias) {
-    delete this._aliases[alias];
-  }
+function CryptoRecordManager() { this._init(); }
+CryptoRecordManager.prototype = {
+  __proto__: RecordManager.prototype,
+  _recordType: CryptoMeta
 };
