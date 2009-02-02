@@ -97,7 +97,7 @@
 	    <button label="Turn Weave Off" id="weave-on-off-button" 
 		    onclick="gFennecWeaveGlue.toggleWeaveOnOff();"/>
 	  </row>
-	  <vbox class="prefection">
+	  <vbox class="prefsection">
 	    <label value="Weave Preferences:"/>
 	    <label value="" id="fennec-weave-full-status"/>
 	  </vbox>

@@ -337,8 +337,8 @@ FennecWeaveGlue.prototype = {
       elem.value = text;
     }
     var elem2 = document.getElementById("fennec-weave-full-status");
-    if (elem) {
-      elem.value = text;
+    if (elem2) {
+      elem2.value = text;
     }
   },
 
