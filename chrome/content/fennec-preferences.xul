@@ -1,4 +1,5 @@
 <?xml version="1.0"?>
+<?xml-stylesheet href="chrome://weave/content/fennec.css" type="text/css"?>
 
 <!DOCTYPE overlay SYSTEM "chrome://weave/locale/preferences.dtd">
 
@@ -19,23 +20,6 @@
       <button label="&fennecOpenPrefsButton.label;"
 	      command="cmd_weave_prefs"/>
     </richpref>
-    <!--
-    <richpref pref="extensions.weave.username" title="&extensions.weave.username.title;" type="text">
-      &extensions.weave.username.description;
-    </richpref>
-    <richpref pref="extensions.weave.password" title="&extensions.weave.password.title;" type="text">
-      &extensions.weave.password.description;
-    </richpref>
-    <richpref pref="extensions.weave.passphrase" title="&extensions.weave.passphrase.title;" type="text">
-      &extensions.weave.passphrase.description;
-    </richpref>
-    <richpref pref="extensions.weave.client.name" title="&extensions.weave.client.name.title;" type="text">
-      &extensions.weave.client.name.description;
-    </richpref>
-    <richpref pref="extensions.weave.serverURL" title="&extensions.weave.serverURL.title;" type="text">
-      &extensions.weave.serverURL.description;
-    </richpref>
-    -->
   </scrollbox>
 
   <deck id="panel-items">
@@ -86,81 +70,85 @@
     <vbox id="weave-detail-prefs-pane" flex="1">
       <grid>
 	<columns>
-	  <column flex="2"/>
 	  <column flex="1"/>
 	  <column flex="1"/>
 	</columns>
 	<rows>
 	  <row>
-	    <box/>
-	    <box/>
-	    <button label="Turn Weave Off" id="weave-on-off-button" 
-		    onclick="gFennecWeaveGlue.toggleWeaveOnOff();"/>
+	    <vbox class="prefsection">
+	      <label value="Weave Status:"/>
+	    </vbox>
+	    <vbox class="prefsection">
+	      <label value="" id="fennec-weave-full-status"/>
+	    </vbox>
 	  </row>
-	  <vbox class="prefection">
-	    <label value="Weave Preferences:"/>
-	    <label value="" id="fennec-weave-full-status"/>
-	  </vbox>
 	  <row>
 	    <richpref pref="extensions.weave.engine.bookmarks" 
 		      title="Bookmarks" type="bool">
 	      Sync bookmarks
 	    </richpref>
-	    <box/>
-	    <button label="Change Account"
-		    onclick = "gFennecWeaveGlue.openConnectPane();"/>
+	    <richpref title="" type="button">
+	      <button label="Turn Weave Off" id="weave-on-off-button" 
+		  onclick="gFennecWeaveGlue.toggleWeaveOnOff();"/>
+	    </richpref>
 	  </row>
 	  <row>
 	    <richpref pref="extensions.weave.engine.cookies" 
 		      title="Cookies" type="bool">
 	      Sync cookies
 	    </richpref>
-	    <box/>
-	    <box/>
+	    <richpref title="Weave User Account" type="button">
+	      <label id="username-label" value="You are user: "/>
+	      <button label="Change Account"
+		      onclick = "gFennecWeaveGlue.openConnectPane();"/>
+	    </richpref>
 	  </row>
 	  <row>
 	    <richpref pref="extensions.weave.engine.history"
 		      title="History" type="bool">
 	      Sync history
 	    </richpref>
-	    <box/>
-	    <box/>
+	    <richpref pref="extensions.weave.serverURL"
+		      title="Server URL" type="string">
+	      weave server
+	    </richpref>
+	    <!--<textbox id="server-url-input"
+		     onclick="gFennecWeaveGlue.selectField('server-url-input');"/>-->
 	  </row>
 	  <row>
 	    <richpref pref="extensions.weave.engine.tabs" 
 		      title="Tabs" type="bool">
 	      Sync tabs
 	    </richpref>
-	    <box/>
-	    <button label="Sync Now (Debug)"
-		    onclick="gFennecWeaveGlue.syncNow();"/>
+	    <richpref pref="extensions.weave.client.name"
+		      title="Client Name" type="string">
+	      client name
+	    </richpref>
+	    <!--<textbox id="client-name-input"
+		     onclick="gFennecWeaveGlue.selectField('client-name-input');"/>-->
 	  </row>
 	  <row>
 	    <richpref pref="extensions.weave.engine.passwords" 
 		      title="Passwords" type="bool">
 	      Sync passwords
 	    </richpref>
-	    <!-- TODO replace the following with richpref type="text"-->
-	    <label value="Weave Server is"/>
-	    <textbox id="server-url-input"
-		     onclick="gFennecWeaveGlue.selectField('server-url-input');"/>
+	    <richpref title="Sync Now" type="button">
+	      Debug only
+	      <button label="Sync" onclick="gFennecWeaveGlue.syncNow();"/>
+	    </richpref>
 	  </row>
 	  <row>
 	    <richpref pref="extensions.weave.engine.forms" 
 		      title="Forms" type="bool">
 	      Sync forms
 	    </richpref>
-	    <!-- TODO replace the following with richpref type="text"-->
-	    <label value="This Client's name is"/>
-	    <textbox id="client-name-input"
-		     onclick="gFennecWeaveGlue.selectField('client-name-input');"/>
+	    <box/>
 	  </row>
 	  <row>
 	    <richpref pref="extensions.weave.engine.input"
 		      title="Input" type="bool">
 	      Sync input
 	    </richpref>
-	    <box/>
 	    <box/>
 	  </row>
 	</rows>

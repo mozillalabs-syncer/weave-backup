@@ -1,0 +1,3 @@
+richpref[type="string"] {
+    -moz-binding: url("chrome://weave/content/richpref.xml#richpref-string");
+}
