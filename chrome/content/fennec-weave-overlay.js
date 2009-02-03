@@ -187,8 +187,8 @@ FennecWeaveGlue.prototype = {
 
   openPrefsPane: function FennecWeaveGlue__openPrefsPane() {
     BrowserUI.switchPane("weave-detail-prefs-pane");
-    // TODO the line below is another place with a closure problem.
     var clientName = this._pfs.getCharPref("extensions.weave.client.name");
+    var username = this._pfs.getCharPref("extensions.weave.username");
     var serverUrl = this._pfs.getCharPref("extensions.weave.serverURL");
 
     var theButton = document.getElementById("weave-on-off-button");
@@ -197,10 +197,11 @@ FennecWeaveGlue.prototype = {
     } else {
       theButton.label = "Turn Weave On";
     }
-    document.getElementById("client-name-input").value = clientName;
-    document.getElementById("server-url-input").value = serverUrl;
+    //document.getElementById("client-name-input").value = clientName;
+    //document.getElementById("server-url-input").value = serverUrl;
+    document.getElementById("username-label").value = "You are user: " + username;
     // TODO update client name and server URL when user changes value
-    // in checkboxes.
+    // in fields.  Or make them richpref
   },
 
   openWeavePane: function FennecWeaveGlue__openWeavePane() {
