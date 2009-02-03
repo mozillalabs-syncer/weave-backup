@@ -336,7 +336,7 @@ Sync.prototype = {
           Weave.Notifications.PRIORITY_WARNING,
           [tryAgainButton]
         );
-      Weave.Notifications.add(notification);
+      Weave.Notifications.replaceTitle(notification);
     }
 
     let syncitem = document.getElementById("sync-syncnowitem");
