@@ -52,7 +52,7 @@ function FennecWeaveGlue() {
     Cu.import("resource://weave/engines/cookies.js");
     Cu.import("resource://weave/engines/input.js");
     Cu.import("resource://weave/engines/tabs.js");*/
-    Weave.Engines.register(new HistoryEngine());
+    //Weave.Engines.register(new HistoryEngine());
     Weave.Engines.register(new BookmarksEngine());
     /*Weave.Engines.register(new FormEngine());
     Weave.Engines.register(new PasswordEngine());
@@ -61,6 +61,7 @@ function FennecWeaveGlue() {
     Weave.Engines.register(new TabEngine());*/
   } catch (e) {
     dump("Could not initialize engine!\n");
+    dump(e.message? e.message: e + "\n");
     this._log.error("Could not initialize engine: " + (e.message? e.message : e));
   }
 
