@@ -49,7 +49,14 @@ function FxWeaveGlue() {
 
     Cu.import("resource://weave/engines/history.js");
     Weave.Engines.register(new HistoryEngine());
+
+    Cu.reportError("Initializing tab engine now.");
+    dump("INITIALIZING TAB ENGINE NOW.\n");
+    Cu.import("resource://weave/engines/tabs.js");
+    Weave.Engines.register(new TabEngine());
+    Cu.reportError("SUCCEED.");
   } catch (e) {
+    Cu.reportError("FAIL.");
     dump("Could not initialize engine: " + (e.message? e.message : e) + "\n");
     this._log.error("Could not initialize engine: " + (e.message? e.message : e));
   }
