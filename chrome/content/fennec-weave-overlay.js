@@ -62,7 +62,7 @@ function FennecWeaveGlue() {
     Weave.Engines.register(new TabEngine());
   } catch (e) {
     dump("Could not initialize engine!\n");
-    dump(e.message? e.message: e + "\n");
+    dump("The error is: " + (e.message? e.message: e) + "\n");
     this._log.error("Could not initialize engine: " + (e.message? e.message : e));
   }
 
