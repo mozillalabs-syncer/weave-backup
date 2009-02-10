@@ -31,34 +31,34 @@
     <menu id="sync-menu" class="menu-iconic" label="&syncMenu.label;"
           insertafter="addonsManager" image="chrome://weave/skin/sync-16x16.png">
         <menupopup id="sync-menu-popup"
-                   onpopupshowing="if (event.target == this) gSync.doPopup(event);"
-                   onpopuphiding="gSync.onMenuPopupHiding()">
+                   onpopupshowing="if (event.target == this) gWeaveWin.doPopup(event);"
+                   onpopuphiding="gWeaveWin.onMenuPopupHiding()">
             <menuitem id="sync-loginitem"
                       hidden="false" disabled="false"
                       checked="false" autocheck="false"
                       label="&logInItem.label;"
-                      oncommand="gSync.doLogin();"/>
+                      oncommand="gWeaveWin.doLogin();"/>
             <menuitem id="sync-logoutitem"
                       hidden="true" disabled="false"
                       checked="false" autocheck="false"
                       label="&logOutItem.label;"
-                      oncommand="gSync.doLogout();"/>
+                      oncommand="gWeaveWin.doLogout();"/>
             <menuitem id="sync-syncnowitem"
                       hidden="true" disabled="true"
                       checked="false" autocheck="false"
                       label="&syncNowItem.label;"
-                      oncommand="gSync.doSync(event);"/>
+                      oncommand="gWeaveWin.doSync(event);"/>
             <menuseparator/>
             <menuitem id="sync-openprefsitem"
                       disabled="false"
                       checked="false" autocheck="false"
                       label="&openPrefsItem.label;"
-                      oncommand="gSync.doOpenPrefs(event);"/>
+                      oncommand="gWeaveWin.doOpenPrefs(event);"/>
             <menuitem id="sync-openlogitem"
                       disabled="false"
                       checked="false" autocheck="false"
                       label="&openLogItem.label;"
-                      oncommand="gSync.doOpenActivityLog(event);"/>
+                      oncommand="gWeaveWin.doOpenActivityLog(event);"/>
             <menuseparator/>
             <menuitem id="sync-lastsyncitem"
                       disabled="false" hidden="true"/>
@@ -69,7 +69,7 @@
         <statusbarpanel id="sync-menu-button"
                         class="statusbarpanel-menu-iconic"
                         insertbefore="security-button"
-                        onmousedown="gSync.onMenuButtonMouseDown()">
+                        onmousedown="gWeaveWin.onMenuButtonMouseDown()">
             <label id="sync-menu-status"
                    control="sync-menu-button"
                    value="&status.offline.label;"/>
