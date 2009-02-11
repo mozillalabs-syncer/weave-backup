@@ -73,10 +73,6 @@ const SHARED_FOLDER_ICON = "chrome://weave/skin/shared-folder-16x16.png";
 
 var oldOnPopupShowingFunc = BookmarksEventHandler.onPopupShowing;
 
-var prefs = Cc["@mozilla.org/preferences-service;1"].
-            getService(Ci.nsIPrefService).getBranch( "extensions.weave." );
-var log = Log4Moz.repository.getLogger("Share.Menu");
-
 function isFolderSharedOutgoing( menuFolder ) {
   let menuFolderId = menuFolder.node.itemId;
   let annotations = PlacesUtils.getAnnotationsForItem( menuFolderId );
@@ -137,6 +133,8 @@ BookmarksEventHandler.onPopupShowing = function BT_onPopupShowing_new(event) {
 
   /* Get the global extensions.weave.ui.sharebookmarks preference,
      don't add anything to the menu unless it's turned on! */
+  let prefs = Cc["@mozilla.org/preferences-service;1"].
+              getService(Ci.nsIPrefService).getBranch("extensions.weave.");
   if ( prefs.getBoolPref( "ui.sharebookmarks" ) == false ) {
     return;
   }
