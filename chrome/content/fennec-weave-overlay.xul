@@ -29,12 +29,7 @@
     </hbox>
   </vbox>
 
-  <!-- Button to bring up synced tabs panel -->
-  <vbox id="tab-list-container">
-    <!-- how's the image applied to id=newtab-button? -->
-    <toolbarbutton id="show-synced-tabs-button" command="cmd_showSyncedTabs"/>
-  </vbox>
   <!-- Panel for browsing tabs synced in from remote clients -->
-  
+  <toolbarbutton id="retrievetab-button" command="cmd_showSyncedTabs" hidden="false"/>
 
 </overlay>

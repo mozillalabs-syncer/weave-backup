@@ -223,6 +223,8 @@ FennecWeaveGlue.prototype = {
     } else {
       this.openConnectPane();
     }
+
+    this.showSyncedTabs();
   },
 
   // Notes:
@@ -371,6 +373,18 @@ FennecWeaveGlue.prototype = {
       }
     } else {
       dump("Can't sync, Weave is not logged in.");
+    }
+  },
+
+  showSyncedTabs: function FennecWeaveGlue_showSyncedTabs() {
+    let tabEngine = Weave.Engines.get("tabs");
+    let clients = tabEngine.getAllClients();
+    for each (let record in clients) {
+      dump("Here is a Tab Sync client named " + record.getClientName() + "\n");
+      let tabs = record.getAllTabs();
+      for each (let tab in tabs) {
+	dump("It has a tab named " + tab.title + "\n");
+      }
     }
   }
 
