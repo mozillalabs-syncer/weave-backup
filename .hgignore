@@ -5,6 +5,8 @@ sync.*.xpi
 src/.*\.xpt
 src/.*\.o
 src/.*\.dylib
+platform/.*\.dylib
+components/.*\.so
 src/I.*\.h
 tests/.*/.*\.log$
 tests/unit/test_load_module_.*\.js$
