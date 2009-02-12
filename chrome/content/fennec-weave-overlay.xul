@@ -6,11 +6,6 @@
 <overlay id="fx-weave-overlay"
          xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
-  <commandset id="cmdset_main">
-    <command id="cmd_showSyncedTabs" name="Show Synced Tabs" 
-	     oncommand="gFennecWeaveGlue.showSyncedTabs();"/>
-  </commandset>
-
   <!-- Loading and initializing Weave Service -->
   <script type="application/x-javascript"
           src="chrome://weave/content/load-weave.js"/>
@@ -29,12 +24,13 @@
     </hbox>
   </vbox>
 
-  <!-- Button to bring up synced tabs panel -->
-  <vbox id="tab-list-container">
-    <!-- how's the image applied to id=newtab-button? -->
-    <toolbarbutton id="show-synced-tabs-button" command="cmd_showSyncedTabs"/>
-  </vbox>
   <!-- Panel for browsing tabs synced in from remote clients -->
-  
+  <toolbarbutton id="retrievetab-button" command="cmd_weave_prefs" hidden="false"/>
+
+
+  <stack id="browser-container">
+    <hbox id="remote-tabsets" style="-moz-stack-sizing: ignore;" top="0" left="0">
+    </hbox>
+  </stack>
 
 </overlay>
