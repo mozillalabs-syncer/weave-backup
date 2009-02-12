@@ -111,14 +111,39 @@ FxWeaveGlue.prototype = {
 
     return virtualTabs;
   },
+*/
 
   doInitTabsMenu: function FxWeaveGlue__doInitTabsMenu() {
     let menu = document.getElementById("sync-tabs-menu");
-    let virtualTabs = this._getVirtualTabs();
+    // virtual tabs no longer exist.
+    //let virtualTabs = this._getVirtualTabs();
 
+    // Clear out old menu contents
     while (menu.itemCount > 1)
       menu.removeItemAt(menu.itemCount - 1);
 
+    dump("INITING TABS MENU.\n");
+    let remoteClients = Weave.Engines.get("tabs").getAllClients();
+    for each (remoteClient in remoteClients)  {
+      let label = "Tabs from " + remoteClient.getClientName() + ":";
+      let menuitem = menu.appendItem(label);
+      menuitem.setAttribute( "disabled", true );
+      let allTabs = remoteClient.getAllTabs();
+      dump("There are " + allTabs.length + " tabs in this record.\n");
+      for each (let tab in allTabs) {
+	/* Note we're just sticking the last URL into the value of the
+	 menu item; this is a limited approach that won't work when we
+	 want to restore a whole urlHistory, so we'll need to assign some
+	 id scheme to the tabs across all the remoteClients, then put IDs
+	 into the menu values, then retrieve the record based on the ID.*/
+	let url = tab.urlHistory[ tab.urlHistory.length -1 ];
+	dump("Setting url to " + url + "\n");
+	menuitem = menu.appendItem("  " + tab.title, url);
+	menuitem.value = [url, "foo"];
+      }
+    }
+
+      /*
     for each (let virtualTab in virtualTabs) {
       let currentEntry = virtualTab.state.entries[virtualTab.state.index - 1];
       if (!currentEntry)
@@ -131,24 +156,27 @@ FxWeaveGlue.prototype = {
       // Make a tooltip that contains either or both of the title and URL.
       menuitem.tooltipText =
         [currentEntry.title, currentEntry.url].filter(function(v) v).join("\n");
-    }
+    }*/
 
     document.getElementById("sync-no-tabs-menu-item").hidden =
       (menu.itemCount > 1);
   },
 
   onCommandTabsMenu: function FxWeaveGlue_onCommandTabsMenu(event) {
-    let tabID = event.target.value;
+    /*let tabID = event.target.value;
     let virtualTabs = this._getVirtualTabs();
     let virtualTab = virtualTabs[tabID];
     let tab = gBrowser.addTab("about:blank");
-    this._sessionStore.setTabState(tab, this._json.encode(virtualTab.state));
+    this._sessionStore.setTabState(tab, this._json.encode(virtualTab.state));*/
+    dump("Event.target.value is " + event.target.value + "\n");
+    let tab = gBrowser.addTab(event.target.value[0]);
     gBrowser.selectedTab = tab;
-    delete virtualTabs[tabID];
+    //delete virtualTabs[tabID];
 
     // FIXME: update a notification that lists the opened tab, if any.
   },
 
+  /*
   _onVirtualTabsChanged: function Sync__onVirtualTabsChanged() {
     let virtualTabs = this._getVirtualTabs();
 

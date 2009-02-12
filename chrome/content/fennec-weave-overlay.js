@@ -386,6 +386,18 @@ FennecWeaveGlue.prototype = {
 	dump("It has a tab named " + tab.title + "\n");
       }
     }
+    dump("By the way...");
+    let retrieveTabButton = document.getElementById("retrievetab-button");
+    dump(" retrievetab-button.command is " + retrieveTabButton.command + "\n");
+    dump(" retrievetab-button.command is " + retrieveTabButton.getAttribute("command") + "\n");
+    let pinch = document.getElementById("pinch-hitting-show-button");
+    dump(" pinch-button.command is " + pinch.command + "\n");
+    dump(" pinch-button.command is " + pinch.getAttribute("command") + "\n");
+
+    // TODO turn on display of "remote-tabsets" somehow.  See how e.g. "bowser-controls" or
+    // "tab-list-container" gets displayed.  Especialy "tab-list-container" since we still want
+    // that present on the right of the screen, and its richlistbox id="tab-list" is really
+    // close to what we want....
   }
 
 };
