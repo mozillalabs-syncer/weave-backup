@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet href="chrome://weave/content/sync.css" type="text/css"?>
 <?xml-stylesheet href="chrome://weave/content/notification.css" type="text/css"?>
+<?xml-stylesheet href="chrome://weave/content/fennec.css" type="text/css"?>
 
 <!DOCTYPE overlay SYSTEM "chrome://weave/locale/sync.dtd">
 <overlay id="fx-weave-overlay"
@@ -24,13 +25,29 @@
     </hbox>
   </vbox>
 
+  <!-- TABS -->
   <!-- Panel for browsing tabs synced in from remote clients -->
-  <toolbarbutton id="retrievetab-button" command="cmd_weave_prefs" hidden="false"/>
-
-
   <stack id="browser-container">
-    <hbox id="remote-tabsets" style="-moz-stack-sizing: ignore;" top="0" left="0">
+    <hbox id="synced-tabs-panel" style="-moz-stack-sizing: ignore;" 
+	  hidden="true" top="0" left="0">
+      <vbox>
+	<hbox id="synced-tabs-column-set">
+	</hbox>
+	<hbox align="right">
+	  <button label="Close" onclick="gFennecWeaveGlue.hideSyncedTabs();"/>
+	</hbox>
+      </vbox>
     </hbox>
   </stack>
+  <!-- Command to show the panel -->
+  <commandset id="cmdset_main">
+    <command id="cmd_showSyncedTabs" name="Show Synced Tabs" 
+	     oncommand="gFennecWeaveGlue.showSyncedTabs();"/>
+  </commandset>
+  <!-- Button to execute the command -->
+  <hbox id="tab-utils-button-set">
+    <toolbarbutton id="retrievetab-button" command="cmd_showSyncedTabs"
+		   hidden="false"/>
+  </hbox>
 
 </overlay>

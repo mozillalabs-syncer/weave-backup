@@ -379,27 +379,58 @@ FennecWeaveGlue.prototype = {
   showSyncedTabs: function FennecWeaveGlue_showSyncedTabs() {
     let tabEngine = Weave.Engines.get("tabs");
     let clients = tabEngine.getAllClients();
+
+    // We're basically adding a new UIMODE to browser-ui.js -- see the
+    // ones handled in BrowserUI.show().
+    let container = document.getElementById("browser-container");
+    let syncedTabPanel = document.getElementById("synced-tabs-panel");
+    let bookmark = document.getElementById("bookmark-container");
+    let urllist = document.getElementById("urllist-container");
+    let panelUI = document.getElementById("panel-container");
+    let tabContainer = document.getElementById("tabs-container");
+    let width = tabContainer.boxObject.width;
+    tabContainer.left = container.boxObject.width - width;
+    syncedTabPanel.hidden = false;
+    syncedTabPanel.width = container.boxObject.width - width;
+    syncedTabPanel.height = container.boxObject.height;
+    bookmark.hidden = true;
+    urllist.hidden = true;
+    panelUI.hidden = true;
+    BrowserUI._showToolbar(false);
+    BrowserUI._editToolbar(false);
+    // TODO this breaks things kinda bad -- if you hit the new-tab button
+    // for instance, it loads the new tab without hiding the synced tab panel!
+
+    let holder = document.getElementById("synced-tabs-column-set");
+    /* Clear out all child elements from holder first, so we don't
+     * end up adding duplicate columns: */
+
+    while (holder.firstChild) {
+      holder.removeChild(holder.firstChild);
+    }
+
+    // Load up all of the remote tabs we can find!
     for each (let record in clients) {
-      dump("Here is a Tab Sync client named " + record.getClientName() + "\n");
+      let newColumn = document.createElement("vbox");
+      holder.appendChild(newColumn);
       let tabs = record.getAllTabs();
       for each (let tab in tabs) {
-	dump("It has a tab named " + tab.title + "\n");
+	let newLabel = document.createElement("label");
+	newLabel.setAttribute("value", tab.title);
+	newColumn.appendChild(newLabel);
       }
     }
-    dump("By the way...");
-    let retrieveTabButton = document.getElementById("retrievetab-button");
-    dump(" retrievetab-button.command is " + retrieveTabButton.command + "\n");
-    dump(" retrievetab-button.command is " + retrieveTabButton.getAttribute("command") + "\n");
-    let pinch = document.getElementById("pinch-hitting-show-button");
-    dump(" pinch-button.command is " + pinch.command + "\n");
-    dump(" pinch-button.command is " + pinch.getAttribute("command") + "\n");
+    // Now we need to make all of these things clickable instead of labels...
+    // and limit the width!!!
+  },
 
-    // TODO turn on display of "remote-tabsets" somehow.  See how e.g. "bowser-controls" or
-    // "tab-list-container" gets displayed.  Especialy "tab-list-container" since we still want
-    // that present on the right of the screen, and its richlistbox id="tab-list" is really
-    // close to what we want....
+  hideSyncedTabs: function FennecWeaveGlue_hideSyncedTabs() {
+    let syncedTabPanel = document.getElementById("synced-tabs-panel");
+    let tabContainer = document.getElementById("tabs-container");
+    tabContainer.left = 0;
+    syncedTabPanel.hidden = true;
+    BrowserUI.show(5); // how to get the constant?
   }
-
 };
 
 let gFennecWeaveGlue;

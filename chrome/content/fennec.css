@@ -1,3 +1,7 @@
 richpref[type="string"] {
     -moz-binding: url("chrome://weave/content/richpref.xml#richpref-string");
 }
+
+#synced-tabs-panel {
+    background: rgb(87, 87, 87);
+}

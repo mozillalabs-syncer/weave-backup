@@ -8,8 +8,6 @@
   <commandset id="cmdset_main">
     <command id="cmd_weave_prefs" name="&fennecOpenPrefsCmd.label;" 
 	     oncommand="gFennecWeaveGlue.openWeavePane();"/>
-    <command id="cmd_showSyncedTabs" name="Show Synced Tabs" 
-	     oncommand="gFennecWeaveGlue.showSyncedTabs();"/>
   </commandset>
   <scrollbox id="pref-list">
     <!--<vbox class="prefsection">
@@ -21,10 +19,6 @@
 	     id="fennec-weave-quick-status"/>
       <button label="&fennecOpenPrefsButton.label;"
 	      command="cmd_weave_prefs"/>
-    </richpref>
-    <richpref title="Do My Bidding!" type="button">
-      <label value="Show synced tabs."/>
-      <button label="Show" id="pinch-hitting-show-button" command="cmd_showSyncedTabs"/>
     </richpref>
   </scrollbox>
 
