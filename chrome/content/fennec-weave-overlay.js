@@ -436,16 +436,9 @@ FennecWeaveGlue.prototype = {
 	let newButton = document.createElement("button");
 	newButton.setAttribute("label", tab.title);
         newButton.setAttribute("crop", "end");
-	dump("Tab.urlHistory is " + tab.urlHistory + "\n");
-	let url = tab.urlHistory[ tab.urlHistory.length -1 ];
-	// TODO urlHistory is a list with correct number of items, but
-	// actual items are blank.  I suspect this is because
-	// of the 404 I get when I try to sync -- it's pulling out-of-date
-	// data.
-	if (!url) url = "http://xkcd.com"; // FOR DEBUG ONLY
+	let url = tab.urlHistory[0];
 	newButton.addEventListener('command', function() {
-				     dump("url is " + url + "\n");
-				     gFennecGlue.openSyncedTab(url);
+				     gFennecWeaveGlue.openSyncedTab(url);
 				   }, true);
 	newRow.appendChild(newButton);
 	column++;
@@ -457,6 +450,8 @@ FennecWeaveGlue.prototype = {
       }
     }
 
+    // TODO: make these into tabby richlistbox items, instead of buttons.
+    //
     // TODO: the built-in tabs bar is <richlistbox id="tabs"
     // onselect="BrowserUI.selectTab(this.selectedItem)"
     // onclosetab="BrowserUI.closeTab(this);"/>  Can we use that?
@@ -468,9 +463,6 @@ FennecWeaveGlue.prototype = {
     this._content.setAttribute("type", "documenttab");
     document.getElementById("tabs").addTab(this._content);*/
 
-
-    // TODO: make these some kind of clickable squares, insted of buttons
-    // TODO: Crop text inside button!  It's overflowing everything.
     // TODO: the close button can be pushed offscreen by too long a list of
     // tabs.  Fix that!
   },
@@ -485,6 +477,7 @@ FennecWeaveGlue.prototype = {
 
   openSyncedTab: function FennecWeaveGlue_openSyncedTab(url) {
     dump("You clicked on a link to open tab with url " + url + "\n");
+    // TODO implement this!
   }
 };
 

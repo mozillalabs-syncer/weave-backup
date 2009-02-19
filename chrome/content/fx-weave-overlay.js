@@ -110,7 +110,7 @@ FxWeaveGlue.prototype = {
 	 want to restore a whole urlHistory, so we'll need to assign some
 	 id scheme to the tabs across all the remoteClients, then put IDs
 	 into the menu values, then retrieve the record based on the ID.*/
-	let url = tab.urlHistory[ tab.urlHistory.length -1 ];
+	let url = tab.urlHistory[ 0 ];
 	dump("Setting url to " + url + "\n");
 	menuitem = menu.appendItem("  " + tab.title, url);
 	menuitem.value = [url, "foo"];
