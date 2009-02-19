@@ -89,14 +89,11 @@ FxWeaveGlue.prototype = {
 
   doInitTabsMenu: function FxWeaveGlue__doInitTabsMenu() {
     let menu = document.getElementById("sync-tabs-menu");
-    // virtual tabs no longer exist.
-    //let virtualTabs = this._getVirtualTabs();
 
     // Clear out old menu contents
     while (menu.itemCount > 1)
       menu.removeItemAt(menu.itemCount - 1);
 
-    dump("INITING TABS MENU.\n");
     let remoteClients = Weave.Engines.get("tabs").getAllClients();
     for each (remoteClient in remoteClients)  {
       let label = "Tabs from " + remoteClient.getClientName() + ":";
