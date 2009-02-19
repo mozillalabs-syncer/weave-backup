@@ -248,8 +248,6 @@ WeaveWindow.prototype = {
     if(logoutitem)
       logoutitem.setAttribute("disabled", "false");
 
-    if (this._isTopBrowserWindow)
-      Weave.Svc.Prefs.set("lastsync", new Date().getTime());
     this._updateLastSyncItem();
   },
 
