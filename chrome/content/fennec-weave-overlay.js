@@ -382,6 +382,8 @@ FennecWeaveGlue.prototype = {
 
     // We're basically adding a new UIMODE to browser-ui.js -- see the
     // ones handled in BrowserUI.show().
+    BrowserUI._showToolbar(false);
+    BrowserUI._editToolbar(false);
     let container = document.getElementById("browser-container");
     let syncedTabPanel = document.getElementById("synced-tabs-panel");
     let bookmark = document.getElementById("bookmark-container");
@@ -396,8 +398,6 @@ FennecWeaveGlue.prototype = {
     bookmark.hidden = true;
     urllist.hidden = true;
     panelUI.hidden = true;
-    BrowserUI._showToolbar(false);
-    BrowserUI._editToolbar(false);
     // TODO this breaks things kinda bad -- if you hit the new-tab button
     // for instance, it loads the new tab without hiding the synced tab panel!
 
@@ -409,19 +409,70 @@ FennecWeaveGlue.prototype = {
       holder.removeChild(holder.firstChild);
     }
 
-    // Load up all of the remote tabs we can find!
+    // Load up all of the remote tabs we can find, into a grid:
+    let column = 0;
+    holder.setAttribute("maxwidth", syncedTabPanel.width);
     for each (let record in clients) {
-      let newColumn = document.createElement("vbox");
-      holder.appendChild(newColumn);
+      let newGroupbox = document.createElement("groupbox");
+      holder.appendChild(newGroupbox);
+      let newCaption = document.createElement("caption");
+      let labelText = "Tabs From " + record.getClientName();
+      newCaption.setAttribute("label", labelText);
+      newGroupbox.appendChild(newCaption);
+      let newGrid = document.createElement("grid");
+      newGroupbox.appendChild(newGrid);
+      let newColumnset = document.createElement("columns");
+      newGrid.appendChild(newColumnset);
+      for (column = 0; column < 4; column++) {
+	newColumnset.appendChild(document.createElement("column"));
+      }
+      let newRowset = document.createElement("rows");
+      newGrid.appendChild(newRowset);
+      let newRow = document.createElement("row");
+      newRowset.appendChild(newRow);
+      column = 0;
       let tabs = record.getAllTabs();
       for each (let tab in tabs) {
-	let newLabel = document.createElement("label");
-	newLabel.setAttribute("value", tab.title);
-	newColumn.appendChild(newLabel);
+	let newButton = document.createElement("button");
+	newButton.setAttribute("label", tab.title);
+        newButton.setAttribute("crop", "end");
+	dump("Tab.urlHistory is " + tab.urlHistory + "\n");
+	let url = tab.urlHistory[ tab.urlHistory.length -1 ];
+	// TODO urlHistory is a list with correct number of items, but
+	// actual items are blank.  I suspect this is because
+	// of the 404 I get when I try to sync -- it's pulling out-of-date
+	// data.
+	if (!url) url = "http://xkcd.com"; // FOR DEBUG ONLY
+	newButton.addEventListener('command', function() {
+				     dump("url is " + url + "\n");
+				     gFennecGlue.openSyncedTab(url);
+				   }, true);
+	newRow.appendChild(newButton);
+	column++;
+	if (column == 4) {
+	  newRow = document.createElement("row");
+	  newRowset.appendChild(newRow);
+	  column = 0;
+	}
       }
     }
-    // Now we need to make all of these things clickable instead of labels...
-    // and limit the width!!!
+
+    // TODO: the built-in tabs bar is <richlistbox id="tabs"
+    // onselect="BrowserUI.selectTab(this.selectedItem)"
+    // onclosetab="BrowserUI.closeTab(this);"/>  Can we use that?
+    // Find where in the code this is populated and what it's populated with
+    // OK,it's bound to XBL defined in tabs.xml#tablist
+    // and richlistitem type="documenttab" bound to tabs.xml#documenttab
+
+    /*this._content = document.createElement("richlistitem");
+    this._content.setAttribute("type", "documenttab");
+    document.getElementById("tabs").addTab(this._content);*/
+
+
+    // TODO: make these some kind of clickable squares, insted of buttons
+    // TODO: Crop text inside button!  It's overflowing everything.
+    // TODO: the close button can be pushed offscreen by too long a list of
+    // tabs.  Fix that!
   },
 
   hideSyncedTabs: function FennecWeaveGlue_hideSyncedTabs() {
@@ -430,6 +481,10 @@ FennecWeaveGlue.prototype = {
     tabContainer.left = 0;
     syncedTabPanel.hidden = true;
     BrowserUI.show(5); // how to get the constant?
+  },
+
+  openSyncedTab: function FennecWeaveGlue_openSyncedTab(url) {
+    dump("You clicked on a link to open tab with url " + url + "\n");
   }
 };
 
