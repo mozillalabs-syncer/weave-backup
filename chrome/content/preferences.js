@@ -5,6 +5,7 @@ var Cr = Components.results;
 function WeavePrefs() {
   this._log = Log4Moz.repository.getLogger("Chrome.Prefs");
   this._log.level = Log4Moz.Level["Debug"];
+  Observers.add("weave:service:sync:success", this._onSync, this);
 }
 WeavePrefs.prototype = {
   get _stringBundle() {
@@ -16,6 +17,10 @@ WeavePrefs.prototype = {
   _checkClientInfo: function WeavePrefs__checkClientInfo() {
     let richlistbox = document.getElementById('sync-clients-list');
     let clients = Weave.Clients.getClients();
+
+    while (richlistbox.firstChild) {
+      element.removeChild(richlistbox.firstChild);
+    }
 
     for (let guid in clients) {
       let richlistitem = document.createElement('richlistitem');
@@ -60,6 +65,10 @@ WeavePrefs.prototype = {
   onPaneLoad: function WeavePrefs_onPaneLoad() {
     this._checkAccountInfo();
     this._checkClientInfo();
+  },
+
+  _onSync: function WeavePrefs__onSync(subject, data) {
+    this.onPaneLoad();
   },
 
   openActivityLog: function WeavePrefs_openActivityLog() {
