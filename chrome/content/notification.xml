@@ -35,29 +35,20 @@
         Cu.import("resource://weave/notifications.js");
         Cu.import("resource://weave/service.js");
 
-        // Register the notification box as an observer of notification changes.
-        // FIXME: make Observers accept an object, pass it "this", then
-        // implement "observe" in this object and make it call
-        // onNotificationAdded and onNotificationRemoved instead of using these
-        // helper functions, so we can remove the observer on destruction.
-        var self = this;
-        Observers.add(function(s, t, d) { self.onNotificationAdded(s, t, d) },
-                      "weave:notification:added");
-        Observers.add(function(s, t, d) { self.onNotificationRemoved(s, t, d) },
-                      "weave:notification:removed");
+	Observers.add("weave:notification:added", this.onNotificationAdded, this);
+	Observers.add("weave:notification:removed", this.onNotificationRemoved, this);
 
         for each (var notification in Notifications.notifications)
           this._appendNotification(notification);
       ]]></constructor>
 
       <destructor><![CDATA[
-        //Observers.remove(this.onNotificationAdded, "weave:notification:added");
-        //Observers.remove(this.onNotificationRemoved, "weave:notification:removed");
+        Observers.remove("weave:notification:added", this.onNotificationAdded, this);
+        Observers.remove("weave:notification:removed", this.onNotificationRemoved, this);
       ]]></destructor>
 
       <method name="onNotificationAdded">
         <parameter name="subject"/>
-        <parameter name="topic"/>
         <parameter name="data"/>
         <body><![CDATA[
           this._appendNotification(subject);
@@ -66,7 +57,6 @@
 
       <method name="onNotificationRemoved">
         <parameter name="subject"/>
-        <parameter name="topic"/>
         <parameter name="data"/>
         <body><![CDATA[
           // If the view of the notification hasn't been removed yet, remove it.
