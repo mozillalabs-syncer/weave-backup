@@ -45,6 +45,7 @@ function FennecWeaveGlue() {
   this._os.addObserver(this, "weave:service:sync:error", false);
 
   try {
+    Cu.import("resource://weave/util.js");
     Cu.import("resource://weave/engines/bookmarks.js");
     Cu.import("resource://weave/engines/history.js");
     Cu.import("resource://weave/engines/tabs.js");
@@ -433,6 +434,7 @@ FennecWeaveGlue.prototype = {
       newRichList.setAttribute("class", "tab-list");
       // TODO
       // newRichList.setAttribute("tabsPerColumn", 12);
+      newRichList.tabsPerColumn = 12;
       newRichList.addEventListener("select", function(event) {
 				     gFennecWeaveGlue.openSyncedTab(this, event);
 				   }, "true");
@@ -441,10 +443,11 @@ FennecWeaveGlue.prototype = {
       for each (let tab in tabs) {
 	let newThingy = document.createElement("richlistitem");
 	newThingy.setAttribute("type", "remotetab");
-	dump("Adding a richList tab from " + tab.title + "\n");
 	newRichList.addTab(newThingy);
 	let shortTitle = tab.title.slice(0, 25);
-	newThingy.updatePreview(shortTitle, "");
+	let domain = Utils.makeURI(tab.urlHistory[0]).prePath;
+	let favicon = domain + "/favicon.ico";
+	newThingy.updatePreview(shortTitle, favicon);
 	newThingy.setTabData(tab);
       }
     }

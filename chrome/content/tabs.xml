@@ -10,9 +10,10 @@
   <binding id="remotetab"
 	   extends="chrome://global/content/bindings/richlistbox.xml#richlistitem">
     <content>
-      <xul:vbox>
+      <xul:hbox>
+	<xul:image anonid="favicon" width='16' height='4'/>
         <xul:label anonid="title" class="remote-tab-label"/>
-      </xul:vbox>
+      </xul:hbox>
     </content>
     <implementation>
       <method name="updatePreview">
@@ -21,9 +22,9 @@
 	<body>
 	  <![CDATA[
             let titleElem = document.getAnonymousElementByAttribute(this, "anonid", "title");
-            //let faviconElem = document.getAnonymousElementByAttribute(this, "anonid", "favicon");
+            let faviconElem = document.getAnonymousElementByAttribute(this, "anonid", "favicon");
 	    titleElem.value = title;
-	    //faviconElem.src = favicon;
+	    faviconElem.src = favicon;
 	  ]]>
 	</body>
       </method>
