@@ -376,10 +376,10 @@ FennecWeaveGlue.prototype = {
     }
   },
 
-  showSyncedTabs: function FennecWeaveGlue_showSyncedTabs() {
-    let tabEngine = Weave.Engines.get("tabs");
-    let clients = tabEngine.getAllClients();
-
+  // TODO try altering browser-ui.js so that we can register this as
+  // a new UIMODE and then call BrowserUI.show( UIMODE_THIS_THING ) to
+  // switch to it.
+  switchToSyncedTabPanel: function FennecWeaveGlue_switchToSyncedTabPanel() {
     // We're basically adding a new UIMODE to browser-ui.js -- see the
     // ones handled in BrowserUI.show().
     BrowserUI._showToolbar(false);
@@ -400,69 +400,54 @@ FennecWeaveGlue.prototype = {
     panelUI.hidden = true;
     // TODO this breaks things kinda bad -- if you hit the new-tab button
     // for instance, it loads the new tab without hiding the synced tab panel!
+  },
 
+  showSyncedTabs: function FennecWeaveGlue_showSyncedTabs() {
+    let tabEngine = Weave.Engines.get("tabs");
+    let clients = tabEngine.getAllClients();
+
+    this.switchToSyncedTabPanel();
     let holder = document.getElementById("synced-tabs-column-set");
+    this.loadRemoteTabs(holder, clients);
+  },
+
+  loadRemoteTabs: function FennecWeaveGlue_loadRemoteTabs(holder, clients) {
     /* Clear out all child elements from holder first, so we don't
      * end up adding duplicate columns: */
-
     while (holder.firstChild) {
       holder.removeChild(holder.firstChild);
     }
 
     // Load up all of the remote tabs we can find, into a grid:
-    let column = 0;
-    holder.setAttribute("maxwidth", syncedTabPanel.width);
     for each (let record in clients) {
+      dump("Processing a Client\n");
       let newGroupbox = document.createElement("groupbox");
       holder.appendChild(newGroupbox);
       let newCaption = document.createElement("caption");
       let labelText = "Tabs From " + record.getClientName();
       newCaption.setAttribute("label", labelText);
       newGroupbox.appendChild(newCaption);
-      let newGrid = document.createElement("grid");
-      newGroupbox.appendChild(newGrid);
-      let newColumnset = document.createElement("columns");
-      newGrid.appendChild(newColumnset);
-      for (column = 0; column < 4; column++) {
-	newColumnset.appendChild(document.createElement("column"));
-      }
-      let newRowset = document.createElement("rows");
-      newGrid.appendChild(newRowset);
-      let newRow = document.createElement("row");
-      newRowset.appendChild(newRow);
-      column = 0;
+      // See definition of richlistbox class = "tab-list" in fennec's tabs.xml
+      // and richlistitem type="remotetab" in weave's tabs.xml
+      let newRichList = document.createElement("richlistbox");
+      newRichList.setAttribute("class", "tab-list");
+      // TODO
+      // newRichList.setAttribute("tabsPerColumn", 12);
+      newRichList.addEventListener("select", function(event) {
+				     gFennecWeaveGlue.openSyncedTab(this, event);
+				   }, "true");
+      newGroupbox.appendChild(newRichList);
       let tabs = record.getAllTabs();
       for each (let tab in tabs) {
-	let newButton = document.createElement("button");
-	newButton.setAttribute("label", tab.title);
-        newButton.setAttribute("crop", "end");
-	let url = tab.urlHistory[0];
-	newButton.addEventListener('command', function() {
-				     gFennecWeaveGlue.openSyncedTab(url);
-				   }, true);
-	newRow.appendChild(newButton);
-	column++;
-	if (column == 4) {
-	  newRow = document.createElement("row");
-	  newRowset.appendChild(newRow);
-	  column = 0;
-	}
+	let newThingy = document.createElement("richlistitem");
+	newThingy.setAttribute("type", "remotetab");
+	dump("Adding a richList tab from " + tab.title + "\n");
+	newRichList.addTab(newThingy);
+	let shortTitle = tab.title.slice(0, 25);
+	newThingy.updatePreview(shortTitle, "");
+	newThingy.setTabData(tab);
       }
     }
-
-    // TODO: make these into tabby richlistbox items, instead of buttons.
-    //
-    // TODO: the built-in tabs bar is <richlistbox id="tabs"
-    // onselect="BrowserUI.selectTab(this.selectedItem)"
-    // onclosetab="BrowserUI.closeTab(this);"/>  Can we use that?
-    // Find where in the code this is populated and what it's populated with
-    // OK,it's bound to XBL defined in tabs.xml#tablist
-    // and richlistitem type="documenttab" bound to tabs.xml#documenttab
-
-    /*this._content = document.createElement("richlistitem");
-    this._content.setAttribute("type", "documenttab");
-    document.getElementById("tabs").addTab(this._content);*/
-
     // TODO: the close button can be pushed offscreen by too long a list of
     // tabs.  Fix that!
   },
@@ -475,9 +460,17 @@ FennecWeaveGlue.prototype = {
     BrowserUI.show(5); // how to get the constant?
   },
 
-  openSyncedTab: function FennecWeaveGlue_openSyncedTab(url) {
-    dump("You clicked on a link to open tab with url " + url + "\n");
-    // TODO implement this!
+  openSyncedTab: function FennecWeaveGlue_openSyncedTab(richlist, event) {
+    let tabData = richlist.selectedItem.getTabData();
+    this.hideSyncedTabs();
+    try {
+      // Newer versions of fennec do it this way:
+      Browser.addTab(tabData.urlHistory[0], true);
+    } catch (e) {
+      // Older versions do it this way:
+      Browser.newTab(true);
+      BrowserUI.goToURI(tabData.urlHistory[0]);
+    }
   }
 };
 

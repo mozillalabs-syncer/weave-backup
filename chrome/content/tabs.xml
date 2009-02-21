@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<!DOCTYPE bindings PUBLIC "-//MOZILLA//DTD XBL V1.0//EN" "http://www.mozilla.org/xbl">
+
+<bindings
+    xmlns="http://www.mozilla.org/xbl"
+    xmlns:xbl="http://www.mozilla.org/xbl"
+    xmlns:html="http://www.w3.org/1999/xhtml"
+    xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <binding id="remotetab"
+	   extends="chrome://global/content/bindings/richlistbox.xml#richlistitem">
+    <content>
+      <xul:vbox>
+        <xul:label anonid="title" class="remote-tab-label"/>
+      </xul:vbox>
+    </content>
+    <implementation>
+      <method name="updatePreview">
+	<parameter name="title"/>
+	<parameter name="favicon"/>
+	<body>
+	  <![CDATA[
+            let titleElem = document.getAnonymousElementByAttribute(this, "anonid", "title");
+            //let faviconElem = document.getAnonymousElementByAttribute(this, "anonid", "favicon");
+	    titleElem.value = title;
+	    //faviconElem.src = favicon;
+	  ]]>
+	</body>
+      </method>
+      <method name="setTabData">
+	<parameter name="tabData"/>
+	<body>
+	  <![CDATA[
+            this._tabData = tabData;
+	  ]]>
+	</body>
+      </method>
+      <method name="getTabData">
+	<body>
+	  <![CDATA[
+            return this._tabData;
+	  ]]>
+	</body>
+      </method>
+      <method name="updateThumbnail">
+        <parameter name="browser"/>
+        <parameter name="srcCanvas"/>
+        <body>
+          <![CDATA[
+		   // I don't think this will be called?
+          ]]>
+        </body>
+      </method>
+    </implementation>
+  </binding>
+</bindings>

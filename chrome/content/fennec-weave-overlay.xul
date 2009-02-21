@@ -31,8 +31,8 @@
     <hbox id="synced-tabs-panel" style="-moz-stack-sizing: ignore;" 
 	  hidden="true" top="0" left="0">
       <vbox>
-	<vbox id="synced-tabs-column-set" flex="1" style="overflow:auto">
-	</vbox>
+	<hbox id="synced-tabs-column-set" flex="1" style="overflow:auto">
+	</hbox>
 	<hbox align="right">
 	  <button label="Close" onclick="gFennecWeaveGlue.hideSyncedTabs();"/>
 	</hbox>
