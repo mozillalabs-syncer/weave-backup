@@ -5,3 +5,17 @@ richpref[type="string"] {
 #synced-tabs-panel {
     background: rgb(87, 87, 87);
 }
+
+richlistbox.tab-list {
+    -moz-binding: url("chrome://browser/content/tabs.xml#tablist");
+}
+
+richlistitem[type="remotetab"] {
+    -moz-binding: url("chrome://weave/content/tabs.xml#remotetab");
+}
+
+.remote-tab-label {
+    color: black;
+    background-color: white;
+    font-size: smaller !important;
+}
