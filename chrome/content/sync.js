@@ -333,7 +333,7 @@ WeaveWindow.prototype = {
     if (!lastSyncItem)
       return;
 
-    let lastSyncDate = new Date(parseInt(lastSync)).toLocaleString();
+    let lastSyncDate = new Date(lastSync).toLocaleString();
     let lastSyncLabel =
       this._stringBundle.getFormattedString("lastSync.label", [lastSyncDate]);
     lastSyncItem.setAttribute("label", lastSyncLabel);
