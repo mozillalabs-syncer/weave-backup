@@ -38,7 +38,7 @@ let Login = {
 
     this._os.addObserver(this, "weave:service:login:start", false);
     this._os.addObserver(this, "weave:service:login:error", false);
-    this._os.addObserver(this, "weave:service:login:success", false);
+    this._os.addObserver(this, "weave:service:login:finish", false);
 
     if (Weave.Utils.prefs.getBoolPref("rememberpassword"))
       document.getElementById("save-password-checkbox").checked = true;
@@ -68,7 +68,7 @@ let Login = {
   shutDown: function Login_shutDown() {
     this._os.removeObserver(this, "weave:service:login:start");
     this._os.removeObserver(this, "weave:service:login:error");
-    this._os.removeObserver(this, "weave:service:login:success");
+    this._os.removeObserver(this, "weave:service:login:finish");
 
     this._log.trace("Sync login window closed");
   },
@@ -90,7 +90,7 @@ let Login = {
     document.getElementById("username").focus();
 
     break;
-    case "weave:service:login:success":
+    case "weave:service:login:finish":
     this._loginStatusIcon.setAttribute("status", "success");
     this._loginStatus.value = this._stringBundle.getString("loginSuccess.label");
     this._loginStatus.style.color = "blue";
@@ -142,7 +142,7 @@ let Login = {
       Weave.Service.passphrase = null;
     }
 
-    Weave.Service.login(null, username.value, password.value, 
+    Weave.Service.login(null, username.value, password.value,
                         passphrase.value);
     return true;
   },

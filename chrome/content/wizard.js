@@ -91,15 +91,15 @@ SyncWizard.prototype = {
 
     this._log.info("Initializing setup wizard");
 
-    this._os.addObserver(this, "weave:service:login:success", false);
+    this._os.addObserver(this, "weave:service:login:finish", false);
     this._os.addObserver(this, "weave:service:login:error", false);
-    this._os.addObserver(this, "weave:service:verify-login:success", false);
+    this._os.addObserver(this, "weave:service:verify-login:finish", false);
     this._os.addObserver(this, "weave:service:verify-login:error", false);
-    this._os.addObserver(this, "weave:service:verify-passphrase:success", false);
+    this._os.addObserver(this, "weave:service:verify-passphrase:finish", false);
     this._os.addObserver(this, "weave:service:verify-passphrase:error", false);
-    this._os.addObserver(this, "weave:service:logout:success", false);
+    this._os.addObserver(this, "weave:service:logout:finish", false);
     this._os.addObserver(this, "weave:service:sync:start", false);
-    this._os.addObserver(this, "weave:service:sync:success", false);
+    this._os.addObserver(this, "weave:service:sync:finish", false);
     this._os.addObserver(this, "weave:service:sync:error", false);
 
     // Initial background request to check if registration is open or closed.
@@ -109,15 +109,15 @@ SyncWizard.prototype = {
   onWizardShutdown: function SyncWizard_onWizardshutdown() {
     this._log.info("Shutting down setup wizard");
 
-    this._os.removeObserver(this, "weave:service:login:success");
+    this._os.removeObserver(this, "weave:service:login:finish");
     this._os.removeObserver(this, "weave:service:login:error");
-    this._os.removeObserver(this, "weave:service:verify-login:success");
+    this._os.removeObserver(this, "weave:service:verify-login:finish");
     this._os.removeObserver(this, "weave:service:verify-login:error");
-    this._os.removeObserver(this, "weave:service:verify-passphrase:success", false);
+    this._os.removeObserver(this, "weave:service:verify-passphrase:finish", false);
     this._os.removeObserver(this, "weave:service:verify-passphrase:error", false);
-    this._os.removeObserver(this, "weave:service:logout:success");
+    this._os.removeObserver(this, "weave:service:logout:finish");
     this._os.removeObserver(this, "weave:service:sync:start");
-    this._os.removeObserver(this, "weave:service:sync:success");
+    this._os.removeObserver(this, "weave:service:sync:finish");
     this._os.removeObserver(this, "weave:service:sync:error");
   },
 
@@ -201,7 +201,7 @@ SyncWizard.prototype = {
         document.getElementById('sync-wizard-tabs').checked = branch.getBoolPref("tabs");
         document.getElementById('sync-wizard-forms').checked = branch.getBoolPref("forms");
 
-	if(deviceName) 
+	if(deviceName)
           branch.setCharPref("client.name", deviceName);
 
         if(deviceType)
@@ -1085,7 +1085,7 @@ SyncWizard.prototype = {
           }
       });
 
-    // don't let them advance- only sync:success will advance
+    // don't let them advance- only sync:finish will advance
     return false;
   },
 
@@ -1155,7 +1155,7 @@ SyncWizard.prototype = {
 
     switch(topic) {
 
-    case "weave:service:verify-login:success": {
+    case "weave:service:verify-login:finish": {
       this._log.info("Login verify succeeded");
 
       document.getElementById('login-verified').value = "true";
@@ -1180,7 +1180,7 @@ SyncWizard.prototype = {
       // Don't allow the wizard to advance here in case other fields weren't filled in
       break;
     }
-    case "weave:service:verify-passphrase:success": {
+    case "weave:service:verify-passphrase:finish": {
       this._log.info("Passphrase verify succeeded");
 
       document.getElementById('passphrase-verified').value = "true";
@@ -1199,7 +1199,7 @@ SyncWizard.prototype = {
       break;
     }
 
-    case "weave:service:login:success":
+    case "weave:service:login:finish":
       this._log.info("Initial login succeeded");
       break;
 
@@ -1243,11 +1243,11 @@ SyncWizard.prototype = {
       break;
     }
 
-    case "weave:service:logout:success":
+    case "weave:service:logout:finish":
       this._log.info("Logged out");
       break;
 
-    case "weave:service:sync:success": {
+    case "weave:service:sync:finish": {
       let syncStatus    = document.getElementById('final-sync-status');
       let finalStatus   = document.getElementById('final-status');
       let finalLink     = document.getElementById('final-status-link');

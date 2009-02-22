@@ -38,10 +38,7 @@
 
 function FxWeaveGlue() {
   this._log = Log4Moz.repository.getLogger("Chrome.Window");
-
   this._log.info("Initializing Firefox Weave embedding");
-
-  this._os.addObserver(this, "weave:service:tabs-engine:sync:success", false);
 
   try {
     Cu.import("resource://weave/engines/bookmarks.js");
@@ -52,41 +49,15 @@ function FxWeaveGlue() {
 
     Cu.import("resource://weave/engines/tabs.js");
     Weave.Engines.register(new TabEngine());
+
   } catch (e) {
     dump("Could not initialize engine: " + (e.message? e.message : e) + "\n");
     this._log.error("Could not initialize engine: " + (e.message? e.message : e));
   }
 
-  // Display a tabs notification if there are any virtual tabs.
-  // FIXME this won't do anything, because virtualTabs get loaded
-  //this._onVirtualTabsChanged();
-
   return;
 }
 FxWeaveGlue.prototype = {
-  _log: null,
-
-  __os: null,
-  get _os() {
-    if (!this.__os)
-      this.__os = Cc["@mozilla.org/observer-service;1"]
-        .getService(Ci.nsIObserverService);
-    return this.__os;
-  },
-
-  get _sessionStore() {
-      let sessionStore = Cc["@mozilla.org/browser/sessionstore;1"].
-                 getService(Ci.nsISessionStore);
-      this.__defineGetter__("_sessionStore", function() sessionStore);
-      return this._sessionStore;
-  },
-
-  get _json() {
-      let json = Cc["@mozilla.org/dom/json;1"].createInstance(Ci.nsIJSON);
-      this.__defineGetter__("_json", function() json);
-      return this._json;
-  },
-
   doInitTabsMenu: function FxWeaveGlue__doInitTabsMenu() {
     let menu = document.getElementById("sync-tabs-menu");
 
@@ -125,19 +96,7 @@ FxWeaveGlue.prototype = {
     // FIXME: update a notification that lists the opened tab, if any.
   },
 
-  // nsIObserver
-  observe: function FxWeaveGlue__observe(subject, topic, data) {
-    switch(topic) {
-    case "weave:service:tabs-engine:sync:success":
-      //this._onVirtualTabsChanged();
-      break;
-    default:
-      break;
-    }
-  },
-
   shutdown: function FxWeaveGlue__shutdown() {
-    this._os.removeObserver(this, "weave:service:tabs-engine:sync:success");
   }
 }
 

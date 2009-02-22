@@ -3,17 +3,7 @@ const Ci = Components.interfaces;
 const Cr = Components.results;
 const Cu = Components.utils;
 
-Cu.import("resource://gre/modules/XPCOMUtils.jsm");
-Cu.import("resource://weave/log4moz.js");
-Cu.import("resource://weave/service.js");
-
 let WeaveStatus = {
-  get _os() {
-    delete this._os;
-    return this._os = Cc["@mozilla.org/observer-service;1"].
-                                       getService(Ci.nsIObserverService);
-  },
-
   __enginesCompleted: 0,
   get _enginesCompleted() {
     return this.__enginesCompleted;
@@ -67,18 +57,12 @@ let WeaveStatus = {
     return this._statusError = document.getElementById("statusError");
   },
 
-  QueryInterface: XPCOMUtils.generateQI([Ci.nsIObserver,
-                                         Ci.nsISupportsWeakReference]),
-
   onLoad: function WeaveStatus_onLoad() {
-    this._os.addObserver(this, "weave:service:sync:start", true);
-    this._os.addObserver(this, "weave:service:sync:engine:start", true);
-    this._os.addObserver(this, "weave:service:sync:status", true);
-    this._os.addObserver(this, "weave:service:sync:success", true);
-    this._os.addObserver(this, "weave:service:sync:error", true);
-
-    this._os.addObserver(this, "weave:service:global:success", true);
-    this._os.addObserver(this, "weave:service:global:error", true);
+    Observers.add("weave:service:sync:start", this.onSyncStart, this);
+    Observers.add("weave:service:sync:finish", this.onSyncFinish, this);
+    Observers.add("weave:service:sync:error", this.onSyncError, this);
+    Observers.add("weave:engine:sync:start", this.onEngineStart, this);
+    Observers.add("weave:engine:sync:status", this.onEngineStatus, this);
 
     // FIXME: we should set a timer to force quit in case there is a
     // stale local lock
@@ -94,16 +78,7 @@ let WeaveStatus = {
     }
   },
 
-  onUnload: function WeaveStatus_onUnload() {
-    this._os.removeObserver(this, "weave:service:sync:start");
-    this._os.removeObserver(this, "weave:service:sync:engine:start");
-    this._os.removeObserver(this, "weave:service:sync:status");
-    this._os.removeObserver(this, "weave:service:sync:success");
-    this._os.removeObserver(this, "weave:service:sync:error");
-
-    this._os.removeObserver(this, "weave:service:global:success");
-    this._os.removeObserver(this, "weave:service:global:error");
-  },
+  onUnload: function WeaveStatus_onUnload() {},
 
   doCancel: function WeaveStatus_doCancel() {
     this._statusText.value = this._stringBundle.getString("status.cancel");
@@ -131,30 +106,21 @@ let WeaveStatus = {
     }
   },
 
-  // nsIObserver
+  // notification handlers
 
-  observe: function WeaveSync__observe(subject, topic, data) {
-    switch (topic) {
-
-    case "weave:service:sync:start":
+  onSyncStart: function WeaveStatus_onSyncStart(subject, data) {
     this._statusIcon.setAttribute("status", "active");
-    break;
+  },
 
-    case "weave:service:sync:status":
-    if(!Weave.Service.cancelRequested)
-      this._statusText.value = this._stringBundle.getString(data);
-    break;
-
-    case "weave:service:sync:engine:start":
-    this._statusText.value = this._stringBundle.getString("status.engine_start");
-    this._statusEngine.value = data;
-    this._enginesCompleted++;
-    this._statusProgress.value = this._enginesCompleted / (Weave.Engines.getEnabled().length + 1) * 100;
-    break;
-
-    case "weave:service:sync:success":
-    if (this._existingSync)
-      break;
+  onSyncFinish: function WeaveStatus_onSyncFinish(subject, data) {
+    if (this._existingSync) {
+      if (!Weave.Service.locked) {
+        this._log.info("Existing action finished, starting modal sync.");
+        this._existingSync = false;
+        this.doSync();
+      }
+      return;
+    }
 
     this._statusDialog.getButton("cancel").setAttribute("disabled", "true");
 
@@ -174,11 +140,17 @@ let WeaveStatus = {
     window.setTimeout(window.close, 2000);
 
     // FIXME: send a growl or other low-priority notification.
-    break;
+  },
 
-    case "weave:service:sync:error":
-    if (this._existingSync)
-      break;
+  onSyncError: function WeaveStatus_onSyncError(subject, data) {
+    if (this._existingSync) {
+      if (!Weave.Service.locked) {
+        this._log.info("Existing action finished, starting modal sync.");
+        this._existingSync = false;
+        this.doSync();
+      }
+      return;
+    }
 
     this._statusDialog.getButton("cancel").setAttribute("disabled", "true");
 
@@ -205,17 +177,21 @@ let WeaveStatus = {
 
     // FIXME: send a growl or other low-priority notification, or don't exit
     // and let the user try again.
-    break;
+  },
 
-    case "weave:service:global:success":
-    case "weave:service:global:error":
-    if (this._existingSync && !Weave.Service.locked) {
-      this._log.info("Existing action finished, starting modal sync.");
-      this._existingSync = false;
-      this.doSync();
-    }
-    break;
-    }
+  onEngineStart: function WeaveStatus_onEngineStart(subject, data) {
+    this._statusText.value = this._stringBundle.getString("status.engine.start");
+    this._statusEngine.value = subject;
+    this._enginesCompleted++;
+    this._statusProgress.value = this._enginesCompleted / (Weave.Engines.getEnabled().length + 1) * 100;
+  },
+
+  onEngineStatus: function WeaveStatus_onEngineStatus(subject, data) {
+    this._statusText.value = this._stringBundle.getString("status.engine." + subject);
+  },
+
+  onCancelRequested: function WeaveStatus_onCancelRequested(subject, data) {
+    // if(!Weave.Service.cancelRequested)
+    //   this._statusText.value = this._stringBundle.getString(data);
   }
-
 };

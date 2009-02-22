@@ -41,7 +41,7 @@ function FennecWeaveGlue() {
   this._log = Log4Moz.repository.getLogger("Chrome.Window");
   //this._pfs.addObserver("", this, false);
   this._os.addObserver(this, "weave:service:sync:start", false);
-  this._os.addObserver(this, "weave:service:sync:success", false);
+  this._os.addObserver(this, "weave:service:sync:finish", false);
   this._os.addObserver(this, "weave:service:sync:error", false);
 
   try {
@@ -114,14 +114,14 @@ FennecWeaveGlue.prototype = {
   shutdown: function FennecWeaveGlue__shutdown() {
     // Anything that needs shutting down can go here.
     this._os.removeObserver(this, "weave:service:sync:start");
-    this._os.removeObserver(this, "weave:service:sync:success");
+    this._os.removeObserver(this, "weave:service:sync:finish");
     this._os.removeObserver(this, "weave:service:sync:error");
   },
 
   observe: function FennecWeaveGlue__observe(subject, topic, data) {
     // observe for "sync", "foo-engine:sync", and...
     // weave:service:sync:start
-    // Event: weave:service:sync:success
+    // Event: weave:service:sync:finish
 
     switch (topic) {
       /*case "nsPref:changed":
@@ -138,10 +138,10 @@ FennecWeaveGlue.prototype = {
       case "weave:service:sync:start":
 	this.setWeaveStatusField("Syncing Now!");
       break;
-      case "weave:service:sync:success":
+      case "weave:service:sync:finish":
 	this.setWeaveStatusField("Sync completed successfully!");
       break;
-      case "weave:service:sync:success":
+      case "weave:service:sync:finish":
 	this.setWeaveStatusField("Hit an error while syncing!");
       break;
     }

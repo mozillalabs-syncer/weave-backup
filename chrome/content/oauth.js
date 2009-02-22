@@ -56,9 +56,9 @@ OAuthWizard.prototype = {
   _init: function OAuthWizard__init() {
     this._log = Log4Moz.repository.getLogger("Chrome.OAuthWizard");
     this._log.info("Intializing OAuth wizard");
-    
-    this._os.addObserver(this, "weave:service:verify-passphrase:success", false);
-    this._os.addObserver(this, "weave:service:login:success", false);
+
+    this._os.addObserver(this, "weave:service:verify-passphrase:finish", false);
+    this._os.addObserver(this, "weave:service:login:finish", false);
     this._os.addObserver(this, "weave:service:verify-passphrase:error", false);
     this._os.addObserver(this, "weave:service:login:error", false);
   },
@@ -66,7 +66,7 @@ OAuthWizard.prototype = {
   uninit: function OAuthWizard_uninit() {
     this._log.info("Shutting down OAuth wizard");
 
-    this._os.removeObserver(this, "weave:service:passphrase:success");
+    this._os.removeObserver(this, "weave:service:passphrase:finish");
     this._os.removeObserver(this, "weave:service:passphrase:error");
   },
 
@@ -84,7 +84,7 @@ OAuthWizard.prototype = {
       aubut.disabled = (pass.value.length == 0);
     }
   },
-  
+
   checkLogin: function OAuthWizard_checkLogin() {
     document.getElementById('oauth-wizard').canAdvance = false;
     document.getElementById('oauth-intro-aubut').disabled = true;
@@ -99,23 +99,23 @@ OAuthWizard.prototype = {
       sbox.hidden = false;
     }
   },
-  
+
   verifyLogin: function OAuthWizard_verifyLogin() {
     let aubox = document.getElementById('oauth-intro-aubox');
     let sibox = document.getElementById('oauth-intro-athing');
     let ssbox = document.getElementById('oauth-intro-success');
     let sebox = document.getElementById('oauth-intro-error');
-    
+
     aubox.hidden = true;
     ssbox.hidden = true;
     sebox.hidden = true;
     sibox.hidden = false;
-    
+
     let pas = document.getElementById('oauth-intro-phrase');
     if (!Weave.Service.isLoggedIn) {
       let uid = document.getElementById('oauth-intro-uid');
       let pwd = document.getElementById('oauth-intro-pwd');
-      
+
       Weave.OAuth.setUser(uid.value, pwd.value, pas.value);
       Weave.Service.login(null, uid.value, pwd.value, pas.value);
     } else {
@@ -123,7 +123,7 @@ OAuthWizard.prototype = {
       Weave.Service.verifyPassphrase(null, Weave.Service.username, Weave.Service.password, pas.value);
     }
   },
-  
+
   authorize: function OAuthWizard_authorize() {
     document.getElementById('oauth-wizard').canAdvance = false;
     document.getElementById('oauth-wizard').canRewind = false;
@@ -132,7 +132,7 @@ OAuthWizard.prototype = {
 
   _authUpdate: function OAuthWizard__authUpdate(bundle, name, rsakey, conskey) {
     document.getElementById('oauth-conf-loading').hidden = true;
-    
+
     if (rsakey && conskey) {
       Weave.OAuth._rsaKey = rsakey;
       Weave.OAuth._consKey = conskey;
@@ -157,7 +157,7 @@ OAuthWizard.prototype = {
           break;
       }
       let fin = bundle.getFormattedString('conf.error', [msg]);
-      
+
       ela.value = fin;
       err.hidden = false;
     } else {
@@ -167,11 +167,11 @@ OAuthWizard.prototype = {
       document.getElementById('oauth-wizard').canAdvance = true;
     }
   },
-  
+
   finalize: function OAuthWizard_finalize() {
     document.getElementById('oauth-wizard').canRewind = false;
     document.getElementById('oauth-wizard').canAdvance = false;
-    
+
     Weave.OAuth.finalize(this._final1, this._final2, this._stringBundle);
     document.getElementById('oauth-final-status').value = this._stringBundle.getString('final.step1');
   },
@@ -180,13 +180,13 @@ OAuthWizard.prototype = {
     document.getElementById('oauth-wizard').canAdvance = false;
     document.getElementById('oauth-final-status').value = bundle.getString('final.step2');
   },
-  
+
   _final2: function OAuth__final2(bundle, succeded) {
     if (succeded) {
       document.getElementById('oauth-wizard').canAdvance = false;
       document.getElementById('oauth-final-processing').hidden = true;
       document.getElementById('oauth-final-status').value = bundle.getString('final.step3');
-    
+
       if (Weave.OAuth._cback) {
         window.location = Weave.OAuth._cback;
       } else {
@@ -195,10 +195,10 @@ OAuthWizard.prototype = {
       }
     }
   },
-  
+
   observe: function OAuth_observe(subject, topic, data) {
     switch (topic) {
-      case "weave:service:verify-passphrase:success":
+      case "weave:service:verify-passphrase:finish":
         if (Weave.Service.isLoggedIn) {
           this._loginDone(true);
         } else {
@@ -207,7 +207,7 @@ OAuthWizard.prototype = {
           Weave.Service.login();
         }
         break;
-      case "weave:service:login:success":
+      case "weave:service:login:finish":
         this._loginDone(true);
         break;
       case "weave:service:verify-passphrase:error":
@@ -218,7 +218,7 @@ OAuthWizard.prototype = {
         break;
     }
   },
-  
+
   _loginDone: function Oauth__loginDone(sure) {
     let wizard = document.getElementById('oauth-wizard');
     let aubox = document.getElementById('oauth-intro-aubox');

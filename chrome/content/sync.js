@@ -40,17 +40,17 @@ var Cc = Components.classes;
 var Ci = Components.interfaces;
 
 function WeaveWindow() {
-  this._log = Log4Moz.repository.getLogger("Chrome.Window");
+  this._log = Log4Moz.repository.getLogger("Window");
 
-  this._os.addObserver(this, "weave:service:login:start", false);
-  this._os.addObserver(this, "weave:service:login:success", false);
-  this._os.addObserver(this, "weave:service:login:error", false);
-  this._os.addObserver(this, "weave:service:logout:success", false);
-  this._os.addObserver(this, "weave:service:sync:start", false);
-  this._os.addObserver(this, "weave:service:sync:success", false);
-  this._os.addObserver(this, "weave:service:sync:error", false);
-  this._os.addObserver(this, "weave:notification:added", false);
-  this._os.addObserver(this, "weave:notification:removed", false);
+  Observers.add("weave:service:sync:start", this.onSyncStart, this);
+  Observers.add("weave:service:sync:finish", this.onSyncFinish, this);
+  Observers.add("weave:service:sync:error", this.onSyncError, this);
+  Observers.add("weave:service:login:start", this.onLoginStart, this);
+  Observers.add("weave:service:login:finish", this.onLoginFinish, this);
+  Observers.add("weave:service:login:error", this.onLoginError, this);
+  Observers.add("weave:service:logout:finish", this.onLogout, this);
+  Observers.add("weave:notification:added", this.onNotificationAdded, this);
+  Observers.add("weave:notification:removed", this.onNotificationRemoved, this);
 
   if (Weave.Svc.Prefs.get("ui.syncnow"))
     document.getElementById("sync-syncnowitem").setAttribute("hidden", false);
@@ -72,7 +72,7 @@ function WeaveWindow() {
   // not support marginal cases such as when a new browser window is
   // opened in the middle of signing-in or syncing.
   if (Weave.Service.isLoggedIn)
-    this._onLogin();
+    this.onLoginFinish();
 
   Weave.Service.onWindowOpened();
 }
@@ -89,14 +89,6 @@ WeaveWindow.prototype = {
     return (win == window);
   },
 
-  __os: null,
-  get _os() {
-    if (!this.__os)
-      this.__os = Cc["@mozilla.org/observer-service;1"]
-        .getService(Ci.nsIObserverService);
-    return this.__os;
-  },
-
   get _stringBundle() {
     let stringBundle = document.getElementById("weaveStringBundle");
     this.__defineGetter__("_stringBundle",
@@ -104,7 +96,7 @@ WeaveWindow.prototype = {
     return this._stringBundle;
   },
 
-  _openWindow: function Sync__openWindow(type, uri, options) {
+  _openWindow: function WeaveWin_openWindow(type, uri, options) {
     let wm = Cc["@mozilla.org/appshell/window-mediator;1"].
       getService(Ci.nsIWindowMediator);
     let window = wm.getMostRecentWindow(type);
@@ -119,11 +111,11 @@ WeaveWindow.prototype = {
      }
   },
 
-  _openDialog: function Sync__openDialog(type, uri) {
+  _openDialog: function WeaveWin_openDialog(type, uri) {
     this._openWindow(type, uri, 'chrome,centerscreen,dialog,modal,resizable=no');
   },
 
-  _setStatus: function Sync__setStatus(status) {
+  _setStatus: function WeaveWin_setStatus(status) {
     document.getElementById("sync-menu-button").setAttribute("status", status);
 
     let label;
@@ -141,12 +133,12 @@ WeaveWindow.prototype = {
     document.getElementById("sync-menu-status").setAttribute("value", label);
   },
 
-  _onLoginStart: function Sync__onLoginStart() {
+  onLoginStart: function WeaveWin_onLoginStart() {
     this._log.info("Logging in...");
     this._setStatus("active");
   },
 
-  _onLoginError: function Sync__onLoginError() {
+  onLoginError: function WeaveWin_onLoginError() {
     this._log.info("Login Error");
     this._setStatus("offline");
 
@@ -159,7 +151,7 @@ WeaveWindow.prototype = {
     Weave.Notifications.replaceTitle(notification);
   },
 
-  _onLogin: function Sync__onLogin() {
+  onLoginFinish: function WeaveWin_onLoginFinish() {
     this._log.info("Login successful");
     this._setStatus("idle");
 
@@ -177,7 +169,7 @@ WeaveWindow.prototype = {
       syncnowitem.setAttribute("disabled", "false");
   },
 
-  _onLogout: function Sync__onLogout() {
+  onLogout: function WeaveWin_onLogout() {
     this._setStatus("offline");
 
     let loginitem = document.getElementById("sync-loginitem");
@@ -192,20 +184,20 @@ WeaveWindow.prototype = {
       syncnowitem.setAttribute("disabled", "true");
   },
 
-  _onGetPassword: function Sync_onGetPassword(identity) {
+  _onGetPassword: function WeaveWin_onGetPassword(identity) {
     let self = yield;
     this._log.info("getting password...");
     self.done();
   },
 
-  _onGetPassphrase: function Sync_onGetPassphrase(identity) {
+  _onGetPassphrase: function WeaveWin_onGetPassphrase(identity) {
     let self = yield;
     this._log.info("getting passphrase...");
 //    this._openWindow('Sync:Login', 'chrome://weave/content/login.xul');
     self.done();
   },
 
-  _onSyncStart: function Sync_onSyncStart() {
+  onSyncStart: function WeaveWin_onSyncStart() {
     this._setStatus("active");
 
     let syncitem = document.getElementById("sync-syncnowitem");
@@ -217,7 +209,7 @@ WeaveWindow.prototype = {
       logoutitem.setAttribute("disabled", "true");
   },
 
-  _onSyncEnd: function Sync_onSyncEnd(status) {
+  _onSyncEnd: function WeaveWin__onSyncEnd(status) {
     this._setStatus("idle");
 
     if (!status) {
@@ -251,23 +243,21 @@ WeaveWindow.prototype = {
     this._updateLastSyncItem();
   },
 
-  shutDown: function Sync_shutDown(event) {
-    this._os.removeObserver(this, "weave:service:login:start");
-    this._os.removeObserver(this, "weave:service:login:success");
-    this._os.removeObserver(this, "weave:service:login:error");
-    this._os.removeObserver(this, "weave:service:logout:success");
-    this._os.removeObserver(this, "weave:service:sync:start");
-    this._os.removeObserver(this, "weave:service:sync:success");
-    this._os.removeObserver(this, "weave:service:sync:error");
-    this._os.removeObserver(this, "weave:notification:added");
-    this._os.removeObserver(this, "weave:notification:removed");
+  onSyncFinish: function WeaveWin_onSyncFinish(subject, data) {
+    this._onSyncEnd(true);
   },
 
-  doLoginPopup : function Sync_doLoginPopup(event) {
+  onSyncError: function WeaveWin_onSyncError(subject, data) {
+    this._onSyncEnd(false);
+  },
+
+  shutDown: function WeaveWin_shutDown(event) {},
+
+  doLoginPopup : function WeaveWin_doLoginPopup(event) {
     this._openDialog('Sync:Login', 'chrome://weave/content/login.xul');
   },
 
-  doLogin: function Sync_doLogin(event) {
+  doLogin: function WeaveWin_doLogin(event) {
     if (Weave.Service.isLoggedIn)
       return;
 
@@ -284,28 +274,28 @@ WeaveWindow.prototype = {
     this.doLoginPopup();
   },
 
-  doOpenSetupWizard : function Sync_doOpenSetupWizard(event) {
+  doOpenSetupWizard : function WeaveWin_doOpenSetupWizard(event) {
       window.openDialog('chrome://weave/content/wizard.xul', '',
         'chrome,centerscreen,dialog,resizable=yes', null);
   },
 
-  doLogout: function Sync_doLogout(event) {
+  doLogout: function WeaveWin_doLogout(event) {
     Weave.Service.logout();
   },
 
-  doSync: function Sync_doSync(event) {
+  doSync: function WeaveWin_doSync(event) {
     this._openDialog('Sync:Status', 'chrome://weave/content/status.xul');
   },
 
-  doShare: function Sync_doShare(event) {
+  doShare: function WeaveWin_doShare(event) {
     this._openDialog('Sync:Share', 'chrome://weave/content/share.xul');
   },
 
-  doCancelSync: function Sync_doCancelSync(event) {
+  doCancelSync: function WeaveWin_doCancelSync(event) {
     this._log.error("cancel sync unimplemented");
   },
 
-  doOpenPrefs: function Sync_doOpenPrefs(event) {
+  doOpenPrefs: function WeaveWin_doOpenPrefs(event) {
     try {
       openPreferences("sync-prefpane");  // firefox
     } catch (ex) {
@@ -313,28 +303,28 @@ WeaveWindow.prototype = {
     }
   },
 
-  onOpenPrefs : function Sync_onOpenPrefs(event) {
+  onOpenPrefs : function WeaveWin_onOpenPrefs(event) {
     // XXX called when prefpane opens, setup password and login states
   },
 
-  doOpenActivityLog: function Sync_doOpenActivityLog(event) {
+  doOpenActivityLog: function WeaveWin_doOpenActivityLog(event) {
     this._openWindow('Weave:Log', 'chrome://weave/content/log.xul');
   },
 
-  doPopup: function Sync_doPopup(event) {
+  doPopup: function WeaveWin_doPopup(event) {
     this._updateLastSyncItem();
   },
 
-  _onNotificationAdded: function Sync__onNotificationAdded() {
+  onNotificationAdded: function WeaveWin_onNotificationAdded() {
     document.getElementById("sync-notifications-button").hidden = false;
   },
 
-  _onNotificationRemoved: function Sync__onNotificationRemoved() {
+  onNotificationRemoved: function WeaveWin_onNotificationRemoved() {
     if (Weave.Notifications.notifications.length == 0)
       document.getElementById("sync-notifications-button").hidden = true;
   },
 
-  _updateLastSyncItem: function Sync__updateLastSyncItem() {
+  _updateLastSyncItem: function WeaveWin__updateLastSyncItem() {
     let lastSync = Weave.Svc.Prefs.get("lastsync");
     if (!lastSync)
       return;
@@ -350,7 +340,7 @@ WeaveWindow.prototype = {
     lastSyncItem.setAttribute("hidden", "false");
   },
 
-  onMenuPopupHiding: function Sync_onMenuPopupHiding() {
+  onMenuPopupHiding: function WeaveWin_onMenuPopupHiding() {
     var menuPopup = document.getElementById('sync-menu-popup');
     var menu = document.getElementById('sync-menu');
 
@@ -362,7 +352,7 @@ WeaveWindow.prototype = {
       menu.appendChild(menuPopup);
   },
 
-  onMenuButtonMouseDown: function Sync_onMenuButtonMouseDown() {
+  onMenuButtonMouseDown: function WeaveWin_onMenuButtonMouseDown() {
     var menuPopup = document.getElementById('sync-menu-popup');
     var menuButton = document.getElementById("sync-menu-button");
 
@@ -371,42 +361,6 @@ WeaveWindow.prototype = {
     // move the popup back to the Tools > Sync menu when the popup hides.
     if (menuPopup.parentNode != menuButton)
       menuButton.appendChild(menuPopup);
-  },
-
-  // nsIObserver
-  observe: function(subject, topic, data) {
-    switch(topic) {
-    case "weave:service:login:start":
-      this._onLoginStart();
-      break;
-    case "weave:service:login:success":
-      this._onLogin();
-      break;
-    case "weave:service:login:error":
-      this._onLoginError();
-      break;
-    case "weave:service:logout:success":
-      this._onLogout();
-      break;
-    case "weave:service:sync:start":
-      this._onSyncStart();
-      break;
-    case "weave:service:sync:success":
-      this._onSyncEnd(true);
-      break;
-    case "weave:service:sync:error":
-      this._onSyncEnd(false);
-      break;
-    case "weave:notification:added":
-      this._onNotificationAdded();
-      break;
-    case "weave:notification:removed":
-      this._onNotificationRemoved();
-      break;
-    default:
-      this._log.warn("Unknown observer notification topic: " + topic);
-      break;
-    }
   }
 };
 

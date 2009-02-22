@@ -5,7 +5,7 @@ var Cr = Components.results;
 function WeavePrefs() {
   this._log = Log4Moz.repository.getLogger("Chrome.Prefs");
   this._log.level = Log4Moz.Level["Debug"];
-  Observers.add("weave:service:sync:success", this._onSync, this);
+  Observers.add("weave:service:sync:finish", this._onSync, this);
 }
 WeavePrefs.prototype = {
   get _stringBundle() {
