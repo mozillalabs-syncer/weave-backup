@@ -47,9 +47,11 @@ endif
 
 ifeq ($(release_build),)
   weave_version := 0.2.103
+  xpi_type := "dev"
   update_url := https://people.mozilla.com/~cbeard/sync/dist/update-dev.rdf
 else
   weave_version := 0.2.103
+  xpi_type := "rel"
   update_url := https://people.mozilla.com/~cbeard/sync/dist/update.rdf
 endif
 
@@ -92,7 +94,7 @@ test: build
 	$(MAKE) -C src test-install
 	$(MAKE) -k -C tests/unit
 
-xpi_name := weave-$(weave_version).xpi
+xpi_name := weave-$(weave_version)-$(xpi_type).xpi
 xpi_files := chrome/sync.jar defaults components modules platform \
              install.rdf chrome.manifest
 chrome_files := chrome/content/* chrome/skin/* chrome/locale/*
