@@ -52,7 +52,7 @@ ifeq ($(release_build),)
 else
   weave_version := 0.2.103
   xpi_type := "rel"
-  update_url := https://people.mozilla.com/~cbeard/sync/dist/update.rdf
+  update_url := 
 endif
 
 buildid ?= ${WEAVE_BUILDID}
