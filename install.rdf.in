@@ -45,7 +45,7 @@
     <em:description>Weave is the Mozilla Labs prototype for online services.</em:description>
     <em:creator>Mozilla Labs Team</em:creator>
     <em:homepageURL>http://labs.mozilla.com/featured-projects/#weave</em:homepageURL>
-    <em:updateURL>@update_url@</em:updateURL>
+    @update_url_tag@
     <em:iconURL>chrome://weave/skin/sync-32x32.png</em:iconURL>
   </Description>      
 </RDF>

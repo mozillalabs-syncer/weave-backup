@@ -55,6 +55,12 @@ else
   update_url := 
 endif
 
+ifeq ($(update_url),)
+  update_url_tag :=
+else
+  update_url_tag := <em:updateURL>$(update_url)</em:updateURL>
+endif
+
 buildid ?= ${WEAVE_BUILDID}
 ifeq ($(buildid),)
   buildid:=$(shell build/gen-buildid.sh)
@@ -73,7 +79,7 @@ else
   jar=\# 
 endif
 
-subst_names := weave_version buildid update_url unpacked jar
+subst_names := weave_version buildid update_url update_url_tag unpacked jar
 substitutions := $(foreach s,$(subst_names),'$(s)=$($(s))')
 
 dotin_files := $(shell find . -type f -name \*.in)
