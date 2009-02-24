@@ -110,115 +110,22 @@
                 <description flex="1" control="signOnButton">
                   &signIntoAccount.description;
                 </description>
-         <button id="signOnButton" label="&signInButton.label;"
+                <button id="signOnButton" label="&signInButton.label;"
                         oncommand="gWeavePrefs.doSignOn()"/>
               </hbox>
             </groupbox>
 
             <!-- Account Status and Sign Out -->
             <groupbox id="sync-signout-button">
-       <caption label="&signedIn.label;"/>
+              <caption label="&signedIn.label;"/>
               <hbox align="center">
                  <label flex="1" control="signOutButton" id="sync-username-field"/>
-          <button id="signOutButton" label="&signOutButton.label;"
+                 <button id="change-password-button"
+                         label="&changePasswordButton.label;"
+                         oncommand="gWeavePrefs.doChangePassword()"/>
+                 <button id="signOutButton" label="&signOutButton.label;"
                          oncommand="gWeavePrefs.doSignOut()"/>
               </hbox>
-
-            <grid width="100%">
-              <rows>
-                <row align="center">
-                  <label value="&instanceName.label;" control="sync-username-field"/>
-                  <textbox id="sync-instanceName-field"
-                           class="padded" width="100%" flex="1"
-                           type="timed" timeout="600"
-                           oncommand="Weave.ClientData.refresh();"
-                           preference="extensions.weave.client.name"/>
-                  <menulist preference="extensions.weave.client.type">
-                    <menupopup>
-                      <menuitem label="Desktop" value="desktop"/>
-                      <menuitem label="Laptop" value="laptop"/>
-                      <menuitem label="Mobile" value="mobile"/>
-                    </menupopup>
-                  </menulist>
-                </row>
-                <row>
-                  <spacer flex="1"/>
-                  <label width="100%" disabled="true" value="&examples.label;"/>
-                </row>
-              </rows>
-            </grid>
-            
-     </groupbox>
-
-            <!-- Change Password -->
-            <groupbox id="sync-change-password-form">
-              <caption label="&changePassword.caption;"/>
-
-<grid>
-  <columns>
-    <column flex="1"/>
-    <column/>
-    <column flex="1"/>
-  </columns>
-
-  <rows>
-    <row align="center" flex="1">
-      <hbox align="center">
-	<label control="oldPassword"
-	       value="&oldPassword.label;"/>
-	<textbox id="oldPassword" type="password" flex="1"/>
-      </hbox>
-      <label control="newPassword" value="&newPassword.label;"/>
-      <!-- See note in preferences.css about how we make this be
-         - both a password and a timed textbox. -->
-      <textbox id="newPassword" type="password" flex="1"
-	       timeout="600"
-	       oncommand="gWeavePrefs.validateNewPasswords()"/>
-    </row>
-
-    <row align="center" flex="1">
-      <checkbox label="&showPasswords.label;"
-		oncommand="gWeavePrefs.doToggleShowPasswords(event)"/>
-      <hbox flex="1" pack="end">
-	<label control="newPasswordAgain"
-	       value="&newPasswordAgain.label;"/>
-      </hbox>
-      <!-- See note in preferences.css about how we make this be
-         - both a password and a timed textbox. -->
-      <textbox id="newPasswordAgain" type="password" flex="1"
-	       timeout="600"
-	       oncommand="gWeavePrefs.validateNewPasswords()"/>
-    </row>
-
-  </rows>
-
-</grid>
-
-<hbox flex="1" align="center">
-  <hbox id="changePasswordStatus" status="idle" align="center">
-    <image id="changePasswordIcon"/>
-    <!-- We duplicate the idle text here so we don't have to
-       - dupe it in preferences.dtd and preferences.properties.
-       - We use the idlevalue attribute when setting the status
-       - to idle in WeavePrefs::_setChangePasswordStatus. -->
-    <label id="changePasswordDescription"
-	   value="&changePassword.description;"
-           idlevalue="&changePassword.description;"/>
-  </hbox>
-  <spacer flex="1"/>
-  <button id="changePasswordButton"
-	  label="&changePasswordButton.label;"
-	  oncommand="gWeavePrefs.doChangePassword()"/>
-</hbox>
-
-            </groupbox>
-
-            <!-- Account Settings -->
-            <groupbox align="start">
-              <caption label="&accountSettings.label;"/>
-                <checkbox id="sync-autoconnect-checkbox" class="indent"
-                          label="&autoconnectCheckbox.label;"
-                          preference="extensions.weave.autoconnect"/>
             </groupbox>
 
             <!-- Create Account -->
@@ -233,6 +140,13 @@
               </hbox>
             </groupbox>
 
+            <!-- Account Settings -->
+            <groupbox align="start">
+              <caption label="&accountSettings.label;"/>
+                <checkbox id="sync-autoconnect-checkbox" class="indent"
+                          label="&autoconnectCheckbox.label;"
+                          preference="extensions.weave.autoconnect"/>
+            </groupbox>
         </tabpanel>
 
         <!-- Data -->
@@ -309,9 +223,29 @@
         <!-- Clients -->
         <tabpanel id="serviceclientsTab">
           <groupbox id="sync-clients-group" flex="1">
-            <richlistbox id="sync-clients-list">
-            
-            </richlistbox>
+            <grid width="100%">
+              <rows>
+                <row align="center">
+                  <label value="&instanceName.label;" control="sync-username-field"/>
+                  <textbox id="sync-instanceName-field"
+                           class="padded" width="100%" flex="1"
+                           type="timed" timeout="600"
+                           preference="extensions.weave.client.name"/>
+                  <menulist preference="extensions.weave.client.type">
+                    <menupopup>
+                      <menuitem label="Desktop" value="desktop"/>
+                      <menuitem label="Laptop" value="laptop"/>
+                      <menuitem label="Mobile" value="mobile"/>
+                    </menupopup>
+                  </menulist>
+                </row>
+                <row>
+                  <spacer flex="1"/>
+                  <label width="100%" disabled="true" value="&examples.label;"/>
+                </row>
+              </rows>
+            </grid>
+            <richlistbox id="sync-clients-list"/>
           </groupbox>
         </tabpanel>
       

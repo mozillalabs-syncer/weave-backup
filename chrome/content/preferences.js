@@ -6,6 +6,7 @@ function WeavePrefs() {
   this._log = Log4Moz.repository.getLogger("Chrome.Prefs");
   this._log.level = Log4Moz.Level["Debug"];
   Observers.add("weave:service:sync:finish", this._onSync, this);
+  Weave.Utils.prefs.addObserver("", this, false);
 }
 WeavePrefs.prototype = {
   get _stringBundle() {
@@ -19,7 +20,7 @@ WeavePrefs.prototype = {
     let clients = Weave.Clients.getClients();
 
     while (richlistbox.firstChild) {
-      element.removeChild(richlistbox.firstChild);
+      richlistbox.removeChild(richlistbox.firstChild);
     }
 
     for (let guid in clients) {
@@ -39,8 +40,7 @@ WeavePrefs.prototype = {
     let syncNowButton = document.getElementById('sync-syncnow-button');
     let createButton = document.getElementById('sync-create-button');
     let syncUserName = document.getElementById('sync-username-field');
-    let changePasswordForm =
-      document.getElementById('sync-change-password-form');
+    let changePasswordButton = document.getElementById('change-password-button');
 
     if (!Weave.Service.isLoggedIn) {
       signOnButton.setAttribute("hidden", "false");
@@ -48,7 +48,7 @@ WeavePrefs.prototype = {
       createButton.setAttribute("hidden", "false");
       syncNowButton.setAttribute("disabled", "true");
       syncUserName.setAttribute("value", "");
-      changePasswordForm.hidden = true;
+      changePasswordButton.setAttribute("hidden", "true");
     } else {
       let signedInDescription =
         this._stringBundle.getFormattedString("signedIn.description",
@@ -58,7 +58,7 @@ WeavePrefs.prototype = {
       createButton.setAttribute("hidden", "true");
       syncNowButton.setAttribute("disabled", "false");
       syncUserName.setAttribute("value", signedInDescription);
-      changePasswordForm.hidden = false;
+      changePasswordButton.setAttribute("hidden", "true"); // FIXME: temp
    }
   },
 
@@ -168,46 +168,8 @@ WeavePrefs.prototype = {
   },
 
   doChangePassword: function WeavePrefs_doChangePassword() {
-    let username = Weave.Service.username;
-    let oldPassword = document.getElementById("oldPassword");
-    let newPassword = document.getElementById("newPassword");
-    let newPasswordAgain = document.getElementById("newPasswordAgain");
-    let changePasswordButton = document.getElementById("changePasswordButton");
-
-    // Validate the form.
-    let errorCodes = [];
-    if (!newPassword.value)
-      errorCodes.push("-11");
-    if (!oldPassword.value)
-      errorCodes.push("-8");
-    if (newPassword.value == Weave.Service.passphrase)
-      errorCodes.push("passwordSameAsPassphrase");
-    if (newPassword.value != newPasswordAgain.value)
-      errorCodes.push("passwordsDoNotMatch");
-
-    if (errorCodes.length > 0) {
-      this._setChangePasswordStatus("error", errorCodes);
-      return;
-    }
-
-    let url = Weave.Utils.prefs.getCharPref("serverURL") +
-	      "api/register/chpwd/";
-
-    let data = "uid=" + encodeURIComponent(username) +
-               "&password=" + encodeURIComponent(oldPassword.value) +
-	       "&new=" + encodeURIComponent(newPassword.value);
-
-    let self = this;
-    let callback = function(event) { self.onChangePassword(event) };
-
-    this._setChangePasswordStatus("active");
-
-    let request = new XMLHttpRequest();
-    request.open("POST", url, true);
-    request.onload = request.onerror = callback;
-    request.setRequestHeader("Content-Type",
-			     "application/x-www-form-urlencoded");
-    request.send(data);
+    let url = "https://services.mozilla.com/";
+    setTimeout(function() { window.openUILinkIn(url, "tab"); }, 500);
   },
 
   _setChangePasswordStatus:
@@ -290,8 +252,8 @@ WeavePrefs.prototype = {
   },
 
   doCreateAccount: function WeavePrefs_doCreateAccount() {
-    window.openDialog('chrome://weave/content/wizard.xul', '',
-                      'chrome,centerscreen,dialog,resizable=yes', null);
+    let url = "https://services.mozilla.com/";
+    setTimeout(function() { window.openUILinkIn(url, "tab"); }, 500);
   },
 
   resetLoginCredentials: function WeavePrefs_resetLoginCredentials() {
@@ -345,6 +307,19 @@ WeavePrefs.prototype = {
                   this._stringBundle.getString("reset.client.warning.title"),
                   this._stringBundle.getString("reset.client.warning")))
       Weave.Service.resetClient();
+  },
+
+  observe: function WeaveSvc__observe(subject, topic, data) {
+    switch (topic) {
+    case "nsPref:changed":
+      switch (data) {
+      case "client.name":
+      case "client.type":
+        gWeavePrefs.onPaneLoad();
+        break;
+      }
+      break;
+    }
   }
 };
 
