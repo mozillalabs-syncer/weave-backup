@@ -50,12 +50,20 @@
 	  </hbox>
           <textbox id="password" type="password"/>
         </row>
+        <row><label value=""/></row>
         <row id="passphrase-ui" align="center">
           <hbox flex="1" align="right">
             <label id="loginPassphraseLabel" value="&encryptionPassphrase.label;"/>
 	  </hbox>
           <textbox id="passphrase" type="password"/>
         </row>
+        <row id="whats-this-row" align="center"> 
+          <hbox flex="1" align="right">
+          <label class="text-link" value="&whatsThis.label;"
+                 onclick="window.open('https://services.mozilla.com/help/login/');"/>
+          </hbox>
+        </row>
+        <row><label value=""/></row>
       </rows>
     </grid>
 
