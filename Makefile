@@ -46,11 +46,11 @@ ifeq ($(sdkdir),)
 endif
 
 ifeq ($(release_build),)
-  weave_version := 0.2.103
+  weave_version := 0.2.104
   xpi_type := "dev"
   update_url := https://people.mozilla.com/~cbeard/sync/dist/update-dev.rdf
 else
-  weave_version := 0.2.103
+  weave_version := 0.2.104
   xpi_type := "rel"
   update_url := 
 endif
