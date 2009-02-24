@@ -245,6 +245,10 @@
                 </row>
               </rows>
             </grid>
+
+            <separator/>
+
+            <label value="&clientList.label;"/>
             <richlistbox id="sync-clients-list"/>
           </groupbox>
         </tabpanel>

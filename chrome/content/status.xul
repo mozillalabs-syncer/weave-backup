@@ -35,7 +35,7 @@
         <image id="statusIcon"/>
         <vbox>
           <!-- empty values are required to preallocate space for the label -->
-          <label id="statusEngine" value=""/>
+          <label id="statusEngine" value="&status.title;"/>
           <label id="statusText" value=""/>
         </vbox>
       </hbox>
