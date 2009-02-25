@@ -66,22 +66,25 @@ FxWeaveGlue.prototype = {
       menu.removeItemAt(menu.itemCount - 1);
 
     let remoteClients = Weave.Engines.get("tabs").getAllClients();
-    for each (remoteClient in remoteClients)  {
+    this._log.debug("There are " + remoteClients.length + " remote clients.");
+    let clientId, tabId;
+    for (clientId = 0; clientId < remoteClients.length; clientId++) {
+      let remoteClient = remoteClients[clientId];
       let label = "Tabs from " + remoteClient.getClientName() + ":";
       let menuitem = menu.appendItem(label);
       menuitem.setAttribute( "disabled", true );
       let allTabs = remoteClient.getAllTabs();
       dump("There are " + allTabs.length + " tabs in this record.\n");
-      for each (let tab in allTabs) {
+      let id = 0;
+      for (id = 0; id < allTabs.length; id++) {
+	let tab = allTabs[id];
 	/* Note we're just sticking the last URL into the value of the
 	 menu item; this is a limited approach that won't work when we
 	 want to restore a whole urlHistory, so we'll need to assign some
 	 id scheme to the tabs across all the remoteClients, then put IDs
 	 into the menu values, then retrieve the record based on the ID.*/
-	let url = tab.urlHistory[ 0 ];
-	dump("Setting url to " + url + "\n");
-	menuitem = menu.appendItem("  " + tab.title, url);
-	menuitem.value = [url, "foo"];
+	menuitem = menu.appendItem("  " + tab.title);
+	menuitem.value = [clientId, tabId];
       }
     }
     document.getElementById("sync-no-tabs-menu-item").hidden =
@@ -90,7 +93,29 @@ FxWeaveGlue.prototype = {
 
   onCommandTabsMenu: function FxWeaveGlue_onCommandTabsMenu(event) {
     dump("Event.target.value is " + event.target.value + "\n");
-    let tab = gBrowser.addTab(event.target.value[0]);
+    // TODO add the tab's history here.
+    // nsISessionStore has getTabState(tab) which returns json and
+    // setTabState(tab, json).  Look at what getTabState returns and then
+    // we can fake similar json and pass it to setTabeState.
+
+    // Try:  {entries:[{url:""}, {url:""}]}  That leaves a lot of stuff
+    // undefined but maybe the tab is smart enough to fill it in?
+    let ss = Cc["@mozilla.org/browser/sessionstore;1"].
+                getService(Ci.nsISessionStore);
+
+    let clientId = event.target.value[0];
+    let tabId = event.target.value[1];
+    let remoteClient = Weave.Engines.get("tabs").getAllClients()[clientId];
+    let tabData = remoteClient.getAllTabs()[tabId];
+    let urlHistory = tab.urlHistory;
+    let tab = gBrowser.addTab(urlHistory[0]);
+    let json = {
+      entries:[]
+    };
+    for (let i = urlHistory.length; i>=0; i--) {
+      json.entries.push({url: urlHistory[i]});
+    }
+    ss.setTabState(tab, json);
     gBrowser.selectedTab = tab;
 
     // FIXME: update a notification that lists the opened tab, if any.
