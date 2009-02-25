@@ -377,42 +377,41 @@ FennecWeaveGlue.prototype = {
     }
   },
 
-  // TODO try altering browser-ui.js so that we can register this as
-  // a new UIMODE and then call BrowserUI.show( UIMODE_THIS_THING ) to
-  // switch to it.
-  switchToSyncedTabPanel: function FennecWeaveGlue_switchToSyncedTabPanel() {
-    // We're basically adding a new UIMODE to browser-ui.js -- see the
-    // ones handled in BrowserUI.show().
-    BrowserUI._showToolbar(false);
-    BrowserUI._editToolbar(false);
-    let container = document.getElementById("browser-container");
-    let syncedTabPanel = document.getElementById("synced-tabs-panel");
-    let bookmark = document.getElementById("bookmark-container");
-    let urllist = document.getElementById("urllist-container");
-    let panelUI = document.getElementById("panel-container");
-    let tabContainer = document.getElementById("tabs-container");
-    let width = tabContainer.boxObject.width;
-    tabContainer.left = container.boxObject.width - width;
-    syncedTabPanel.hidden = false;
-    syncedTabPanel.width = container.boxObject.width - width;
-    syncedTabPanel.height = container.boxObject.height;
-    bookmark.hidden = true;
-    urllist.hidden = true;
-    panelUI.hidden = true;
-    // TODO this breaks things kinda bad -- if you hit the new-tab button
-    // for instance, it loads the new tab without hiding the synced tab panel!
-  },
-
   showSyncedTabs: function FennecWeaveGlue_showSyncedTabs() {
-    let tabEngine = Weave.Engines.get("tabs");
-    let clients = tabEngine.getAllClients();
-
-    this.switchToSyncedTabPanel();
-    let holder = document.getElementById("synced-tabs-column-set");
-    this.loadRemoteTabs(holder, clients);
+    RemoteTabViewer.show();
   },
 
-  loadRemoteTabs: function FennecWeaveGlue_loadRemoteTabs(holder, clients) {
+  hideSyncedTabs: function FennecWeaveGlue_hideSyncedTabs() {
+    RemoteTabViewer.close();
+  }
+};
+
+var RemoteTabViewer = {
+  _panel: null,
+  _remoteClients: null,
+
+  show: function() {
+    let container = document.getElementById("browser-container");
+    this._panel = document.getElementById("synced-tabs-panel");
+    this._panel.hidden = false;
+    this._panel.width = container.boxObject.width;
+    this._panel.height = container.boxObject.height;
+    /*  If we want the tab bar to still appear on the right side:
+     *     let width = tabContainer.boxObject.width;
+     * tabContainer.left = container.boxObject.width - width;
+     * syncedTabPanel.hidden = false;
+     * syncedTabPanel.width = container.boxObject.width - width;
+     */
+    let tabEngine = Weave.Engines.get("tabs");
+    this._remoteClients = tabEngine.getAllClients();
+    this._populateTabs(document.getElementById("synced-tabs-column-set"));
+  },
+
+  close: function() {
+    this._panel.hidden = true;
+  },
+
+  _populateTabs: function FennecWeaveGlue_loadRemoteTabs(holder) {
     /* Clear out all child elements from holder first, so we don't
      * end up adding duplicate columns: */
     while (holder.firstChild) {
@@ -420,7 +419,7 @@ FennecWeaveGlue.prototype = {
     }
 
     // Load up all of the remote tabs we can find, into a grid:
-    for each (let record in clients) {
+    for each (let record in this._remoteClients) {
       dump("Processing a Client\n");
       let newGroupbox = document.createElement("groupbox");
       holder.appendChild(newGroupbox);
@@ -436,7 +435,7 @@ FennecWeaveGlue.prototype = {
       // newRichList.setAttribute("tabsPerColumn", 12);
       newRichList.tabsPerColumn = 12;
       newRichList.addEventListener("select", function(event) {
-				     gFennecWeaveGlue.openSyncedTab(this, event);
+				     RemoteTabViewer.openSyncedTab(this, event);
 				   }, "true");
       newGroupbox.appendChild(newRichList);
       let tabs = record.getAllTabs();
@@ -453,14 +452,6 @@ FennecWeaveGlue.prototype = {
     }
     // TODO: the close button can be pushed offscreen by too long a list of
     // tabs.  Fix that!
-  },
-
-  hideSyncedTabs: function FennecWeaveGlue_hideSyncedTabs() {
-    let syncedTabPanel = document.getElementById("synced-tabs-panel");
-    let tabContainer = document.getElementById("tabs-container");
-    tabContainer.left = 0;
-    syncedTabPanel.hidden = true;
-    BrowserUI.show(5); // how to get the constant?
   },
 
   openSyncedTab: function FennecWeaveGlue_openSyncedTab(richlist, event) {
