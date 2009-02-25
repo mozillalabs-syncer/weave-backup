@@ -224,18 +224,7 @@ FennecWeaveGlue.prototype = {
     } else {
       this.openConnectPane();
     }
-
-    this.showSyncedTabs();
   },
-
-  // Notes:
-    // try BrowserUI.show() and BrowserUI.switchPane() and BrowserUI.goToURI
-    /* See richpref.xml ( an XBL document) for the semantics of the
-     richpref tags in browser.xul, and browser.css to see how this
-     definition is associated with the tags.  One approach would be
-     to define a richpref-text to go along with the others (there
-     is currently no richpref-text) and then use that for all the
-     fields we need. */
     /*Also: defaults for prefs being different on fennec than on ffox?
        E.G. rememberpassword default to true, syncOnQuit default to false
        (but syncOnStart default to true...)  Pref defaults can be set
