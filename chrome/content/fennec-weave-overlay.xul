@@ -40,7 +40,7 @@
     </hbox>
   </stack>
   <!-- Command to show the panel -->
-  <commandset id="cmdset_main">
+  <commandset id="mainCommandSet">
     <command id="cmd_showSyncedTabs" name="Show Synced Tabs" 
 	     oncommand="gFennecWeaveGlue.showSyncedTabs();"/>
   </commandset>

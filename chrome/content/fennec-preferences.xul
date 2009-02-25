@@ -5,7 +5,7 @@
 
 <overlay id="sync-preferences"
          xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
-  <commandset id="cmdset_main">
+  <commandset id="mainCommandSet">
     <command id="cmd_weave_prefs" name="&fennecOpenPrefsCmd.label;" 
 	     oncommand="gFennecWeaveGlue.openWeavePane();"/>
   </commandset>
