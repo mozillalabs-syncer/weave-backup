@@ -445,7 +445,7 @@ var RemoteTabViewer = {
 
   openSyncedTab: function FennecWeaveGlue_openSyncedTab(richlist, event) {
     let tabData = richlist.selectedItem.getTabData();
-    this.hideSyncedTabs();
+    this.close();
     try {
       // Newer versions of fennec do it this way:
       Browser.addTab(tabData.urlHistory[0], true);

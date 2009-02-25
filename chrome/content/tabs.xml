@@ -11,7 +11,7 @@
 	   extends="chrome://global/content/bindings/richlistbox.xml#richlistitem">
     <content>
       <xul:hbox>
-	<xul:image anonid="favicon" width='16' height='4'/>
+	<xul:image anonid="favicon" width='16px' height='16px'/>
         <xul:label anonid="title" class="remote-tab-label"/>
       </xul:hbox>
     </content>
