@@ -52,8 +52,7 @@ function FennecWeaveGlue() {
     /*Cu.import("resource://weave/engines/forms.js");
     Cu.import("resource://weave/engines/passwords.js");
     Cu.import("resource://weave/engines/cookies.js");
-    Cu.import("resource://weave/engines/input.js");
-    Cu.import("resource://weave/engines/tabs.js");*/
+    Cu.import("resource://weave/engines/input.js");*/
     //Weave.Engines.register(new HistoryEngine());
     Weave.Engines.register(new BookmarksEngine());
     /*Weave.Engines.register(new FormEngine());
@@ -400,6 +399,7 @@ var RemoteTabViewer = {
     this._panel.hidden = true;
   },
 
+  // TODO De-Uglify this:
   _populateTabs: function FennecWeaveGlue_loadRemoteTabs(holder) {
     /* Clear out all child elements from holder first, so we don't
      * end up adding duplicate columns: */
@@ -420,8 +420,6 @@ var RemoteTabViewer = {
       // and richlistitem type="remotetab" in weave's tabs.xml
       let newRichList = document.createElement("richlistbox");
       newRichList.setAttribute("class", "tab-list");
-      // TODO
-      // newRichList.setAttribute("tabsPerColumn", 12);
       newRichList.tabsPerColumn = 12;
       newRichList.addEventListener("select", function(event) {
 				     RemoteTabViewer.openSyncedTab(this, event);

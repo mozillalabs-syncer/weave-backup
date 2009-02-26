@@ -65,19 +65,19 @@ FxWeaveGlue.prototype = {
     while (menu.itemCount > 1)
       menu.removeItemAt(menu.itemCount - 1);
 
+    // TODO put favicons here.  How is it done in the main bookmark
+    // menus?
     let remoteClients = Weave.Engines.get("tabs").getAllClients();
-    this._log.debug("There are " + remoteClients.length + " remote clients.");
     let clientId, tabId;
-    for (clientId = 0; clientId < remoteClients.length; clientId++) {
+    for (clientId in remoteClients) {
       let remoteClient = remoteClients[clientId];
       let label = "Tabs from " + remoteClient.getClientName() + ":";
       let menuitem = menu.appendItem(label);
       menuitem.setAttribute( "disabled", true );
       let allTabs = remoteClient.getAllTabs();
-      dump("There are " + allTabs.length + " tabs in this record.\n");
       let id = 0;
-      for (id = 0; id < allTabs.length; id++) {
-	let tab = allTabs[id];
+      for (tabId = 0; tabId < allTabs.length; tabId++) {
+	let tab = allTabs[tabId];
 	/* Note we're just sticking the last URL into the value of the
 	 menu item; this is a limited approach that won't work when we
 	 want to restore a whole urlHistory, so we'll need to assign some
@@ -92,31 +92,37 @@ FxWeaveGlue.prototype = {
   },
 
   onCommandTabsMenu: function FxWeaveGlue_onCommandTabsMenu(event) {
-    dump("Event.target.value is " + event.target.value + "\n");
-    // TODO add the tab's history here.
-    // nsISessionStore has getTabState(tab) which returns json and
-    // setTabState(tab, json).  Look at what getTabState returns and then
-    // we can fake similar json and pass it to setTabeState.
-
-    // Try:  {entries:[{url:""}, {url:""}]}  That leaves a lot of stuff
-    // undefined but maybe the tab is smart enough to fill it in?
     let ss = Cc["@mozilla.org/browser/sessionstore;1"].
                 getService(Ci.nsISessionStore);
+    let js = Cc["@mozilla.org/dom/json;1"]
+                 .createInstance(Ci.nsIJSON);
 
+    /* The event.target.value is a list of two items: [clientId, tabId]
+     * as set by doInitTabMenu above.  Read this out and use it to get
+     * the tab data:
+     */
     let clientId = event.target.value[0];
     let tabId = event.target.value[1];
     let remoteClient = Weave.Engines.get("tabs").getAllClients()[clientId];
     let tabData = remoteClient.getAllTabs()[tabId];
-    let urlHistory = tab.urlHistory;
-    let tab = gBrowser.addTab(urlHistory[0]);
+
+    // Open the new tab:
+    let urlHistory = tabData.urlHistory;
+    let newTab = gBrowser.addTab(urlHistory[0]);
+
+    /* Turn url history into a json string that we can pass to sessionStore
+     * in order to restore the tab's history. */
     let json = {
       entries:[]
     };
-    for (let i = urlHistory.length; i>=0; i--) {
+    for (let i = urlHistory.length-1; i > -1; i--) {
       json.entries.push({url: urlHistory[i]});
     }
-    ss.setTabState(tab, json);
-    gBrowser.selectedTab = tab;
+    dump("Using json: " + uneval(json) + "\n");
+    ss.setTabState(newTab, js.encode(json));
+
+    // Switch to the newly opened tab:
+    gBrowser.selectedTab = newTab;
 
     // FIXME: update a notification that lists the opened tab, if any.
   },
