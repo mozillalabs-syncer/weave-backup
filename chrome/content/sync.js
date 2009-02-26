@@ -325,7 +325,7 @@ WeaveWindow.prototype = {
   },
 
   _updateLastSyncItem: function WeaveWin__updateLastSyncItem() {
-    let lastSync = Weave.Svc.Prefs.get("lastsync");
+    let lastSync = Weave.Svc.Prefs.get("lastSync");
     if (!lastSync)
       return;
 
