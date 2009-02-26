@@ -71,6 +71,7 @@
                         insertbefore="security-button"
                         onmousedown="gWeaveWin.onMenuButtonMouseDown()">
             <label id="sync-menu-status"
+                   class="statusbarpanel-text"
                    control="sync-menu-button"
                    value="&status.offline.label;"/>
         </statusbarpanel>
