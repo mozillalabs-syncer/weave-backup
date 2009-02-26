@@ -42,7 +42,7 @@
           <hbox flex="1" align="right">
 	    <label id="loginUsernameLabel" value="&username.label;"/>
 	  </hbox>
-          <textbox id="username" preference="username"/>
+          <textbox id="username"/>
         </row>
         <row align="center">
           <hbox flex="1" align="right">
