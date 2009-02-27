@@ -29,14 +29,14 @@
   </preferences>
 
   <tabbox id="syncLogTabs" flex="1"
-          onselect="gSyncLog.onSelectionChanged();">
+          onselect="gSyncLog.onSelectionChanged(event);">
     <tabs>
         <tab id="syncLogTab" label="&briefLogTab.label;"/>
         <tab id="syncLogVerboseTab" label="&verboseLogTab.label;"/>
     </tabs>
     <tabpanels flex="1">
       <tabpanel id="syncLogPanel" flex="1">
-        <iframe id="sync-log-frame"
+        <iframe id="sync-log-brief-frame"
                 style="min-height : 25em; min-width: 80em; background-color:white;"
                 type="content" flex="1"/>
       </tabpanel>

@@ -3,79 +3,81 @@ var Cc = Components.classes;
 var Cr = Components.results;
 
 let gSyncLog = {
+  //////////////////////////////////////////////////////////////////////////////
+  // Private Methods
+
+  _file: function SyncLog__file(type) {
+    let dirSvc = Cc["@mozilla.org/file/directory_service;1"].
+      getService(Ci.nsIProperties);
+
+    let logFile = dirSvc.get("ProfD", Ci.nsIFile);
+    logFile.QueryInterface(Ci.nsILocalFile);
+    logFile.append("weave");
+    logFile.append("logs");
+    logFile.append(type + "-log.txt");
+
+    return logFile;
+  },
+
+  _frame: function SyncLog__frame(type) {
+    return document.getElementById("sync-log-" + type + "-frame");
+  },
+
+  get _logTypes() {
+    return ["brief", "verbose"];
+  },
+
   get _stringBundle() {
     let stringBundle = document.getElementById("weaveStringBundle");
     delete this._stringBundle;
-    this._stringBundle = stringBundle;
-    return this._stringBundle;
+    return this._stringBundle = stringBundle;
   },
 
-  init: function() {
+  _uriLog: function SyncLog__uriLog(type) {
+    if (type) {
+      let file = this._file(type);
+      if (file.exists())
+        return "file://" + file.path;
+    }
+
+    return "chrome://weave/content/default-log.txt";
+  },
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Event Handlers
+
+  init: function SyncLog_init(event) {
     let tabbox = document.getElementById("syncLogTabs");
     let index = document.getElementById("extensions.weave.log.selectedTabIndex");
     if (index.value != null)
       tabbox.selectedIndex = index.value;
-    this.loadLogs();
+
+    for each (let type in this._logTypes) {
+      let frame = this._frame(type);
+      frame.setAttribute("src", this._uriLog(type));
+    }
   },
 
-  onSelectionChanged: function() {
+  onSelectionChanged: function SyncLog_onSelectionChanged(event) {
     let tabbox = document.getElementById("syncLogTabs");
     let index = document.getElementById("extensions.weave.log.selectedTabIndex");
     index.valueFromPreferences = tabbox.selectedIndex;
   },
 
-  loadLogs: function() {
-    let dirSvc = Cc["@mozilla.org/file/directory_service;1"].
-    getService(Ci.nsIProperties);
+  //////////////////////////////////////////////////////////////////////////////
+  // Public Methods
 
-    let brief = dirSvc.get("ProfD", Ci.nsIFile);
-    brief.QueryInterface(Ci.nsILocalFile);
-
-    brief.append("weave");
-    brief.append("logs");
-    brief.append("brief-log.txt");
-
-    if (brief.exists())
-      document.getElementById("sync-log-frame").
-        setAttribute("src", "file://" + brief.path);
-    else
-      document.getElementById("sync-log-frame").
-        setAttribute("src", "chrome://weave/content/default-log.txt");
-
-    let verbose = brief.parent.clone();
-    verbose.append("verbose-log.txt");
-
-    if (verbose.exists())
-      document.getElementById("sync-log-verbose-frame").
-        setAttribute("src", "file://" + verbose.path);
-    else
-      document.getElementById("sync-log-verbose-frame").
-        setAttribute("src", "chrome://weave/content/default-log.txt");
-  },
-
-  saveAs: function() {
+  saveAs: function SyncLog_saveAs() {
     let tabbox = document.getElementById("syncLogTabs");
-    let index = tabbox.selectedIndex;
-  
-    let dirSvc = Cc["@mozilla.org/file/directory_service;1"].
-    getService(Ci.nsIProperties);
-  
-    let file = dirSvc.get("ProfD", Ci.nsIFile);
-    file.QueryInterface(Ci.nsILocalFile);
-  
-    file.append("weave");
-    file.append("logs");
-  
-    if (index == 0)
-      file.append("brief-log.txt");
-    else
-      file.append("verbose-log.txt");
-  
+    let file = this._file(this._logTypes[tabbox.selectedIndex]);
+
     if (!file.exists()) {
       alert(this._stringBundle.getString("noLogAvailable.alert"));
       return;
     }
-  
+
+    let dirSvc = Cc["@mozilla.org/file/directory_service;1"].
+      getService(Ci.nsIProperties);
     let backupsDir = dirSvc.get("Desk", Ci.nsILocalFile);
     let fp = Cc["@mozilla.org/filepicker;1"].createInstance(Ci.nsIFilePicker);
     let filePickerTitle = this._stringBundle.getString("filePicker.title");
@@ -83,7 +85,7 @@ let gSyncLog = {
     fp.appendFilters(Ci.nsIFilePicker.filterAll);
     fp.displayDirectory = backupsDir;
     fp.defaultString = "Weave Sync.log";
-  
+
     if (fp.show() != Ci.nsIFilePicker.returnCancel) {
       if (fp.file.exists())
         fp.file.remove(false);
@@ -93,11 +95,10 @@ let gSyncLog = {
 
   clear: function SyncLog_clear() {
     Weave.Service.clearLogs();
-    document.getElementById("sync-log-frame").
-      setAttribute("src", "chrome://weave/content/default-log.txt");
-    document.getElementById("sync-log-verbose-frame").
-      setAttribute("src", "chrome://weave/content/default-log.txt");
+
+    for each (let type in this._logTypes)
+      this._frame(type).setAttribute("src", this._uriLog());
   }
 }
 
-window.addEventListener("load", function(e) { gSyncLog.init(e); }, false);
+window.addEventListener("load", function(e) gSyncLog.init(e), false);
