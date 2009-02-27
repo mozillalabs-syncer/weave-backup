@@ -297,7 +297,7 @@ WeavePrefs.prototype = {
     if (p.confirm(null,
                   this._stringBundle.getString("reset.server.warning.title"),
                   this._stringBundle.getString("reset.server.warning")))
-      Weave.Service.serverWipe();
+      Weave.Service.wipeServer();
   },
 
   resetClient: function WeavePrefs_resetClient() {
