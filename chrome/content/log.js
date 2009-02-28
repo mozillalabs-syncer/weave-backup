@@ -93,9 +93,12 @@ let gSyncLog = {
 
       // Generate a background color based on the source of the log
       let bgColor = [0, 0, 0];
-      for (let i = source.length; --i >= 0; )
-        bgColor[i % 3] += source.charCodeAt(i);
-      bgColor = bgColor.map(function(v) v % 256);
+      for (let i = source.length; --i >= 0; ) {
+        let code = source.charCodeAt(i) - 65;
+        bgColor[i % 3] += code;
+        bgColor[(i + code) % 3] += code;
+      }
+      bgColor = bgColor.map(function(v) Math.abs(v % 256));
 
       let pre = doc.body.appendChild(doc.createElement("pre"));
       pre.style.color = textColors[type];
