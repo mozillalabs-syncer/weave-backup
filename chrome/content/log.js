@@ -76,7 +76,7 @@ let gSyncLog = {
 
     // Define some colors for various levels/types of logging
     let textColors = {
-      WARN:   "#f90",
+      WARN:   "#f60",
       ERROR:  "#f30",
       FATAL:  "#f00",
 
