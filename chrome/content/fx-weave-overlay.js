@@ -65,8 +65,6 @@ FxWeaveGlue.prototype = {
     while (menu.itemCount > 1)
       menu.removeItemAt(menu.itemCount - 1);
 
-    // TODO put favicons here.  How is it done in the main bookmark
-    // menus?
     let remoteClients = Weave.Engines.get("tabs").getAllClients();
     let clientId, tabId;
     for (clientId in remoteClients) {
@@ -78,13 +76,16 @@ FxWeaveGlue.prototype = {
       let id = 0;
       for (tabId = 0; tabId < allTabs.length; tabId++) {
 	let tab = allTabs[tabId];
-	/* Note we're just sticking the last URL into the value of the
-	 menu item; this is a limited approach that won't work when we
-	 want to restore a whole urlHistory, so we'll need to assign some
-	 id scheme to the tabs across all the remoteClients, then put IDs
-	 into the menu values, then retrieve the record based on the ID.*/
 	menuitem = menu.appendItem("  " + tab.title);
+	/* Store index of client within clients list AND index of tab within
+	 * client, as an ordered list, in value of menu item, so that we
+	 * can retrive the correct tab when it is chosen. */
 	menuitem.value = [clientId, tabId];
+	// Add site's favicon to menu:
+	menuitem.class = "menuitem-iconic";
+	let domain = Utils.makeURI(tab.urlHistory[0]).prePath;
+	let favicon = domain + "favicon.ico";
+	menuitem.image = favicon;
       }
     }
     document.getElementById("sync-no-tabs-menu-item").hidden =
