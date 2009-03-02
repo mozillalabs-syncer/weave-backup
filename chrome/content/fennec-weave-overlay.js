@@ -72,20 +72,19 @@ function FennecWeaveGlue() {
    */
   if (this._pfs.getBoolPref("extensions.weave.enabled")) {
     this.setWeaveStatusField("Weave is trying to log in...");
+    /* startup Weave service after a delay, so that it will happen after the
+     * UI is loaded. */
+    let self = this;
+    setTimeout( function() {
+		  self._log.info("Timeout done, starting Weave service.\n");
+		  Weave.Service.onStartup( function() {
+					     self.showLoginStatus();
+					   });
+		}, 3000);
   } else {
     this.setWeaveStatusField("Weave is turned off.");
-    // TODO if weave is turned off, should we not call onStartup?
+    // If it's turned off, don't start it up.
   }
-
-  // startup Weave service after a delay, so that it will happen after the
-  // UI is loaded.
-  let self = this;
-  setTimeout( function() {
-		self._log.info("Timeout done, starting Weave service.\n");
-		Weave.Service.onStartup( function() {
-					   self.showLoginStatus();
-					 });
-	      }, 3000);
 }
 FennecWeaveGlue.prototype = {
   __prefService: null,
@@ -288,6 +287,8 @@ FennecWeaveGlue.prototype = {
       } catch(e) {
 	log.warn("Exception caught when logging in: " + e);
 	setStatus("Weave had an error when trying to log in.");
+	// TODO more specific message based on what the error is.
+	// e.g. Original exception: No server URL set
       }
     }
   },
@@ -309,6 +310,7 @@ FennecWeaveGlue.prototype = {
       if (!pass || pass == "" || !user || user == "" || !phrase || phrase == "") {
 	this.setWeaveStatusField("Weave needs more info from you to get started.");
       } else {
+	// TODO display more specifics depending on what the error was
 	this.setWeaveStatusField("Weave encountered an error when trying to log you in.");
       }
     }
@@ -381,14 +383,13 @@ var RemoteTabViewer = {
      */
     let tabEngine = Weave.Engines.get("tabs");
     this._remoteClients = tabEngine.getAllClients();
-    this._populateTabs(document.getElementById("synced-tabs-column-set"));
+    this._populateTabs(document.getElementById("remote-tabs-richlist"));
   },
 
   close: function() {
     this._panel.hidden = true;
   },
 
-  // TODO De-Uglify this:
   _populateTabs: function FennecWeaveGlue_loadRemoteTabs(holder) {
     /* Clear out all child elements from holder first, so we don't
      * end up adding duplicate columns: */
@@ -396,33 +397,33 @@ var RemoteTabViewer = {
       holder.removeChild(holder.firstChild);
     }
 
-    // Load up all of the remote tabs we can find, into a grid:
+    // Load up all of the remote tabs we can find, into the richlist:
     for each (let record in this._remoteClients) {
-      dump("Processing a Client\n");
-      let newGroupbox = document.createElement("groupbox");
+      /*let newGroupbox = document.createElement("groupbox");
       holder.appendChild(newGroupbox);
       let newCaption = document.createElement("caption");
       let labelText = "Tabs From " + record.getClientName();
       newCaption.setAttribute("label", labelText);
-      newGroupbox.appendChild(newCaption);
+      newGroupbox.appendChild(newCaption);*/
       // See definition of richlistbox class = "tab-list" in fennec's tabs.xml
       // and richlistitem type="remotetab" in weave's tabs.xml
-      let newRichList = document.createElement("richlistbox");
+     /* let newRichList = document.createElement("richlistbox");
       newRichList.setAttribute("class", "tab-list");
       newRichList.tabsPerColumn = 12;
       newRichList.addEventListener("select", function(event) {
 				     RemoteTabViewer.openSyncedTab(this, event);
 				   }, "true");
-      newGroupbox.appendChild(newRichList);
+      newGroupbox.appendChild(newRichList);*/
+      let newRichList = holder;
+      newRichList.tabsPerColumn = 100;
       let tabs = record.getAllTabs();
       for each (let tab in tabs) {
 	let newThingy = document.createElement("richlistitem");
 	newThingy.setAttribute("type", "remotetab");
 	newRichList.addTab(newThingy);
-	let shortTitle = tab.title.slice(0, 25);
 	let domain = Utils.makeURI(tab.urlHistory[0]).prePath;
 	let favicon = domain + "/favicon.ico";
-	newThingy.updatePreview(shortTitle, favicon);
+	newThingy.updatePreview(tab.title, favicon);
 	newThingy.setTabData(tab);
       }
     }

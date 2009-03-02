@@ -31,9 +31,10 @@
     <hbox id="synced-tabs-panel" style="-moz-stack-sizing: ignore;" 
 	  hidden="true" top="0" left="0">
       <vbox>
-	<hbox id="synced-tabs-column-set" flex="1" style="overflow:auto">
-	</hbox>
-	<hbox align="right">
+	<richlistbox class="tab-list" id="remote-tabs-richlist"
+		     onselect="RemoteTabViewer.openSyncedTab(this, event);">
+	</richlistbox>
+	<hbox pack="end">
 	  <button label="Close" onclick="gFennecWeaveGlue.hideSyncedTabs();"/>
 	</hbox>
       </vbox>
