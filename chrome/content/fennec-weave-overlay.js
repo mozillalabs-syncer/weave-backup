@@ -106,6 +106,14 @@ FennecWeaveGlue.prototype = {
 
   _passwordsHidden: false,
 
+  get _username() {
+    if (this._pfs.prefHasUserValue("extensions.weave.username")) {
+      return this._pfs.getCharPref("extensions.weave.username");
+    } else {
+      return null;
+    }
+  },
+
   shutdown: function FennecWeaveGlue__shutdown() {
     // Anything that needs shutting down can go here.
     this._os.removeObserver(this, "weave:service:sync:start");
@@ -160,13 +168,12 @@ FennecWeaveGlue.prototype = {
   },
 
   openConnectPane: function FennecWeaveGlue__openConnectPane() {
-    var username = this._pfs.getCharPref("extensions.weave.username");
     var password = Weave.Service.password;
     var passphrase = Weave.Service.passphrase;
 
     BrowserUI.switchPane("weave-detail-connect-pane");
-    if (username && username != "nobody") {
-      document.getElementById("username-input").value = username;
+    if (this._username) {
+      document.getElementById("username-input").value = this._username;
     } else {
       document.getElementById("username-input").value = "Your Username Here";
     }
@@ -183,15 +190,21 @@ FennecWeaveGlue.prototype = {
   },
 
   openPrefsPane: function FennecWeaveGlue__openPrefsPane() {
+    // this works with the prefs stuff defined in the overlay to
+    // deck id="panel-items" in fennec-preferences.xul.
     BrowserUI.switchPane("weave-detail-prefs-pane");
-    var username = this._pfs.getCharPref("extensions.weave.username");
     var theButton = document.getElementById("weave-on-off-button");
     if (this._pfs.getBoolPref("extensions.weave.enabled")) {
       theButton.label = "Turn Weave Off";
     } else {
       theButton.label = "Turn Weave On";
     }
-    document.getElementById("username-label").value = "You are user: " + username;
+    var usernameLabel =  document.getElementById("username-label");
+    if (this._username) {
+      usernameLabel.value = "You are user: " + this._username;
+    } else {
+      usernameLabel.value = "No username set."; // can't happen?
+    }
   },
 
   openWeavePane: function FennecWeaveGlue__openWeavePane() {
@@ -199,27 +212,14 @@ FennecWeaveGlue.prototype = {
      * passphrase are set and uses that to determine whether setup is
      * required; opens connect pane if setup is required, prefs pane
      * if not.*/
-
-    // this works with the prefs stuff defined in the overlay to
-    // deck id="panel-items" in fennec-preferences.xul.
-    var username = this._pfs.getCharPref("extensions.weave.username");
     var password = Weave.Service.password;
     var passphrase = Weave.Service.passphrase;
-
-    if ( username && password && passphrase && username != "nobody") {
+    if ( this._username && password && passphrase ) {
       this.openPrefsPane();
     } else {
       this.openConnectPane();
     }
   },
-    /*Also: defaults for prefs being different on fennec than on ffox?
-       E.G. rememberpassword default to true, syncOnQuit default to false
-       (but syncOnStart default to true...)  Pref defaults can be set
-     programmatically (not affecting the actual current setting)
-     with something like:
-     defaults = this._prefSvc.getDefaultBranch(null);
-     defaults.setCharPref(name, val);*/
-
 
   submitConnectForm: function FennecWeaveGlue__submitConnect(errFieldId) {
     this._log.info("connection form submitted...");
@@ -306,8 +306,8 @@ FennecWeaveGlue.prototype = {
       // Not logged in?  Why not?
       var pass = Weave.Service.password;
       var phrase = Weave.Service.passphrase;
-      var user = this._pfs.getCharPref("extensions.weave.username");
-      if (!pass || pass == "" || !user || user == "" || !phrase || phrase == "") {
+      if (!pass || pass == "" || !this._username ||
+	  this._username == "" || !phrase || phrase == "") {
 	this.setWeaveStatusField("Weave needs more info from you to get started.");
       } else {
 	// TODO display more specifics depending on what the error was
