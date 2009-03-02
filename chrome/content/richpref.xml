@@ -18,7 +18,7 @@
 	  </xul:label>
 	</xul:vbox>
 	<xul:hbox anonid="input-container">
-	  <xul:textbox anonid="input" oncommand="inputChanged();"/>
+	  <xul:textbox anonid="input" oninput="inputChanged();"/>
 	</xul:hbox>
       </xul:hbox>
       <xul:preferences>
@@ -29,8 +29,7 @@
     </content>
     <implementation>
       <property name="value" onget="return this.input.value;"
-		onset="return this.input.setValue(val);"/>
+		onset="this.input.value = val;"/>
     </implementation>
   </binding>
-
 </bindings>
