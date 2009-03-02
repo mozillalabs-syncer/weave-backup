@@ -186,7 +186,8 @@
               </richlistitem>
               <richlistitem>
                   <checkbox id="sync-passwords-checkbox"
-                            label="&passwordsCheckbox.label;" disabled="true" checked="false"/>
+                            label="&passwordsCheckbox.label;"
+                            preference="extensions.weave.engine.passwords"/>
               </richlistitem>
               <richlistitem>
                   <checkbox id="sync-cookies-checkbox"

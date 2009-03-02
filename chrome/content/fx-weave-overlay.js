@@ -46,7 +46,10 @@ function FxWeaveGlue() {
 
     Cu.import("resource://weave/engines/history.js");
     Weave.Engines.register(new HistoryEngine());
-
+    
+    Cu.import("resource://weave/engines/passwords.js");
+    Weave.Engines.register(new PasswordEngine());
+    
     Cu.import("resource://weave/engines/tabs.js");
     Weave.Engines.register(new TabEngine());
 
