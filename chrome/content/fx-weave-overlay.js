@@ -92,7 +92,7 @@ FxWeaveGlue.prototype = {
 	  // Add site's favicon to menu:
 	  menuitem.class = "menuitem-iconic";
 	  menuitem.image = faviconSvc.getFaviconImageForPage(
-            Weave.Utils.makeURI(tab.urlHistory[0]));
+            Weave.Utils.makeURI(tab.urlHistory[0])).spec;
         }
       }
     }
