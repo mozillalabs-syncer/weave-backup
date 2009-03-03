@@ -46,10 +46,10 @@ function FxWeaveGlue() {
 
     Cu.import("resource://weave/engines/history.js");
     Weave.Engines.register(new HistoryEngine());
-    
+
     Cu.import("resource://weave/engines/passwords.js");
     Weave.Engines.register(new PasswordEngine());
-    
+
     Cu.import("resource://weave/engines/tabs.js");
     Weave.Engines.register(new TabEngine());
 
@@ -76,7 +76,6 @@ FxWeaveGlue.prototype = {
       let menuitem = menu.appendItem(label);
       menuitem.setAttribute( "disabled", true );
       let allTabs = remoteClient.getAllTabs();
-      let id = 0;
       for (tabId = 0; tabId < allTabs.length; tabId++) {
 	let tab = allTabs[tabId];
 	menuitem = menu.appendItem("  " + tab.title);
@@ -84,11 +83,13 @@ FxWeaveGlue.prototype = {
 	 * client, as an ordered list, in value of menu item, so that we
 	 * can retrive the correct tab when it is chosen. */
 	menuitem.value = [clientId, tabId];
-	// Add site's favicon to menu:
-	menuitem.class = "menuitem-iconic";
-	let domain = Utils.makeURI(tab.urlHistory[0]).prePath;
-	let favicon = domain + "favicon.ico";
-	menuitem.image = favicon;
+	if (tab.urlHistory.length > 0) {
+	  // Add site's favicon to menu:
+	  menuitem.class = "menuitem-iconic";
+	  let domain = Utils.makeURI(tab.urlHistory[0]).prePath;
+	  let favicon = domain + "favicon.ico";
+	  menuitem.image = favicon;
+	}
       }
     }
     document.getElementById("sync-no-tabs-menu-item").hidden =
