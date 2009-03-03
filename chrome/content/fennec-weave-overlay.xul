@@ -28,21 +28,19 @@
   <!-- TABS -->
   <!-- Panel for browsing tabs synced in from remote clients -->
   <stack id="browser-container">
-    <hbox id="synced-tabs-panel" style="-moz-stack-sizing: ignore;" 
-	  hidden="true" top="0" left="0">
-      <vbox>
-	<richlistbox class="tab-list" id="remote-tabs-richlist"
-		     onselect="RemoteTabViewer.openSyncedTab(this, event);">
-	</richlistbox>
-	<hbox pack="end">
-	  <button label="Close" onclick="gFennecWeaveGlue.hideSyncedTabs();"/>
-	</hbox>
-      </vbox>
-    </hbox>
+    <vbox id="synced-tabs-panel" style="-moz-stack-sizing: ignore;" 
+          hidden="true" top="0" left="0">
+      <richlistbox id="remote-tabs-richlist"
+		   onselect="RemoteTabViewer.openSyncedTab(this, event);">
+      </richlistbox>
+      <hbox pack="end" flex="1">
+        <button label="Close" onclick="gFennecWeaveGlue.hideSyncedTabs();"/>
+      </hbox>
+    </vbox>
   </stack>
   <!-- Command to show the panel -->
   <commandset id="mainCommandSet">
-    <command id="cmd_showSyncedTabs" name="Show Synced Tabs" 
+    <command id="cmd_showSyncedTabs" name="Show Synced Tabs"
 	     oncommand="gFennecWeaveGlue.showSyncedTabs();"/>
   </commandset>
   <!-- Button to execute the command -->

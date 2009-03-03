@@ -6,10 +6,6 @@ richpref[type="string"] {
     background: rgb(87, 87, 87);
 }
 
-richlistbox.tab-list {
-    -moz-binding: url("chrome://browser/content/tabs.xml#tablist");
-}
-
 richlistitem[type="remotetab"] {
     -moz-binding: url("chrome://weave/content/tabs.xml#remotetab");
 }
@@ -19,3 +15,17 @@ richlistitem[type="remotetab"] {
     background-color: white;
     font-size: smaller !important;
 }
+
+.remote-tab-bounding-box {
+    border-style: solid;
+    border-color: black;
+    border-width: 2px;
+    padding: 5px;
+    overflow: hidden;
+}
+
+.favicon {
+    width: 32px;
+    height: 32px;
+}
+

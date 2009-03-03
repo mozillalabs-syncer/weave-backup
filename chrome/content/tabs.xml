@@ -7,24 +7,51 @@
     xmlns:html="http://www.w3.org/1999/xhtml"
     xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
+  <binding id="remotetabs-list"
+           extends="chrome://global/content/bindings/richlistbox.xml#richlistbox">
+    <content>
+      <children includes="listheader"/>
+      <xul:scrollbox allowevents="true" orient="vertical" anonid="main-box"
+		     flex="1" style="">
+	<children/>
+      </xul:scrollbox>
+    </content>
+    <implementation>
+    </implementation>
+  </binding>
+
   <binding id="remotetab"
 	   extends="chrome://global/content/bindings/richlistbox.xml#richlistitem">
     <content>
-      <xul:hbox>
-	<xul:image anonid="favicon" width='16px' height='16px'/>
-        <xul:label anonid="title" class="remote-tab-label"/>
-      </xul:hbox>
+      <xul:vbox anonid="bounding-box" class="remote-tab-bounding-box">
+	<xul:hbox>
+	  <xul:image anonid="favicon" class="favicon"/>
+	  <xul:vbox>
+	    <xul:label anonid="title" crop="right"/>
+	    <xul:hbox>
+	      <xul:label anonid="source-client" class="remote-tab-label"/>
+	      <xul:label anonid="tab-url" class="remote-tab-label" crop="right"/>
+	    </xul:hbox>
+	  </xul:vbox>
+	</xul:hbox>
+      </xul:vbox>
     </content>
     <implementation>
       <method name="updatePreview">
 	<parameter name="title"/>
 	<parameter name="favicon"/>
+	<parameter name="clientName"/>
+	<parameter name="url"/>
 	<body>
 	  <![CDATA[
             let titleElem = document.getAnonymousElementByAttribute(this, "anonid", "title");
             let faviconElem = document.getAnonymousElementByAttribute(this, "anonid", "favicon");
+            let clientElem = document.getAnonymousElementByAttribute(this, "anonid", "source-client");
+            let urlElem = document.getAnonymousElementByAttribute(this, "anonid", "tab-url");
 	    titleElem.value = title;
 	    faviconElem.src = favicon;
+	    clientElem.value = clientName;
+	    urlElem.value = url;
 	  ]]>
 	</body>
       </method>
@@ -51,6 +78,17 @@
 		   // I don't think this will be called?
           ]]>
         </body>
+      </method>
+      <method name="setWidth">
+	<parameter name="width"/>
+	<body>
+          <![CDATA[
+            let box = document.getAnonymousElementByAttribute(this, "anonid", 
+	                                                      "bounding-box");
+            box.width = width + "px";
+	    box.style.maxWidth = width + "px";
+	  ]]>
+	</body>
       </method>
     </implementation>
   </binding>
