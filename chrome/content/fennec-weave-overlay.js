@@ -241,12 +241,17 @@ FennecWeaveGlue.prototype = {
       return;
     }
 
+    dump("Turning Weave off.\n");
     this._turnWeaveOff();
-
+    dump("Setting username to " + usernameInput + "\n");
     this._pfs.setCharPref("extensions.weave.username", usernameInput);
+    dump("Setting password to " + passwordInput + "\n");
     Weave.Service.password = passwordInput;
+    dump("Setting passphrase to " + passphraseInput + "\n");
     Weave.Service.passphrase = passphraseInput;
 
+    dump("After setting it, password is " + Weave.Service.password + "\n");
+    dump("Turning Weave on...\n");
     // redirect you to the full prefs page if login succeeds.
     var self = this;
     this._turnWeaveOn( function() {
@@ -383,14 +388,18 @@ var RemoteTabViewer = {
      */
     let tabEngine = Weave.Engines.get("tabs");
     this._remoteClients = tabEngine.getAllClients();
-    this._populateTabs(document.getElementById("remote-tabs-richlist"));
+    let richlist = document.getElementById("remote-tabs-richlist");
+    let width = this._panel.width - 10;
+    richlist.style.maxWidth = width + "px";
+    richlist.style.maxHeight = (this._panel.height - 40) + "px";
+    this._populateTabs(richlist, width - 5);
   },
 
   close: function() {
     this._panel.hidden = true;
   },
 
-  _populateTabs: function FennecWeaveGlue_loadRemoteTabs(holder) {
+  _populateTabs: function FennecWeaveGlue_loadRemoteTabs(holder, width) {
     /* Clear out all child elements from holder first, so we don't
      * end up adding duplicate columns: */
     while (holder.firstChild) {
@@ -399,36 +408,21 @@ var RemoteTabViewer = {
 
     // Load up all of the remote tabs we can find, into the richlist:
     for each (let record in this._remoteClients) {
-      /*let newGroupbox = document.createElement("groupbox");
-      holder.appendChild(newGroupbox);
-      let newCaption = document.createElement("caption");
-      let labelText = "Tabs From " + record.getClientName();
-      newCaption.setAttribute("label", labelText);
-      newGroupbox.appendChild(newCaption);*/
-      // See definition of richlistbox class = "tab-list" in fennec's tabs.xml
-      // and richlistitem type="remotetab" in weave's tabs.xml
-     /* let newRichList = document.createElement("richlistbox");
-      newRichList.setAttribute("class", "tab-list");
-      newRichList.tabsPerColumn = 12;
-      newRichList.addEventListener("select", function(event) {
-				     RemoteTabViewer.openSyncedTab(this, event);
-				   }, "true");
-      newGroupbox.appendChild(newRichList);*/
       let newRichList = holder;
-      newRichList.tabsPerColumn = 100;
       let tabs = record.getAllTabs();
       for each (let tab in tabs) {
-	let newThingy = document.createElement("richlistitem");
-	newThingy.setAttribute("type", "remotetab");
-	newRichList.addTab(newThingy);
-	let domain = Utils.makeURI(tab.urlHistory[0]).prePath;
+	let newItem = document.createElement("richlistitem");
+	newItem.setAttribute("type", "remotetab");
+	newRichList.appendChild(newItem);
+	newItem.setWidth(width);
+	let url = tab.urlHistory[0];
+	let domain = Utils.makeURI(url).prePath;
 	let favicon = domain + "/favicon.ico";
-	newThingy.updatePreview(tab.title, favicon);
-	newThingy.setTabData(tab);
+	let sourceClient = "From " + record.getClientName();
+	newItem.updatePreview(tab.title, favicon, sourceClient, url);
+	newItem.setTabData(tab);
       }
     }
-    // TODO: the close button can be pushed offscreen by too long a list of
-    // tabs.  Fix that!
   },
 
   openSyncedTab: function FennecWeaveGlue_openSyncedTab(richlist, event) {
