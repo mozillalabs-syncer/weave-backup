@@ -68,14 +68,18 @@ FxWeaveGlue.prototype = {
     while (menu.itemCount > 1)
       menu.removeItemAt(menu.itemCount - 1);
 
+    let faviconSvc = Cc["@mozilla.org/browser/favicon-service;1"]
+      .getService(Ci.nsIFaviconService);
     let remoteClients = Weave.Engines.get("tabs").getAllClients();
     let clientId, tabId;
+
     for (clientId in remoteClients) {
       let remoteClient = remoteClients[clientId];
       let label = "Tabs from " + remoteClient.getClientName() + ":";
       let menuitem = menu.appendItem(label);
       menuitem.setAttribute( "disabled", true );
       let allTabs = remoteClient.getAllTabs();
+
       for (tabId = 0; tabId < allTabs.length; tabId++) {
 	let tab = allTabs[tabId];
 	menuitem = menu.appendItem("  " + tab.title);
@@ -83,13 +87,13 @@ FxWeaveGlue.prototype = {
 	 * client, as an ordered list, in value of menu item, so that we
 	 * can retrive the correct tab when it is chosen. */
 	menuitem.value = [clientId, tabId];
+
 	if (tab.urlHistory.length > 0) {
 	  // Add site's favicon to menu:
 	  menuitem.class = "menuitem-iconic";
-	  let domain = Utils.makeURI(tab.urlHistory[0]).prePath;
-	  let favicon = domain + "favicon.ico";
-	  menuitem.image = favicon;
-	}
+	  menuitem.image = faviconSvc.getFaviconImageForPage(
+            Weave.Utils.makeURI(tab.urlHistory[0]));
+        }
       }
     }
     document.getElementById("sync-no-tabs-menu-item").hidden =
