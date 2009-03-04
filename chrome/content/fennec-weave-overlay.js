@@ -146,7 +146,11 @@ FennecWeaveGlue.prototype = {
 	this.setWeaveStatusField("Sync completed successfully!");
       break;
       case "weave:service:sync:error":
-	this.setWeaveStatusField("Hit an error while syncing!");
+        let err = Weave.Service.mostRecentError;
+        if (err)
+          this.setWeaveStatusField("Login error: " + err);
+        else
+          this.setWeaveStatusField("Weave had an error when trying to sync.");
       break;
     }
   },
@@ -270,7 +274,7 @@ FennecWeaveGlue.prototype = {
     // and then nothing.  It hangs there displaying the "logging in" message.
     // Clicking it off and back on again fixes it.
     // I wonder if that's because Weave.Service.isLoggedIn is already true
-    // for some reason, and therefore the other stuf never runs??
+    // for some reason, and therefore the other stuff never runs??
 
     // onSuccess is an optional callback function that gets called
     // when login completes successfully.
@@ -280,27 +284,21 @@ FennecWeaveGlue.prototype = {
     var setStatus = this.setWeaveStatusField;
     setStatus("Weave is logging in...");
     if (!Weave.Service.isLoggedIn) {
-      try {
-	// Report on success or failure...
-        Weave.Service.login( function(success) {
-			       if (success) {
-				 setStatus("Weave is logged in.");
-				 if (onSuccess) {
-				   onSuccess();
-				 }
-			       } else {
+      // Report on success or failure...
+      Weave.Service.login( function(success) {
+                             if (success) {
+			       setStatus("Weave is logged in.");
+                               if (onSuccess) {
+                                 onSuccess();
+                               }
+                             } else {
+                               let err = Weave.Service.mostRecentError;
+                               if (err)
+				 setStatus("Login error: " + err);
+			       else
 				 setStatus("Weave had an error when trying to log in.");
-			       }
-			     } );
-      } catch(e) {
-	log.warn("Exception caught when logging in: " + e);
-	setStatus("Weave had an error when trying to log in.");
-	// TODO more specific message based on what the error is.
-	// e.g. Original exception: No server URL set
-	// or original exception: "Authentication failed".
-	// Problem: the original exception is usually caught inside of
-	// Weave.Service.login and so is not available here.
-      }
+			     }
+			   });
     }
   },
 
