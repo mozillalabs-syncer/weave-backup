@@ -15,6 +15,26 @@ WeavePrefs.prototype = {
     return this._stringBundle;
   },
 
+  // FIXME: copied from sync.js - should unify
+  _openWindow: function WeaveWin_openWindow(type, uri, options) {
+    let wm = Cc["@mozilla.org/appshell/window-mediator;1"].
+      getService(Ci.nsIWindowMediator);
+    let window = wm.getMostRecentWindow(type);
+    if (window)
+      window.focus();
+     else {
+       var ww = Cc["@mozilla.org/embedcomp/window-watcher;1"].
+         getService(Ci.nsIWindowWatcher);
+       if (!options)
+         options = 'chrome, centerscreen, dialog, resizable=yes';
+       ww.activeWindow.openDialog(uri, '', options, null);
+     }
+  },
+
+  _openDialog: function WeaveWin_openDialog(type, uri) {
+    this._openWindow(type, uri, 'chrome,centerscreen,dialog,modal,resizable=no');
+  },
+
   _checkClientInfo: function WeavePrefs__checkClientInfo() {
     let richlistbox = document.getElementById('sync-clients-list');
     let clients = Weave.Clients.getClients();
@@ -90,7 +110,7 @@ WeavePrefs.prototype = {
     syncNowButton.setAttribute("disabled", "true");
     let wm = Cc["@mozilla.org/appshell/window-mediator;1"].
       getService(Ci.nsIWindowMediator);
-    let window = wm.getMostRecentWindow("Sync:Status");
+    let window = wm.getMostRecentWindow("Weave:Status");
     if (window)
       window.focus();
      else {
@@ -103,24 +123,11 @@ WeavePrefs.prototype = {
   },
 
   openAdvancedPrefs: function WeavePrefs_openAdvancedPrefs() {
-         window.openDialog('chrome://weave/content/advanced.xul', '',
-                      'chrome, dialog, modal, resizable=yes, ', null);
+    this._openDialog('Weave:AdvancedPrefs', 'chrome://weave/content/advanced.xul');
   },
 
   doSignOn: function WeavePrefs_doSignOn() {
-
-    let branch = Cc["@mozilla.org/preferences-service;1"].
-      getService(Ci.nsIPrefBranch);
-    let username = branch.getCharPref("extensions.weave.username");
-
-    if (!username || username == 'nobody') {
-         window.openDialog('chrome://weave/content/wizard.xul', '',
-		      'chrome, dialog, modal, resizable=yes', null);
-    } else {
-         window.openDialog('chrome://weave/content/login.xul', '',
-                      'chrome, dialog, modal, resizable=yes', null);
-    }
-
+    this._openDialog('Weave:Login', 'chrome://weave/content/login.xul');
     this.onPaneLoad();
   },
 

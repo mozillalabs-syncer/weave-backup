@@ -193,7 +193,7 @@ WeaveWindow.prototype = {
   _onGetPassphrase: function WeaveWin_onGetPassphrase(identity) {
     let self = yield;
     this._log.info("getting passphrase...");
-//    this._openWindow('Sync:Login', 'chrome://weave/content/login.xul');
+//    this._openWindow('Weave:Login', 'chrome://weave/content/login.xul');
     self.done();
   },
 
@@ -254,7 +254,7 @@ WeaveWindow.prototype = {
   shutDown: function WeaveWin_shutDown(event) {},
 
   doLoginPopup : function WeaveWin_doLoginPopup(event) {
-    this._openDialog('Sync:Login', 'chrome://weave/content/login.xul');
+    this._openDialog('Weave:Login', 'chrome://weave/content/login.xul');
   },
 
   doLogin: function WeaveWin_doLogin(event) {
@@ -284,7 +284,7 @@ WeaveWindow.prototype = {
   },
 
   doSync: function WeaveWin_doSync(event) {
-    this._openDialog('Sync:Status', 'chrome://weave/content/status.xul');
+    this._openDialog('Weave:Status', 'chrome://weave/content/status.xul');
   },
 
   doShare: function WeaveWin_doShare(event) {
