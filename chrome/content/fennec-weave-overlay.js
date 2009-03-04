@@ -37,9 +37,7 @@
 const EXPORTED_SYMBOLS = ['gFennecWeaveGlue'];
 
 function FennecWeaveGlue() {
-  // Yes, Log4Moz works fine on fennec.
   this._log = Log4Moz.repository.getLogger("Chrome.Window");
-  //this._pfs.addObserver("", this, false);
   this._os.addObserver(this, "weave:service:sync:start", false);
   this._os.addObserver(this, "weave:service:sync:finish", false);
   this._os.addObserver(this, "weave:service:sync:error", false);
@@ -74,8 +72,9 @@ function FennecWeaveGlue() {
     this.setWeaveStatusField("Weave is trying to log in...");
   } else {
     this.setWeaveStatusField("Weave is turned off.");
-    // If it's turned off, don't start it up.
   }
+
+  this._setPreferenceDefaults();
 
   /* startup Weave service after a delay, so that it will happen after the
    * UI is loaded. */
@@ -113,6 +112,17 @@ FennecWeaveGlue.prototype = {
       return this._pfs.getCharPref("extensions.weave.username");
     } else {
       return null;
+    }
+  },
+
+  _setPreferenceDefaults: function FennecWeaveGlue__setPrefDefaults() {
+    // Some prefs need different defaults in Fennec than they have in
+    // Firefox.  Set them here and they'll only apply to Fennec.
+    if (!this._pfs.prefHasUserValue("extensions.weave.client.name")) {
+      this._pfs.setCharPref("extensions.weave.client.name", "Fennec");
+    }
+    if (!this._pfs.prefHasUserValue("extensions.weave.client.type")) {
+      this._pfs.setCharPref("extensions.weave.client.type", "Mobile");
     }
   },
 
@@ -349,6 +359,7 @@ FennecWeaveGlue.prototype = {
     if (Weave.Service.isLoggedIn) {
       if (!Weave.Service.isQuitting) {
 	Weave.Service.sync();
+	// TODO any way to get a success or failure code out of sync()?
       } else {
 	dump("Can't sync, Weave is quitting.");
       }
