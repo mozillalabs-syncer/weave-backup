@@ -25,8 +25,8 @@
   <deck id="panel-items">
     <vbox id="weave-detail-connect-pane" flex="1">
       <vbox class="prefsection">
-	<label value="Connect this device to your Weave account:"/>
-	<label value="" id="err-msg-label"/>
+	<label value="Connect this device to your Weave account:"
+	       id="fennec-weave-login-status"/>
       </vbox>
 
       <grid>
@@ -60,7 +60,8 @@
 		   onclick="gFennecWeaveGlue.selectField('passphrase-input');"/>
 	  <row>
 	    <box/>
-	    <button label="Connect" onclick="gFennecWeaveGlue.submitConnectForm('err-msg-label');"/>
+	    <button label="Connect"
+		    onclick="gFennecWeaveGlue.submitConnectForm('fennec-weave-login-status');"/>
 	    <box/>
 	  </row>
 	</rows>

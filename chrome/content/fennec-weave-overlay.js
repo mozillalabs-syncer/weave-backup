@@ -72,19 +72,21 @@ function FennecWeaveGlue() {
    */
   if (this._pfs.getBoolPref("extensions.weave.enabled")) {
     this.setWeaveStatusField("Weave is trying to log in...");
-    /* startup Weave service after a delay, so that it will happen after the
-     * UI is loaded. */
-    let self = this;
-    setTimeout( function() {
-		  self._log.info("Timeout done, starting Weave service.\n");
-		  Weave.Service.onStartup( function() {
-					     self.showLoginStatus();
-					   });
-		}, 3000);
   } else {
     this.setWeaveStatusField("Weave is turned off.");
     // If it's turned off, don't start it up.
   }
+
+  /* startup Weave service after a delay, so that it will happen after the
+   * UI is loaded. */
+   let self = this;
+   setTimeout( function() {
+	         self._log.info("Timeout done, starting Weave service.\n");
+		 Weave.Service.onStartup( function() {
+					    self.showLoginStatus();
+					  });
+	       }, 3000);
+
 }
 FennecWeaveGlue.prototype = {
   __prefService: null,
@@ -127,17 +129,6 @@ FennecWeaveGlue.prototype = {
     // Event: weave:service:sync:finish
 
     switch (topic) {
-      /*case "nsPref:changed":
-        switch (data) {
-          case "extensions.weave.enabled":
-	  if (this._pfs.getBoolPref("extensions.weave.enabled")) {
-	    this._turnWeaveOn();
-	  } else {
-	    this._turnWeaveOff();
-	  }
-            break;
-        }
-        break;*/
       case "weave:service:sync:start":
 	this.setWeaveStatusField("Syncing Now!");
       break;
@@ -251,6 +242,7 @@ FennecWeaveGlue.prototype = {
     Weave.Service.passphrase = passphraseInput;
 
     dump("After setting it, password is " + Weave.Service.password + "\n");
+    // TODO:  Jay's bug:  The above works for me, but try it on his nokia.
     dump("Turning Weave on...\n");
     // redirect you to the full prefs page if login succeeds.
     var self = this;
@@ -268,6 +260,11 @@ FennecWeaveGlue.prototype = {
   },
 
   _turnWeaveOn: function FennecWeaveGlue__turnWeaveOn( onSuccess ) {
+    // TODO there are times when this runs and nothing happens.  We get:
+    // Chrome.Window INFO Turning Weave on...
+    // and then nothing.  It hangs there displaying the "logging in" message.
+    // Clicking it off and back on again fixes it.
+
     // onSuccess is an optional callback function that gets called
     // when login completes successfully.
     this._log.info("Turning Weave on...");
@@ -284,8 +281,6 @@ FennecWeaveGlue.prototype = {
 				   onSuccess();
 				 }
 			       } else {
-				 // TODO nothing gets displayed on the
-				 // connect page if a problem happens here.
 				 setStatus("Weave had an error when trying to log in.");
 			       }
 			     } );
@@ -294,6 +289,9 @@ FennecWeaveGlue.prototype = {
 	setStatus("Weave had an error when trying to log in.");
 	// TODO more specific message based on what the error is.
 	// e.g. Original exception: No server URL set
+	// or original exception: "Authentication failed".
+	// Problem: the original exception is usually caught inside of
+	// Weave.Service.login and so is not available here.
       }
     }
   },
@@ -329,6 +327,10 @@ FennecWeaveGlue.prototype = {
     var elem2 = document.getElementById("fennec-weave-full-status");
     if (elem2) {
       elem2.value = text;
+    }
+    var elem3 = document.getElementById("fennec-weave-login-status");
+    if (elem3) {
+      elem3.value = text;
     }
   },
 

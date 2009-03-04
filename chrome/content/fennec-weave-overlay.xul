@@ -33,7 +33,7 @@
       <richlistbox id="remote-tabs-richlist"
 		   onselect="RemoteTabViewer.openSyncedTab(this, event);">
       </richlistbox>
-      <hbox pack="end" flex="1">
+      <hbox pack="end" align="end">
         <button label="Close" onclick="gFennecWeaveGlue.hideSyncedTabs();"/>
       </hbox>
     </vbox>
