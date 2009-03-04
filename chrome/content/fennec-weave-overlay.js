@@ -232,17 +232,11 @@ FennecWeaveGlue.prototype = {
       return;
     }
 
-    dump("Turning Weave off.\n");
     this._turnWeaveOff();
-    dump("Setting username to " + usernameInput + "\n");
     this._pfs.setCharPref("extensions.weave.username", usernameInput);
-    dump("Setting password to " + passwordInput + "\n");
     Weave.Service.password = passwordInput;
-    dump("Setting passphrase to " + passphraseInput + "\n");
     Weave.Service.passphrase = passphraseInput;
 
-    dump("After setting it, password is " + Weave.Service.password + "\n");
-    // TODO:  Jay's bug:  The above works for me, but try it on his nokia.
     dump("Turning Weave on...\n");
     // redirect you to the full prefs page if login succeeds.
     var self = this;
