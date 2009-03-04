@@ -140,12 +140,12 @@ FennecWeaveGlue.prototype = {
 
     switch (topic) {
       case "weave:service:sync:start":
-	this.setWeaveStatusField("Syncing Now!");
+	this.setWeaveStatusField("Syncing Now...");
       break;
       case "weave:service:sync:finish":
 	this.setWeaveStatusField("Sync completed successfully!");
       break;
-      case "weave:service:sync:finish":
+      case "weave:service:sync:error":
 	this.setWeaveStatusField("Hit an error while syncing!");
       break;
     }
@@ -257,6 +257,7 @@ FennecWeaveGlue.prototype = {
 
   _turnWeaveOff: function FennecWeaveGlue__turnWeaveOff() {
     this._log.info("Turning Weave off...");
+    this._pfs.setBoolPref("extensions.weave.enabled", false);
     if (Weave.Service.isLoggedIn) {
       Weave.Service.logout();
     }
@@ -268,10 +269,13 @@ FennecWeaveGlue.prototype = {
     // Chrome.Window INFO Turning Weave on...
     // and then nothing.  It hangs there displaying the "logging in" message.
     // Clicking it off and back on again fixes it.
+    // I wonder if that's because Weave.Service.isLoggedIn is already true
+    // for some reason, and therefore the other stuf never runs??
 
     // onSuccess is an optional callback function that gets called
     // when login completes successfully.
     this._log.info("Turning Weave on...");
+    this._pfs.setBoolPref("extensions.weave.enabled", true);
     var log = this._log;
     var setStatus = this.setWeaveStatusField;
     setStatus("Weave is logging in...");
@@ -341,11 +345,9 @@ FennecWeaveGlue.prototype = {
   toggleWeaveOnOff: function FennecWeaveGlue_toggleWeave() {
     var theButton = document.getElementById("weave-on-off-button");
     if (this._pfs.getBoolPref("extensions.weave.enabled")) {
-      this._pfs.setBoolPref("extensions.weave.enabled", false);
       this._turnWeaveOff();
       theButton.label = "Turn Weave On";
     } else {
-      this._pfs.setBoolPref("extensions.weave.enabled", true);
       theButton.label = "Turning Weave On...";
       theButton.enabled = false;
       this._turnWeaveOn( function() {
@@ -358,13 +360,14 @@ FennecWeaveGlue.prototype = {
   syncNow: function FennecWeaveGlue_syncNow() {
     if (Weave.Service.isLoggedIn) {
       if (!Weave.Service.isQuitting) {
+	// Note: we can pass a function(success) {} in here if we need
+	// to respond to success or failure... but the observer handles that.
 	Weave.Service.sync();
-	// TODO any way to get a success or failure code out of sync()?
       } else {
-	dump("Can't sync, Weave is quitting.");
+	this.setWeaveStatusField("Can't sync, Weave is quitting.");
       }
     } else {
-      dump("Can't sync, Weave is not logged in.");
+      this.setWeaveStatusField("Can't sync, Weave is not logged in.");
     }
   },
 
@@ -438,8 +441,10 @@ var RemoteTabViewer = {
     try {
       // Newer versions of fennec do it this way:
       Browser.addTab(tabData.urlHistory[0], true);
+      // TODO how to include back history in the tab?
     } catch (e) {
       // Older versions do it this way:
+      // (This code can probably be removed...)
       Browser.newTab(true);
       BrowserUI.goToURI(tabData.urlHistory[0]);
     }
