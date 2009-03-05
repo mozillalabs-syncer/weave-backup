@@ -54,6 +54,9 @@ function FennecWeaveGlue() {
     Cu.import("resource://weave/engines/tabs.js");
     Weave.Engines.register(new TabEngine());
 
+    Cu.import("resource://weave/engines/passwords.js");
+    Weave.Engines.register(new PasswordEngine());
+
   } catch (e) {
     dump("Could not initialize engine!\n");
     dump("The error is: " + (e.message? e.message: e) + "\n");
