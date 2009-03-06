@@ -67,13 +67,9 @@
 
     <statusbar id="status-bar">
         <statusbarpanel id="sync-menu-button"
-                        class="statusbarpanel-menu-iconic"
+                        class="statusbarpanel-iconic-text"
                         insertbefore="security-button"
                         onmousedown="gWeaveWin.onMenuButtonMouseDown()">
-            <label id="sync-menu-status"
-                   class="statusbarpanel-text"
-                   control="sync-menu-button"
-                   value="&status.offline.label;"/>
         </statusbarpanel>
         <statusbarpanel id="sync-notifications-button"
                         class="statusbarpanel-iconic"

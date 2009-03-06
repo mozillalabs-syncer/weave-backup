@@ -116,8 +116,6 @@ WeaveWindow.prototype = {
   },
 
   _setStatus: function WeaveWin_setStatus(status) {
-    document.getElementById("sync-menu-button").setAttribute("status", status);
-
     let label;
     if (status == "offline")
       label = this._stringBundle.getString("status.offline");
@@ -130,7 +128,11 @@ WeaveWindow.prototype = {
       else
         label = Weave.Service.username;
     }
-    document.getElementById("sync-menu-status").setAttribute("value", label);
+
+    let button = document.getElementById("sync-menu-button");
+    button.setAttribute("label", label);
+    button.setAttribute("image", "chrome://weave/skin/" + (status == "active" ? 
+      "sync-throbber-16x16-active.apng" : "sync-16x16.png"));
   },
 
   onLoginStart: function WeaveWin_onLoginStart() {
@@ -361,6 +363,8 @@ WeaveWindow.prototype = {
     // move the popup back to the Tools > Sync menu when the popup hides.
     if (menuPopup.parentNode != menuButton)
       menuButton.appendChild(menuPopup);
+
+    menuPopup.openPopup(menuButton, "before_start", 0, 0, true);
   }
 };
 
