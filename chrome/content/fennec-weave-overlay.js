@@ -37,9 +37,7 @@
 const EXPORTED_SYMBOLS = ['gFennecWeaveGlue'];
 
 function FennecWeaveGlue() {
-  // Yes, Log4Moz works fine on fennec.
   this._log = Log4Moz.repository.getLogger("Chrome.Window");
-  //this._pfs.addObserver("", this, false);
   this._os.addObserver(this, "weave:service:sync:start", false);
   this._os.addObserver(this, "weave:service:sync:finish", false);
   this._os.addObserver(this, "weave:service:sync:error", false);
@@ -55,6 +53,9 @@ function FennecWeaveGlue() {
 
     Cu.import("resource://weave/engines/tabs.js");
     Weave.Engines.register(new TabEngine());
+
+    Cu.import("resource://weave/engines/passwords.js");
+    Weave.Engines.register(new PasswordEngine());
 
   } catch (e) {
     dump("Could not initialize engine!\n");
@@ -74,8 +75,9 @@ function FennecWeaveGlue() {
     this.setWeaveStatusField("Weave is trying to log in...");
   } else {
     this.setWeaveStatusField("Weave is turned off.");
-    // If it's turned off, don't start it up.
   }
+
+  this._setPreferenceDefaults();
 
   /* startup Weave service after a delay, so that it will happen after the
    * UI is loaded. */
@@ -116,6 +118,17 @@ FennecWeaveGlue.prototype = {
     }
   },
 
+  _setPreferenceDefaults: function FennecWeaveGlue__setPrefDefaults() {
+    // Some prefs need different defaults in Fennec than they have in
+    // Firefox.  Set them here and they'll only apply to Fennec.
+    if (!this._pfs.prefHasUserValue("extensions.weave.client.name")) {
+      this._pfs.setCharPref("extensions.weave.client.name", "Fennec");
+    }
+    if (!this._pfs.prefHasUserValue("extensions.weave.client.type")) {
+      this._pfs.setCharPref("extensions.weave.client.type", "Mobile");
+    }
+  },
+
   shutdown: function FennecWeaveGlue__shutdown() {
     // Anything that needs shutting down can go here.
     this._os.removeObserver(this, "weave:service:sync:start");
@@ -130,13 +143,17 @@ FennecWeaveGlue.prototype = {
 
     switch (topic) {
       case "weave:service:sync:start":
-	this.setWeaveStatusField("Syncing Now!");
+	this.setWeaveStatusField("Syncing Now...");
       break;
       case "weave:service:sync:finish":
 	this.setWeaveStatusField("Sync completed successfully!");
       break;
-      case "weave:service:sync:finish":
-	this.setWeaveStatusField("Hit an error while syncing!");
+      case "weave:service:sync:error":
+        let err = Weave.Service.mostRecentError;
+        if (err)
+          this.setWeaveStatusField("Login error: " + err);
+        else
+          this.setWeaveStatusField("Weave had an error when trying to sync.");
       break;
     }
   },
@@ -247,6 +264,7 @@ FennecWeaveGlue.prototype = {
 
   _turnWeaveOff: function FennecWeaveGlue__turnWeaveOff() {
     this._log.info("Turning Weave off...");
+    this._pfs.setBoolPref("extensions.weave.enabled", false);
     if (Weave.Service.isLoggedIn) {
       Weave.Service.logout();
     }
@@ -258,35 +276,32 @@ FennecWeaveGlue.prototype = {
     // Chrome.Window INFO Turning Weave on...
     // and then nothing.  It hangs there displaying the "logging in" message.
     // Clicking it off and back on again fixes it.
+    // I wonder if that's because Weave.Service.isLoggedIn is already true
+    // for some reason, and therefore the other stuff never runs??
 
     // onSuccess is an optional callback function that gets called
     // when login completes successfully.
     this._log.info("Turning Weave on...");
+    this._pfs.setBoolPref("extensions.weave.enabled", true);
     var log = this._log;
     var setStatus = this.setWeaveStatusField;
     setStatus("Weave is logging in...");
     if (!Weave.Service.isLoggedIn) {
-      try {
-	// Report on success or failure...
-        Weave.Service.login( function(success) {
-			       if (success) {
-				 setStatus("Weave is logged in.");
-				 if (onSuccess) {
-				   onSuccess();
-				 }
-			       } else {
+      // Report on success or failure...
+      Weave.Service.login( function(success) {
+                             if (success) {
+			       setStatus("Weave is logged in.");
+                               if (onSuccess) {
+                                 onSuccess();
+                               }
+                             } else {
+                               let err = Weave.Service.mostRecentError;
+                               if (err)
+				 setStatus("Login error: " + err);
+			       else
 				 setStatus("Weave had an error when trying to log in.");
-			       }
-			     } );
-      } catch(e) {
-	log.warn("Exception caught when logging in: " + e);
-	setStatus("Weave had an error when trying to log in.");
-	// TODO more specific message based on what the error is.
-	// e.g. Original exception: No server URL set
-	// or original exception: "Authentication failed".
-	// Problem: the original exception is usually caught inside of
-	// Weave.Service.login and so is not available here.
-      }
+			     }
+			   });
     }
   },
 
@@ -331,11 +346,9 @@ FennecWeaveGlue.prototype = {
   toggleWeaveOnOff: function FennecWeaveGlue_toggleWeave() {
     var theButton = document.getElementById("weave-on-off-button");
     if (this._pfs.getBoolPref("extensions.weave.enabled")) {
-      this._pfs.setBoolPref("extensions.weave.enabled", false);
       this._turnWeaveOff();
       theButton.label = "Turn Weave On";
     } else {
-      this._pfs.setBoolPref("extensions.weave.enabled", true);
       theButton.label = "Turning Weave On...";
       theButton.enabled = false;
       this._turnWeaveOn( function() {
@@ -348,12 +361,14 @@ FennecWeaveGlue.prototype = {
   syncNow: function FennecWeaveGlue_syncNow() {
     if (Weave.Service.isLoggedIn) {
       if (!Weave.Service.isQuitting) {
+	// Note: we can pass a function(success) {} in here if we need
+	// to respond to success or failure... but the observer handles that.
 	Weave.Service.sync();
       } else {
-	dump("Can't sync, Weave is quitting.");
+	this.setWeaveStatusField("Can't sync, Weave is quitting.");
       }
     } else {
-      dump("Can't sync, Weave is not logged in.");
+      this.setWeaveStatusField("Can't sync, Weave is not logged in.");
     }
   },
 
@@ -427,8 +442,10 @@ var RemoteTabViewer = {
     try {
       // Newer versions of fennec do it this way:
       Browser.addTab(tabData.urlHistory[0], true);
+      // TODO how to include back history in the tab?
     } catch (e) {
       // Older versions do it this way:
+      // (This code can probably be removed...)
       Browser.newTab(true);
       BrowserUI.goToURI(tabData.urlHistory[0]);
     }
