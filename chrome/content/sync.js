@@ -157,7 +157,9 @@ WeaveWindow.prototype = {
     this._log.info("Login successful");
     this._setStatus("idle");
 
-    this._userLogin = false;
+    // Clear out any login failure notifications
+    let title = this._stringBundle.getString("error.login.title");
+    Weave.Notifications.removeAll(title);
 
     let loginitem = document.getElementById("sync-loginitem");
     let logoutitem = document.getElementById("sync-logoutitem");
