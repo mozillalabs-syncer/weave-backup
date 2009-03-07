@@ -41,6 +41,8 @@ function FennecWeaveGlue() {
   this._os.addObserver(this, "weave:service:sync:start", false);
   this._os.addObserver(this, "weave:service:sync:finish", false);
   this._os.addObserver(this, "weave:service:sync:error", false);
+  // TODO: Need to do the firstrun page thing, like so!  Otherwise
+  // the lastversion pref never gets set, and so syncId is always reset.
 
   try {
     Cu.import("resource://weave/util.js");
@@ -78,6 +80,7 @@ function FennecWeaveGlue() {
   }
 
   this._setPreferenceDefaults();
+  this._checkFirstRun();
 
   /* startup Weave service after a delay, so that it will happen after the
    * UI is loaded. */
@@ -126,6 +129,23 @@ FennecWeaveGlue.prototype = {
     }
     if (!this._pfs.prefHasUserValue("extensions.weave.client.type")) {
       this._pfs.setCharPref("extensions.weave.client.type", "Mobile");
+    }
+  },
+
+  _checkFirstRun: function FennecWeaveGlue__checkFirstRun() {
+    let url;
+    let lastVersion = this._pfs.getCharPref("extensions.weave.lastversion");
+    if (lastVersion != Weave.WEAVE_VERSION) {
+      if (lastVersion == "firstrun")
+	url = "http://services.mozilla.com/firstrun/?version=" +
+	Weave.WEAVE_VERSION;
+      else
+	url = "http://services.mozilla.com/updated/?version=" +
+	Weave.WEAVE_VERSION;
+
+      setTimeout(function() { Browser.addTab(url, true); }, 500);
+      this._pfs.setCharPref("extensions.weave.lastversion",
+			    Weave.WEAVE_VERSION);
     }
   },
 
