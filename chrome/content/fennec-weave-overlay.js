@@ -41,8 +41,6 @@ function FennecWeaveGlue() {
   this._os.addObserver(this, "weave:service:sync:start", false);
   this._os.addObserver(this, "weave:service:sync:finish", false);
   this._os.addObserver(this, "weave:service:sync:error", false);
-  // TODO: Need to do the firstrun page thing, like so!  Otherwise
-  // the lastversion pref never gets set, and so syncId is always reset.
 
   try {
     Cu.import("resource://weave/util.js");
@@ -136,6 +134,7 @@ FennecWeaveGlue.prototype = {
     let url;
     let lastVersion = this._pfs.getCharPref("extensions.weave.lastversion");
     if (lastVersion != Weave.WEAVE_VERSION) {
+      // TODO point this at a fennec-specific first-run page
       if (lastVersion == "firstrun")
 	url = "http://services.mozilla.com/firstrun/?version=" +
 	Weave.WEAVE_VERSION;
