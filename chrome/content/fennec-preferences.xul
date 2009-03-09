@@ -10,9 +10,6 @@
 	     oncommand="gFennecWeaveGlue.openWeavePane();"/>
   </commandset>
   <scrollbox id="pref-list">
-    <!--<vbox class="prefsection">
-      <label value="&prefpane.label;" crop="end" flex="1"/>
-    </vbox>-->
     <richpref title="&fennecPrefsHeader.title;" type="button"
 	      insertafter="plugins.enabled">
       <label value="&fennecPrefsHeader.description;"
@@ -61,7 +58,7 @@
 	  <row>
 	    <box/>
 	    <button label="Connect"
-		    onclick="gFennecWeaveGlue.submitConnectForm('fennec-weave-login-status');"/>
+		    oncommand="gFennecWeaveGlue.submitConnectForm('fennec-weave-login-status');"/>
 	    <box/>
 	  </row>
 	</rows>
@@ -90,7 +87,7 @@
 	    </richpref>
 	    <richpref title="" type="button">
 	      <button label="Turn Weave Off" id="weave-on-off-button" 
-		  onclick="gFennecWeaveGlue.toggleWeaveOnOff();"/>
+		  oncommand="gFennecWeaveGlue.toggleWeaveOnOff();"/>
 	    </richpref>
 	  </row>
 	  <row>
@@ -100,8 +97,8 @@
 	    </richpref>
 	    <richpref title="Weave User Account" type="button">
 	      <label id="username-label" value="You are user: "/>
-	      <button label="Change Account"
-		      onclick = "gFennecWeaveGlue.openConnectPane();"/>
+	      <button label="Change Account" id="change-account-button"
+		      oncommand = "gFennecWeaveGlue.openConnectPane();"/>
 	    </richpref>
 	  </row>
 	  <row>
@@ -113,8 +110,6 @@
 		      title="Server URL" type="string">
 	      weave server
 	    </richpref>
-	    <!--<textbox id="server-url-input"
-		     onclick="gFennecWeaveGlue.selectField('server-url-input');"/>-->
 	  </row>
 	  <row>
 	    <richpref pref="extensions.weave.engine.tabs" 
@@ -125,8 +120,6 @@
 		      title="Client Name" type="string">
 	      client name
 	    </richpref>
-	    <!--<textbox id="client-name-input"
-		     onclick="gFennecWeaveGlue.selectField('client-name-input');"/>-->
 	  </row>
 	  <row>
 	    <richpref pref="extensions.weave.engine.passwords" 
@@ -135,7 +128,8 @@
 	    </richpref>
 	    <richpref title="Sync Now" type="button">
 	      Debug only
-	      <button label="Sync" onclick="gFennecWeaveGlue.syncNow();"/>
+	      <button id="sync-now-button" label="Sync"
+                      oncommand="gFennecWeaveGlue.syncNow();"/>
 	    </richpref>
 	  </row>
 	  <row>

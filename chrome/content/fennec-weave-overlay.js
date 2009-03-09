@@ -148,6 +148,21 @@ FennecWeaveGlue.prototype = {
     }
   },
 
+  _enableButtons: function FennecWeaveGlue__enableButtons(status) {
+    // enable/disable the buttons that should not be clicked while sync
+    // is in progress
+    let buttonIds = ["weave-on-off-button",
+		     "change-account-button",
+		     "sync-now-button"];
+    for each (let buttonId in buttonIds) {
+      let elem = document.getElementById(buttonId);
+      if (elem)
+	elem.setAttribute("disabled", !status);
+    }
+    // TODO ok this is weird, because it disables them visually but
+    // you can still click them!!
+  },
+
   shutdown: function FennecWeaveGlue__shutdown() {
     // Anything that needs shutting down can go here.
     this._os.removeObserver(this, "weave:service:sync:start");
@@ -163,16 +178,20 @@ FennecWeaveGlue.prototype = {
     switch (topic) {
       case "weave:service:sync:start":
 	this.setWeaveStatusField("Syncing Now...");
+        this._enableButtons(false);
       break;
       case "weave:service:sync:finish":
 	this.setWeaveStatusField("Sync completed successfully!");
+        this._enableButtons(true);
       break;
       case "weave:service:sync:error":
         let err = Weave.Service.mostRecentError;
-        if (err)
+        if (err) {
           this.setWeaveStatusField("Login error: " + err);
-        else
+        } else {
           this.setWeaveStatusField("Weave had an error when trying to sync.");
+	}
+        this._enableButtons(true);
       break;
     }
   },
