@@ -86,7 +86,7 @@ function FennecWeaveGlue() {
    setTimeout( function() {
 	         self._log.info("Timeout done, starting Weave service.\n");
 		 Weave.Service.onStartup( function() {
-					    self.showLoginStatus();
+					    self.showLoginErrors();
 					  });
 	       }, 3000);
 
@@ -181,7 +181,10 @@ FennecWeaveGlue.prototype = {
         this._enableButtons(false);
       break;
       case "weave:service:sync:finish":
-	this.setWeaveStatusField("Sync completed successfully!");
+        let now = new Date();
+        let time = now.toLocaleTimeString();
+        let date = now.toLocaleDateString();
+        this.setWeaveStatusField("Sync completed at " + time + ", " + date);
         this._enableButtons(true);
       break;
       case "weave:service:sync:error":
@@ -349,11 +352,10 @@ FennecWeaveGlue.prototype = {
     field.select();
   },
 
-  showLoginStatus: function FennecWeaveGlue__updateStatusMessage() {
-    if (Weave.Service.isLoggedIn) {
-      this.setWeaveStatusField("Weave is logged in and idle.");
-    } else {
-      // Not logged in?  Why not?
+  showLoginErrors: function FennecWeaveGlue__showLoginErrors() {
+    // If weave is not logged in, set the status field to show why not.
+    // If it is logged in, do nothing.
+    if (!Weave.Service.isLoggedIn) {
       var pass = Weave.Service.password;
       var phrase = Weave.Service.passphrase;
       if (!pass || pass == "" || !this._username ||
