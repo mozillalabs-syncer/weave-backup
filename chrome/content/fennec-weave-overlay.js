@@ -466,6 +466,7 @@ var RemoteTabViewer = {
   _populateTabs: function FennecWeaveGlue_loadRemoteTabs(holder, width) {
     /* Clear out all child elements from holder first, so we don't
      * end up adding duplicate columns: */
+    let engine = Weave.Engines.get("tabs");
     while (holder.firstChild) {
       holder.removeChild(holder.firstChild);
     }
@@ -475,6 +476,9 @@ var RemoteTabViewer = {
       let newRichList = holder;
       let tabs = record.getAllTabs();
       for each (let tab in tabs) {
+        if ( engine.locallyOpenTabMatchesURL(tab.urlHistory[0]) ) {
+          continue;
+        }
 	let newItem = document.createElement("richlistitem");
 	newItem.setAttribute("type", "remotetab");
 	newRichList.appendChild(newItem);

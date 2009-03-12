@@ -61,6 +61,7 @@ function FxWeaveGlue() {
   return;
 }
 FxWeaveGlue.prototype = {
+
   doInitTabsMenu: function FxWeaveGlue__doInitTabsMenu() {
     let menu = document.getElementById("sync-tabs-menu");
 
@@ -70,7 +71,12 @@ FxWeaveGlue.prototype = {
 
     let faviconSvc = Cc["@mozilla.org/browser/favicon-service;1"]
       .getService(Ci.nsIFaviconService);
-    let remoteClients = Weave.Engines.get("tabs").getAllClients();
+    let engine = Weave.Engines.get("tabs");
+    if (!engine) {
+      // Tab sync disabled
+      return;
+    }
+    let remoteClients = engine.getAllClients();
     let clientId, tabId;
 
     for (clientId in remoteClients) {
@@ -79,21 +85,26 @@ FxWeaveGlue.prototype = {
       let menuitem = menu.appendItem(label);
       menuitem.setAttribute( "disabled", true );
       let allTabs = remoteClient.getAllTabs();
-
       for (tabId = 0; tabId < allTabs.length; tabId++) {
-	let tab = allTabs[tabId];
+        let tab = allTabs[tabId];
+        // Skip tabs with empty history, e.g. just-opened tabs
+        if (tab.urlHistory.length == 0) {
+          continue;
+        }
+        let currUrl = tab.urlHistory[0];
+        // Skip tabs that match an already-open URL
+        if ( engine.locallyOpenTabMatchesURL(currUrl) ) {
+          continue;
+        }
 	menuitem = menu.appendItem("  " + tab.title);
 	/* Store index of client within clients list AND index of tab within
 	 * client, as an ordered list, in value of menu item, so that we
 	 * can retrive the correct tab when it is chosen. */
 	menuitem.value = [clientId, tabId];
-
-	if (tab.urlHistory.length > 0) {
-	  // Add site's favicon to menu:
-	  menuitem.class = "menuitem-iconic";
-	  menuitem.image = faviconSvc.getFaviconImageForPage(
-            Weave.Utils.makeURI(tab.urlHistory[0])).spec;
-        }
+        // Add site's favicon to menu:
+        menuitem.class = "menuitem-iconic";
+        menuitem.image = faviconSvc.getFaviconImageForPage(
+                           Weave.Utils.makeURI(currUrl)).spec;
       }
     }
     document.getElementById("sync-no-tabs-menu-item").hidden =
@@ -127,7 +138,6 @@ FxWeaveGlue.prototype = {
     for (let i = urlHistory.length-1; i > -1; i--) {
       json.entries.push({url: urlHistory[i]});
     }
-    dump("Using json: " + uneval(json) + "\n");
     ss.setTabState(newTab, js.encode(json));
 
     // Switch to the newly opened tab:
