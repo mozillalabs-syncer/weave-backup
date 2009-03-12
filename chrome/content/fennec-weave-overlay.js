@@ -37,14 +37,17 @@
 const EXPORTED_SYMBOLS = ['gFennecWeaveGlue'];
 
 function FennecWeaveGlue() {
+  Cu.import("resource://weave/util.js");
+
   this._log = Log4Moz.repository.getLogger("Chrome.Window");
+
   this._os.addObserver(this, "weave:service:sync:start", false);
   this._os.addObserver(this, "weave:service:sync:finish", false);
   this._os.addObserver(this, "weave:service:sync:error", false);
+  Observers.add("weave:engine:sync:start", this.onEngineStart, this);
+  Observers.add("weave:engine:sync:status", this.onEngineStatus, this);
 
   try {
-    Cu.import("resource://weave/util.js");
-
     Cu.import("resource://weave/engines/bookmarks.js");
     Weave.Engines.register(new BookmarksEngine());
 
@@ -159,8 +162,6 @@ FennecWeaveGlue.prototype = {
       if (elem)
 	elem.setAttribute("disabled", !status);
     }
-    // TODO ok this is weird, because it disables them visually but
-    // you can still click them!!
   },
 
   shutdown: function FennecWeaveGlue__shutdown() {
@@ -190,13 +191,25 @@ FennecWeaveGlue.prototype = {
       case "weave:service:sync:error":
         let err = Weave.Service.mostRecentError;
         if (err) {
-          this.setWeaveStatusField("Login error: " + err);
+          this.setWeaveStatusField("Error: " + err);
         } else {
           this.setWeaveStatusField("Weave had an error when trying to sync.");
 	}
         this._enableButtons(true);
       break;
     }
+  },
+
+  // TODO: we're using a different method to register these two observers
+  // than to register observe() above.  Pick one method and stick with it.
+  onEngineStart: function FennecWeaveGlue_onEngineStart(subject, data) {
+    this.setWeaveStatusField("Syncing " + subject + "...");
+    this._lastRunningEngine = subject;
+  },
+
+  onEngineStatus: function FennecWeaveGlue_onEngineStatus(subject, data) {
+    let s = "Syncing (" + subject + " " + this._lastRunningEngine + ")...";
+    this.setWeaveStatusField(s);
   },
 
   showHidePasswordFields: function FennecWeaveGlue__showHidePassFields() {
