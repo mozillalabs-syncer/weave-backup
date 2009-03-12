@@ -88,7 +88,11 @@ let gSyncLog = {
 
     let logPattern = new RegExp(re);
     // Color one line at a time on a timeout reverse-log-order
-    let colorText = function SyncLog__colorText(doc) setTimeout(function() {
+    let colorText = function SyncLog__colorText(doc, num) {
+      // Stop processing if we're out of lines
+      if (matches.length == 0)
+        return;
+
       let [line, source, type] = matches.pop().match(logPattern);
 
       // Generate a background color based on the source of the log
@@ -105,15 +109,18 @@ let gSyncLog = {
       pre.style.backgroundColor = "rgba(" + bgColor + ", .2)";
       pre.appendChild(doc.createTextNode(line));
 
-      // Color another line if there is more
-      if (matches.length > 0)
-        colorText(doc);
-    }, 0);
+      // Color another line right away if we need to
+      if (--num > 0)
+        colorText(doc, num);
+      // Wait a short bit before starting another batch
+      else
+        setTimeout(colorText, 0, doc, 50);
+    };
 
     // The second frame load is for switching to html
     let handleHtmlLoad = function SyncLog__handleHtmlLoad(event) {
       frame.removeEventListener("load", handleHtmlLoad, true);
-      colorText(event.target);
+      colorText(event.target, 100);
     };
     frame.addEventListener("load", handleHtmlLoad, true);
 
