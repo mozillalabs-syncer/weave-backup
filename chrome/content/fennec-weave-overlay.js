@@ -403,7 +403,7 @@ FennecWeaveGlue.prototype = {
       if (!Weave.Service.isQuitting) {
 	// Note: we can pass a function(success) {} in here if we need
 	// to respond to success or failure... but the observer handles that.
-	Weave.Service.sync();
+	Weave.Service.sync(null, true);
       } else {
 	this.setWeaveStatusField("Can't sync, Weave is quitting.");
       }
