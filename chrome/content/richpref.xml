@@ -32,4 +32,28 @@
 		onset="this.input.value = val;"/>
     </implementation>
   </binding>
+
+  <binding id="richpref-disabled" 
+	   extends="chrome://browser/content/preferences/richpref.xml#richpref-base">
+    <content>
+      <xul:hbox flex="1" class="prefbox">
+        <xul:vbox flex="1">
+          <xul:label class="preftitle" xbl:inherits="value=title" crop="end" flex="1"/>
+          <xul:label class="prefdesc" xbl:inherits="value=desc" crop="end" flex="1">
+            <children/>
+          </xul:label>
+        </xul:vbox>
+        <xul:hbox anonid="input-container">
+          <xul:checkbox anonid="input" disabled="true"/>
+        </xul:hbox>
+      </xul:hbox>
+      <xul:preferences>
+        <xul:preference anonid="pref" xbl:inherits="name=pref,type,inverted" instantApply="true"/>
+      </xul:preferences>
+    </content>
+
+    <implementation>
+      <property name="value" onget="return false;" onset="return false;"/>
+    </implementation>
+  </binding>
 </bindings>

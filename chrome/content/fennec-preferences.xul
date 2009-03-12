@@ -92,8 +92,8 @@
 	  </row>
 	  <row>
 	    <richpref pref="extensions.weave.engine.cookies" 
-		      title="Cookies" type="bool">
-	      Sync cookies
+		      title="Cookies" type="disabled">
+	      Not yet implemented
 	    </richpref>
 	    <richpref title="Weave User Account" type="button">
 	      <label id="username-label" value="You are user: "/>
@@ -104,27 +104,27 @@
 	  <row>
 	    <richpref pref="extensions.weave.engine.history"
 		      title="History" type="bool">
-	      Sync history
+	      Sync browsing history
 	    </richpref>
 	    <richpref pref="extensions.weave.serverURL"
 		      title="Server URL" type="string">
-	      weave server
+	      Use this Weave server
 	    </richpref>
 	  </row>
 	  <row>
 	    <richpref pref="extensions.weave.engine.tabs" 
 		      title="Tabs" type="bool">
-	      Sync tabs
+	      Sync open tabs
 	    </richpref>
 	    <richpref pref="extensions.weave.client.name"
 		      title="Client Name" type="string">
-	      client name
+	      Name this client
 	    </richpref>
 	  </row>
 	  <row>
 	    <richpref pref="extensions.weave.engine.passwords" 
 		      title="Passwords" type="bool">
-	      Sync passwords
+	      Sync stored passwords
 	    </richpref>
 	    <richpref title="Sync Now" type="button">
 	      Debug only
@@ -134,15 +134,15 @@
 	  </row>
 	  <row>
 	    <richpref pref="extensions.weave.engine.forms" 
-		      title="Forms" type="bool">
-	      Sync forms
+		      title="Forms" type="disabled">
+	      Not yet implemented
 	    </richpref>
 	    <box/>
 	  </row>
 	  <row>
 	    <richpref pref="extensions.weave.engine.input"
-		      title="Input" type="bool">
-	      Sync input
+		      title="Input" type="disabled">
+	      Not yet implemented
 	    </richpref>
 	    <box/>
 	  </row>
