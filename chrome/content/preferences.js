@@ -108,6 +108,11 @@ WeavePrefs.prototype = {
   doSyncNow: function WeavePrefs_doSyncNow() {
     let syncNowButton = document.getElementById('sync-syncnow-button');
     syncNowButton.setAttribute("disabled", "true");
+    this._startSync();
+    syncNowButton.setAttribute("disabled", "false");
+  },
+
+  _startSync: function WeavePrefs__startSync() {
     let wm = Cc["@mozilla.org/appshell/window-mediator;1"].
       getService(Ci.nsIWindowMediator);
     let window = wm.getMostRecentWindow("Weave:Status");
@@ -119,7 +124,6 @@ WeavePrefs.prototype = {
        let options = 'chrome,centerscreen,dialog,modal,resizable=yes';
        ww.activeWindow.openDialog("chrome://weave/content/status.xul", '', options, null);
      }
-    syncNowButton.setAttribute("disabled", "false");
   },
 
   openAdvancedPrefs: function WeavePrefs_openAdvancedPrefs() {
@@ -298,13 +302,47 @@ WeavePrefs.prototype = {
     }
   },
 
-  resetServer: function WeavePrefs_resetServer() {
+  resetSync: function WeavePrefs_resetSync() {
+    let button = document.getElementById("resetsync-button");
+    button.setAttribute("disabled", "true");
+    Weave.Service.resetClient(this._startSync);
+    button.setAttribute("disabled", "false");
+  },
+
+  eraseLocal: function WeavePrefs_eraseLocal() {
+    let button = document.getElementById("eraselocal-button");
+    button.setAttribute("disabled", "true");
     let p = Cc["@mozilla.org/embedcomp/prompt-service;1"]
       .getService(Ci.nsIPromptService);
     if (p.confirm(null,
-                  this._stringBundle.getString("reset.server.warning.title"),
-                  this._stringBundle.getString("reset.server.warning")))
-      Weave.Service.wipeServer();
+                  this._stringBundle.getString("erase.local.warning.title"),
+                  this._stringBundle.getString("erase.local.warning")))
+      Weave.Service.wipeClient(this._startSync);
+    button.setAttribute("disabled", "false");
+  },
+
+  eraseServer: function WeavePrefs_eraseServer() {
+    let button = document.getElementById("eraseserver-button");
+    button.setAttribute("disabled", "true");
+    let p = Cc["@mozilla.org/embedcomp/prompt-service;1"]
+      .getService(Ci.nsIPromptService);
+    if (p.confirm(null,
+                  this._stringBundle.getString("erase.server.warning.title"),
+                  this._stringBundle.getString("erase.server.warning")))
+      Weave.Service.wipeServer(this._startSync);
+    button.setAttribute("disabled", "false");
+  },
+
+  eraseRemote: function WeavePrefs_eraseRemote() {
+    let button = document.getElementById("eraseremote-button");
+    button.setAttribute("disabled", "true");
+    let p = Cc["@mozilla.org/embedcomp/prompt-service;1"]
+      .getService(Ci.nsIPromptService);
+    if (p.confirm(null,
+                  this._stringBundle.getString("erase.remote.warning.title"),
+                  this._stringBundle.getString("erase.remote.warning")))
+      Weave.Service.wipeRemote(this._startSync);
+    button.setAttribute("disabled", "false");
   },
 
   resetClient: function WeavePrefs_resetClient() {

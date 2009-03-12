@@ -288,6 +288,26 @@
           </groupbox>
           <groupbox>
             <caption label="&debugCaption.label;"/>
+            <hbox align="center">
+              <label value="&resetSyncMetaButton.description;" flex="1"/>
+              <button id="resetsync-button" label="&resetSyncMetaButton.label;"
+                      oncommand="gWeavePrefs.resetSync();"/>
+            </hbox>
+            <hbox align="center">
+              <label value="&eraseLocalDataButton.description;" flex="1"/>
+              <button id="eraselocal-button" label="&eraseLocalDataButton.label;"
+                      oncommand="gWeavePrefs.eraseLocal();"/>
+            </hbox>
+            <hbox align="center">
+              <label value="&eraseServerDataButton.description;" flex="1"/>
+              <button id="eraseserver-button" label="&eraseServerDataButton.label;"
+                      oncommand="gWeavePrefs.eraseServer();"/>
+            </hbox>
+            <hbox align="center">
+              <label value="&eraseRemoteDataButton.description;" flex="1"/>
+              <button id="eraseremote-button" label="&eraseRemoteDataButton.label;"
+                      oncommand="gWeavePrefs.eraseRemote();"/>
+            </hbox>
             <hbox>
               <label value="&openActivityLogButton.description;" flex="1"/>
               <button label="&openActivityLogButton.label;"
