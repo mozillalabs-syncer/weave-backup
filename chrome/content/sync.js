@@ -216,8 +216,8 @@ WeaveWindow.prototype = {
   _onSyncEnd: function WeaveWin__onSyncEnd(status) {
     this._setStatus("idle");
 
+    let title = this._stringBundle.getString("error.sync.title");
     if (!status) {
-      let title = this._stringBundle.getString("error.sync.title");
       let description = this._stringBundle.getString("error.sync.description");
       let tryAgainButton =
         new Weave.NotificationButton(
@@ -235,6 +235,9 @@ WeaveWindow.prototype = {
         );
       Weave.Notifications.replaceTitle(notification);
     }
+    // Clear out sync failures on a successful sync
+    else
+      Weave.Notifications.removeAll(title);
 
     let syncitem = document.getElementById("sync-syncnowitem");
     if (syncitem)
