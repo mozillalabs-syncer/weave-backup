@@ -437,8 +437,9 @@ FennecWeaveGlue.prototype = {
 var RemoteTabViewer = {
   _panel: null,
   _remoteClients: null,
+  _sortMode: 'client', // shouldn't be set here
 
-  show: function() {
+  show: function RemoteTabViewer_show() {
     let container = document.getElementById("browser-container");
     this._panel = document.getElementById("synced-tabs-panel");
     this._panel.hidden = false;
@@ -454,16 +455,17 @@ var RemoteTabViewer = {
     this._remoteClients = tabEngine.getAllClients();
     let richlist = document.getElementById("remote-tabs-richlist");
     let width = this._panel.width - 10;
+    // TODO is there a less awkward way of setting maxWidth and maxHeight?
     richlist.style.maxWidth = width + "px";
-    richlist.style.maxHeight = (this._panel.height - 40) + "px";
-    this._populateTabs(richlist, width - 5);
+    richlist.style.maxHeight = (this._panel.height - 32) + "px";
+    this._populateTabs(richlist, width - 2);
   },
 
   close: function() {
     this._panel.hidden = true;
   },
 
-  _populateTabs: function FennecWeaveGlue_loadRemoteTabs(holder, width) {
+  _populateTabs: function RemoteTabViewer__populateTabs(holder, width) {
     /* Clear out all child elements from holder first, so we don't
      * end up adding duplicate columns: */
     let engine = Weave.Engines.get("tabs");
@@ -471,29 +473,52 @@ var RemoteTabViewer = {
       holder.removeChild(holder.firstChild);
     }
 
-    // Load up all of the remote tabs we can find, into the richlist:
-    for each (let record in this._remoteClients) {
-      let newRichList = holder;
+    // Get a list of all tabs:
+    let allTabs = [];
+    for each (record in this._remoteClients) {
       let tabs = record.getAllTabs();
-      for each (let tab in tabs) {
-        if ( engine.locallyOpenTabMatchesURL(tab.urlHistory[0]) ) {
-          continue;
-        }
-	let newItem = document.createElement("richlistitem");
-	newItem.setAttribute("type", "remotetab");
-	newRichList.appendChild(newItem);
-	newItem.setWidth(width);
-	let url = tab.urlHistory[0];
-	let domain = Utils.makeURI(url).prePath;
-	let favicon = domain + "/favicon.ico";
-	let sourceClient = "From " + record.getClientName();
-	newItem.updatePreview(tab.title, favicon, sourceClient, url);
-	newItem.setTabData(tab);
+      for each (tab in tabs) {
+        allTabs.push(tab);
       }
+    }
+
+    // Sort list according to sort mode:
+    let prefName = "extensions.weave.tabs.sortMode";
+    let sortMode = gFennecWeaveGlue._pfs.getCharPref(prefName);
+    switch (sortMode) {
+      case 'alphabetical':
+        allTabs.sort(function(a, b) {
+                       return a.title.localeCompare( b.title );
+                     });
+        break;
+      case 'recency':
+        // TODO Need more metadata before we can implement this one!!
+        break;
+      case 'client':
+        // List is already ordered by client, no need to change.
+        break;
+    }
+
+    // Now actually add them to the menu:
+    for each (let tab in allTabs) {
+      // Skip those that are already open:
+      if ( engine.locallyOpenTabMatchesURL(tab.urlHistory[0]) ) {
+        return;
+      }
+      let newItem = document.createElement("richlistitem");
+      newItem.setAttribute("type", "remotetab");
+      holder.appendChild(newItem);
+      newItem.setWidth(width);
+      let url = tab.urlHistory[0];
+      let domain = Utils.makeURI(url).prePath;
+      let favicon = domain + "/favicon.ico";
+      let sourceClient = "From " + record.getClientName();
+      newItem.updatePreview(tab.title, favicon, sourceClient, url);
+      newItem.setTabData(tab);
     }
   },
 
-  openSyncedTab: function FennecWeaveGlue_openSyncedTab(richlist, event) {
+  openSyncedTab: function RemoteTabViewer_openSyncedTab(richlist, event) {
     let tabData = richlist.selectedItem.getTabData();
     this.close();
     try {
@@ -506,6 +531,12 @@ var RemoteTabViewer = {
       Browser.newTab(true);
       BrowserUI.goToURI(tabData.urlHistory[0]);
     }
+  },
+
+  setSort: function RemoteTabViewer_setSort( sortMode ) {
+    let prefName = "extensions.weave.tabs.sortMode";
+    gFennecWeaveGlue._pfs.setCharPref( prefName, sortMode );
+    this.show();
   }
 };
 

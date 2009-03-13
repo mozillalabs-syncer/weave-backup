@@ -30,12 +30,20 @@
   <stack id="browser-container">
     <vbox id="synced-tabs-panel" style="-moz-stack-sizing: ignore;" 
           hidden="true" top="0" left="0">
+      <hbox pack="end" align="end">
+        <!-- TODO radio-button style these -->
+        <button label="By Date"
+                oncommand="RemoteTabViewer.setSort('recency');"/>
+        <button label="By Title"
+                oncommand="RemoteTabViewer.setSort('alphabetical');"/>
+        <button label="By Source"
+                oncommand="RemoteTabViewer.setSort('client');"/>
+        <button label="Close"
+                oncommand="gFennecWeaveGlue.hideSyncedTabs();"/>
+      </hbox>
       <richlistbox id="remote-tabs-richlist"
 		   onselect="RemoteTabViewer.openSyncedTab(this, event);">
       </richlistbox>
-      <hbox pack="end" align="end">
-        <button label="Close" onclick="gFennecWeaveGlue.hideSyncedTabs();"/>
-      </hbox>
     </vbox>
   </stack>
   <!-- Command to show the panel -->
