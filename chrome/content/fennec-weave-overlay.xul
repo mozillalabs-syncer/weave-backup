@@ -32,12 +32,17 @@
           hidden="true" top="0" left="0">
       <hbox pack="end" align="end">
         <!-- TODO radio-button style these -->
-        <button label="By Date"
-                oncommand="RemoteTabViewer.setSort('recency');"/>
-        <button label="By Title"
-                oncommand="RemoteTabViewer.setSort('alphabetical');"/>
-        <button label="By Source"
-                oncommand="RemoteTabViewer.setSort('client');"/>
+        <radiogroup>
+        <radio label="By Date"
+                oncommand="RemoteTabViewer.setSort('recency');"
+                selected="true"/>
+        <radio label="By Title"
+                oncommand="RemoteTabViewer.setSort('alphabetical');"
+                selected="false"/>
+        <radio label="By Source"
+                oncommand="RemoteTabViewer.setSort('client');"
+                selected="false"/>
+        </radiogroup>
         <button label="Close"
                 oncommand="gFennecWeaveGlue.hideSyncedTabs();"/>
       </hbox>

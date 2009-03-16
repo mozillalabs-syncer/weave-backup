@@ -122,6 +122,15 @@ FennecWeaveGlue.prototype = {
     }
   },
 
+  get _hasBeenConfigured() {
+    /* Weave has been configured if the username, password, and passphrase
+     * are all defined.
+     */
+    var password = Weave.Service.password;
+    var passphrase = Weave.Service.passphrase;
+    return (this._username && password && passphrase);
+  },
+
   _setPreferenceDefaults: function FennecWeaveGlue__setPrefDefaults() {
     // Some prefs need different defaults in Fennec than they have in
     // Firefox.  Set them here and they'll only apply to Fennec.
@@ -274,9 +283,7 @@ FennecWeaveGlue.prototype = {
      * passphrase are set and uses that to determine whether setup is
      * required; opens connect pane if setup is required, prefs pane
      * if not.*/
-    var password = Weave.Service.password;
-    var passphrase = Weave.Service.passphrase;
-    if ( this._username && password && passphrase ) {
+    if (this._hasBeenConfigured) {
       this.openPrefsPane();
     } else {
       this.openConnectPane();
@@ -426,7 +433,12 @@ FennecWeaveGlue.prototype = {
   },
 
   showSyncedTabs: function FennecWeaveGlue_showSyncedTabs() {
-    RemoteTabViewer.show();
+    if ( this._hasBeenConfigured ) {
+      RemoteTabViewer.show();
+    } else {
+      document.getElementById("cmd_panel").doCommand();
+      this.openConnectPane();
+    }
   },
 
   hideSyncedTabs: function FennecWeaveGlue_hideSyncedTabs() {
