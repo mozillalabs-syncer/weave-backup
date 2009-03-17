@@ -87,12 +87,14 @@ dotin_files := $(dotin_files:.in=)
 
 all: test
 
-.PHONY: build test xpi clean $(dotin_files)
+.PHONY: build test xpi clean $(dotin_files) subst
 
 $(dotin_files): $(dotin_files:=.in)
 	./build/subst.pl $@ $(substitutions)
 
-build: $(dotin_files)
+subst: $(dotin_files)
+
+build: subst
 	$(MAKE) -C src install
 
 test: build
