@@ -18,13 +18,6 @@
                   src="chrome://weave/locale/sync.properties"/>
   </stringbundleset>
 
-  <!-- Bookmark list overlay UI -->
-  <vbox id="urllist-container">
-    <hbox id="weave-bookmark-hack">
-      <!-- TODO -->
-    </hbox>
-  </vbox>
-
   <!-- TABS -->
   <!-- Panel for browsing tabs synced in from remote clients -->
   <stack id="browser-container">
