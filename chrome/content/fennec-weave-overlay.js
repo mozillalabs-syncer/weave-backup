@@ -504,7 +504,9 @@ var RemoteTabViewer = {
                      });
         break;
       case 'recency':
-        // TODO Need more metadata before we can implement this one!!
+        allTabs.sort(function(a, b) {
+                     return (parseInt(b.lastUsed) - parseInt(a.lastUsed));
+                   });
         break;
       case 'client':
         // List is already ordered by client, no need to change.
