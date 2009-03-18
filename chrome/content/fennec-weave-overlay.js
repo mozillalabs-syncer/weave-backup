@@ -75,9 +75,9 @@ function FennecWeaveGlue() {
    * appropriately:
    */
   if (this._pfs.getBoolPref("extensions.weave.enabled")) {
-    this.setWeaveStatusField("Weave is trying to log in...");
+    this.setWeaveStatusField("fennec.logging-in");
   } else {
-    this.setWeaveStatusField("Weave is turned off.");
+    this.setWeaveStatusField("fennec.turned-off");
   }
 
   this._setPreferenceDefaults();
@@ -131,14 +131,31 @@ FennecWeaveGlue.prototype = {
     return (this._username && password && passphrase);
   },
 
+  __stringBundle: null,
+  _getString: function FennecWeaveGlue__getString(id) {
+    if (!this.__stringBundle) {
+      this.__stringBundle = document.getElementById("weaveStringBundle");
+    }
+    return this.__stringBundle.getString(id);
+  },
+
+  _getFormattedString: function FennecWeaveGlue__getFormatStr(id, args) {
+    if (!this.__stringBundle) {
+      this.__stringBundle = document.getElementById("weaveStringBundle");
+    }
+    return this.__stringBundle.getFormattedString(id, args);
+  },
+
   _setPreferenceDefaults: function FennecWeaveGlue__setPrefDefaults() {
     // Some prefs need different defaults in Fennec than they have in
     // Firefox.  Set them here and they'll only apply to Fennec.
     if (!this._pfs.prefHasUserValue("extensions.weave.client.name")) {
-      this._pfs.setCharPref("extensions.weave.client.name", "Fennec");
+      this._pfs.setCharPref("extensions.weave.client.name",
+                            this._getString("fennec.default.client.name"));
     }
     if (!this._pfs.prefHasUserValue("extensions.weave.client.type")) {
-      this._pfs.setCharPref("extensions.weave.client.type", "Mobile");
+      this._pfs.setCharPref("extensions.weave.client.type",
+                            this._getString("fennec.default.client.type"));
     }
   },
 
@@ -194,15 +211,15 @@ FennecWeaveGlue.prototype = {
         let now = new Date();
         let time = now.toLocaleTimeString();
         let date = now.toLocaleDateString();
-        this.setWeaveStatusField("Sync completed at " + time + ", " + date);
-        this._enableButtons(true);
+          this.setWeaveStatusField("fennec.sync.complete.time", [time, date]);
+          this._enableButtons(true);
       break;
       case "weave:service:sync:error":
         let err = Weave.Service.mostRecentError;
         if (err) {
-          this.setWeaveStatusField("Error: " + err);
+          this.setWeaveStatusField("fennec.sync.error.detail", [err]);
         } else {
-          this.setWeaveStatusField("Weave had an error when trying to sync.");
+          this.setWeaveStatusField("fennec.sync.error.generic");
 	}
         this._enableButtons(true);
       break;
@@ -212,13 +229,13 @@ FennecWeaveGlue.prototype = {
   // TODO: we're using a different method to register these two observers
   // than to register observe() above.  Pick one method and stick with it.
   onEngineStart: function FennecWeaveGlue_onEngineStart(subject, data) {
-    this.setWeaveStatusField("Syncing " + subject + "...");
+    this.setWeaveStatusField("fennec.sync.status", [subject]);
     this._lastRunningEngine = subject;
   },
 
   onEngineStatus: function FennecWeaveGlue_onEngineStatus(subject, data) {
-    let s = "Syncing (" + subject + " " + this._lastRunningEngine + ")...";
-    this.setWeaveStatusField(s);
+    this.setWeaveStatusField("fennec.sync.status.detail",
+                             [subject, this._lastRunningEngine]);
   },
 
   showHidePasswordFields: function FennecWeaveGlue__showHidePassFields() {
@@ -246,17 +263,20 @@ FennecWeaveGlue.prototype = {
     if (this._username) {
       document.getElementById("username-input").value = this._username;
     } else {
-      document.getElementById("username-input").value = "Your Username Here";
+      document.getElementById("username-input").value =
+        this._getString("fennec.username.here");
     }
     if (password) {
       document.getElementById("password-input").value = password;
     } else {
-      document.getElementById("password-input").value = "Your Password Here";
+      document.getElementById("password-input").value =
+        this._getString("fennec.password.here");
     }
     if (passphrase) {
       document.getElementById("passphrase-input").value = passphrase;
     } else {
-      document.getElementById("passphrase-input").value = "Your Passphrase Here";
+      document.getElementById("passphrase-input").value =
+        this._getString("fennec.passphrase.here");
     }
   },
 
@@ -266,15 +286,17 @@ FennecWeaveGlue.prototype = {
     BrowserUI.switchPane("weave-detail-prefs-pane");
     var theButton = document.getElementById("weave-on-off-button");
     if (this._pfs.getBoolPref("extensions.weave.enabled")) {
-      theButton.label = "Turn Weave Off";
+      theButton.label = this._getString("fennec.turn.weave.off");
     } else {
-      theButton.label = "Turn Weave On";
+      theButton.label = this._getString("fennec.turn.weave.on");
     }
     var usernameLabel =  document.getElementById("username-label");
     if (this._username) {
-      usernameLabel.value = "You are user: " + this._username;
+      usernameLabel.value = this._getFormattedString("fennec.username.is",
+                                                     [this._username]);
     } else {
-      usernameLabel.value = "No username set."; // can't happen?
+      usernameLabel.value = this._getString("fennec.no.username");
+      // can't happen?
     }
   },
 
@@ -298,15 +320,15 @@ FennecWeaveGlue.prototype = {
     var passphraseInput = document.getElementById("passphrase-input").value;
     var errField = document.getElementById(errFieldId);
     if (usernameInput == "") {
-      errField.value = "You must enter a Weave username.";
+      errField.value = this._getString("fennec.need.username");
       return;
     }
     if (passwordInput == "") {
-      errField.value = "You must enter a Weave password.";
+      errField.value = this._getString("fennec.need.password");
       return;
     }
     if (passphraseInput == "") {
-      errField.value = "You must enter a Weave passphrase.";
+      errField.value = this._getString("fennec.need.passphrase");
       return;
     }
 
@@ -314,7 +336,6 @@ FennecWeaveGlue.prototype = {
     this._pfs.setCharPref("extensions.weave.username", usernameInput);
     Weave.Service.password = passwordInput;
     Weave.Service.passphrase = passphraseInput;
-
     dump("Turning Weave on...\n");
     // redirect you to the full prefs page if login succeeds.
     var self = this;
@@ -329,7 +350,7 @@ FennecWeaveGlue.prototype = {
     if (Weave.Service.isLoggedIn) {
       Weave.Service.logout();
     }
-    this.setWeaveStatusField("Weave is turned off.");
+    this.setWeaveStatusField("fennec.turned-off");
   },
 
   _turnWeaveOn: function FennecWeaveGlue__turnWeaveOn( onSuccess ) {
@@ -346,21 +367,22 @@ FennecWeaveGlue.prototype = {
     this._pfs.setBoolPref("extensions.weave.enabled", true);
     var log = this._log;
     var setStatus = this.setWeaveStatusField;
-    setStatus("Weave is logging in...");
+    setStatus("fennec.logging-in");
     if (!Weave.Service.isLoggedIn) {
       // Report on success or failure...
       Weave.Service.login( function(success) {
                              if (success) {
-			       setStatus("Weave is logged in.");
+			       setStatus("fennec.logged-in");
                                if (onSuccess) {
                                  onSuccess();
                                }
                              } else {
                                let err = Weave.Service.mostRecentError;
                                if (err)
-				 setStatus("Login error: " + err);
+				 setStatus("fennec.login.error.detail",
+                                           [err]);
 			       else
-				 setStatus("Weave had an error when trying to log in.");
+				 setStatus("fennec.login.error");
 			     }
 			   });
     }
@@ -380,15 +402,21 @@ FennecWeaveGlue.prototype = {
       var phrase = Weave.Service.passphrase;
       if (!pass || pass == "" || !this._username ||
 	  this._username == "" || !phrase || phrase == "") {
-	this.setWeaveStatusField("Weave needs more info from you to get started.");
+	this.setWeaveStatusField("fennec.need.credentials");
       } else {
 	// TODO display more specifics depending on what the error was
-	this.setWeaveStatusField("Weave encountered an error when trying to log you in.");
+	this.setWeaveStatusField("fennec.login.error");
       }
     }
   },
 
-  setWeaveStatusField: function FennecWeaveGlue__setWeaveStatusField(text) {
+  setWeaveStatusField: function FennecWeaveGlue_setStatusField(msg, args) {
+    var text;
+    if (args) {
+      text = this._getFormattedString(msg, args);
+    } else {
+      text = this._getString(msg);
+    }
     var elem = document.getElementById("fennec-weave-quick-status");
     if (elem) {
       elem.value = text;
@@ -407,13 +435,13 @@ FennecWeaveGlue.prototype = {
     var theButton = document.getElementById("weave-on-off-button");
     if (this._pfs.getBoolPref("extensions.weave.enabled")) {
       this._turnWeaveOff();
-      theButton.label = "Turn Weave On";
+      theButton.label = this._getString("fennec.turn.weave.on");
     } else {
-      theButton.label = "Turning Weave On...";
+      theButton.label = this._getString("fennec.logging-in");
       theButton.enabled = false;
       this._turnWeaveOn( function() {
 			   theButton.enabled = true;
-			   theButton.label = "Turn Weave Off";
+			   theButton.label = this._getString("fennec.turn.weave.off");
 			 });
     }
   },
@@ -425,10 +453,10 @@ FennecWeaveGlue.prototype = {
 	// to respond to success or failure... but the observer handles that.
 	Weave.Service.sync(null, true);
       } else {
-	this.setWeaveStatusField("Can't sync, Weave is quitting.");
+	this.setWeaveStatusField("fennec.quitting");
       }
     } else {
-      this.setWeaveStatusField("Can't sync, Weave is not logged in.");
+      this.setWeaveStatusField("fennec.no.sync");
     }
   },
 
