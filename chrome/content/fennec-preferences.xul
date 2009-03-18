@@ -86,7 +86,7 @@
 	      &bookmarksCheckbox.label;
 	    </richpref>
 	    <richpref title="" type="button">
-	      <button label="&fennecPrefs.turnWeaveOfflabel;" id="weave-on-off-button" 
+	      <button label="&fennecPrefs.turnWeaveOff.label;" id="weave-on-off-button" 
 		  oncommand="gFennecWeaveGlue.toggleWeaveOnOff();"/>
 	    </richpref>
 	  </row>
