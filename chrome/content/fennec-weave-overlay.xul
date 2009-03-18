@@ -3,7 +3,7 @@
 <?xml-stylesheet href="chrome://weave/content/notification.css" type="text/css"?>
 <?xml-stylesheet href="chrome://weave/content/fennec.css" type="text/css"?>
 
-<!DOCTYPE overlay SYSTEM "chrome://weave/locale/sync.dtd">
+<!DOCTYPE overlay SYSTEM "chrome://weave/locale/preferences.dtd">
 <overlay id="fx-weave-overlay"
          xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
@@ -15,7 +15,7 @@
 
   <stringbundleset id="stringbundleset">
     <stringbundle id="weaveStringBundle"
-                  src="chrome://weave/locale/sync.properties"/>
+                  src="chrome://weave/locale/fennec.properties"/>
   </stringbundleset>
 
   <!-- TABS -->
@@ -26,13 +26,13 @@
       <hbox pack="end" align="end">
         <!-- TODO radio-button style these -->
         <radiogroup>
-        <radio label="By Date"
+        <radio label="&tabs.sortBy.date.label;"
                 oncommand="RemoteTabViewer.setSort('recency');"
                 selected="true"/>
-        <radio label="By Title"
+        <radio label="&tabs.sortBy.title.label;"
                 oncommand="RemoteTabViewer.setSort('alphabetical');"
                 selected="false"/>
-        <radio label="By Source"
+        <radio label="&tabs.sortBy.source.label;"
                 oncommand="RemoteTabViewer.setSort('client');"
                 selected="false"/>
         </radiogroup>
