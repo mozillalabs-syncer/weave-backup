@@ -520,6 +520,12 @@ var RemoteTabViewer = {
     for each (record in this._remoteClients) {
       let tabs = record.getAllTabs();
       for each (tab in tabs) {
+        if (!tab.title) {
+          tab.title = "";
+        }
+        if (!tab.lastUsed) {
+          tab.lastUsed = 0;
+        }
         allTabs.push(tab);
       }
     }
