@@ -334,6 +334,7 @@ FennecWeaveGlue.prototype = {
 
     this._turnWeaveOff();
     this._pfs.setCharPref("extensions.weave.username", usernameInput);
+    Weave.Service.username = usernameInput;
     Weave.Service.password = passwordInput;
     Weave.Service.passphrase = passphraseInput;
     dump("Turning Weave on...\n");
@@ -366,23 +367,24 @@ FennecWeaveGlue.prototype = {
     this._log.info("Turning Weave on...");
     this._pfs.setBoolPref("extensions.weave.enabled", true);
     var log = this._log;
-    var setStatus = this.setWeaveStatusField;
-    setStatus("fennec.logging-in");
+
+    this.setWeaveStatusField("fennec.logging-in");
+    var self = this;
     if (!Weave.Service.isLoggedIn) {
       // Report on success or failure...
       Weave.Service.login( function(success) {
                              if (success) {
-			       setStatus("fennec.logged-in");
+			       self.setWeaveStatusField("fennec.logged-in");
                                if (onSuccess) {
                                  onSuccess();
                                }
                              } else {
                                let err = Weave.Service.mostRecentError;
                                if (err)
-				 setStatus("fennec.login.error.detail",
+				 self.setWeaveStatusField("fennec.login.error.detail",
                                            [err]);
 			       else
-				 setStatus("fennec.login.error");
+				 self.setWeaveStatusField("fennec.login.error");
 			     }
 			   });
     }
