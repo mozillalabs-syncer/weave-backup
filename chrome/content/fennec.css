@@ -33,3 +33,15 @@ richlistitem[type="remotetab"] {
     height: 32px;
 }
 
+.square-button-not-selected {
+    padding: 5px;
+    margin: 0px;
+    -moz-border-radius: 0px;
+}
+
+.square-button-selected {
+    padding: 5px;
+    margin: 0px;
+    -moz-border-radius: 0px;
+    -moz-box-shadow: inset -2px -2px 10px -2px black;
+}

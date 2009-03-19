@@ -533,6 +533,8 @@ var RemoteTabViewer = {
     // Sort list according to sort mode:
     let prefName = "extensions.weave.tabs.sortMode";
     let sortMode = gFennecWeaveGlue._pfs.getCharPref(prefName);
+    let pressedBtn = document.getElementById("sort-tabs-" + sortMode);
+    pressedBtn.setAttribute("class", "square-button-selected");
     switch (sortMode) {
       case 'alphabetical':
         allTabs.sort(function(a, b) {
@@ -585,6 +587,9 @@ var RemoteTabViewer = {
 
   setSort: function RemoteTabViewer_setSort( sortMode ) {
     let prefName = "extensions.weave.tabs.sortMode";
+    let oldSortMode = gFennecWeaveGlue._pfs.getCharPref(prefName);
+    let btn = document.getElementById("sort-tabs-" + oldSortMode);
+    btn.setAttribute("class", "square-button-not-selected");
     gFennecWeaveGlue._pfs.setCharPref( prefName, sortMode );
     this.show();
   }
