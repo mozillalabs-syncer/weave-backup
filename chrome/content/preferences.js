@@ -15,26 +15,6 @@ WeavePrefs.prototype = {
     return this._stringBundle;
   },
 
-  // FIXME: copied from sync.js - should unify
-  _openWindow: function WeaveWin_openWindow(type, uri, options) {
-    let wm = Cc["@mozilla.org/appshell/window-mediator;1"].
-      getService(Ci.nsIWindowMediator);
-    let window = wm.getMostRecentWindow(type);
-    if (window)
-      window.focus();
-     else {
-       var ww = Cc["@mozilla.org/embedcomp/window-watcher;1"].
-         getService(Ci.nsIWindowWatcher);
-       if (!options)
-         options = 'chrome, centerscreen, dialog, resizable=yes';
-       ww.activeWindow.openDialog(uri, '', options, null);
-     }
-  },
-
-  _openDialog: function WeaveWin_openDialog(type, uri) {
-    this._openWindow(type, uri, 'chrome,centerscreen,dialog,modal,resizable=no');
-  },
-
   _checkClientInfo: function WeavePrefs__checkClientInfo() {
     let richlistbox = document.getElementById('sync-clients-list');
     let clients = Weave.Clients.getClients();
@@ -92,17 +72,7 @@ WeavePrefs.prototype = {
   },
 
   openActivityLog: function WeavePrefs_openActivityLog() {
-    let wm = Cc["@mozilla.org/appshell/window-mediator;1"].
-      getService(Ci.nsIWindowMediator);
-    let logWindow = wm.getMostRecentWindow('Weave:Log');
-    if (logWindow)
-      logWindow.focus();
-     else {
-       var ww = Cc["@mozilla.org/embedcomp/window-watcher;1"].
-         getService(Ci.nsIWindowWatcher);
-       ww.openWindow(null, 'chrome://weave/content/log.xul', '',
-                     'chrome,centerscreen,dialog,modal,resizable=yes', null);
-     }
+    Weave.Utils.openWindow("Log", "log.xul");
   },
 
   doSyncNow: function WeavePrefs_doSyncNow() {
@@ -113,25 +83,15 @@ WeavePrefs.prototype = {
   },
 
   _startSync: function WeavePrefs__startSync() {
-    let wm = Cc["@mozilla.org/appshell/window-mediator;1"].
-      getService(Ci.nsIWindowMediator);
-    let window = wm.getMostRecentWindow("Weave:Status");
-    if (window)
-      window.focus();
-     else {
-       var ww = Cc["@mozilla.org/embedcomp/window-watcher;1"].
-         getService(Ci.nsIWindowWatcher);
-       let options = 'chrome,centerscreen,dialog,modal,resizable=yes';
-       ww.activeWindow.openDialog("chrome://weave/content/status.xul", '', options, null);
-     }
+    Weave.Utils.openDialog("Status", "status.xul");
   },
 
   openAdvancedPrefs: function WeavePrefs_openAdvancedPrefs() {
-    this._openDialog('Weave:AdvancedPrefs', 'chrome://weave/content/advanced.xul');
+    Weave.Utils.openDialog("AdvancedPrefs", "advanced.xul");
   },
 
   doSignOn: function WeavePrefs_doSignOn() {
-    this._openDialog('Weave:Login', 'chrome://weave/content/login.xul');
+    Weave.Utils.openDialog("Login", "login.xul");
     this.onPaneLoad();
   },
 
@@ -268,9 +228,7 @@ WeavePrefs.prototype = {
   },
 
   resetLoginCredentials: function WeavePrefs_resetLoginCredentials() {
-    let p = Cc["@mozilla.org/embedcomp/prompt-service;1"]
-      .getService(Ci.nsIPromptService);
-    if (p.confirm(null,
+    if (Weave.Svc.Prompt.confirm(null,
                   this._stringBundle.getString("reset.login.warning.title"),
                   this._stringBundle.getString("reset.login.warning"))) {
       Weave.Service.logout();
@@ -283,19 +241,15 @@ WeavePrefs.prototype = {
   },
 
   resetServerURL: function WeavePrefs_resetServerURL() {
-    let branch = Cc["@mozilla.org/preferences-service;1"].
-      getService(Ci.nsIPrefBranch);
-    branch.clearUserPref("extensions.weave.serverURL");
-    let serverURL = branch.getCharPref("extensions.weave.serverURL");
+    Weave.Svc.Prefs.reset("serverURL");
+    let serverURL = Weave.Svc.Prefs.get("serverURL");
     let serverField = document.getElementById('sync-server-field');
     serverField.setAttribute("value", serverURL);
     Weave.Service.logout();
   },
 
   resetLock: function WeavePrefs_resetLock() {
-    let p = Cc["@mozilla.org/embedcomp/prompt-service;1"]
-      .getService(Ci.nsIPromptService);
-    if (p.confirm(null,
+    if (Weave.Svc.Prompt.confirm(null,
                   this._stringBundle.getString("reset.lock.warning.title"),
                   this._stringBundle.getString("reset.lock.warning"))) {
        Weave.Service.resetLock();
@@ -312,9 +266,7 @@ WeavePrefs.prototype = {
   eraseLocal: function WeavePrefs_eraseLocal() {
     let button = document.getElementById("eraselocal-button");
     button.setAttribute("disabled", "true");
-    let p = Cc["@mozilla.org/embedcomp/prompt-service;1"]
-      .getService(Ci.nsIPromptService);
-    if (p.confirm(null,
+    if (Weave.Svc.Prompt.confirm(null,
                   this._stringBundle.getString("erase.local.warning.title"),
                   this._stringBundle.getString("erase.local.warning")))
       Weave.Service.wipeClient(this._startSync);
@@ -324,9 +276,7 @@ WeavePrefs.prototype = {
   eraseServer: function WeavePrefs_eraseServer() {
     let button = document.getElementById("eraseserver-button");
     button.setAttribute("disabled", "true");
-    let p = Cc["@mozilla.org/embedcomp/prompt-service;1"]
-      .getService(Ci.nsIPromptService);
-    if (p.confirm(null,
+    if (Weave.Svc.Prompt.confirm(null,
                   this._stringBundle.getString("erase.server.warning.title"),
                   this._stringBundle.getString("erase.server.warning")))
       Weave.Service.wipeServer(this._startSync);
@@ -336,9 +286,7 @@ WeavePrefs.prototype = {
   eraseRemote: function WeavePrefs_eraseRemote() {
     let button = document.getElementById("eraseremote-button");
     button.setAttribute("disabled", "true");
-    let p = Cc["@mozilla.org/embedcomp/prompt-service;1"]
-      .getService(Ci.nsIPromptService);
-    if (p.confirm(null,
+    if (Weave.Svc.Prompt.confirm(null,
                   this._stringBundle.getString("erase.remote.warning.title"),
                   this._stringBundle.getString("erase.remote.warning")))
       Weave.Service.wipeRemote(this._startSync);
@@ -346,9 +294,7 @@ WeavePrefs.prototype = {
   },
 
   resetClient: function WeavePrefs_resetClient() {
-    let p = Cc["@mozilla.org/embedcomp/prompt-service;1"]
-      .getService(Ci.nsIPromptService);
-    if (p.confirm(null,
+    if (Weave.Svc.Prompt.confirm(null,
                   this._stringBundle.getString("reset.client.warning.title"),
                   this._stringBundle.getString("reset.client.warning")))
       Weave.Service.resetClient();
