@@ -96,25 +96,6 @@ WeaveWindow.prototype = {
     return this._stringBundle;
   },
 
-  _openWindow: function WeaveWin_openWindow(type, uri, options) {
-    let wm = Cc["@mozilla.org/appshell/window-mediator;1"].
-      getService(Ci.nsIWindowMediator);
-    let window = wm.getMostRecentWindow(type);
-    if (window)
-      window.focus();
-     else {
-       var ww = Cc["@mozilla.org/embedcomp/window-watcher;1"].
-         getService(Ci.nsIWindowWatcher);
-       if (!options)
-         options = 'chrome, centerscreen, dialog, resizable=yes';
-       ww.activeWindow.openDialog(uri, '', options, null);
-     }
-  },
-
-  _openDialog: function WeaveWin_openDialog(type, uri) {
-    this._openWindow(type, uri, 'chrome,centerscreen,dialog,modal,resizable=no');
-  },
-
   _setStatus: function WeaveWin_setStatus(status) {
     let label;
     if (status == "offline")
@@ -197,7 +178,7 @@ WeaveWindow.prototype = {
   _onGetPassphrase: function WeaveWin_onGetPassphrase(identity) {
     let self = yield;
     this._log.info("getting passphrase...");
-//    this._openWindow('Weave:Login', 'chrome://weave/content/login.xul');
+//    Weave.Utils.openLogin();
     self.done();
   },
 
@@ -261,7 +242,7 @@ WeaveWindow.prototype = {
   shutDown: function WeaveWin_shutDown(event) {},
 
   doLoginPopup : function WeaveWin_doLoginPopup(event) {
-    this._openDialog('Weave:Login', 'chrome://weave/content/login.xul');
+    Weave.Utils.openLogin();
   },
 
   doLogin: function WeaveWin_doLogin(event) {
@@ -282,8 +263,7 @@ WeaveWindow.prototype = {
   },
 
   doOpenSetupWizard : function WeaveWin_doOpenSetupWizard(event) {
-      window.openDialog('chrome://weave/content/wizard.xul', '',
-        'chrome,centerscreen,dialog,resizable=yes', null);
+    Weave.Utils.openWizard();
   },
 
   doLogout: function WeaveWin_doLogout(event) {
@@ -291,11 +271,11 @@ WeaveWindow.prototype = {
   },
 
   doSync: function WeaveWin_doSync(event) {
-    this._openDialog('Weave:Status', 'chrome://weave/content/status.xul');
+    Weave.Utils.openStatus();
   },
 
   doShare: function WeaveWin_doShare(event) {
-    this._openDialog('Sync:Share', 'chrome://weave/content/share.xul');
+    Weave.Utils.openShare();
   },
 
   doCancelSync: function WeaveWin_doCancelSync(event) {
@@ -315,7 +295,7 @@ WeaveWindow.prototype = {
   },
 
   doOpenActivityLog: function WeaveWin_doOpenActivityLog(event) {
-    this._openWindow('Weave:Log', 'chrome://weave/content/log.xul');
+    Weave.Utils.openLog();
   },
 
   doPopup: function WeaveWin_doPopup(event) {

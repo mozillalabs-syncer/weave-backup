@@ -72,7 +72,7 @@ WeavePrefs.prototype = {
   },
 
   openActivityLog: function WeavePrefs_openActivityLog() {
-    Weave.Utils.openWindow("Log", "log.xul");
+    Weave.Utils.openLog();
   },
 
   doSyncNow: function WeavePrefs_doSyncNow() {
@@ -83,7 +83,7 @@ WeavePrefs.prototype = {
   },
 
   _startSync: function WeavePrefs__startSync() {
-    Weave.Utils.openDialog("Status", "status.xul");
+    Weave.Utils.openStatus();
   },
 
   openAdvancedPrefs: function WeavePrefs_openAdvancedPrefs() {
@@ -91,7 +91,7 @@ WeavePrefs.prototype = {
   },
 
   doSignOn: function WeavePrefs_doSignOn() {
-    Weave.Utils.openDialog("Login", "login.xul");
+    Weave.Utils.openLogin();
     this.onPaneLoad();
   },
 

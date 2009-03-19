@@ -190,26 +190,9 @@ BookmarksEventHandler.onPopupShowing = function BT_onPopupShowing_new(event) {
                               null, // no callback needed
                               selectedMenuFolder.node.itemId,
                               username);
-    } else {
-      // Pop the dialog box for sharing the selected folder:
-      let type = "Sync:Share";
-      let uri = "Chrome://weave/content/share.xul";
-      let options = null;
-
-      let wm = Cc["@mozilla.org/appshell/window-mediator;1"].
-        getService(Ci.nsIWindowMediator);
-      let window = wm.getMostRecentWindow(type);
-      if (window) {
-        window.focus();
-      } else {
-        var ww = Cc["@mozilla.org/embedcomp/window-watcher;1"].
-          getService(Ci.nsIWindowWatcher);
-        if (!options) {
-           options = 'chrome,centerscreen,dialog,modal,resizable=yes';
-        }
-        ww.activeWindow.openDialog(uri, '', options, selectedMenuFolder);
-      }
     }
+    else
+      Weave.Utils.openShare();
   }
 
   // add an item for "share folder", only if it's not already there
