@@ -9,7 +9,7 @@
         id="sync-status-dialog"
         title="&dialog.title;"
         windowtype="Weave:Status"
-        buttons="cancel"
+        buttons="accept"
         ondialogcancel="return WeaveStatus.doCancel();"
         onload="WeaveStatus.onLoad()"
         onunload="WeaveStatus.onUnload()">

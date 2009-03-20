@@ -58,6 +58,9 @@ let WeaveStatus = {
   },
 
   onLoad: function WeaveStatus_onLoad() {
+    this._statusDialog.getButton("accept").setAttribute("label",
+      this._stringBundle.getString("dialog.accept"));
+
     Observers.add("weave:service:sync:start", this.onSyncStart, this);
     Observers.add("weave:service:sync:finish", this.onSyncFinish, this);
     Observers.add("weave:service:sync:error", this.onSyncError, this);
