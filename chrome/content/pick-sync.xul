@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+
+<?xml-stylesheet href="chrome://global/skin/global.css" type="text/css"?>
+<?xml-stylesheet href="chrome://weave/content/pick-sync.css" type="text/css"?>
+
+<dialog xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        buttons="accept,cancel"
+        id="syncDialog"
+        ondialogaccept="return Sync.doSync();"
+        onload="Sync.onLoad();"
+        onunload="Sync.onUnload();"
+        windowtype="Weave:Sync"
+        >
+
+  <script type="application/x-javascript"
+          src="chrome://weave/content/load-weave.js"/>
+  <script type="application/x-javascript"
+          src="chrome://weave/content/pick-sync.js"/>
+
+  <stringbundleset>
+    <stringbundle id="syncStrings"
+                  src="chrome://weave/locale/pick-sync.properties"/>
+  </stringbundleset>
+
+  <hbox align="center">
+    <image id="syncIcon"/>
+    <label id="syncTitle" value=""/>
+  </hbox>
+
+  <groupbox id="dirBox">
+    <caption id="dirCaption"/>
+    <hbox>
+      <label id="dirDevice" value="[my computer]"/>
+      <menulist id="dirList" oncommand="Sync.updateDir();">
+        <menupopup>
+          <menuitem label="&lt;==&gt;" value="resetClient"/>
+          <menuitem label="&lt;==" value="wipeClient"/>
+          <menuitem label="  ==&gt;" value="wipeRemote"/>
+        </menupopup>
+      </menulist>
+      <label id="dirCloud" value="[weave cloud]"/>
+    </hbox>
+    <label id="dirDesc" value=""/>
+  </groupbox>
+
+  <groupbox id="dataBox">
+    <caption id="dataCaption"/>
+    <menulist id="dataList">
+      <menupopup>
+        <menuitem label="All Data" value=""/>
+      </menupopup>
+    </menulist>
+  </groupbox>
+</dialog>

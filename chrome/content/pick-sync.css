@@ -1,0 +1,12 @@
+#syncDialog {
+  width: 300px;
+}
+
+#syncIcon {
+  list-style-image: url("chrome://weave/skin/sync-32x32.png");
+}
+
+#syncTitle {
+  font-size: 14px;
+  font-weight: bold;
+}

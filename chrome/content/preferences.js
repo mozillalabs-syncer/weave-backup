@@ -5,6 +5,7 @@ var Cr = Components.results;
 function WeavePrefs() {
   this._log = Log4Moz.repository.getLogger("Chrome.Prefs");
   this._log.level = Log4Moz.Level["Debug"];
+  Observers.add("weave:service:sync:start", this._onSyncStart, this);
   Observers.add("weave:service:sync:finish", this._onSync, this);
   Weave.Utils.prefs.addObserver("", this, false);
 }
@@ -67,7 +68,17 @@ WeavePrefs.prototype = {
     this._checkClientInfo();
   },
 
+  _onSyncStart: function WeavePrefs__onSyncStart(subject, data) {
+    document.getElementById("sync-syncnow-button").
+      setAttribute("disabled", "true");
+    document.getElementById("eraseserver-button").
+      setAttribute("disabled", "true");
+  },
   _onSync: function WeavePrefs__onSync(subject, data) {
+    document.getElementById("sync-syncnow-button").
+      setAttribute("disabled", "false");
+    document.getElementById("eraseserver-button").
+      setAttribute("disabled", "false");
     this.onPaneLoad();
   },
 
@@ -76,14 +87,7 @@ WeavePrefs.prototype = {
   },
 
   doSyncNow: function WeavePrefs_doSyncNow() {
-    let syncNowButton = document.getElementById('sync-syncnow-button');
-    syncNowButton.setAttribute("disabled", "true");
-    this._startSync();
-    syncNowButton.setAttribute("disabled", "false");
-  },
-
-  _startSync: function WeavePrefs__startSync() {
-    Weave.Utils.openStatus();
+    Weave.Utils.openSync();
   },
 
   openAdvancedPrefs: function WeavePrefs_openAdvancedPrefs() {
@@ -256,48 +260,11 @@ WeavePrefs.prototype = {
     }
   },
 
-  resetSync: function WeavePrefs_resetSync() {
-    let button = document.getElementById("resetsync-button");
-    button.setAttribute("disabled", "true");
-    Weave.Service.resetClient(this._startSync);
-    button.setAttribute("disabled", "false");
-  },
-
-  eraseLocal: function WeavePrefs_eraseLocal() {
-    let button = document.getElementById("eraselocal-button");
-    button.setAttribute("disabled", "true");
-    if (Weave.Svc.Prompt.confirm(null,
-                  this._stringBundle.getString("erase.local.warning.title"),
-                  this._stringBundle.getString("erase.local.warning")))
-      Weave.Service.wipeClient(this._startSync);
-    button.setAttribute("disabled", "false");
-  },
-
   eraseServer: function WeavePrefs_eraseServer() {
-    let button = document.getElementById("eraseserver-button");
-    button.setAttribute("disabled", "true");
     if (Weave.Svc.Prompt.confirm(null,
                   this._stringBundle.getString("erase.server.warning.title"),
                   this._stringBundle.getString("erase.server.warning")))
-      Weave.Service.wipeServer(this._startSync);
-    button.setAttribute("disabled", "false");
-  },
-
-  eraseRemote: function WeavePrefs_eraseRemote() {
-    let button = document.getElementById("eraseremote-button");
-    button.setAttribute("disabled", "true");
-    if (Weave.Svc.Prompt.confirm(null,
-                  this._stringBundle.getString("erase.remote.warning.title"),
-                  this._stringBundle.getString("erase.remote.warning")))
-      Weave.Service.wipeRemote(this._startSync);
-    button.setAttribute("disabled", "false");
-  },
-
-  resetClient: function WeavePrefs_resetClient() {
-    if (Weave.Svc.Prompt.confirm(null,
-                  this._stringBundle.getString("reset.client.warning.title"),
-                  this._stringBundle.getString("reset.client.warning")))
-      Weave.Service.resetClient();
+      Weave.Service.wipeServer(Weave.Utils.openStatus);
   },
 
   observe: function WeaveSvc__observe(subject, topic, data) {
