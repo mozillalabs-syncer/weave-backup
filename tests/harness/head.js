@@ -205,7 +205,7 @@ function do_test_finished() {
 }
 
 function do_import_script(topsrcdirRelativePath) {
-  var scriptPath = environment["TOPSRCDIR"];
+  var scriptPath = environment.get("TOPSRCDIR");
   if (scriptPath.charAt(scriptPath.length - 1) != "/")
     scriptPath += "/";
   scriptPath += topsrcdirRelativePath;
@@ -220,7 +220,7 @@ function do_get_file(path, allowInexistent) {
     // the -a (absolute) modifier to generate NATIVE_TOPSRCDIR.
     var lf = Components.classes["@mozilla.org/file/local;1"]
                        .createInstance(Components.interfaces.nsILocalFile);
-    lf.initWithPath(environment["NATIVE_TOPSRCDIR"]);
+    lf.initWithPath(environment.get("NATIVE_TOPSRCDIR"));
   } catch (e) {
     // Relative -- and not-Windows per above
     lf = Components.classes["@mozilla.org/file/directory_service;1"]
@@ -229,7 +229,7 @@ function do_get_file(path, allowInexistent) {
 
     // We can't use appendRelativePath because it's not supposed to work with
     // paths containing "..", and this path might contain "..".
-    var topsrcdirComps = environment["NATIVE_TOPSRCDIR"].split("/");
+    var topsrcdirComps = environment.get("NATIVE_TOPSRCDIR").split("/");
     Array.prototype.unshift.apply(comps, topsrcdirComps);
   }
 

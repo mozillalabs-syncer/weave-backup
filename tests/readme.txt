@@ -2,19 +2,35 @@ About the Weave test suite
 
 Part 1: Setting up your environment to run the tests.
 
-To run these tests, you'll need the latest Gecko SDK installed.  It can be downloaded from http://ftp.mozilla.org/pub/mozilla.org/xulrunner/nightly/latest-trunk/
+To run these tests, you'll need XULRunner or Firefox 3.0+ installed.
 
 Now you'll need to set up your environment variables as follows:
 
-1. Add xulrunner-sdk/bin to your PATH
-2. set MOZSDKDIR to the location of xulrunner-sdk
-3. set TOPSRCDIR to the location of the top-level weave source code directory.
-4. set NATIVE_TOPSRCDIR to the location of the top-level weave source code directory, but expressed in the platform native format.  On Unix or Mac OS X this will be identical to TOPSRCDIR, but on Windows, NATIVE_TOPSRCDIR should be a Windows-style path to the same directory, with backslashes for separators.
+1. Set XULRUNNER_BIN to the location of the XULRunner or Firefox3.0+ executable.
+   Here are some possible values (but your executable might be elsewhere):
+
+   Linux:
+     /usr/bin/xulrunner
+     /usr/bin/firefox
+
+     Note: Firefox executables on distributions like Ubuntu that ship Firefox
+           as a XULRunner app won't work.  But those distributions all have
+           XULRunner installed, so just use the XULRunner executable on them.
+
+   Mac OS X:
+     /Library/Frameworks/XUL.framework/xulrunner-bin
+     /Applications/Firefox.app/Contents/MacOS/firefox-bin
+
+   Windows:
+     /c/Program\ Files/Mozilla\ Firefox/firefox.exe
+
+2. set TOPSRCDIR to the location of the top-level weave source code directory.
+
+3. set NATIVE_TOPSRCDIR to the location of the top-level weave source code directory, but expressed in the platform native format.  On Unix or Mac OS X this will be identical to TOPSRCDIR, but on Windows, NATIVE_TOPSRCDIR should be a Windows-style path to the same directory, with backslashes for separators.
 
 On Mac OS X, my ~/.profile looks like this, in part:
 
-        export PATH=$PATH:/opt/local/bin:~/xulrunner-sdk/bin
-        export MOZSDKDIR=~/xulrunner-sdk
+        export XULRUNNER_BIN=/Library/Frameworks/XUL.framework/xulrunner-bin
         export TOPSRCDIR=~/weave
         export NATIVE_TOPSRCDIR=~/weave
 

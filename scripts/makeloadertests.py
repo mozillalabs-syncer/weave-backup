@@ -13,7 +13,7 @@ LOADER_TEST_TEMPLATE = """
 
 function run_test() {
   dump("Attempting to load %(jsmodule_url)s\\n");
-  let module = loadInSandbox("%(jsmodule_url)s");
+  Components.utils.import("%(jsmodule_url)s");
 }
 
 """

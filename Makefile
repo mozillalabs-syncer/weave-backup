@@ -36,6 +36,15 @@
 #
 # ***** END LICENSE BLOCK *****
 
+xulrunner_bin ?= ${XULRUNNER_BIN}
+ifeq ($(xulrunner_bin),)
+  $(warning No 'xulrunner_bin' variable given)
+  $(warning It should point to the location of a XULRunner/Firefox executable)
+  $(warning For example: "make xulrunner_bin=/foo/bar/xulrunner")
+  $(warning Or set the XULRUNNER_BIN environment variable to point to it)
+  $(error)
+endif
+
 sdkdir ?= ${MOZSDKDIR}
 ifeq ($(sdkdir),)
   $(warning No 'sdkdir' variable given)
@@ -99,7 +108,6 @@ build: subst
 
 test: build
 	python scripts/makeloadertests.py
-	$(MAKE) -C src test-install
 	$(MAKE) -k -C tests/unit
 
 xpi_name := weave-$(weave_version)-$(xpi_type).xpi
@@ -116,6 +124,7 @@ xpi: build chrome/sync.jar $(xpi_files)
 
 clean:
 	$(MAKE) -C src clean
+	$(MAKE) -C tests/unit clean
 	rm -f $(dotin_files) $(xpi_name)
 
 help:
