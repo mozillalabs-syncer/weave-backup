@@ -487,27 +487,17 @@ var RemoteTabViewer = {
     this._panel.hidden = false;
     this._panel.width = container.boxObject.width;
     this._panel.height = container.boxObject.height;
-    /*  If we want the tab bar to still appear on the right side:
-     *     let width = tabContainer.boxObject.width;
-     * tabContainer.left = container.boxObject.width - width;
-     * syncedTabPanel.hidden = false;
-     * syncedTabPanel.width = container.boxObject.width - width;
-     */
     let tabEngine = Weave.Engines.get("tabs");
     this._remoteClients = tabEngine.getAllClients();
     let richlist = document.getElementById("remote-tabs-richlist");
-    let width = this._panel.width - 10;
-    // TODO is there a less awkward way of setting maxWidth and maxHeight?
-    richlist.style.maxWidth = width + "px";
-    richlist.style.maxHeight = (this._panel.height - 32) + "px";
-    this._populateTabs(richlist, width - 2);
+    this._populateTabs(richlist);
   },
 
   close: function() {
     this._panel.hidden = true;
   },
 
-  _populateTabs: function RemoteTabViewer__populateTabs(holder, width) {
+  _populateTabs: function RemoteTabViewer__populateTabs(holder) {
     /* Clear out all child elements from holder first, so we don't
      * end up adding duplicate columns: */
     let engine = Weave.Engines.get("tabs");
@@ -560,7 +550,6 @@ var RemoteTabViewer = {
       let newItem = document.createElement("richlistitem");
       newItem.setAttribute("type", "remotetab");
       holder.appendChild(newItem);
-      newItem.setWidth(width);
       let url = tab.urlHistory[0];
       let domain = Utils.makeURI(url).prePath;
       let favicon = domain + "/favicon.ico";

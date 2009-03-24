@@ -23,7 +23,7 @@
   <binding id="remotetab"
 	   extends="chrome://global/content/bindings/richlistbox.xml#richlistitem">
     <content>
-      <xul:vbox anonid="bounding-box" class="remote-tab-bounding-box">
+      <xul:vbox anonid="bounding-box" class="remote-tab-bounding-box" flex="1">
 	<xul:hbox align="start">
 	  <xul:image anonid="favicon" class="favicon"/>
 	  <xul:vbox>

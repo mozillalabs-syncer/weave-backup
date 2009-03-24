@@ -45,7 +45,7 @@
                   class="square-button-not-selected"/>
         </hbox>
       </hbox>
-      <richlistbox id="remote-tabs-richlist"
+      <richlistbox id="remote-tabs-richlist" flex="1"
 		   onselect="RemoteTabViewer.openSyncedTab(this, event);">
       </richlistbox>
     </vbox>
