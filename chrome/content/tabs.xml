@@ -26,13 +26,13 @@
       <xul:vbox anonid="bounding-box" class="remote-tab-bounding-box" flex="1">
 	<xul:hbox align="start">
 	  <xul:image anonid="favicon" class="favicon"/>
-	  <xul:vbox>
+	  <xul:vbox flex="1">
 	    <xul:label anonid="title" crop="right"/>
-	    <xul:hbox>
-	      <xul:label anonid="source-client" class="remote-tab-label"/>
-	      <xul:label anonid="tab-url" class="remote-tab-label" crop="right"/>
-	    </xul:hbox>
+            <xul:label anonid="tab-url" class="remote-tab-label" crop="right"/>
 	  </xul:vbox>
+          <xul:hbox pack="end" flex="1">
+            <xul:label anonid="source-client" class="remote-tab-label"/>
+          </xul:hbox>
 	</xul:hbox>
       </xul:vbox>
     </content>

@@ -553,7 +553,7 @@ var RemoteTabViewer = {
       let url = tab.urlHistory[0];
       let domain = Utils.makeURI(url).prePath;
       let favicon = domain + "/favicon.ico";
-      let sourceClient = "From " + record.getClientName();
+      let sourceClient = record.getClientName();
       newItem.updatePreview(tab.title, favicon, sourceClient, url);
       newItem.setTabData(tab);
     }
