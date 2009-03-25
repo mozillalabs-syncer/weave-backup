@@ -215,8 +215,10 @@ FennecWeaveGlue.prototype = {
           this._enableButtons(true);
       break;
       case "weave:service:sync:error":
-        let err = Weave.Service.mostRecentError;
+        let err = Weave.Service.detailedStatus.sync;
         if (err) {
+          // TODO do localization based on constants
+          // instead of using the bare error string
           this.setWeaveStatusField("fennec.sync.error.detail", [err]);
         } else {
           this.setWeaveStatusField("fennec.sync.error.generic");
@@ -379,7 +381,9 @@ FennecWeaveGlue.prototype = {
                                  onSuccess();
                                }
                              } else {
-                               let err = Weave.Service.mostRecentError;
+                               let err = Weave.Service.detailedStatus.sync;
+                               // TODO do localization based on constants
+                               // instead of using the bare error string
                                if (err)
 				 self.setWeaveStatusField("fennec.login.error.detail",
                                            [err]);
