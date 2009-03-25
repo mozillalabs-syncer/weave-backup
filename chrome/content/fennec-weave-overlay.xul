@@ -24,20 +24,19 @@
     <vbox id="synced-tabs-panel" style="-moz-stack-sizing: ignore;" 
           hidden="true" top="0" left="0">
       <hbox flex="1">
-        <hbox pack="start" flex="1">
+        <hbox pack="start" align="center" flex="1">
           <label value="&tabs.sortBy.label;" style="color:white;"/>
-          <button label="&tabs.sortBy.date.label;"
-                 oncommand="RemoteTabViewer.setSort('recency');"
-                 id="sort-tabs-recency"
-                 class="square-button-not-selected"/> 
-          <button label="&tabs.sortBy.title.label;"
-                 oncommand="RemoteTabViewer.setSort('alphabetical');"
-                 id="sort-tabs-alphabetical"
-                 class="square-button-not-selected"/>
-          <button label="&tabs.sortBy.source.label;"
-                 oncommand="RemoteTabViewer.setSort('client');"
-                 id="sort-tabs-client"
-                 class="square-button-not-selected"/>
+          <radiogroup id="sort-tabs-radioset">
+            <radio label="&tabs.sortBy.date.label;"
+                   oncommand="RemoteTabViewer.setSort('recency');"
+                   id="sort-tabs-recency"/>
+            <radio label="&tabs.sortBy.title.label;"
+                   oncommand="RemoteTabViewer.setSort('alphabetical');"
+                   id="sort-tabs-alphabetical"/>
+            <radio label="&tabs.sortBy.source.label;"
+                   oncommand="RemoteTabViewer.setSort('client');"
+                   id="sort-tabs-client"/>
+          </radiogroup>
         </hbox>
         <hbox pack="end" flex="1">
           <button label="Close"

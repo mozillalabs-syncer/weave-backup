@@ -483,14 +483,24 @@ FennecWeaveGlue.prototype = {
 var RemoteTabViewer = {
   _panel: null,
   _remoteClients: null,
-  _sortMode: 'client', // shouldn't be set here
 
   show: function RemoteTabViewer_show() {
+    // Show the panel, make sure it's the correct size
     let container = document.getElementById("browser-container");
     this._panel = document.getElementById("synced-tabs-panel");
     this._panel.hidden = false;
     this._panel.width = container.boxObject.width;
     this._panel.height = container.boxObject.height;
+
+    // Make sure the right radio button is selected for the current sort
+    // mode preference:
+    let prefName = "extensions.weave.tabs.sortMode";
+    let sortMode = gFennecWeaveGlue._pfs.getCharPref(prefName);
+    let btnSet = document.getElementById("sort-tabs-radioset");
+    let btn = document.getElementById("sort-tabs-" + sortMode);
+    btnSet.selectedItem = btn;
+
+    // Get all of the remote tabs and populate the list.
     let tabEngine = Weave.Engines.get("tabs");
     this._remoteClients = tabEngine.getAllClients();
     let richlist = document.getElementById("remote-tabs-richlist");
@@ -527,8 +537,6 @@ var RemoteTabViewer = {
     // Sort list according to sort mode:
     let prefName = "extensions.weave.tabs.sortMode";
     let sortMode = gFennecWeaveGlue._pfs.getCharPref(prefName);
-    let pressedBtn = document.getElementById("sort-tabs-" + sortMode);
-    pressedBtn.setAttribute("class", "square-button-selected");
     switch (sortMode) {
       case 'alphabetical':
         allTabs.sort(function(a, b) {
@@ -580,9 +588,6 @@ var RemoteTabViewer = {
 
   setSort: function RemoteTabViewer_setSort( sortMode ) {
     let prefName = "extensions.weave.tabs.sortMode";
-    let oldSortMode = gFennecWeaveGlue._pfs.getCharPref(prefName);
-    let btn = document.getElementById("sort-tabs-" + oldSortMode);
-    btn.setAttribute("class", "square-button-not-selected");
     gFennecWeaveGlue._pfs.setCharPref( prefName, sortMode );
     this.show();
   }

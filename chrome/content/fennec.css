@@ -33,15 +33,35 @@ richlistitem[type="remotetab"] {
     height: 32px;
 }
 
-.square-button-not-selected {
-    padding: 5px;
-    margin: 0px;
-    -moz-border-radius: 0px;
+/* re-theme radio buttons -- Note, this belongs in fennec's platform.css.*/
+radiogroup {
+  -moz-box-orient: horizontal;
+}
+radio {
+  border: 1px solid #000;
+  border-left: none;
+  background: gray;
+  margin: 0px;
+  padding: 6px;
+  -moz-box-align: center;
+  -moz-appearance: none;
 }
 
-.square-button-selected {
-    padding: 5px;
-    margin: 0px;
-    -moz-border-radius: 0px;
-    -moz-box-shadow: inset -2px -2px 10px -2px black;
+radio .radio-check-box1, .radio-check {
+  display: none;
+}
+
+radio:first-child {
+  border-left: 1px solid #000;
+  -moz-border-radius-topleft: 8px;
+  -moz-border-radius-bottomleft: 8px;
+}
+
+radio:last-child {
+  -moz-border-radius-topright: 8px;
+  -moz-border-radius-bottomright: 8px;
+}
+
+radio[selected] {
+  background: #fff;
 }
