@@ -227,8 +227,9 @@ WeavePrefs.prototype = {
   },
 
   doCreateAccount: function WeavePrefs_doCreateAccount() {
-    let url = "https://services.mozilla.com/";
-    setTimeout(function() { window.openUILinkIn(url, "tab"); }, 500);
+    Weave.Utils.openWizard();
+//    let url = "https://services.mozilla.com/";
+//    setTimeout(function() { window.openUILinkIn(url, "tab"); }, 500);
   },
 
   resetLoginCredentials: function WeavePrefs_resetLoginCredentials() {
