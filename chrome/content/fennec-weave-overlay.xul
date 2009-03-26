@@ -23,7 +23,7 @@
   <stack id="browser-container">
     <vbox id="synced-tabs-panel" style="-moz-stack-sizing: ignore;" 
           hidden="true" top="0" left="0">
-      <hbox flex="1">
+      <hbox>
         <hbox pack="start" align="center" flex="1">
           <label value="&tabs.sortBy.label;" style="color:white;"/>
           <radiogroup id="sort-tabs-radioset">

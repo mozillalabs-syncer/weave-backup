@@ -27,11 +27,11 @@
 	<xul:hbox align="start">
 	  <xul:image anonid="favicon" class="favicon"/>
 	  <xul:vbox flex="1">
-	    <xul:label anonid="title" crop="right"/>
-            <xul:label anonid="tab-url" class="remote-tab-label" crop="right"/>
+	    <xul:label anonid="title" class="remote-tab-title" crop="right"/>
+            <xul:label anonid="tab-url" class="remote-tab-url" crop="right"/>
 	  </xul:vbox>
           <xul:hbox pack="end" flex="1">
-            <xul:label anonid="source-client" class="remote-tab-label"/>
+            <xul:label anonid="source-client" class="remote-tab-source-client"/>
           </xul:hbox>
 	</xul:hbox>
       </xul:vbox>
@@ -88,7 +88,7 @@
             box.width = width + "px";
 	    box.style.maxWidth = width + "px";
 	  ]]>
-	</body>
+	</body>\
       </method>
     </implementation>
   </binding>

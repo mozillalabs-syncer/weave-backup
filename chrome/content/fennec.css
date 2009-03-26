@@ -12,23 +12,45 @@ richpref[type="disabled"] {
 
 richlistitem[type="remotetab"] {
     -moz-binding: url("chrome://weave/content/tabs.xml#remotetab");
+    padding-top: 2px;
+    padding-bottom: 5px;
 }
 
-.remote-tab-label {
+#remote-tabs-richlist {
+    margin-top: 5px;
+    margin-left: 0px;
+    margin-right: 0px;
+    margin-bottom: 0px;
+}
+
+.remote-tab-title {
     color: black;
     background-color: white;
-    font-size: smaller !important;
+    font-size: medium !important;
+}
+
+.remote-tab-url {
+    color: grey;
+    background-color: white;
+    font-size: small !important;
+}
+
+.remote-tab-source-client {
+    color: grey;
+    background-color: white;
+    font-size: small !important;
 }
 
 .remote-tab-bounding-box {
-    border-style: solid;
-    border-color: black;
-    border-width: 2px;
+    border-bottom-style: solid;
+    border-bottom-color: grey;
+    border-bottom-width: 1px;
     padding: 5px;
     overflow: hidden;
 }
 
 .favicon {
+    margin-right: 10px;
     width: 32px;
     height: 32px;
 }
