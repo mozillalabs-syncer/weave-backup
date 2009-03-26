@@ -36,8 +36,10 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-var Cc = Components.classes;
-var Ci = Components.interfaces;
+if (typeof(Cc) == "undefined")
+  var Cc = Components.classes;
+if (typeof(Ci) == "undefined")
+  var Ci = Components.interfaces;
 
 function WeaveWindow() {
   this._log = Log4Moz.repository.getLogger("Window");
@@ -75,6 +77,8 @@ function WeaveWindow() {
     this.onLoginFinish();
 
   Weave.Service.onWindowOpened();
+
+      this.doOpenSetupWizard();
 }
 WeaveWindow.prototype = {
   get _isTopBrowserWindow() {
@@ -112,7 +116,7 @@ WeaveWindow.prototype = {
 
     let button = document.getElementById("sync-menu-button");
     button.setAttribute("label", label);
-    button.setAttribute("image", "chrome://weave/skin/" + (status == "active" ? 
+    button.setAttribute("image", "chrome://weave/skin/" + (status == "active" ?
       "sync-throbber-16x16-active.apng" : "sync-16x16.png"));
   },
 
@@ -249,17 +253,12 @@ WeaveWindow.prototype = {
     if (Weave.Service.isLoggedIn)
       return;
 
-    /* XXX tmp disabled for 0.3
     let username = Weave.Svc.Prefs.get("username");
     let server = Weave.Svc.Prefs.get("serverURL");
-    if (false && (!username || username == 'nobody') &&
-        server == 'https://services.mozilla.com/') {
+    if (!username && server == 'https://services.mozilla.com/')
       this.doOpenSetupWizard();
-      return;
-    }
-     */
-
-    this.doLoginPopup();
+    else
+      this.doLoginPopup();
   },
 
   doOpenSetupWizard : function WeaveWin_doOpenSetupWizard(event) {
