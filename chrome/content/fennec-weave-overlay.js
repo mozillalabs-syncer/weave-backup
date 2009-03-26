@@ -163,9 +163,9 @@ FennecWeaveGlue.prototype = {
     let url;
     let lastVersion = this._pfs.getCharPref("extensions.weave.lastversion");
     if (lastVersion != Weave.WEAVE_VERSION) {
-      // TODO point this at a fennec-specific first-run page
       if (lastVersion == "firstrun")
-	url = "http://services.mozilla.com/firstrun/?version=" +
+        // Open the fennec-specific version of the first-run page.
+	url = "http://services.mozilla.com/fennec-firstrun/?version=" +
 	Weave.WEAVE_VERSION;
       else
 	url = "http://services.mozilla.com/updated/?version=" +
@@ -215,8 +215,10 @@ FennecWeaveGlue.prototype = {
           this._enableButtons(true);
       break;
       case "weave:service:sync:error":
-        let err = Weave.Service.mostRecentError;
+        let err = Weave.Service.detailedStatus.sync;
         if (err) {
+          // TODO do localization based on constants
+          // instead of using the bare error string
           this.setWeaveStatusField("fennec.sync.error.detail", [err]);
         } else {
           this.setWeaveStatusField("fennec.sync.error.generic");
@@ -379,7 +381,9 @@ FennecWeaveGlue.prototype = {
                                  onSuccess();
                                }
                              } else {
-                               let err = Weave.Service.mostRecentError;
+                               let err = Weave.Service.detailedStatus.sync;
+                               // TODO do localization based on constants
+                               // instead of using the bare error string
                                if (err)
 				 self.setWeaveStatusField("fennec.login.error.detail",
                                            [err]);
@@ -479,35 +483,35 @@ FennecWeaveGlue.prototype = {
 var RemoteTabViewer = {
   _panel: null,
   _remoteClients: null,
-  _sortMode: 'client', // shouldn't be set here
 
   show: function RemoteTabViewer_show() {
+    // Show the panel, make sure it's the correct size
     let container = document.getElementById("browser-container");
     this._panel = document.getElementById("synced-tabs-panel");
     this._panel.hidden = false;
     this._panel.width = container.boxObject.width;
     this._panel.height = container.boxObject.height;
-    /*  If we want the tab bar to still appear on the right side:
-     *     let width = tabContainer.boxObject.width;
-     * tabContainer.left = container.boxObject.width - width;
-     * syncedTabPanel.hidden = false;
-     * syncedTabPanel.width = container.boxObject.width - width;
-     */
+
+    // Make sure the right radio button is selected for the current sort
+    // mode preference:
+    let prefName = "extensions.weave.tabs.sortMode";
+    let sortMode = gFennecWeaveGlue._pfs.getCharPref(prefName);
+    let btnSet = document.getElementById("sort-tabs-radioset");
+    let btn = document.getElementById("sort-tabs-" + sortMode);
+    btnSet.selectedItem = btn;
+
+    // Get all of the remote tabs and populate the list.
     let tabEngine = Weave.Engines.get("tabs");
     this._remoteClients = tabEngine.getAllClients();
     let richlist = document.getElementById("remote-tabs-richlist");
-    let width = this._panel.width - 10;
-    // TODO is there a less awkward way of setting maxWidth and maxHeight?
-    richlist.style.maxWidth = width + "px";
-    richlist.style.maxHeight = (this._panel.height - 32) + "px";
-    this._populateTabs(richlist, width - 2);
+    this._populateTabs(richlist);
   },
 
   close: function() {
     this._panel.hidden = true;
   },
 
-  _populateTabs: function RemoteTabViewer__populateTabs(holder, width) {
+  _populateTabs: function RemoteTabViewer__populateTabs(holder) {
     /* Clear out all child elements from holder first, so we don't
      * end up adding duplicate columns: */
     let engine = Weave.Engines.get("tabs");
@@ -533,8 +537,6 @@ var RemoteTabViewer = {
     // Sort list according to sort mode:
     let prefName = "extensions.weave.tabs.sortMode";
     let sortMode = gFennecWeaveGlue._pfs.getCharPref(prefName);
-    let pressedBtn = document.getElementById("sort-tabs-" + sortMode);
-    pressedBtn.setAttribute("class", "square-button-selected");
     switch (sortMode) {
       case 'alphabetical':
         allTabs.sort(function(a, b) {
@@ -560,11 +562,10 @@ var RemoteTabViewer = {
       let newItem = document.createElement("richlistitem");
       newItem.setAttribute("type", "remotetab");
       holder.appendChild(newItem);
-      newItem.setWidth(width);
       let url = tab.urlHistory[0];
       let domain = Utils.makeURI(url).prePath;
       let favicon = domain + "/favicon.ico";
-      let sourceClient = "From " + record.getClientName();
+      let sourceClient = record.getClientName();
       newItem.updatePreview(tab.title, favicon, sourceClient, url);
       newItem.setTabData(tab);
     }
@@ -587,9 +588,6 @@ var RemoteTabViewer = {
 
   setSort: function RemoteTabViewer_setSort( sortMode ) {
     let prefName = "extensions.weave.tabs.sortMode";
-    let oldSortMode = gFennecWeaveGlue._pfs.getCharPref(prefName);
-    let btn = document.getElementById("sort-tabs-" + oldSortMode);
-    btn.setAttribute("class", "square-button-not-selected");
     gFennecWeaveGlue._pfs.setCharPref( prefName, sortMode );
     this.show();
   }
