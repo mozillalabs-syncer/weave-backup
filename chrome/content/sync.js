@@ -77,8 +77,6 @@ function WeaveWindow() {
     this.onLoginFinish();
 
   Weave.Service.onWindowOpened();
-
-      this.doOpenSetupWizard();
 }
 WeaveWindow.prototype = {
   get _isTopBrowserWindow() {
