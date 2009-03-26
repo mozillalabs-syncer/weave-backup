@@ -17,10 +17,8 @@
         ondialogcancel="return Login.doCancel();"
         defaultButton="extra2">
     
-  <script type="application/x-javascript"
-          src="chrome://weave/content/load-weave.js"/>
-  <script type="application/x-javascript"
-	  src="chrome://weave/content/login.js"/>
+  <script type="application/x-javascript" src="chrome://weave/content/load-weave.js"/>
+  <script type="application/x-javascript" src="chrome://weave/content/login.js"/>
 
   <stringbundleset id="stringbundleset">
     <stringbundle id="weaveStringBundle" src="chrome://weave/locale/login.properties"/>
@@ -74,6 +72,5 @@
       <image id="loginStatusIcon"/>
       <label id="loginStatus"/>
     </hbox>
-    
   </vbox>
 </dialog>
