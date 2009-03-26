@@ -38,10 +38,11 @@
 
 const SYNC_NS_ERROR_LOGIN_ALREADY_EXISTS = 2153185310;
 
-const REGISTER_STATUS    = "api/register/regopen/";
-const REGISTER_URL       = "api/register/new/";
-const CHECK_USERNAME_URL = "api/register/check/";
-const CHECK_EMAIL_URL    = "api/register/chkmail/";
+const REGISTER_STATUS    = "0.3/api/register/regopen/";
+const CHECK_USERNAME_URL = "0.3/api/register/checkuser/";
+const CHECK_EMAIL_URL    = "0.3/api/register/checkmail/";
+const REGISTER_URL       = "0.3/api/register/new";
+const CAPTCHA_URL        = "0.3/api/register/captcha/";
 const CAPTCHA_IMAGE_URL  = "http://api.recaptcha.net/image";
 
 const PROGRESS_COLOR     = "black";
@@ -51,493 +52,330 @@ const SUCCESS_COLOR      = "blue";
 
 const SERVER_TIMEOUT = 15000;
 
-var Cc = Components.classes;
-var Ci = Components.interfaces;
+const Cc = Components.classes;
+const Ci = Components.interfaces;
+const Cu = Components.utils;
 
-function SyncWizard() {
-  this._init();
+function $(id) {
+  if (id[0] == '.')
+    return document.getElementsByClassName(id);
+  return document.getElementById(id);
 }
 
-SyncWizard.prototype = {
-
+WeaveWiz = {
   registrationClosed: false,
 
-  __os: null,
-  get _os() {
-    if (!this.__os)
-      this.__os = Cc["@mozilla.org/observer-service;1"]
-                  .getService(Ci.nsIObserverService);
-    return this.__os;
-  },
+  init: function WeaveWiz_init() {
+    WeaveWiz._log = Log4Moz.repository.getLogger("Chrome.Wizard");
+    WeaveWiz._log.info("Initializing setup wizard");
 
-  get _stringBundle() {
-    let stringBundle = document.getElementById("weaveStringBundle");
-    this.__defineGetter__("_stringBundle",
-                          function() { return stringBundle; });
-    return this._stringBundle;
-  },
+    WeaveWiz._serverURL = Weave.Svc.Prefs.get("tmpServerURL");
 
-  _init : function SyncWizard__init() {
-    let branch = Cc["@mozilla.org/preferences-service;1"].
-                     getService(Ci.nsIPrefService).getBranch(Weave.PREFS_BRANCH);
-
-    this._serverURL = branch.getCharPref("serverURL");
-
-    this._log = Log4Moz.Service.getLogger("Chrome.Wizard");
-
-    if (Weave.Service.isLoggedIn) {
+    if (Weave.Service.isLoggedIn)
       Weave.Service.logout();
-    }
 
-    this._log.info("Initializing setup wizard");
-
-    this._os.addObserver(this, "weave:service:login:finish", false);
-    this._os.addObserver(this, "weave:service:login:error", false);
-    this._os.addObserver(this, "weave:service:verify-login:finish", false);
-    this._os.addObserver(this, "weave:service:verify-login:error", false);
-    this._os.addObserver(this, "weave:service:verify-passphrase:finish", false);
-    this._os.addObserver(this, "weave:service:verify-passphrase:error", false);
-    this._os.addObserver(this, "weave:service:logout:finish", false);
-    this._os.addObserver(this, "weave:service:sync:start", false);
-    this._os.addObserver(this, "weave:service:sync:finish", false);
-    this._os.addObserver(this, "weave:service:sync:error", false);
+    Observers.add("weave:service:login:finish", WeaveWiz.onLogin);
+    Observers.add("weave:service:login:error", WeaveWiz.onLoginError);
+    Observers.add("weave:service:logout:finish", WeaveWiz.onLogout);
+    Observers.add("weave:service:verify-login:finish", WeaveWiz.onVerifyLogin);
+    Observers.add("weave:service:verify-login:error", WeaveWiz.onVerifyLoginError);
+    Observers.add("weave:service:verify-passphrase:finish", WeaveWiz.onVerifyPassphrase);
+    Observers.add("weave:service:verify-passphrase:error", WeaveWiz.onVerifyPassphraseError);
+    Observers.add("weave:service:sync:start", WeaveWiz.onSyncStart);
+    Observers.add("weave:service:sync:finish", WeaveWiz.onSyncFinish);
+    Observers.add("weave:service:sync:error", WeaveWiz.onSyncError);
 
     // Initial background request to check if registration is open or closed.
-    // this.checkRegistrationStatus();
+    // WeaveWiz.checkRegistrationStatus();
   },
 
-  onWizardShutdown: function SyncWizard_onWizardshutdown() {
-    this._log.info("Shutting down setup wizard");
+  onWizardShutdown: function WeaveWiz_onWizardshutdown() {
+    WeaveWiz._log.info("Closing setup wizard");
 
-    this._os.removeObserver(this, "weave:service:login:finish");
-    this._os.removeObserver(this, "weave:service:login:error");
-    this._os.removeObserver(this, "weave:service:verify-login:finish");
-    this._os.removeObserver(this, "weave:service:verify-login:error");
-    this._os.removeObserver(this, "weave:service:verify-passphrase:finish", false);
-    this._os.removeObserver(this, "weave:service:verify-passphrase:error", false);
-    this._os.removeObserver(this, "weave:service:logout:finish");
-    this._os.removeObserver(this, "weave:service:sync:start");
-    this._os.removeObserver(this, "weave:service:sync:finish");
-    this._os.removeObserver(this, "weave:service:sync:error");
+    Observers.remove("weave:service:login:finish", WeaveWiz.onLogin);
+    Observers.remove("weave:service:login:error", WeaveWiz.onLoginError);
+    Observers.remove("weave:service:logout:finish", WeaveWiz.onLogout);
+    Observers.remove("weave:service:verify-login:finish", WeaveWiz.onVerifyLogin);
+    Observers.remove("weave:service:verify-login:error", WeaveWiz.onVerifyLoginError);
+    Observers.remove("weave:service:verify-passphrase:finish", WeaveWiz.onVerifyPassphrase);
+    Observers.remove("weave:service:verify-passphrase:error", WeaveWiz.onVerifyPassphraseError);
+    Observers.remove("weave:service:sync:start", WeaveWiz.onSyncStart);
+    Observers.remove("weave:service:sync:finish", WeaveWiz.onSyncFinish);
+    Observers.remove("weave:service:sync:error", WeaveWiz.onSyncError);
   },
 
-
-  onPageShow: function SyncWizard_onPageShow(pageId) {
-    let wizard = document.getElementById('sync-wizard');
-
-    switch(pageId) {
-      case "sync-wizard-intro":
-        let radio = document.getElementById("acceptOrDecline");
-        radio.value = "false";
-        wizard.canAdvance = false;
-        break;
-
-      case "sync-wizard-welcome":
-        wizard.canAdvance = false;
-        break;
-
-      case "sync-wizard-verify":
-        if (document.getElementById("verify-check").value == "true")
-          wizard.canAdvance = true;
-        else
-          wizard.canAdvance = false;
-        break;
-
-      case "sync-wizard-create1":
-
-        // Check to see if registration is closed, and if so display a friendly message
-        // to the would be user and then push them back to the registration menu.
-        if (this.registrationClosed) {
-            let p = Cc["@mozilla.org/embedcomp/prompt-service;1"]
-                      .getService(Ci.nsIPromptService);
-            p.alert(null,this._stringBundle.getString("registration-closed.title"),
-                      this._stringBundle.getString("registration-closed.label"));
-            wizard.goTo("sync-wizard-welcome");
-        }
-
-        if (document.getElementById("create1-check").value == "true")
-          wizard.canAdvance = true;
-        else
-          wizard.canAdvance = false;
-        break;
-
-      case "sync-wizard-create2":
-        if (document.getElementById("create2-check").value == "true")
-	      wizard.canAdvance = true;
-	    else
-	      wizard.canAdvance = false;
-	    break;
-
-      case "sync-wizard-create3":
-        if (document.getElementById("create3-check").value == "true") {
-          //document.getElementById("captchaInput").value = "";
-          wizard.canAdvance = true;
-        }
-        else {
-          document.getElementById("captcha").addEventListener("pageshow", function() {gSyncWizard.onLoadCaptcha()}, false, true);
-          document.getElementById("captcha").setAttribute("src", this._serverURL + REGISTER_URL);
-          wizard.canAdvance = false;
-        }
-        break;
-
-      case "sync-wizard-data": {
-        let deviceName = document.getElementById('sync-instanceName-field');
-        let deviceType = document.getElementById('sync-instanceType-field');
-        let path = document.getElementById('path').value;
-        let username;
-
-        if (path == "verify")
-          username = document.getElementById('sync-username-field').value;
-        else if (path == "create")
-          username = document.getElementById('sync-username-create-field').value;
-
-        let branch = Cc["@mozilla.org/preferences-service;1"].
-                     getService(Ci.nsIPrefService).getBranch(Weave.PREFS_BRANCH + "engine.");
-        // TODO: Move this into a separate module for use in prefs and wizard
-        document.getElementById('sync-wizard-bookmarks').checked = branch.getBoolPref("bookmarks");
-        document.getElementById('sync-wizard-history').checked = branch.getBoolPref("history");
-        document.getElementById('sync-wizard-cookies').checked = branch.getBoolPref("cookies");
-        document.getElementById('sync-wizard-passwords').checked = branch.getBoolPref("passwords");
-        document.getElementById('sync-wizard-tabs').checked = branch.getBoolPref("tabs");
-        document.getElementById('sync-wizard-forms').checked = branch.getBoolPref("forms");
-
-	if(deviceName)
-          branch.setCharPref("client.name", deviceName);
-
-        if(deviceType)
-          branch.setCharPref("client.type", deviceType);
-
-        wizard.canAdvance = true;
-        break;
-      }
-      case "sync-wizard-final": {
-        // display the username
-        let accountDetails = document.getElementById('final-account-details');
-        let path = document.getElementById('path').value;
-        let username;
-
-        if (path == "verify")
-          username = document.getElementById('sync-username-field').value;
-        else if (path == "create")
-          username = document.getElementById('sync-username-create-field').value;
-        accountDetails.value = this._stringBundle.getFormattedString("final-account-value.label", [username]);
-
-        // get the preferences
-        var prefArray = new Array();
-        if (document.getElementById('sync-wizard-bookmarks').checked)
-          prefArray.push(this._stringBundle.getString("bookmarks.label"));
-        if (document.getElementById('sync-wizard-history').checked)
-          prefArray.push(this._stringBundle.getString("history.label"));
-        if (document.getElementById('sync-wizard-cookies').checked)
-          prefArray.push(this._stringBundle.getString("cookies.label"));
-        if (document.getElementById('sync-wizard-passwords').checked)
-          prefArray.push(this._stringBundle.getString("passwords.label"));
-        if (document.getElementById('sync-wizard-tabs').checked)
-          prefArray.push(this._stringBundle.getString("tabs.label"));
-        if (document.getElementById('sync-wizard-forms').checked)
-          prefArray.push(this._stringBundle.getString("formdata.label"));
-        var prefString = "";
-        for (var i=0; i<prefArray.length-1; i++)
-          prefString = prefString + prefArray[i] + ", ";
-          prefString = prefString + prefArray[prefArray.length-1];
-
-        // display the preferences
-        let prefDetails = document.getElementById('final-pref-details');
-        prefDetails.value = prefString;
-
-        // explain sync
-        let syncDetails = document.getElementById('final-sync-details');
-        syncDetails.value = this._stringBundle.getString("final-sync-value.label");
-
-        if (document.getElementById("sync-success").value == "true")
-          wizard.canAdvance = true;
-        else if (document.getElementById("installation-started").value == "false")
-          wizard.canAdvance = true;
-        else
-          wizard.canAdvance = false;
-        break;
-      }
-      default:
-        this._log.warn("Unknown wizard page requested: " + pageId);
-        break;
+  // XXX unused
+  _lazyDOM: function WeaveWiz__lazyDOM(obj) {
+    for (let prop in obj) {
+      let thing = obj[prop];
+      if (typeof(thing) == "object")
+        Weave_lazyDOM(thing);
+      else
+        Weave.Utils.lazy2(obj, prop, function() document.getElementById(thing));
     }
   },
 
   /////INTRO SCREEN/////
 
-  onChangeTermsRadio: function SyncWizard_onChangeEULARadio() {
-    let wizard = document.getElementById('sync-wizard');
-    let radio = document.getElementById("acceptOrDecline");
-
-    wizard.canAdvance = (radio.value == "true");
+  onShowIntro: function WeaveWiz_onShowIntro() {
+    WeaveWiz._log.debug("Showing intro page");
+    $('tos_radio').value = "false";
+    $('weave-setup-wizard').canAdvance = false;
   },
 
+  onChangeTermsRadio: function WeaveWiz_onChangeEULARadio() {
+    $('weave-setup-wizard').canAdvance = ($('tos_radio').value == "true");
+  },
+
+  onFinishIntro: function WeaveWiz_onFinishIntro() {
+    return ($('tos_radio').value == "true");
+  },
 
   /////WELCOME SCREEN/////
 
-
-  /* setTitles() - Called by welcome screen to set upcoming page titles.
-   */
-  setTitles: function SyncWizard_setTitles(type) {
-    let wizard = document.getElementById('sync-wizard');
-    let dataPage  = wizard.getPageById('sync-wizard-data');
-    let finalPage = wizard.getPageById('sync-wizard-final');
-
-    // The hidden "path" label- for later use so we know which path the user took.
-    let path = document.getElementById('path');
-
-    if (type == "verify") {
-      dataPage.setAttribute("label", this._stringBundle.getString("data-verify.title"));
-      finalPage.setAttribute("label", this._stringBundle.getString("final-verify.title"));
-      path.value = "verify";
-    }
-    else if (type == "create") {
-      dataPage.setAttribute("label", this._stringBundle.getString("data-create.title"));
-      finalPage.setAttribute("label", this._stringBundle.getString("final-create.title"));
-      path.value = "create";
-    }
+  onShowWelcome: function WeaveWiz_onShowWelcome() {
+    WeaveWiz._log.debug("Showing welcome page");
+    $('weave-setup-wizard').canAdvance = false;
   },
 
-  /* advanceTo() - Called by buttons on account type screen.
-   *  Advances to the specified page.
-   */
-  advanceTo: function SyncWizard_advanceTo(pageid) {
-    let wizard = document.getElementById('sync-wizard');
-    wizard.canAdvance = true;
-    wizard.advance(pageid);
+  onFinishWelcome: function WeaveWiz_onFinishWelcome() {
+    return true;
   },
 
+  // Called by buttons on account type screen. Advances to the specified page.
+  advanceTo: function WeaveWiz_advanceTo(pageid) {
+    WeaveWiz._log.debug("Jumping to " + pageid);
+    $('weave-setup-wizard').canAdvance = true;
+    $('weave-setup-wizard').advance(pageid);
+  },
 
   /////ACCOUNT VERIFICATION/////
 
-  /* checkVerificationFields() - Called oninput from all fields, and onadvance from verification page
-   *  Checks that all fields have values and that the login and passphrase were verified
-   */
-  checkVerificationFields: function SyncWizard_checkVerify() {
-	let wizard = document.getElementById('sync-wizard');
+  onShowVerify: function WeaveWiz_onShowVerify() {
+    WeaveWiz._log.debug("Showing verify page");
+    $('weave-setup-wizard').canAdvance = WeaveWiz._verifyCheck;
+  },
 
-	let statusLabel = document.getElementById('verify-account-error');
-    let username    = document.getElementById('sync-username-field').value;
-    let password    = document.getElementById('sync-password-field').value;
-    let passphrase  = document.getElementById('sync-passphrase-field').value;
+  onFinishVerify: function WeaveWiz_onFinishVerify() {
+    return WeaveWiz.checkVerificationFields();
+  },
 
-    let loginVerified = this._stringBundle.getString("verify-success.label");
+  // Called oninput from all fields, and onadvance from verification page.
+  // Checks that all fields have values and that the login and passphrase were verified
+  checkVerificationFields: function WeaveWiz_checkVerify() {
+    WeaveWiz._log.trace("Checking verification fields");
 
-    wizard.canAdvance = false;
+    $('weave-setup-wizard').canAdvance = false;
+    WeaveWiz._verifyCheck = false;
 
-    if (!(username && password && passphrase)) {
-      wizard.canAdvance = false;
+    if (!($('username').value && $('password').value && $('passphrase').value))
       return false;
-    }
 
     // Make sure the login has been verified
     // user could quickly enter an incorrect password and advance if malicious:)
     // to prevent this, add a call to Weave.Service.login(), but this is redundant for now
-    if (document.getElementById('login-verified').value == "true" &&
-        document.getElementById('passphrase-verified').value == "true") {
-	  wizard.canAdvance = true;
-      document.getElementById('verify-check').value = "true";
-	  return true;
+    if (WeaveWiz._loginCheck && WeaveWiz._passphraseCheck) {
+      $('weave-setup-wizard').canAdvance = true;
+      WeaveWiz._verifyCheck = true;
+      return true;
     }
 
-    wizard.canAdvance = false;
-    document.getElementById('verify-check').value = "false";
     return false;
   },
 
-  /* verifyLogin() - Called when username or password field is changed.
-   *  Asychronously tests the login on the server.
-   */
-  verifyLogin: function SyncWizard_verifyLogin() {
-    let log = this._log;
-    let wizard = document.getElementById("sync-wizard");
-    let statusLabel = document.getElementById("verify-account-error");
-    let statusLink  = document.getElementById("verify-account-error-link");
-    let statusIcon  = document.getElementById("verify-account-icon");
+  // Called when username or password field is changed.
+  // Asychronously tests the login on the server.
+  verifyLogin: function WeaveWiz_verifyLogin() {
+    WeaveWiz._log.debug("Verifying login");
 
-    let username = document.getElementById("sync-username-field").value;
-    let password = document.getElementById("sync-password-field").value;
-
-    let progress = this._stringBundle.getString("verify-progress.label");
-
-    let loginVerified = document.getElementById("login-verified");
+    let progress = $('strings').getString("verify-progress.label");
 
     // Don't allow advancing until we verify the account.
-    wizard.canAdvance = false;
-    document.getElementById("login-verified").value = "false";
+    $('weave-setup-wizard').canAdvance = false;
+    WeaveWiz._loginCheck = false;
 
     // Check for empty username or password fields
-    if (!username || !password) {
-      statusIcon.hidden = true;
-      statusLabel.value = "";
+    if (!$('username').value || !$('password').value) {
+      $('account-error-icon').hidden = true;
+      $('account-error-label').value = "";
       return;
     }
 
     // Ok to verify, set the status and throbber
-    statusIcon.hidden  = false;
-    statusLink.hidden  = true;
-    statusLabel.hidden = false;
-    statusLabel.value  = progress;
-    statusLabel.style.color = PROGRESS_COLOR;
+    $('account-error-icon').hidden = false;
+    $('account-error-link').hidden = true;
+    $('account-error-label').hidden = false;
+    $('account-error-label').value = progress;
+    $('account-error-label').style.color = PROGRESS_COLOR;
 
     // The observer will handle success and failure notifications
     // checkVerificationFields() will take care of allowing advance if this works
-    log.info("Verifying username/password...");
-    Weave.Service.verifyLogin(null, username, password);
+    WeaveWiz._log.info("Verifying username/password...");
+    Weave.Service.verifyLogin(null, $('username').value, $('password').value);
 
     // In case the server is hanging...
     setTimeout(function() {
-            if (loginVerified.value == "false") {
-              log.info("Server timeout (username/password verification)");
-	      statusIcon.hidden = true;
-	      statusLabel.value = this._stringBundle.getString("serverTimeoutError.label");
-	      statusLabel.style.color = SERVER_ERROR_COLOR;
-            }
-	  }, SERVER_TIMEOUT);
+      if (loginVerified.value == "false") {
+        WeaveWiz._log.info("Server timeout (username/password verification)");
+	$('account-error-icon').hidden = true;
+	$('account-error-label').value = $('strings').getString("serverTimeoutError.label");
+	$('account-error-label').style.color = SERVER_ERROR_COLOR;
+      }
+    }, SERVER_TIMEOUT);
   },
 
-  /* verifyPassphrase() - Called when passphrase field changes.
-   * Eventually this should actually verify that the passphrase works. :-)
-   */
-  verifyPassphrase : function SyncWizard_verifyPassphrase() {
-    let log = this._log;
-    let wizard = document.getElementById("sync-wizard");
-    let statusLabel = document.getElementById("verify-passphrase-error");
-    let statusLink  = document.getElementById("verify-passphrase-error-link");
-    let statusIcon  = document.getElementById("verify-passphrase-icon");
+  // Called when passphrase field changes.
+  // Eventually this should actually verify that the passphrase works. :-)
+  verifyPassphrase : function WeaveWiz_verifyPassphrase() {
+    WeaveWiz._log.debug("Verifying passphrase");
 
-    let username = document.getElementById("sync-username-field").value;
-    let password = document.getElementById("sync-password-field").value;
-    let passphrase = document.getElementById("sync-passphrase-field").value;
-
-    let progress = this._stringBundle.getString("passphrase-progress.label");
-
-    let passphraseVerified = document.getElementById("passphrase-verified");
+    let progress = $('strings').getString("passphrase-progress.label");
 
     // Don't allow advancing until we verify the account.
-	wizard.canAdvance = false;
-	document.getElementById("passphrase-verified").value = "false";
+    $('weave-setup-wizard').canAdvance = false;
+    WeaveWiz._passphraseCheck = false;
 
     // Check for empty passphrase field
     if (!passphrase) {
-      statusIcon.hidden = true;
-      statusLabel.value = "";
+      Wiz.Verify.statusIcon.hidden = true;
+      Wiz.Verified.passphraseLabel.value = "";
       return;
     }
 
     // Ok to verify, set the status and throbber
-    statusIcon.hidden  = false;
-    statusLink.hidden  = true;
-    statusLabel.hidden = false;
-    statusLabel.value  = progress;
-    statusLabel.style.color = PROGRESS_COLOR;
+    Wiz.Verify.statusIcon.hidden  = false;
+    $('passphrase-error-link').hidden  = true;
+    $('passphrase-error-label').hidden = false;
+    $('passphrase-error-label').value  = progress;
+    $('passphrase-error-label').style.color = PROGRESS_COLOR;
 
     // The observer will handle success and failure notifications
     // checkVerificationFields() will take care of allowing advance if this works
-    log.info("Verifying passphrase...");
-    Weave.Service.verifyPassphrase(null, username, password, passphrase);
+    WeaveWiz._log.info("Verifying passphrase...");
+    Weave.Service.verifyPassphrase(null, $('username').valu, $('password').value, $('passphrase').value);
 
     // In case the server is hanging...
-    let stringBundle = this._stringBundle;
+    let strings = $('strings');
     setTimeout(function() {
             if (statusLabel.value == progress) {
-	              log.info("Server timeout (passphrase verification)");
-		      statusIcon.hidden = true;
-                      statusLabel.value = stringBundle.getString("serverTimeoutError.label");
-		      statusLabel.style.color = SERVER_ERROR_COLOR;
+	      WeaveWiz._log.info("Server timeout (passphrase verification)");
+	      $('passphrase-error-icon').hidden = true;
+              $('passphrase-error-label').value = strings.getString("serverTimeoutError.label");
+	      $('passphrase-error-label').style.color = SERVER_ERROR_COLOR;
             }
 	  }, SERVER_TIMEOUT);
   },
 
-  /* acceptExistingAccount() - Sets Weave properties so they are stored in login manager
-   *  Do not call until final wizard screen in case the user cancels setup.
-   */
-  acceptExistingAccount: function SyncWizard_acceptExistingAccount() {
-    let path = document.getElementById('path').value;
-    let username, password, passphrase;
+  // Sets Weave properties so they are stored in login manager
+  // Do not call until final wizard screen in case the user cancels setup.
+  acceptExistingAccount: function WeaveWiz_acceptExistingAccount() {
+    WeaveWiz._log.debug("Saving username, password, passphrase in login manager");
 
-    if (path == "verify") {
-      username = document.getElementById('sync-username-field').value;
-      password = document.getElementById('sync-password-field').value;
-      passphrase = document.getElementById('sync-passphrase-field').value;
+    // Setting the Weave.Service properties results in this data being
+    // saved in the Firefox login manager
+    if (WeaveWiz._path == "verify") {
+      Weave.Service.username = Wiz.Verify.username.value;
+      Weave.Service.password = Wiz.Verify.password.value;
+      Weave.Service.passphrase = Wiz.Verify.passphrase.value;
+    } else {
+      Weave.Service.username = $('username-create-field').value;
+      Weave.Service.password = $('password-create-field').value;
+      Weave.Service.passphrase = $('passphrase-create-field').value;
     }
-    else if (path == "create") {
-      username = document.getElementById('sync-username-create-field').value;
-      password = document.getElementById('sync-password-create-field').value;
-      passphrase = document.getElementById('sync-passphrase-create-field').value;
-    }
-
-    // Setting these properties (really getters) results in this data being
-    // saved in the Firefox login manager.
-    this._log.info("Saving username, password, passphrase in login manager");
-    Weave.Service.username = username;
-    Weave.Service.password = password;
-    Weave.Service.passphrase = passphrase;
-
     return true;
   },
 
-  /* checkRegistrationStatus() - Called on Wizard load to see if registration is closed.
-   *   Sets boolean on gSyncWizard.registrationClosed.
-   */
-  checkRegistrationStatus: function SyncWizard_checkRegistrationStatus() {
+  // Called on Wizard load to see if registration is closed.
+  // Sets boolean on WeaveWiz.registrationClosed.
+  checkRegistrationStatus: function WeaveWiz_checkRegistrationStatus() {
+    WeaveWiz._log.debug("Checking registration status");
 
-    let log = this._log;
-    let httpRequest = new XMLHttpRequest();
-    let url = this._serverURL + REGISTER_STATUS;
-
-    log.info("Checking registration status: " + url);
-
-    httpRequest.open('GET', url, true);
-    httpRequest.onreadystatechange = function() {
-      if (httpRequest.readyState == 4) {
-        if (httpRequest.status == 200) {
-          if (httpRequest.responseText == 0) {
-            log.info("Registration closed");
-            gSyncWizard.registrationClosed = true;
+    let res = new Weave.Resource(WeaveWiz._serverURL + REGISTER_STATUS);
+    res.authenticator = new Weave.NoOpAuthenticator();
+    res.get(
+      function(data) {
+        if (res.lastChannel.responseStatus == 200) {
+          if (data == 0) {
+            WeaveWiz._log.info("Registration closed");
+            WeaveWiz.registrationClosed = true;
           } else {
-            log.info("Registration open");
-            gSyncWizard.registrationClosed = false;
+            WeaveWiz._log.info("Registration open");
+            WeaveWiz.registrationClosed = false;
           }
         } else {
-          log.info("checkRegistrationStatus error: received httpRequest.status " + httpRequest.status);
+          WeaveWiz._log.info("Error getting registration status:" +
+                             res.lastChannel.responseStatus);
         }
-      }
-    };
-    httpRequest.send(null);
+      });
   },
 
   /////ACCOUNT CREATION - USERNAME, PASSWORD, PASSPHRASE/////
 
-  /* checkUsername() - Called oncommand from username field for account creation.
-   *   Checks username availability.
-   */
-  checkUsername: function SyncWizard_checkUsername() {
+  // Check to see if registration is closed, and if so display a friendly message
+  // to the would be user and then push them back to the registration menu.
+  onShowCreate1: function WeaveWiz_onShowCreate1() {
+    WeaveWiz._log.debug("Showing creation page step 1");
+    if (WeaveWiz.registrationClosed) {
+      let p = Cc["@mozilla.org/embedcomp/prompt-service;1"]
+        .getService(Ci.nsIPromptService);
+      p.alert(null,$('strings').getString("registration-closed.title"),
+              $('strings').getString("registration-closed.label"));
+      $('weave-setup-wizard').goTo("sync-wizard-welcome");
+    }
+    $('weave-setup-wizard').canAdvance = WeaveWiz._createCheck;
+  },
 
-    let wizard = document.getElementById('sync-wizard');
-    let username    = document.getElementById('sync-username-create-field').value;
-    let statusLabel = document.getElementById('create-username-error');
-    let statusLink  = document.getElementById('create-username-error-link');
-    let statusIcon  = document.getElementById('create-username-icon');
+  onFinishCreate1: function WeaveWiz_onFinishCreate1() {
+    return WeaveWiz.checkCreationFields();
+  },
 
-    let log = this._log;
-    let httpRequest = new XMLHttpRequest();
-    let url = this._serverURL + CHECK_USERNAME_URL + username;
+  onShowCreate2: function WeaveWiz_onShowCreate2() {
+    WeaveWiz._log.debug("Showing creation page step 2");
+    $('weave-setup-wizard').canAdvance = WeaveWiz._createCheck2;
+  },
+
+  onFinishCreate2: function WeaveWiz_onFinishCreate2() {
+    return WeaveWiz.checkPassphraseFields();
+  },
+
+  onShowCreate3: function WeaveWiz_onShowCreate3() {
+    WeaveWiz._log.debug("Showing creation page step 3");
+    $('weave-setup-wizard').canAdvance = WeaveWiz._createCheck3;
+    if (!WeaveWiz._createCheck3) {
+      $('captcha').addEventListener(
+        "pageshow", function() {WeaveWiz.onLoadCaptcha()}, false, true);
+      $('captcha').setAttribute("src", WeaveWiz._serverURL + CAPTCHA_URL);
+    }
+  },
+
+  onFinishCreate3: function WeaveWiz_onFinishCreate3() {
+    return WeaveWiz.createAccount();
+  },
+
+  // Called oncommand from username field for account creation.
+  // Checks username availability.
+  checkUsername: function WeaveWiz_checkUsername() {
+    WeaveWiz._log.debug("Checking username");
+
+    let username = $('username-create-field').value;
+    let statusLabel = $('username-create-error-label');
+    let statusLink = $('username-create-error-link');
+    let statusIcon = $('username-create-error-icon');
 
     // Status messages
-    let usernameTaken      = this._stringBundle.getFormattedString("createUsername-error.label", [username]);
-    let usernameAvailable  = this._stringBundle.getFormattedString("createUsername-success.label", [username]);
-	let checkingUsername   = this._stringBundle.getString("createUsername-progress.label");
-    let serverError        = this._stringBundle.getString("serverError.label");
-    let serverTimeoutError = this._stringBundle.getString("serverTimeoutError.label");
+    let usernameTaken = $('strings').getFormattedString("createUsername-error.label", [username]);
+    let usernameAvailable = $('strings').getFormattedString("createUsername-success.label", [username]);
+    let checkingUsername = $('strings').getString("createUsername-progress.label");
+    let serverError = $('strings').getString("serverError.label");
+    let serverTimeoutError = $('strings').getString("serverTimeoutError.label");
 
     // Don't check if they haven't entered something
     if (!username) {
       statusIcon.hidden = true;
       statusLink.hidden = true;
       statusLabel.value = "";
-	  wizard.canAdvance = false;
-	  return false;
+      $('weave-setup-wizard').canAdvance = false;
+      return false;
     }
 
     // Show progress
@@ -547,84 +385,81 @@ SyncWizard.prototype = {
     statusLabel.value = checkingUsername;
     statusLabel.style.color = PROGRESS_COLOR;
 
-    // Check availability
-    httpRequest.open('GET', url, true);
-    httpRequest.onreadystatechange = function() {
-      if (httpRequest.readyState == 4) {
-        if (httpRequest.status == 200) {
+    let res = new Weave.Resource(WeaveWiz._serverURL +
+                                 CHECK_USERNAME_URL + username);
+    res.authenticator = new Weave.NoOpAuthenticator();
+    res.get(
+      function(data) {
+        if (res.lastChannel.responseStatus == 200) {
           statusIcon.hidden = true;
           statusLink.hidden = true;
 
-          if (httpRequest.responseText == 0) {
+          if (data == 1) {
             statusLabel.value = usernameTaken;
             statusLabel.style.color = ERROR_COLOR;
-            wizard.canAdvance = false;
-            document.getElementById('create1-check').value = "false";
-            document.getElementById("username-verified").value = "false";
-          }
-          else {
+            $('weave-setup-wizard').canAdvance = false;
+            WeaveWiz._createCheck = false;
+            WeaveWiz._usernameVerified = false;
+          } else {
             statusLabel.value = usernameAvailable;
             statusLabel.style.color = SUCCESS_COLOR;
-            document.getElementById("username-verified").value = "true";
+            WeaveWiz._usernameVerified = true;
           }
-        }
-        else {
-          log.info("Error: received status " + httpRequest.status);
+        } else {
+          WeaveWiz._log.info("Error: received status " +
+                             res.lastChannel.responseStatus);
           statusIcon.hidden = true;
           statusLink.hidden = false;
           // TODO: add more descriptive server errors in this case, we know what the status was
           statusLabel.value = serverError;
           statusLabel.style.color = SERVER_ERROR_COLOR;
-          wizard.canAdvance = false;
-          document.getElementById("username-verified").value = "false";
-          document.getElementById('create1-check').value = "false";
+          $('weave-setup-wizard').canAdvance = false;
+          WeaveWiz._usernameVerified = false;
+          WeaveWiz._createCheck = false;
         }
-      } };
-    httpRequest.send(null);
+      });
 
     // In case the server is hanging...
-    setTimeout(function() {
-            if (statusLabel.value == checkingUsername) {
-              this._log.info("Server timeout (username check)");
-              statusIcon.hidden = true;
-              statusLink.hidden = false;
-              statusLabel.value = serverTimeoutError;
-              statusLabel.style.color = SERVER_ERROR;
-            }
-      }, SERVER_TIMEOUT);
+//    setTimeout(function() {
+//            if (statusLabel.value == checkingUsername) {
+//              WeaveWiz._log.info("Server timeout (username check)");
+//              statusIcon.hidden = true;
+//              statusLink.hidden = false;
+//              statusLabel.value = serverTimeoutError;
+//              statusLabel.style.color = SERVER_ERROR;
+//            }
+//      }, SERVER_TIMEOUT);
+
+    return false;
   },
 
-  /* checkEmail() - Called oncommand from email field in account creation.
-   *  Checks validity and availability of email address.
-   */
-  checkEmail: function SyncWizard_checkEmail() {
+  // Called oncommand from email field in account creation.
+  // Checks validity and availability of email address.
+  checkEmail: function WeaveWiz_checkEmail() {
+    WeaveWiz._log.debug("Checking email");
 
-    let wizard = document.getElementById('sync-wizard');
-    let email       = document.getElementById('sync-email-create-field').value;
-    let statusLabel = document.getElementById('email-error');
-    let statusLink  = document.getElementById('email-error-link');
-    let statusIcon  = document.getElementById('email-icon');
+    let email = $('email-create-field').value;
+    let statusLabel = $('email-error-label');
+    let statusLink = $('email-error-link');
+    let statusIcon = $('email-error-icon');
 
-    let log = this._log;
-    let httpRequest = new XMLHttpRequest();
-    let url = this._serverURL + CHECK_EMAIL_URL + email;
     let regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
 
     // Status messages
-    let checkingEmail      = this._stringBundle.getString("email-progress.label");
-    let emailTaken         = this._stringBundle.getFormattedString("email-unavailable.label", [email]);
-    let emailOk            = this._stringBundle.getFormattedString("email-success.label", [email]);
-    let emailInvalid       = this._stringBundle.getString("email-invalid.label");
-    let serverError        = this._stringBundle.getString("serverError.label");
-    let serverTimeoutError = this._stringBundle.getString("serverTimeoutError.label");
+    let checkingEmail = $('strings').getString("email-progress.label");
+    let emailTaken = $('strings').getFormattedString("email-unavailable.label", [email]);
+    let emailOk = $('strings').getFormattedString("email-success.label", [email]);
+    let emailInvalid = $('strings').getString("email-invalid.label");
+    let serverError = $('strings').getString("serverError.label");
+    let serverTimeoutError = $('strings').getString("serverTimeoutError.label");
 
     // Don't check if they haven't entered anything
     if (!email) {
       statusIcon.hidden = true;
       statusLink.hidden = true;
       statusLabel.value = "";
-      document.getElementById("email-verified").value = "false";
-	  wizard.canAdvance = false;
+      WeaveWiz._emailVerified = false;
+      $('weave-setup-wizard').canAdvance = false;
       return false;
     }
 
@@ -633,654 +468,569 @@ SyncWizard.prototype = {
       statusLink.hidden = true;
       statusLabel.value = emailInvalid;
       statusLabel.style.color = ERROR_COLOR;
-      document.getElementById("email-verified").value = "false";
-      wizard.canAdvance = false;
+      WeaveWiz._emailVerified = false;
+      $('weave-setup-wizard').canAdvance = false;
       return false;
     }
 
+/*
     // Show progress...
     statusIcon.hidden = false;
     statusLink.hidden = true;
     statusLabel.value = checkingEmail;
     statusLabel.style.color = PROGRESS_COLOR;
 
-    httpRequest.open('GET', url, true);
-    httpRequest.onreadystatechange = function() {
-      if (httpRequest.readyState == 4) {
-        if (httpRequest.status == 200) {
+    let res = new Weave.Resource(WeaveWiz._serverURL + CHECK_EMAIL_URL + email);
+    res.authenticator = new Weave.NoOpAuthenticator();
+    res.get(
+      function(data) {
+        if (res.lastChannel.responseStatus == 200) {
           statusIcon.hidden = true;
           statusLink.hidden = true;
-          if (httpRequest.responseText == 0) {
+
+          if (data == 0) {
             statusLabel.value = emailTaken;
             statusLabel.style.color = ERROR_COLOR;
-            wizard.canAdvance = false;
-            document.getElementById("email-verified").value = "false";
-          }
-          else {
+            $('weave-setup-wizard').canAdvance = false;
+            WeaveWiz._emailVerified = false;
+
+          } else {
             statusLabel.value = emailOk;
             statusLabel.style.color = SUCCESS_COLOR;
-            document.getElementById("email-verified").value = "true";
-		  }
-		}
-		else {
-		  log.info("Error: received status " + httpRequest.status);
-		  statusIcon.hidden = true;
-		  statusLink.hidden = false;
-		  statusLabel.value = serverError;
-		  statusLabel.style.color = SERVER_ERROR_COLOR;
-		}
-      }};
-    httpRequest.send(null);
+            WeaveWiz._emailVerified = true;
+	  }
 
+	} else {
+	  WeaveWiz._log.info("Error: received status " +
+                             res.lastChannel.responseStatus);
+	  statusIcon.hidden = true;
+	  statusLink.hidden = false;
+	  statusLabel.value = serverError;
+	  statusLabel.style.color = SERVER_ERROR_COLOR;
+	}
+      });
+*/
     // If the server is hanging...
-    setTimeout(function() {
-            if (document.getElementById("email-verified").value == "false") {
-              this._log.info("Server timeout (email verification)");
-              statusIcon.hidden = true;
-              statusLink.hidden = false;
-              statusLabel.value = serverTimeoutError;
-              statusLabel.style.color = SERVER_ERROR_COLOR;
-              }
-	  }, SERVER_TIMEOUT);
+    //setTimeout(
+    //  function() {
+    //    if (!WeaveWiz._emailVerified) {
+    //      WeaveWiz._log.info("Server timeout (email verification)");
+    //      statusIcon.hidden = true;
+    //      statusLink.hidden = false;
+    //      statusLabel.value = serverTimeoutError;
+    //      statusLabel.style.color = SERVER_ERROR_COLOR;
+    //    }
+    //  }, SERVER_TIMEOUT);
 
+    return false;
   },
 
+  // Called oncommand from password and passphrase entry/reentry fields.
+  //  Checks that password and passphrase reentry fields are the same, and that password
+  //  and passphrase are different values.
+  checkAccountInput: function WeaveWiz_checkAccountInput(field) {
+    WeaveWiz._log.debug("Checking account input");
 
-  /* checkAccountInput() - Called oncommand from password and passphrase entry/reentry fields.
-   *  Checks that password and passphrase reentry fields are the same, and that password
-   *  and passphrase are different values.
-   */
-  checkAccountInput: function SyncWizard_checkAccountInput(field) {
-    let wizard = document.getElementById('sync-wizard');
-    let username    = document.getElementById("sync-username-create-field").value;
-    let password1   = document.getElementById("sync-password-create-field").value;
-    let password2   = document.getElementById("sync-reenter-password-field").value;
-    let passphrase1 = document.getElementById("sync-passphrase-create-field").value;
-    let passphrase2 = document.getElementById("sync-reenter-passphrase-field").value;
+    let username = $('username-create-field').value;
+    let password1 = $('password-create-field').value;
+    let password2 = $('reenter-password-field').value;
+    let passphrase1 = $('passphrase-create-field').value;
+    let passphrase2 = $('reenter-passphrase-field').value;
 
     if (field == "password") {
-      let passwordMatchError = document.getElementById("password-match-error");
-
       // if the second password hasn't been entered yet, don't check
       if (!password2) {
-        document.getElementById("password-verified").value = "false";
+        WeaveWiz._passwordVerified = false;
         return false;
       }
 
       // check that the two passwords are the same
       if (password1 != password2)  {
-        passwordMatchError.value = this._stringBundle.getString("passwordsUnmatched.label");
-        passwordMatchError.style.color = ERROR_COLOR;
-        wizard.canAdvance = false;
-        document.getElementById("password-verified").value = "false";
+        $('password-match-error').value =
+          $('strings').getString("passwordsUnmatched.label");
+        $('password-match-error').style.color = ERROR_COLOR;
+        $('weave-setup-wizard').canAdvance = false;
+        WeaveWiz._passwordVerified = false;
         return false;
       }
 
-      document.getElementById("password-verified").value = "true";
-      passwordMatchError.value = "";
-    }
-    else if (field == "passphrase") {
-      let passphraseError = document.getElementById("passphrase-match-error");
+      WeaveWiz._passwordVerified = true;
+      $('password-match-error').value = "";
 
-	  // If the second passphrase hasn't been entered yet, don't check
-	  if (!passphrase2) {
-        document.getElementById("passphrase-verified").value = "false";
+    } else if (field == "passphrase") {
+      // If the second passphrase hasn't been entered yet, don't check
+      if (!passphrase2) {
+        WeaveWiz._passphraseCheck = false;
         return false;
       }
 
       // check that the two passphrases are the same
       if (passphrase1 != passphrase2)  {
-        passphraseError.value = this._stringBundle.getString("passphrasesUnmatched.label");
-        passphraseError.style.color = ERROR_COLOR;
-        wizard.canAdvance = false;
-        document.getElementById("passphrase-verified").value = "false";
+        $('passphrase-match-error').value = $('strings').getString("passphrasesUnmatched.label");
+        $('passphrase-match-error').style.color = ERROR_COLOR;
+        $('weave-setup-wizard').canAdvance = false;
+        WeaveWiz._passphraseCheck = false;
         return false;
-	  }
+      }
 
-	  // check that they haven't entered the same password and passphrase
-	  // TODO: check for this in the password case as well for the devious user case
-	  if (passphrase1 == password1) {
-	    passphraseError.value = this._stringBundle.getString("samePasswordAndPassphrase.label");
-	    passphraseError.style.color = ERROR_COLOR;
-	    wizard.canAdvance = false;
-	    document.getElementById("passphrase-verified").value = "false";
-	    return false;
-	  }
+      // check that they haven't entered the same password and passphrase
+      // TODO: check for this in the password case as well for the devious user case
+      if (passphrase1 == password1) {
+	$('passphrase-match-error').value = $('strings').getString("samePasswordAndPassphrase.label");
+	$('passphrase-match-error').style.color = ERROR_COLOR;
+	$('weave-setup-wizard').canAdvance = false;
+        WeaveWiz._passphraseCheck = false;
+	return false;
+      }
 
-      document.getElementById("passphrase-verified").value = "true";
-      passphraseError.value = "";
+      WeaveWiz._passphraseCheck = true;
+      $('passphrase-match-error').value = "";
     }
-    wizard.canAdvance = true;
+    $('weave-setup-wizard').canAdvance = true;
     return true;
   },
 
+  // Called oninput from password entry fields.
+  // Allows the wizard to continue if password fields have values and if an
+  // available username has been chosen.
+  checkCreationFields: function WeaveWiz_checkUserPasswordFields() {
+    WeaveWiz._log.trace("Checking creation fields");
 
-  /* checkCreationFields() - Called oninput from password entry fields.
-   *  Allows the wizard to continue if password fields have values and if an
-   *  available username has been chosen.
-   */
-  checkCreationFields: function SyncWizard_checkUserPasswordFields() {
-    let wizard = document.getElementById("sync-wizard");
-
-    let username  = document.getElementById("sync-username-create-field").value;
-    let password1 = document.getElementById("sync-password-create-field").value;
-    let password2 = document.getElementById("sync-reenter-password-field").value;
-    let email     = document.getElementById("sync-email-create-field").value;
+    let username = $('username-create-field').value;
+    let password1 = $('password-create-field').value;
+    let password2 = $('reenter-password-field').value;
+    let email = $('email-create-field').value;
 
     // check for empty fields
     if (!(username && password1 && password2 && email)) {
-      wizard.canAdvance = false;
+      $('weave-setup-wizard').canAdvance = false;
       return false;
     }
 
     // check that everything has been verified
-    if (document.getElementById("username-verified").value == "true" &&
-        document.getElementById("email-verified").value == "true" &&
-        document.getElementById("password-verified").value == "true") {
-      wizard.canAdvance = true;
-      document.getElementById("create1-check").value = "true";
+    if (/*WeaveWiz._usernameVerified &&
+        WeaveWiz._emailVerified && */
+        WeaveWiz._passwordVerified) {
+      $('weave-setup-wizard').canAdvance = true;
+      WeaveWiz._createCheck = true;
       return true;
     }
 
-    wizard.canAdvance = false;
-    document.getElementById("create1-check").value = "false";
+    $('weave-setup-wizard').canAdvance = false;
+    WeaveWiz._createCheck = false;
     return false;
   },
 
-  /* checkPassphraseFields() - Called oninput from fields on passphrase / email entry screen.
-   *  Allows wizard to advance if all fields have a value.
-   */
-  checkPassphraseFields: function SyncWizard_checkPassphraseFields() {
-    let wizard = document.getElementById('sync-wizard');
+  // Called oninput from fields on passphrase / email entry screen.
+  // Allows wizard to advance if all fields have a value.
+  checkPassphraseFields: function WeaveWiz_checkPassphraseFields() {
+    WeaveWiz._log.trace("Checking passphrase fields");
 
-    let passphrase1 = document.getElementById('sync-passphrase-create-field').value;
-    let passphrase2 = document.getElementById('sync-reenter-passphrase-field').value;
+    let passphrase1 = $('passphrase-create-field').value;
+    let passphrase2 = $('reenter-passphrase-field').value;
 
     // check for empty fields
     if (!(passphrase1 && passphrase2)) {
-      wizard.canAdvance = false;
+      $('weave-setup-wizard').canAdvance = false;
       return false;
     }
 
     // check that everything has been verified
-    if (document.getElementById("passphrase-verified").value == "true") {
-      wizard.canAdvance = true;
-      document.getElementById("create2-check").value = "true";
+    if (WeaveWiz._passphraseCheck) {
+      $('weave-setup-wizard').canAdvance = true;
+      WeaveWiz._createCheck2 = true;
       return true;
     }
 
-    wizard.canAdvance = false;
-    document.getElementById('create2-check').value = "false";
+    $('weave-setup-wizard').canAdvance = false;
+    WeaveWiz._createCheck2 = false;
     return false;
   },
 
-
-
-
-  /* reloadCaptcha() - Called onclick from "try another image" link.
-   *  Refreshes captcha image.
-   */
-  reloadCaptcha: function SyncWizard_reloadCaptcha() {
-    document.getElementById("captcha").reload();
+  // Called onclick from "try another image" link.
+  // Refreshes captcha image.
+  reloadCaptcha: function WeaveWiz_reloadCaptcha() {
+    WeaveWiz._log.debug("Reloading captcha");
+    $('captcha').reload();
   },
 
-  onLoadCaptcha: function SyncWizard_onLoadCaptcha() {
-    let captchaImage = document.getElementById('captcha').contentDocument.getElementById('recaptcha_challenge_field').value;
-    document.getElementById('lastCaptchaChallenge').value = captchaImage;
-    document.getElementById('captchaImage').setAttribute("src", CAPTCHA_IMAGE_URL + "?c=" + captchaImage);
+  onLoadCaptcha: function WeaveWiz_onLoadCaptcha() {
+    WeaveWiz._log.debug("Captcha loaded");
+    let captchaImage = $('captcha').
+      contentDocument.getElementById('recaptcha_challenge_field').value;
+    $('lastCaptchaChallenge').value = captchaImage;
+    $('captcha-image').setAttribute("src", CAPTCHA_IMAGE_URL + "?c=" + captchaImage);
   },
 
 
-  /* createAccount() - Called onadvance for final account creation screen.
-   *  Posts http request to server, and checks for correct captcha response.
-   */
+  // Called onadvance for final account creation screen.
+  // Posts http request to server, and checks for correct captcha response.
+  createAccount: function WeaveWiz_createAccount() {
+    WeaveWiz._log.debug("Creating account");
 
-  createAccount: function SyncWizard_createAccount() {
+    let statusLabel = $('account-creation-status-label');
+    let statusLink = $('account-creation-status-link');
+    let statusIcon = $('account-creation-status-icon');
 
-    let wizard = document.getElementById('sync-wizard');
-	let statusLabel = document.getElementById('account-creation-status');
-	let statusLink  = document.getElementById('account-creation-status-link');
-	let statusIcon  = document.getElementById('account-creation-status-icon');
+    let captchaError = $('captcha-error');
+    let captchaImage = $('captcha').
+      contentDocument.getElementById('recaptcha_challenge_field').value;
+    let username = $('username-create-field').value;
+    let created = $('strings').getFormattedString("create-success.label", [username]);
+    let serverError = $('strings').getString("serverError.label");
+    let progress = $('strings').getString("create-progress.label");
+    let uidTaken = $('strings').getString("create-uid-inuse.label");
+    let uidMissing = $('strings').getString("create-uid-missing.label");
+    let uidInvalid = $('strings').getString("create-uid-invalid.label");
+    let emailInvalid = $('strings').getString("create-mail-invalid.label");
+    let emailTaken = $('strings').getString("create-mail-inuse.label");
+    let captchaMissing = $('strings').getString("create-captcha-missing.label");
+    let passwordMissing = $('strings').getString("create-password-missing.label");
+    let incorrectCaptcha = $('strings').getString("incorrectCaptcha.label");
 
-    let captchaError   = document.getElementById('captcha-error');
-    let captchaImage   = document.getElementById('captcha').contentDocument.getElementById('recaptcha_challenge_field').value;
+    if (WeaveWiz._createCheck3)
+      return true;
 
-    let username         = document.getElementById('sync-username-create-field').value;
-    let created          = this._stringBundle.getFormattedString("create-success.label", [username]);
-    let serverError      = this._stringBundle.getString("serverError.label");
-    let progress         = this._stringBundle.getString("create-progress.label");
-    let uidTaken         = this._stringBundle.getString("create-uid-inuse.label");
-    let uidMissing       = this._stringBundle.getString("create-uid-missing.label");
-    let uidInvalid       = this._stringBundle.getString("create-uid-invalid.label");
-    let emailInvalid     = this._stringBundle.getString("create-mail-invalid.label");
-    let emailTaken       = this._stringBundle.getString("create-mail-inuse.label");
-    let captchaMissing   = this._stringBundle.getString("create-captcha-missing.label");
-    let passwordMissing  = this._stringBundle.getString("create-password-missing.label");
-    let incorrectCaptcha = this._stringBundle.getString("incorrectCaptcha.label");
-
-
-    let log = this._log;
-    let httpRequest = new XMLHttpRequest();
-
-    if (document.getElementById("create3-check").value == "true")
-	  return true;
-
-	// tell the user the server is working...
-	statusIcon.hidden = false;
-	statusLink.hidden = true;
-	statusLabel.hidden = false;
-	statusLabel.value = progress;
-	statusLabel.style.color = PROGRESS_COLOR;
+    // tell the user the server is working...
+    statusIcon.hidden = false;
+    statusLink.hidden = true;
+    statusLabel.hidden = false;
+    statusLabel.value = progress;
+    statusLabel.style.color = PROGRESS_COLOR;
 
     // hide the captcha error message in case that was the problem
     captchaError.value = "";
 
-    httpRequest.open('POST', this._serverURL + REGISTER_URL, true);
-
-    httpRequest.onreadystatechange = function() {
-	if (httpRequest.readyState == 4) {
-	  switch (httpRequest.status) {
-
-	 // CREATED
-	    case 201:
-	      captchaError.value = "";
-	      if (httpRequest.responseText == "2: VERIFICATION SENT")
-	        log.info("Account created, verification email sent.");
-	      else if (httpRequest.responseText == "3: CREATED")
-	        log.info("Account created, no email address given.");
-
-	      //document.getElementById('lastCaptchaChallenge').value = captchaImage;
-
-	      statusIcon.hidden = true;
-	      statusLink.hidden = true;
-	      statusLabel.value = created;
-	      statusLabel.style.color = SUCCESS_COLOR;
-
-	      document.getElementById("create3-check").value = "true";
-	      wizard.canAdvance = true;
-	      wizard.advance('sync-wizard-data');
-          break;
-
-        // BAD REQUEST (the user should rarely get to this state -> ok to report one at a time)
-        case 400:
-	      statusIcon.hidden = true;
-	      statusLink.hidden = true;
-          statusLabel.style.color = ERROR_COLOR;
-          let response = httpRequest.responseText;
-	      log.info("Status 400: Account not created, response " + response);
-          if (response.match("0") && !response.match("-10"))
-            statusLabel.value = uidTaken;
-          else if (response.match("-2"))
-            statusLabel.value = uidMissing;
-          else if (response.match("-3"))
-            statusLabel.value = uidInvalid;
-          else if (response.match("-4"))
-            statusLabel.value = emailInvalid;
-          else if (response.match("-5"))
-            statusLabel.value = emailTaken;
-          else if (response.match("-7")) {
-            captchaError.value = captchaMissing;
-            captchaError.style.color = ERROR_COLOR;
-	        statusLabel.hidden = true;
-	      }
-          else if (response.match("-8"))
-            statusLabel.value = passwordMissing;
-	      else
-	        statusLabel.value = serverError;
-
-	      document.getElementById("create3-check").value = "false";
-	      wizard.canAdvance = false;
-          break;
-
-	    // CAPTCHA FAILED
-	    case 417:
-	      log.info("Incorrect Captcha response. Account not created.");
-	      captchaError.value = incorrectCaptcha;
-	      captchaError.style.color = ERROR_COLOR;
-	      document.getElementById('captcha').reload();
-	      document.getElementById('captchaInput').value = "";
-	      statusIcon.hidden = true;
-	      statusLink.hidden = true;
-	      statusLabel.hidden = true;
-          document.getElementById("create3-check").value = "false";
-	      wizard.canAdvance = false;
-	      break;
-
-        default:
-          log.info("Error: received status " + httpRequest.status + ". Account not created.");
-	      statusIcon.hidden = true;
-	      statusLink.hidden = false;
-	      statusLabel.value = serverError;
-	      statusLabel.style.color = SERVER_ERROR_COLOR;
-
-	      document.getElementById("create3-check").value = "false";
-	      wizard.canAdvance = false;
-	      break;
-	    }
-	  }
-    };
-
-    let uid = document.getElementById("sync-username-create-field").value;
-    let password = document.getElementById("sync-password-create-field").value;
-    let passphrase = document.getElementById("sync-passphrase-create-field").value;
-    let mail = document.getElementById("sync-email-create-field").value;
-
-    let captchaDoc = document.getElementById("captcha").contentDocument;
-    let challenge = document.getElementById("lastCaptchaChallenge").value;
-    let response = document.getElementById("captchaInput").value;
-
-    let message = "uid=" + encodeURIComponent(uid) +
-      "&password=" + encodeURIComponent(password) +
-      "&mail=" + encodeURIComponent(mail) +
-      "&recaptcha_response_field=" + encodeURIComponent(response) +
-      "&recaptcha_challenge_field=" + encodeURIComponent(challenge) +
+    function enc(x) encodeURIComponent(x);
+    let message = "uid=" + enc($('username-create-field').value) +
+      "&password=" + enc($('password-create-field').value) +
+      "&mail=" + enc($('email-create-field').value) +
+      "&recaptcha_response_field=" + enc($('captcha-input').value) +
+      "&recaptcha_challenge_field=" + enc($('lastCaptchaChallenge').value) +
       "&token=3419b5893291d055";
 
-    httpRequest.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-    httpRequest.setRequestHeader("Content-Length", message.length);
-    httpRequest.send(message);
+    let res = new Weave.Resource(WeaveWiz._serverURL + REGISTER_URL);
+    res.authenticator = new Weave.NoOpAuthenticator();
+    res.setHeader("Content-Type", "application/x-www-form-urlencoded",
+                  "Content-Length", message.length);
+
+    let onPost = function(data) {
+      switch (res.lastChannel.responseStatus) {
+      case 200:
+      case 201:
+        // CREATED
+	captchaError.value = "";
+	WeaveWiz._log.info("Account created: " + data);
+
+	//$('lastCaptchaChallenge').value = captchaImage;
+
+	statusIcon.hidden = true;
+	statusLink.hidden = true;
+	statusLabel.value = created;
+	statusLabel.style.color = SUCCESS_COLOR;
+
+        WeaveWiz._createCheck3 = true;
+	$('weave-setup-wizard').canAdvance = true;
+	$('weave-setup-wizard').advance('sync-wizard-data');
+        break;
+
+      case 400:
+        // BAD REQUEST (the user should rarely get to this state -> ok to report one at a time)
+	statusIcon.hidden = true;
+	statusLink.hidden = true;
+        statusLabel.style.color = ERROR_COLOR;
+        let response = data;
+	WeaveWiz._log.info("Status 400: Account not created, response " + response);
+
+        if (response.match("0") && !response.match("-10"))
+          statusLabel.value = uidTaken;
+        else if (response.match("-2"))
+        statusLabel.value = uidMissing;
+        else if (response.match("-3"))
+        statusLabel.value = uidInvalid;
+        else if (response.match("-4"))
+        statusLabel.value = emailInvalid;
+        else if (response.match("-5"))
+        statusLabel.value = emailTaken;
+        else if (response.match("-7")) {
+          captchaError.value = captchaMissing;
+          captchaError.style.color = ERROR_COLOR;
+	  statusLabel.hidden = true;
+	} else if (response.match("-8"))
+        statusLabel.value = passwordMissing;
+	else
+	  statusLabel.value = serverError;
+
+        WeaveWiz._createCheck3 = false;
+	$('weave-setup-wizard').canAdvance = false;
+        break;
+
+      case 417:
+        // CAPTCHA FAILED
+	WeaveWiz._log.info("Incorrect Captcha response. Account not created.");
+	captchaError.value = incorrectCaptcha;
+	captchaError.style.color = ERROR_COLOR;
+	$('captcha').reload();
+	$('captcha-input').value = "";
+	statusIcon.hidden = true;
+	statusLink.hidden = true;
+	statusLabel.hidden = true;
+        WeaveWiz._createCheck3 = false;
+	$('weave-setup-wizard').canAdvance = false;
+	break;
+
+      default:
+        WeaveWiz._log.info("Error: received status " +
+                           res.lastChannel.responseStatus +
+                           ". Account not created.");
+	statusIcon.hidden = true;
+	statusLink.hidden = false;
+	statusLabel.value = serverError;
+	statusLabel.style.color = SERVER_ERROR_COLOR;
+
+        WeaveWiz._createCheck3 = false;
+	$('weave-setup-wizard').canAdvance = false;
+	break;
+      }
+    };
+    res.post(onPost, message);
 
     // in case the server is hanging...
-	setTimeout(function() {
-      if (document.getElementById("create3-check").value == "false") {
-        this._log.info("Server timeout (account creation)");
-        statusIcon.hidden = true;
-        statusLink.hidden = false;
-        statusLabel.value = serverTimeoutError;
-        statusLabel.style.color = SERVER_ERROR_COLOR;
-      }
-	}, SERVER_TIMEOUT);
+    //setTimeout(
+    //  function() {
+    //    if (!WeaveWiz._createCheck3) {
+    //      WeaveWiz._log.info("Server timeout (account creation)");
+    //      statusIcon.hidden = true;
+    //      statusLink.hidden = false;
+    //      statusLabel.value = serverTimeoutError;
+    //      statusLabel.style.color = SERVER_ERROR_COLOR;
+    //    }
+    //  }, SERVER_TIMEOUT);
 
     return false;
   },
 
-
-
   /////INSTALLATION, FINAL SYNC/////
 
-  /* checkFinalFields() - Called oninput from fields on final account creation screen.
-   *  Allows wizard to advance if all fields have a value.
-   */
-  checkFinalFields: function SyncWizard_checkFinalFields() {
-    let wizard = document.getElementById('sync-wizard');
+  // FIXME: Code duplication between here and pref pane
+  onShowData: function WeaveWiz_onShowData() {
+    WeaveWiz._log.debug("Showing data page");
+    $('device-name-field').value = Weave.Clients.clientName;
+    $('device-type-field').value = Weave.Clients.clientType;
+    $('sync-bookmarks').checked = Weave.Svc.Prefs.get("engine.bookmarks");
+    $('sync-history').checked = Weave.Svc.Prefs.get("engine.history");
+    $('sync-tabs').checked = Weave.Svc.Prefs.get("engine.tabs");
+    $('sync-passwords').checked = Weave.Svc.Prefs.get("engine.passwords");
+    $('weave-setup-wizard').canAdvance = true;
+  },
 
-    let input = document.getElementById('captchaInput').value;
-    let agree = document.getElementById('terms-checkbox');
-
-    if (!input || !agree.checked) {
-	  wizard.canAdvance = false;
-	  return false;
-    }
-
-    wizard.canAdvance = true;
+  onFinishData: function WeaveWiz_onFinishData() {
+    WeaveWiz._log.debug("Saving data prefs");
+    Weave.Clients.clientName = $('device-name-field').value;
+    Weave.Clients.clientType = $('device-type-field').value;
+    Weave.Svc.Prefs.set("engine.bookmarks", $('sync-bookmarks').checked);
+    Weave.Svc.Prefs.set("engine.history", $('sync-history').checked);
+    Weave.Svc.Prefs.set("engine.tabs", $('sync-tabs').checked);
+    Weave.Svc.Prefs.set("engine.passwords", $('sync-passwords').checked);
     return true;
   },
 
+  onShowFinal: function WeaveWiz_onShowFinal() {
+    WeaveWiz._log.debug("Showing final page");
 
-  /* completeInstallation() - Called on advance from final wizard screen.
-   *  Sets prefs, does final login, does an initial sync.
-   */
-  completeInstallation: function SyncWizard_completeInstallation() {
-    let wizard        = document.getElementById("sync-wizard");
-    let prefStatus    = document.getElementById("final-pref-status");
-    let accountStatus = document.getElementById("final-account-status");
-    let syncStatus    = document.getElementById("final-sync-status");
-    let finalStatus   = document.getElementById("final-status");
-    let finalLink     = document.getElementById("final-status-link");
-    let finalIcon     = document.getElementById("final-status-icon");
-    let prefsProgress = this._stringBundle.getString("initialPrefs-progress.label");
-    let loginProgress = this._stringBundle.getString("initialLogin-progress.label");
-    let syncProgress  = this._stringBundle.getString("initialSync-progress.label");
-    let loginError    = this._stringBundle.getString("initialLogin-error.label");
-    let syncError     = this._stringBundle.getString("initialSync-error.label");
+    // account status
+    let username = (WeaveWiz._path == "verify")?
+      $('username').value : $('username-create-field').value;
+    $('final-account-details').value =
+      $('strings').getFormattedString("final-account-value.label", [username]);
 
+    // preferences
+    let prefs = "";
+    for each (let type in ["bookmarks", "history", "tabs", "passwords"]) {
+      if ($('sync-' + type).checked)
+        prefs += $('strings').getString(type + ".label") + ", ";
+    }
+    $('final-pref-details').value = prefs.substring(0, prefs.length-2);
+
+    // explain sync
+    let syncDetails = $('final-sync-details');
+    syncDetails.value = $('strings').getString("final-sync-value.label");
+
+    $('weave-setup-wizard').canAdvance =
+      (WeaveWiz._syncSuccess || !WeaveWiz._installationStarted)? true : false;
+  },
+
+  onFinishFinal: function WeaveWiz_onFinishFinal() {
+    WeaveWiz._log.debug("Completing installation");
 
     // don't do anything if the sync has already happened
-    if (document.getElementById("sync-success").value == "true")
+    if (WeaveWiz._syncSuccess)
       return true;
 
     // don't let them continue once continue has been clicked once
-    if (document.getElementById("installation-started").value == "true")
+    if (WeaveWiz._installationStarted)
       return false;
 
-    // now set the value for the first time through
-    document.getElementById("installation-started").value = "true";
-    wizard.canAdvance = false;
+    WeaveWiz._installationStarted = true;
+    $('weave-setup-wizard').canAdvance = false;
 
-
-    finalStatus.style.color = PROGRESS_COLOR;
-    finalIcon.hidden = false;
-    finalLink.hidden = true;
-
-    // for server error case, only start at sync if login worked
-    if (Weave.Service.isInitialized) {
-      gSyncWizard.initialSync();
-      return;
-    }
+    $('final-status-label').style.color = PROGRESS_COLOR;
+    $('final-status-icon').hidden = false;
+    $('final-status-link').hidden = true;
 
     // set prefs
-    finalStatus.value = prefsProgress;
-    gSyncWizard.setPrefs();
-    prefStatus.style.color = SUCCESS_COLOR;
+    $('final-status-label').value =
+      $('strings').getString("initialPrefs-progress.label");
+    $('final-pref-status').style.color = SUCCESS_COLOR;
 
     // login and perform initial sync
-    finalStatus.value = loginProgress;
-    finalIcon.hidden = false;
+    $('final-status-label').value =
+      $('strings').getString("initialLogin-progress.label");
+    $('final-status-icon').hidden = false;
 
     // adds username and password to manager
-    gSyncWizard.acceptExistingAccount();
+    WeaveWiz.acceptExistingAccount();
+
+    Weave.Service.login(Weave.Service.sync(function() {}, true));
+
+    if (Weave.Service.isLoggedIn) {
+      WeaveWiz.initialSync();
+      return false;
+    }
 
     // login using those values
-    Weave.Service.loginAndInit(function() {
-          if(Weave.Service.isInitialized) {
-            accountStatus.style.color = SUCCESS_COLOR;
-            gSyncWizard.initialSync();
-          }
-          else {
-            accountStatus.style.color = ERROR_COLOR;
-            finalStatus.value = loginError;
-            finalStatus.style.color = SERVER_ERROR_COLOR;
-            finalIcon.hidden = true;
-            finalLink.hidden = false;
-          }
+    Weave.Service.loginAndInit(
+      function() {
+        if(Weave.Service.isInitialized) {
+          $('final-account-status').style.color = SUCCESS_COLOR;
+          WeaveWiz.initialSync();
+        } else {
+          $('final-account-status').style.color = ERROR_COLOR;
+          $('final-status-label').value =
+            $('strings').getString("initialLogin-error.label");
+          $('final-status-label').style.color = SERVER_ERROR_COLOR;
+          $('final-status-icon').hidden = true;
+          $('final-status-link').hidden = false;
+        }
       });
 
     // don't let them advance- only sync:finish will advance
     return false;
   },
 
-  /* initialSync() - Called from completeInstallation().
-   *  Sets page values and does a sync.
-   */
-  initialSync: function SyncWizard_initialSync() {
-    let finalStatus   = document.getElementById('final-status');
-    let finalLink     = document.getElementById('final-status-link');
-    let finalIcon     = document.getElementById('final-status-icon');
-    let syncProgress  = this._stringBundle.getString("initialSync-progress.label");
+  // Called oninput from fields on final account creation screen.
+  // Allows wizard to advance if all fields have a value.
+  checkFinalFields: function WeaveWiz_checkFinalFields() {
+    WeaveWiz._log.trace("Checking final fields");
 
-    finalStatus.value = syncProgress;
-    finalIcon.hidden = false;
-    finalLink.hidden = true;
-
-    Weave.Utils.openStatus();
-  },
-
-  /* setPrefs() - Called during final screen checklist.
-   *  Prefs are set on the previous screen, but committed here in case the user "Cancels".
-   */
-  setPrefs: function SyncWizard_setPrefs() {
-
-    let branch = Cc["@mozilla.org/preferences-service;1"].
-    getService(Ci.nsIPrefService).
-    getBranch(Weave.PREFS_BRANCH + "engine.");
-
-    let value;
-
-    // TODO: Move this into a separate module for use in prefs and wizard
-    value = document.getElementById('sync-wizard-bookmarks').checked;
-    branch.setBoolPref("bookmarks", value);
-    value = document.getElementById('sync-wizard-history').checked;
-    branch.setBoolPref("history", value);
-    value = document.getElementById('sync-wizard-cookies').checked;
-    branch.setBoolPref("cookies", value);
-    value = document.getElementById('sync-wizard-passwords').checked;
-    branch.setBoolPref("passwords", value);
-    value = document.getElementById('sync-wizard-tabs').checked;
-    branch.setBoolPref("tabs", value);
-    value = document.getElementById('sync-wizard-forms').checked;
-    branch.setBoolPref("forms", value);
-
-    this._log.info("Preferences set.");
-
+    //    if (!$('captcha-input').value || !Wiz.Final.terms.checked) {
+    if (!$('captcha-input').value) {
+      $('weave-setup-wizard').canAdvance = false;
+      return false;
+    }
+    $('weave-setup-wizard').canAdvance = true;
     return true;
   },
 
+  // Called from completeInstallation().
+  // Sets page values and does a sync.
+  initialSync: function WeaveWiz_initialSync() {
+    WeaveWiz._log.debug("initialSync()");
+    $('final-status-label').value = $('strings').getString("initialSync-progress.label");
+    $('final-status-icon').hidden = false;
+    $('final-status-link').hidden = true;
+    Weave.Utils.openStatus();
+  },
 
-  observe: function(subject, topic, data) {
-    if (!document) {
-      this._log.warn("XXX FIXME: wizard observer called after wizard went away");
-      return;
-    }
-    let wizard = document.getElementById('sync-wizard');
+  onLogin: function WeaveWiz_onLogin(subject, data) {
+    WeaveWiz._log.info("Initial login succeeded");
+  },
 
-    switch(topic) {
+  onLoginError: function WeaveWiz_onLoginError(subject, data) {
+    WeaveWiz._log.info("Initial login failed");
+  },
 
-    case "weave:service:verify-login:finish": {
-      this._log.info("Login verify succeeded");
+  onLogout: function WeaveWiz_onLogout(subject, data) {
+    WeaveWiz._log.info("Logged out");
+  },
 
-      document.getElementById('login-verified').value = "true";
+  onVerifyLogin: function WeaveWiz_onVerifyLogin(subject, data) {
+    WeaveWiz._log.info("Login verify succeeded");
 
-      let statusIcon  = document.getElementById('verify-account-icon');
-      let statusLink  = document.getElementById('verify-account-error-link');
-      let statusLabel = document.getElementById('verify-account-error');
+    WeaveWiz._loginCheck = true;
+    $('account-error-icon').hidden = true;
+    $('account-error-link').hidden = true;
+    $('account-error-label').value = $('strings').getString("verify-success.label");
+    $('account-error-label').style.color = SUCCESS_COLOR;
 
-      statusIcon.hidden = true;
-      statusLink.hidden = true;
-      statusLabel.value = this._stringBundle.getString("verify-success.label");
-      statusLabel.style.color = SUCCESS_COLOR;
+    // If the passphrase hasn't been verified, try doing so now.
+    // Its check may have been deferred until we had a valid login.
 
-      // If the passphrase hasn't been verified, try doing so now.
-      // Its check may have been deferred until we had a valid login.
-      if (document.getElementById('passphrase-verified').value == "false") {
-        this._log.info("Checking passphrase after login verify");
-        this.verifyPassphrase();
-      }
-
-      gSyncWizard.checkVerificationFields();
-      // Don't allow the wizard to advance here in case other fields weren't filled in
-      break;
-    }
-    case "weave:service:verify-passphrase:finish": {
-      this._log.info("Passphrase verify succeeded");
-
-      document.getElementById('passphrase-verified').value = "true";
-
-      let statusIcon  = document.getElementById('verify-passphrase-icon');
-      let statusLink  = document.getElementById('verify-passphrase-error-link');
-      let statusLabel = document.getElementById('verify-passphrase-error');
-
-      statusIcon.hidden = true;
-      statusLink.hidden = true;
-      statusLabel.value = this._stringBundle.getString("passphrase-success.label");
-      statusLabel.style.color = SUCCESS_COLOR;
-
-      gSyncWizard.checkVerificationFields();
-      // Don't allow the wizard to advance here in case other fields weren't filled in
-      break;
+    if (!WeaveWiz._passphraseCheck) {
+      WeaveWiz._log.info("Checking passphrase after login verify");
+      WeaveWiz.verifyPassphrase();
     }
 
-    case "weave:service:login:finish":
-      this._log.info("Initial login succeeded");
-      break;
+    WeaveWiz.checkVerificationFields();
 
-    case "weave:service:login:error":
-      this._log.info("Initial login failed");
-      break;
+    // Don't allow the wizard to advance here in case other fields weren't filled in
+  },
 
-    case "weave:service:verify-login:error": {
-      this._log.info("Login verify failed");
+  onVerifyLoginError: function WeaveWiz_onVerifyLoginError(subject, data) {
+    WeaveWiz._log.info("Login verify failed");
+    WeaveWiz._loginCheck = false;
+    $('account-error-icon').hidden = true;
+    $('account-error-link').hidden = true;
+    $('account-error-label').value = $('strings').getString("verify-error.label");
+    $('account-error-label').style.color = ERROR_COLOR;
+    $('weave-setup-wizard').canAdvance = false;
+  },
 
-      document.getElementById('login-verified').value = "false";
+  onVerifyPassphrase: function WeaveWiz_onVerifyPassphrase(subject, data) {
+    WeaveWiz._log.info("Passphrase verify succeeded");
+    WeaveWiz._passphraseCheck = true;
+    $('passphrase-error-icon').hidden = true;
+    $('passphrase-error-link').hidden = true;
+    $('passphrase-error-label').value = $('strings').getString("passphrase-success.label");
+    $('passphrase-error-label').style.color = SUCCESS_COLOR;
+    WeaveWiz.checkVerificationFields();
+    // Don't allow the wizard to advance here in case other fields weren't filled in
+  },
 
-      let statusIcon  = document.getElementById('verify-account-icon');
-      let statusLink  = document.getElementById('verify-account-error-link');
-      let statusLabel = document.getElementById('verify-account-error');
+  onVerifyPassphraseError: function WeaveWiz_onVerifyPassphraseError(subject, data) {
+    WeaveWiz._log.info("Passphrase verify failed");
+    WeaveWiz._passphraseCheck = false;
+    $('passphrase-error-icon').hidden = true;
+    $('passphrase-error-link').hidden = true;
+    $('passphrase-error-label').value = $('strings').getString("passphrase-error.label");
+    $('passphrase-error-label').style.color = ERROR_COLOR;
+    $('weave-setup-wizard').canAdvance = false;
+  },
 
-      statusIcon.hidden = true;
-      statusLink.hidden = true;
-      statusLabel.value = this._stringBundle.getString("verify-error.label");
-      statusLabel.style.color = ERROR_COLOR;
+  onSyncStart: function WeaveWiz_onSyncStart(subject, data) {
+  },
 
-      wizard.canAdvance = false;
-      break;
-    }
+  onSyncFinish: function WeaveWiz_onSyncFinish(subject, data) {
+    WeaveWiz._log.info("Initial Sync finished");
+    $('final-sync-status').style.color = SUCCESS_COLOR;
+    $('final-status-label').value = $('strings').getString("installation-complete.label");
+    $('final-status-link').hidden = true;
+    $('final-status-icon').hidden = true;
+    WeaveWiz._syncSuccess = true;
+    $('weave-setup-wizard').canAdvance = true;
+    $('weave-setup-wizard').advance('sync-wizard-thankyou');
+  },
 
-    case "weave:service:verify-passphrase:error": {
-      this._log.info("Passphrase verify failed");
+  onSyncError: function WeaveWiz_onSyncError(subject, data) {
+    WeaveWiz._log.info("Initial Sync failed");
+    $('final-sync-status').style.color = ERROR_COLOR;
+    $('final-status-label').value = $('strings').getString("initialSync-error.label");
+    $('final-status-label').style.color = SERVER_ERROR_COLOR;
+    $('final-status-link').hidden = false;
+    $('final-status-icon').hidden = true;
 
-      document.getElementById('passphrase-verified').value = "false";
-
-      let statusIcon  = document.getElementById('verify-passphrase-icon');
-      let statusLink  = document.getElementById('verify-passphrase-error-link');
-      let statusLabel = document.getElementById('verify-passphrase-error');
-
-      statusIcon.hidden = true;
-      statusLink.hidden = true;
-      statusLabel.value = this._stringBundle.getString("passphrase-error.label");
-      statusLabel.style.color = ERROR_COLOR;
-
-      wizard.canAdvance = false;
-      break;
-    }
-
-    case "weave:service:logout:finish":
-      this._log.info("Logged out");
-      break;
-
-    case "weave:service:sync:finish": {
-      let syncStatus    = document.getElementById('final-sync-status');
-      let finalStatus   = document.getElementById('final-status');
-      let finalLink     = document.getElementById('final-status-link');
-      let finalIcon     = document.getElementById('final-status-icon');
-      let syncProgress  = this._stringBundle.getString("initialSync-progress.label");
-      let complete      = this._stringBundle.getString("installation-complete.label");
-
-      this._log.info("Initial Sync performed");
-      syncStatus.style.color = SUCCESS_COLOR;
-      finalStatus.value = complete;
-      finalIcon.hidden = true;
-      finalLink.hidden = true;
-
-      document.getElementById("sync-success").value = "true";
-      wizard.canAdvance = true;
-      wizard.advance('sync-wizard-thankyou');
-      break;
-    }
-
-    case "weave:service:sync:error": {
-      let syncStatus    = document.getElementById('final-sync-status');
-      let finalStatus   = document.getElementById('final-status');
-      let finalLink     = document.getElementById('final-status-link');
-      let finalIcon     = document.getElementById('final-status-icon');
-      let syncError     = this._stringBundle.getString("initialSync-error.label");
-
-      this._log.info("Initial Sync failed");
-      syncStatus.style.color = ERROR_COLOR;
-      finalStatus.value = syncError;
-      finalStatus.style.color = SERVER_ERROR_COLOR;
-      finalLink.hidden = false;
-      finalIcon.hidden = true;
-
-      //this will allow them to run completeInstallation() again (try again)
-      document.getElementById("installation-started").value = "false";
-      break;
-    }
-
-    default:
-      this._log.warn("Unknown observer notification topic: " + topic);
-      break;
-    }
+    //this will allow them to run completeInstallation() again (try again)
+    WeaveWiz._installationStarted = false;
   }
 };
-
-let gSyncWizard = new SyncWizard();
+WeaveWiz.init();
