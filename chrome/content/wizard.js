@@ -266,25 +266,6 @@ WeaveWiz = {
 	  }, SERVER_TIMEOUT);
   },
 
-  // Sets Weave properties so they are stored in login manager
-  // Do not call until final wizard screen in case the user cancels setup.
-  acceptExistingAccount: function WeaveWiz_acceptExistingAccount() {
-    WeaveWiz._log.debug("Saving username, password, passphrase in login manager");
-
-    // Setting the Weave.Service properties results in this data being
-    // saved in the Firefox login manager
-    if (WeaveWiz._path == "verify") {
-      Weave.Service.username = Wiz.Verify.username.value;
-      Weave.Service.password = Wiz.Verify.password.value;
-      Weave.Service.passphrase = Wiz.Verify.passphrase.value;
-    } else {
-      Weave.Service.username = $('username-create-field').value;
-      Weave.Service.password = $('password-create-field').value;
-      Weave.Service.passphrase = $('passphrase-create-field').value;
-    }
-    return true;
-  },
-
   // Called on Wizard load to see if registration is closed.
   // Sets boolean on WeaveWiz.registrationClosed.
   checkRegistrationStatus: function WeaveWiz_checkRegistrationStatus() {
@@ -729,6 +710,9 @@ WeaveWiz = {
 	statusLabel.value = created;
 	statusLabel.style.color = SUCCESS_COLOR;
 
+        // account created ok, so save it in the pw manager
+        WeaveWiz.saveLoginInfo();
+
         WeaveWiz._createCheck3 = true;
 	$('weave-setup-wizard').canAdvance = true;
 	$('weave-setup-wizard').advance('sync-wizard-data');
@@ -810,6 +794,23 @@ WeaveWiz = {
     return false;
   },
 
+  saveLoginInfo: function WeaveWiz_saveLoginInfo() {
+    WeaveWiz._log.debug("Saving username, password, passphrase in login manager");
+
+    // Setting the Weave.Service properties results in this data being
+    // saved in the Firefox login manager
+    if (WeaveWiz._path == "verify") {
+      Weave.Service.username = Wiz.Verify.username.value;
+      Weave.Service.password = Wiz.Verify.password.value;
+      Weave.Service.passphrase = Wiz.Verify.passphrase.value;
+    } else {
+      Weave.Service.username = $('username-create-field').value;
+      Weave.Service.password = $('password-create-field').value;
+      Weave.Service.passphrase = $('passphrase-create-field').value;
+    }
+    return true;
+  },
+
   /////INSTALLATION, FINAL SYNC/////
 
   // FIXME: Code duplication between here and pref pane
@@ -888,31 +889,21 @@ WeaveWiz = {
       $('strings').getString("initialLogin-progress.label");
     $('final-status-icon').hidden = false;
 
-    // adds username and password to manager
-    WeaveWiz.acceptExistingAccount();
-
-    Weave.Service.login(Weave.Service.sync(function() {}, true));
-
-    if (Weave.Service.isLoggedIn) {
-      WeaveWiz.initialSync();
-      return false;
-    }
-
-    // login using those values
-    Weave.Service.loginAndInit(
+    Weave.Service.login(
       function() {
-        if(Weave.Service.isInitialized) {
-          $('final-account-status').style.color = SUCCESS_COLOR;
-          WeaveWiz.initialSync();
-        } else {
-          $('final-account-status').style.color = ERROR_COLOR;
-          $('final-status-label').value =
-            $('strings').getString("initialLogin-error.label");
-          $('final-status-label').style.color = SERVER_ERROR_COLOR;
-          $('final-status-icon').hidden = true;
-          $('final-status-link').hidden = false;
-        }
+        $('final-account-status').style.color = SUCCESS_COLOR;
+        Weave.Service.sync(
+          function() {
+          }, true);
       });
+
+
+//          $('final-account-status').style.color = ERROR_COLOR;
+//          $('final-status-label').value =
+//            $('strings').getString("initialLogin-error.label");
+//          $('final-status-label').style.color = SERVER_ERROR_COLOR;
+//          $('final-status-icon').hidden = true;
+//          $('final-status-link').hidden = false;
 
     // don't let them advance- only sync:finish will advance
     return false;
