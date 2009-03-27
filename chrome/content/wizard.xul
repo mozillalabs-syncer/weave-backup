@@ -85,9 +85,11 @@
       <columns><column/><column flex="1"/></columns>       
       <rows>
         <row align="center">
+          <!-- note: username timeout is short to avoid validation while user is
+               typing in the password -->
           <label value="&username.label;" control="username"/>
           <textbox id="username" class="padded"
-                   type="timed" timeout="1500"
+                   type="timed" timeout="300"
                    oninput = "WeaveWiz.checkVerificationFields();"
                    oncommand="WeaveWiz.verifyLogin();"/>
         </row>
@@ -287,7 +289,7 @@
         <row>
           <hbox>
           <vbox width="316">
-            <textbox id="captcha-input" oninput="WeaveWiz.checkFinalFields();"/>
+            <textbox id="captcha-input" oninput="WeaveWiz.checkCaptchaField();"/>
             <hbox><label class="hint" value="&captchaHint.label;"/><spacer flex="1"/></hbox>
             <hbox><label id="captcha-error" value=""/><spacer flex="1"/></hbox>
           </vbox>
@@ -361,15 +363,14 @@
               next="sync-wizard-thankyou" 
               onpageadvanced="WeaveWiz.onFinishFinal();">
     <description>&final1.description;</description>
-    <separator class="thin"/>
+    <separator/>
     <hbox>
       <label id="final-pref-status" value="&final-pref-title.description;"/>
       <image id="final-pref-icon" hidden="true" src="chrome://global/skin/icons/loading_16.png"/>
       <spacer flex="1"/>
     </hbox>
     <hbox>
-      <spacer width="10"/>
-      <label id="final-pref-details" disabled="true"/>
+      <spacer width="10"/><label id="final-pref-details" disabled="true"/>
       <spacer flex="1"/>
     </hbox>
     <separator/>
@@ -379,8 +380,7 @@
       <spacer flex="1"/>
     </hbox>
     <hbox>
-      <spacer width="10"/>
-      <label id="final-account-details" disabled="true"/>
+      <spacer width="10"/><label id="final-account-details" disabled="true"/>
       <spacer flex="1"/>
     </hbox>
     <separator/>
@@ -390,15 +390,12 @@
       <spacer flex="1"/>
     </hbox>
     <hbox>
-      <spacer width="10"/>
-      <label id="final-sync-details" disabled="true"/>
+      <spacer width="10"/><label id="final-sync-details" disabled="true"/>
       <spacer flex="1"/>
     </hbox>
-    
     <separator/>
     <separator/>
     <separator/>
-    
     <hbox>
       <spacer flex="1"/>
       <label id="final-status-label"/>

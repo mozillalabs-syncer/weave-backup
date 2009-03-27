@@ -153,11 +153,16 @@ WeaveWiz = {
 
   onShowVerify: function WeaveWiz_onShowVerify() {
     WeaveWiz._log.debug("Showing verify page");
+    this._path = "verify";
     $('weave-setup-wizard').canAdvance = WeaveWiz._verifyCheck;
   },
 
   onFinishVerify: function WeaveWiz_onFinishVerify() {
-    return WeaveWiz.checkVerificationFields();
+    if (WeaveWiz.checkVerificationFields()) {
+      WeaveWiz.saveLoginInfo();
+      return true;
+    }
+    return false;
   },
 
   // Called oninput from all fields, and onadvance from verification page.
@@ -210,7 +215,7 @@ WeaveWiz = {
 
     // The observer will handle success and failure notifications
     // checkVerificationFields() will take care of allowing advance if this works
-    WeaveWiz._log.info("Verifying username/password...");
+    WeaveWiz._log.debug("Verifying username/password...");
     Weave.Service.verifyLogin(null, $('username').value, $('password').value);
 
     // In case the server is hanging...
@@ -229,21 +234,26 @@ WeaveWiz = {
   verifyPassphrase : function WeaveWiz_verifyPassphrase() {
     WeaveWiz._log.debug("Verifying passphrase");
 
-    let progress = $('strings').getString("passphrase-progress.label");
+    // FIXME: disabling passphrase check for now
+    $('weave-setup-wizard').canAdvance = true;
+    WeaveWiz._passphraseCheck = true;
+    return;
 
     // Don't allow advancing until we verify the account.
     $('weave-setup-wizard').canAdvance = false;
     WeaveWiz._passphraseCheck = false;
 
     // Check for empty passphrase field
-    if (!passphrase) {
-      Wiz.Verify.statusIcon.hidden = true;
-      Wiz.Verified.passphraseLabel.value = "";
+    if (!$('passphrase').value) {
+      $('passphrase-error-icon').hidden = true;
+      $('passphrase-error-label').value = "";
       return;
     }
 
+    let progress = $('strings').getString("passphrase-progress.label");
+
     // Ok to verify, set the status and throbber
-    Wiz.Verify.statusIcon.hidden  = false;
+    $('passphrase-error-icon').hidden = false;
     $('passphrase-error-link').hidden  = true;
     $('passphrase-error-label').hidden = false;
     $('passphrase-error-label').value  = progress;
@@ -251,8 +261,9 @@ WeaveWiz = {
 
     // The observer will handle success and failure notifications
     // checkVerificationFields() will take care of allowing advance if this works
-    WeaveWiz._log.info("Verifying passphrase...");
-    Weave.Service.verifyPassphrase(null, $('username').valu, $('password').value, $('passphrase').value);
+    WeaveWiz._log.debug("Verifying passphrase...");
+    Weave.Service.verifyPassphrase(null, $('username').value,
+                                   $('password').value, $('passphrase').value);
 
     // In case the server is hanging...
     let strings = $('strings');
@@ -296,6 +307,7 @@ WeaveWiz = {
   // to the would be user and then push them back to the registration menu.
   onShowCreate1: function WeaveWiz_onShowCreate1() {
     WeaveWiz._log.debug("Showing creation page step 1");
+    this._path = "create";
     if (WeaveWiz.registrationClosed) {
       let p = Cc["@mozilla.org/embedcomp/prompt-service;1"]
         .getService(Ci.nsIPromptService);
@@ -401,15 +413,15 @@ WeaveWiz = {
       });
 
     // In case the server is hanging...
-//    setTimeout(function() {
-//            if (statusLabel.value == checkingUsername) {
-//              WeaveWiz._log.info("Server timeout (username check)");
-//              statusIcon.hidden = true;
-//              statusLink.hidden = false;
-//              statusLabel.value = serverTimeoutError;
-//              statusLabel.style.color = SERVER_ERROR;
-//            }
-//      }, SERVER_TIMEOUT);
+    setTimeout(function() {
+            if (statusLabel.value == checkingUsername) {
+              WeaveWiz._log.info("Server timeout (username check)");
+              statusIcon.hidden = true;
+              statusLink.hidden = false;
+              statusLabel.value = serverTimeoutError;
+              statusLabel.style.color = SERVER_ERROR;
+            }
+      }, SERVER_TIMEOUT);
 
     return false;
   },
@@ -628,6 +640,19 @@ WeaveWiz = {
     return false;
   },
 
+
+  // Called oninput from fields on final account creation screen.
+  // Allows wizard to advance if all fields have a value.
+  checkCaptchaField: function WeaveWiz_checkCaptchaField() {
+    WeaveWiz._log.trace("Checking captcha field");
+    if (!$('captcha-input').value) {
+      $('weave-setup-wizard').canAdvance = false;
+      return false;
+    }
+    $('weave-setup-wizard').canAdvance = true;
+    return true;
+  },
+
   // Called onclick from "try another image" link.
   // Refreshes captcha image.
   reloadCaptcha: function WeaveWiz_reloadCaptcha() {
@@ -682,35 +707,17 @@ WeaveWiz = {
     // hide the captcha error message in case that was the problem
     captchaError.value = "";
 
-    function enc(x) encodeURIComponent(x);
-    let message = "uid=" + enc($('username-create-field').value) +
-      "&password=" + enc($('password-create-field').value) +
-      "&mail=" + enc($('email-create-field').value) +
-      "&recaptcha_response_field=" + enc($('captcha-input').value) +
-      "&recaptcha_challenge_field=" + enc($('lastCaptchaChallenge').value) +
-      "&token=3419b5893291d055";
-
-    let res = new Weave.Resource(WeaveWiz._serverURL + REGISTER_URL);
-    res.authenticator = new Weave.NoOpAuthenticator();
-    res.setHeader("Content-Type", "application/x-www-form-urlencoded",
-                  "Content-Length", message.length);
-
-    let onPost = function(data) {
-      switch (res.lastChannel.responseStatus) {
+    let onComplete = function(status) {
+      switch (status) {
       case 200:
       case 201:
         // CREATED
 	captchaError.value = "";
-	WeaveWiz._log.info("Account created: " + data);
-
-	//$('lastCaptchaChallenge').value = captchaImage;
-
 	statusIcon.hidden = true;
 	statusLink.hidden = true;
 	statusLabel.value = created;
 	statusLabel.style.color = SUCCESS_COLOR;
 
-        // account created ok, so save it in the pw manager
         WeaveWiz.saveLoginInfo();
 
         WeaveWiz._createCheck3 = true;
@@ -719,13 +726,11 @@ WeaveWiz = {
         break;
 
       case 400:
-        // BAD REQUEST (the user should rarely get to this state -> ok to report one at a time)
 	statusIcon.hidden = true;
 	statusLink.hidden = true;
         statusLabel.style.color = ERROR_COLOR;
-        let response = data;
-	WeaveWiz._log.info("Status 400: Account not created, response " + response);
 
+        let response = data;
         if (response.match("0") && !response.match("-10"))
           statusLabel.value = uidTaken;
         else if (response.match("-2"))
@@ -750,8 +755,6 @@ WeaveWiz = {
         break;
 
       case 417:
-        // CAPTCHA FAILED
-	WeaveWiz._log.info("Incorrect Captcha response. Account not created.");
 	captchaError.value = incorrectCaptcha;
 	captchaError.style.color = ERROR_COLOR;
 	$('captcha').reload();
@@ -764,9 +767,6 @@ WeaveWiz = {
 	break;
 
       default:
-        WeaveWiz._log.info("Error: received status " +
-                           res.lastChannel.responseStatus +
-                           ". Account not created.");
 	statusIcon.hidden = true;
 	statusLink.hidden = false;
 	statusLabel.value = serverError;
@@ -777,19 +777,13 @@ WeaveWiz = {
 	break;
       }
     };
-    res.post(onPost, message);
 
-    // in case the server is hanging...
-    //setTimeout(
-    //  function() {
-    //    if (!WeaveWiz._createCheck3) {
-    //      WeaveWiz._log.info("Server timeout (account creation)");
-    //      statusIcon.hidden = true;
-    //      statusLink.hidden = false;
-    //      statusLabel.value = serverTimeoutError;
-    //      statusLabel.style.color = SERVER_ERROR_COLOR;
-    //    }
-    //  }, SERVER_TIMEOUT);
+    Weave.Service.createAccount(onComplete,
+                                $('username-create-field').value,
+                                $('password-create-field').value,
+                                $('email-create-field').value,
+                                $('lastCaptchaChallenge').value,
+                                $('captcha-input').value);
 
     return false;
   },
@@ -799,10 +793,11 @@ WeaveWiz = {
 
     // Setting the Weave.Service properties results in this data being
     // saved in the Firefox login manager
+    Weave.Svc.Prefs.set("autoconnect", true);
     if (WeaveWiz._path == "verify") {
-      Weave.Service.username = Wiz.Verify.username.value;
-      Weave.Service.password = Wiz.Verify.password.value;
-      Weave.Service.passphrase = Wiz.Verify.passphrase.value;
+      Weave.Service.username = $('username').value;
+      Weave.Service.password = $('password').value;
+      Weave.Service.passphrase = $('passphrase').value;
     } else {
       Weave.Service.username = $('username-create-field').value;
       Weave.Service.password = $('password-create-field').value;
@@ -839,6 +834,16 @@ WeaveWiz = {
   onShowFinal: function WeaveWiz_onShowFinal() {
     WeaveWiz._log.debug("Showing final page");
 
+    // don't do anything if the sync has already happened
+    if (WeaveWiz._syncSuccess) {
+      $('weave-setup-wizard').canAdvance = true;
+      return true;
+    }
+
+    WeaveWiz._log.debug("Completing installation");
+
+    $('weave-setup-wizard').canAdvance = false;
+
     // account status
     let username = (WeaveWiz._path == "verify")?
       $('username').value : $('username-create-field').value;
@@ -857,24 +862,6 @@ WeaveWiz = {
     let syncDetails = $('final-sync-details');
     syncDetails.value = $('strings').getString("final-sync-value.label");
 
-    $('weave-setup-wizard').canAdvance =
-      (WeaveWiz._syncSuccess || !WeaveWiz._installationStarted)? true : false;
-  },
-
-  onFinishFinal: function WeaveWiz_onFinishFinal() {
-    WeaveWiz._log.debug("Completing installation");
-
-    // don't do anything if the sync has already happened
-    if (WeaveWiz._syncSuccess)
-      return true;
-
-    // don't let them continue once continue has been clicked once
-    if (WeaveWiz._installationStarted)
-      return false;
-
-    WeaveWiz._installationStarted = true;
-    $('weave-setup-wizard').canAdvance = false;
-
     $('final-status-label').style.color = PROGRESS_COLOR;
     $('final-status-icon').hidden = false;
     $('final-status-link').hidden = true;
@@ -891,12 +878,23 @@ WeaveWiz = {
 
     Weave.Service.login(
       function() {
+        WeaveWiz._log.info("Initial login finished");
         $('final-account-status').style.color = SUCCESS_COLOR;
+        $('final-status-label').value =
+          $('strings').getString("initialSync-progress.label");
         Weave.Service.sync(
           function() {
+            WeaveWiz._log.info("Initial sync finished");
+            $('final-sync-status').style.color = SUCCESS_COLOR;
+            $('final-status-label').value =
+              $('strings').getString("installation-complete.label");
+            $('final-status-link').hidden = true;
+            $('final-status-icon').hidden = true;
+            WeaveWiz._syncSuccess = true;
+            $('weave-setup-wizard').canAdvance = true;
+            $('weave-setup-wizard').advance('sync-wizard-thankyou');
           }, true);
       });
-
 
 //          $('final-account-status').style.color = ERROR_COLOR;
 //          $('final-status-label').value =
@@ -906,21 +904,10 @@ WeaveWiz = {
 //          $('final-status-link').hidden = false;
 
     // don't let them advance- only sync:finish will advance
-    return false;
   },
 
-  // Called oninput from fields on final account creation screen.
-  // Allows wizard to advance if all fields have a value.
-  checkFinalFields: function WeaveWiz_checkFinalFields() {
-    WeaveWiz._log.trace("Checking final fields");
-
-    //    if (!$('captcha-input').value || !Wiz.Final.terms.checked) {
-    if (!$('captcha-input').value) {
-      $('weave-setup-wizard').canAdvance = false;
-      return false;
-    }
-    $('weave-setup-wizard').canAdvance = true;
-    return true;
+  onFinishFinal: function WeaveWiz_onFinishFinal() {
+    return false;
   },
 
   // Called from completeInstallation().
@@ -961,10 +948,6 @@ WeaveWiz = {
       WeaveWiz._log.info("Checking passphrase after login verify");
       WeaveWiz.verifyPassphrase();
     }
-
-    WeaveWiz.checkVerificationFields();
-
-    // Don't allow the wizard to advance here in case other fields weren't filled in
   },
 
   onVerifyLoginError: function WeaveWiz_onVerifyLoginError(subject, data) {
@@ -984,8 +967,6 @@ WeaveWiz = {
     $('passphrase-error-link').hidden = true;
     $('passphrase-error-label').value = $('strings').getString("passphrase-success.label");
     $('passphrase-error-label').style.color = SUCCESS_COLOR;
-    WeaveWiz.checkVerificationFields();
-    // Don't allow the wizard to advance here in case other fields weren't filled in
   },
 
   onVerifyPassphraseError: function WeaveWiz_onVerifyPassphraseError(subject, data) {
@@ -1002,14 +983,6 @@ WeaveWiz = {
   },
 
   onSyncFinish: function WeaveWiz_onSyncFinish(subject, data) {
-    WeaveWiz._log.info("Initial Sync finished");
-    $('final-sync-status').style.color = SUCCESS_COLOR;
-    $('final-status-label').value = $('strings').getString("installation-complete.label");
-    $('final-status-link').hidden = true;
-    $('final-status-icon').hidden = true;
-    WeaveWiz._syncSuccess = true;
-    $('weave-setup-wizard').canAdvance = true;
-    $('weave-setup-wizard').advance('sync-wizard-thankyou');
   },
 
   onSyncError: function WeaveWiz_onSyncError(subject, data) {
