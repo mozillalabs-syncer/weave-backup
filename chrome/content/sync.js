@@ -75,6 +75,8 @@ function WeaveWindow() {
   // opened in the middle of signing-in or syncing.
   if (Weave.Service.isLoggedIn)
     this.onLoginFinish();
+  else
+    this._setStatus("offline");
 
   Weave.Service.onWindowOpened();
 }
@@ -253,7 +255,7 @@ WeaveWindow.prototype = {
 
     let username = Weave.Svc.Prefs.get("username");
     let server = Weave.Svc.Prefs.get("serverURL");
-    if (!username && server == 'https://services.mozilla.com/')
+    if (!username && server == 'https://auth.services.mozilla.com/')
       this.doOpenSetupWizard();
     else
       this.doLoginPopup();
