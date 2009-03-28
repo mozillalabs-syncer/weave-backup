@@ -33,7 +33,8 @@ let Sync = {
     this._set("syncButton", "disabled", "cancelButton", "disabled", "true");
 
     // Run the sync type then do the actual sync
-    Weave.Service[this._syncType](Weave.Utils.openStatus);
+    let engines = Weave.Engines.getEnabled().map(function(i) i.name);
+    Weave.Service[this._syncType](Weave.Utils.openStatus, engines);
 
     return true;
   },
