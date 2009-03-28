@@ -96,11 +96,11 @@ FxWeaveGlue.prototype = {
         if ( engine.locallyOpenTabMatchesURL(currUrl) ) {
           continue;
         }
-	menuitem = menu.appendItem("  " + tab.title);
+        menuitem = menu.appendItem("  " + tab.title);
 	/* Store index of client within clients list AND index of tab within
-	 * client, as an ordered list, in value of menu item, so that we
+	 * client, separated by comma, in value of menu item, so that we
 	 * can retrive the correct tab when it is chosen. */
-	menuitem.value = [clientId, tabId];
+        menuitem.value = clientId + "," + tabId;
         // Add site's favicon to menu:
         menuitem.class = "menuitem-iconic";
         menuitem.image = faviconSvc.getFaviconImageForPage(
@@ -117,13 +117,15 @@ FxWeaveGlue.prototype = {
     let js = Cc["@mozilla.org/dom/json;1"]
                  .createInstance(Ci.nsIJSON);
 
-    /* The event.target.value is a list of two items: [clientId, tabId]
+    /* The event.target.value is two items comma-separated: "clientId,tabId"
      * as set by doInitTabMenu above.  Read this out and use it to get
      * the tab data:
      */
-    let clientId = event.target.value[0];
-    let tabId = event.target.value[1];
-    let remoteClient = Weave.Engines.get("tabs").getAllClients()[clientId];
+    let values = event.target.value.split(",");
+    let clientId = values[0];
+    let tabId = values[1];
+    let clients = Weave.Engines.get("tabs").getAllClients();
+    let remoteClient = clients[clientId];
     let tabData = remoteClient.getAllTabs()[tabId];
 
     // Open the new tab:
