@@ -525,7 +525,7 @@ var RemoteTabViewer = {
       let tabs = record.getAllTabs();
       for each (tab in tabs) {
         if (!tab.title) {
-          tab.title = "";
+          tab.title = tab.urlHistory[0];
         }
         if (!tab.lastUsed) {
           tab.lastUsed = 0;
