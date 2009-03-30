@@ -96,7 +96,7 @@ FxWeaveGlue.prototype = {
         if ( engine.locallyOpenTabMatchesURL(currUrl) ) {
           continue;
         }
-        menuitem = menu.appendItem("  " + tab.title);
+        menuitem = menu.appendItem("  " + (tab.title? tab.title : tab.urlHistory[0]));
 	/* Store index of client within clients list AND index of tab within
 	 * client, separated by comma, in value of menu item, so that we
 	 * can retrive the correct tab when it is chosen. */
