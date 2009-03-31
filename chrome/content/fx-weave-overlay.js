@@ -114,8 +114,6 @@ FxWeaveGlue.prototype = {
   onCommandTabsMenu: function FxWeaveGlue_onCommandTabsMenu(event) {
     let ss = Cc["@mozilla.org/browser/sessionstore;1"].
                 getService(Ci.nsISessionStore);
-    let js = Cc["@mozilla.org/dom/json;1"]
-                 .createInstance(Ci.nsIJSON);
 
     /* The event.target.value is two items comma-separated: "clientId,tabId"
      * as set by doInitTabMenu above.  Read this out and use it to get
@@ -140,7 +138,7 @@ FxWeaveGlue.prototype = {
     for (let i = urlHistory.length-1; i > -1; i--) {
       json.entries.push({url: urlHistory[i]});
     }
-    ss.setTabState(newTab, js.encode(json));
+    ss.setTabState(newTab, JSON.stringify(json));
 
     // Switch to the newly opened tab:
     gBrowser.selectedTab = newTab;

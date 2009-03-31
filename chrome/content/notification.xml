@@ -193,10 +193,6 @@
         Cc["@mozilla.org/browser/sessionstore;1"].getService(Ci.nsISessionStore);
       </field>
 
-      <field name="_json" readonly="true">
-        Cc["@mozilla.org/dom/json;1"].createInstance(Ci.nsIJSON);
-      </field>
-
       <!-- FIXME: refactor this function with the identical one in sync.js. -->
       <method name="_getVirtualTabs">
         <body><![CDATA[
@@ -274,7 +270,7 @@
             }
             if (listitem.checked) {
               var tab = gBrowser.addTab("about:blank");
-              this._sessionStore.setTabState(tab, this._json.encode(virtualTab.state));
+              this._sessionStore.setTabState(tab, JSON.stringify(virtualTab.state));
               delete virtualTabs[listitem.value];
             }
             else {
