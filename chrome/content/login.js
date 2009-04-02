@@ -86,6 +86,9 @@ let Login = {
     this._origCancel = cancel.getAttribute("label");
     cancel.setAttribute("label", this._stringBundle.getString("hide.label"));
 
+    this._loginDialog.defaultButton = "cancel";
+    cancel.focus();
+
     break;
     case "weave:service:login:error":
     this._loginStatusIcon.setAttribute("status", "error");
@@ -93,6 +96,7 @@ let Login = {
     this._loginStatus.style.color = "red";
     this._loginDialog.getButton("extra2").setAttribute("disabled", "false");
     this._loginDialog.getButton("cancel").setAttribute("label", this._origCancel);
+    this._loginDialog.defaultButton = "extra2";
     document.getElementById("username").focus();
 
     break;
