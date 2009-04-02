@@ -81,12 +81,18 @@ let Login = {
     this._loginStatus.style.color = "-moz-dialogtext";
     this._loginDialog.getButton("extra2").setAttribute("disabled", "true");
 
+    // Switch the cancel button to hide when we're logging in
+    let cancel = this._loginDialog.getButton("cancel");
+    this._origCancel = cancel.getAttribute("label");
+    cancel.setAttribute("label", this._stringBundle.getString("hide.label"));
+
     break;
     case "weave:service:login:error":
     this._loginStatusIcon.setAttribute("status", "error");
     this._loginStatus.value = this._stringBundle.getString("loginError.label");
     this._loginStatus.style.color = "red";
     this._loginDialog.getButton("extra2").setAttribute("disabled", "false");
+    this._loginDialog.getButton("cancel").setAttribute("label", this._origCancel);
     document.getElementById("username").focus();
 
     break;
