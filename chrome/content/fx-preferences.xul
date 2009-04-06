@@ -195,7 +195,8 @@
               </richlistitem>
               <richlistitem>
                   <checkbox id="sync-forms-checkbox"
-                            label="&formsCheckbox.label;" disabled="true" checked="false"/>
+                            label="&formsCheckbox.label;"
+                            preference="extensions.weave.engine.forms"/>
               </richlistitem>
               <richlistitem>
                   <checkbox id="sync-input-checkbox"

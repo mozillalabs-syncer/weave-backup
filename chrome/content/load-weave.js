@@ -31,7 +31,7 @@ Components.utils.import("resource://weave/engines/history.js", {});
 Components.utils.import("resource://weave/engines/clientData.js", {});
 //Components.utils.import("resource://weave/engines/tabs.js", {});
 //Components.utils.import("resource://weave/engines/cookies.js", {});
-//Components.utils.import("resource://weave/engines/forms.js", {});
+Components.utils.import("resource://weave/engines/forms.js", {});
 //Components.utils.import("resource://weave/engines/input.js", {});
 Components.utils.import("resource://weave/engines/passwords.js", {});
 Components.utils.import("resource://weave/faultTolerance.js", {});

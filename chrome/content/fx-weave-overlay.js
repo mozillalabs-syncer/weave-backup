@@ -53,6 +53,9 @@ function FxWeaveGlue() {
     Cu.import("resource://weave/engines/tabs.js");
     Weave.Engines.register(new TabEngine());
 
+    Cu.import("resource://weave/engines/forms.js");
+    Weave.Engines.register(new FormEngine());
+    
   } catch (e) {
     dump("Could not initialize engine: " + (e.message? e.message : e) + "\n");
     this._log.error("Could not initialize engine: " + (e.message? e.message : e));
