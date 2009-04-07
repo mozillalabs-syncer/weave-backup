@@ -89,7 +89,8 @@ else
 endif
 
 subst_names := weave_version buildid update_url update_url_tag unpacked jar
-substitutions := $(foreach s,$(subst_names),'$(s)=$($(s))')
+export $(subst_names)
+substitute  := perl -p -e 's/@([^@]+)@/defined $$ENV{$$1} ? $$ENV{$$1} : $$&/ge'
 
 dotin_files := $(shell find . -type f -name \*.in)
 dotin_files := $(dotin_files:.in=)
@@ -99,7 +100,7 @@ all: test
 .PHONY: build test xpi clean $(dotin_files) subst
 
 $(dotin_files): $(dotin_files:=.in)
-	./build/subst.pl $@ $(substitutions)
+	$(substitute) $@.in > $@
 
 subst: $(dotin_files)
 
