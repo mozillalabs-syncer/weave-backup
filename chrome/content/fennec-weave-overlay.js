@@ -47,24 +47,10 @@ function FennecWeaveGlue() {
   Observers.add("weave:engine:sync:start", this.onEngineStart, this);
   Observers.add("weave:engine:sync:status", this.onEngineStatus, this);
 
-  try {
-    Cu.import("resource://weave/engines/bookmarks.js");
-    Weave.Engines.register(new BookmarksEngine());
-
-    Cu.import("resource://weave/engines/history.js");
-    Weave.Engines.register(new HistoryEngine());
-
-    Cu.import("resource://weave/engines/tabs.js");
-    Weave.Engines.register(new TabEngine());
-
-    Cu.import("resource://weave/engines/passwords.js");
-    Weave.Engines.register(new PasswordEngine());
-
-  } catch (e) {
-    dump("Could not initialize engine!\n");
-    dump("The error is: " + (e.message? e.message: e) + "\n");
-    this._log.error("Could not initialize engine: " + (e.message? e.message : e));
-  }
+  // Register engines
+  let engines = ["Bookmarks", "History", "Password", "Tab"].
+    map(function(name) Weave[name + "Engine"]);
+  Weave.Engines.register(engines);
 
   /* Generating keypairs is an expensive operation, and we should never
    have to do it on Fennec because we don't support creating a Weave

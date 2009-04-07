@@ -29,7 +29,7 @@ Components.utils.import("resource://weave/engines.js", {});
 Components.utils.import("resource://weave/engines/bookmarks.js", {});
 Components.utils.import("resource://weave/engines/history.js", {});
 Components.utils.import("resource://weave/engines/clientData.js", {});
-//Components.utils.import("resource://weave/engines/tabs.js", {});
+Components.utils.import("resource://weave/engines/tabs.js", {});
 //Components.utils.import("resource://weave/engines/cookies.js", {});
 Components.utils.import("resource://weave/engines/forms.js", {});
 //Components.utils.import("resource://weave/engines/input.js", {});

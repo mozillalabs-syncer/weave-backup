@@ -40,28 +40,10 @@ function FxWeaveGlue() {
   this._log = Log4Moz.repository.getLogger("Chrome.Window");
   this._log.info("Initializing Firefox Weave embedding");
 
-  try {
-    Cu.import("resource://weave/engines/bookmarks.js");
-    Weave.Engines.register(new BookmarksEngine());
-
-    Cu.import("resource://weave/engines/history.js");
-    Weave.Engines.register(new HistoryEngine());
-
-    Cu.import("resource://weave/engines/passwords.js");
-    Weave.Engines.register(new PasswordEngine());
-
-    Cu.import("resource://weave/engines/tabs.js");
-    Weave.Engines.register(new TabEngine());
-
-    Cu.import("resource://weave/engines/forms.js");
-    Weave.Engines.register(new FormEngine());
-    
-  } catch (e) {
-    dump("Could not initialize engine: " + (e.message? e.message : e) + "\n");
-    this._log.error("Could not initialize engine: " + (e.message? e.message : e));
-  }
-
-  return;
+  // Register engines
+  let engines = ["Bookmarks", "Form", "History", "Password", "Tab"].
+    map(function(name) Weave[name + "Engine"]);
+  Weave.Engines.register(engines);
 }
 FxWeaveGlue.prototype = {
 

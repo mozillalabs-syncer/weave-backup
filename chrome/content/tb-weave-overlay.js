@@ -39,16 +39,10 @@ function TbWeaveGlue() {
   this._log = Log4Moz.repository.getLogger("Chrome.Window");
   this._log.info("Initializing Thunderbird Weave embedding\n");
 
-  var engines = [
-                 new Weave.CookieEngine(),
-                 new Weave.PasswordEngine()
-                ];
-
   // Register engines
-  for (let i = 0; i < engines.length; i++)
-    Weave.Engines.register(engines[i]);
-
-  return;
+  let engines = ["Cookie", "Password"].
+    map(function(name) Weave[name + "Engine"]);
+  Weave.Engines.register(engines);
 }
     
 TbWeaveGlue.prototype = {   
