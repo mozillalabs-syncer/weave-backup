@@ -72,7 +72,7 @@ endif
 
 buildid ?= ${WEAVE_BUILDID}
 ifeq ($(buildid),)
-  date    := $(shell date --utc +%Y%m%d%H%M)
+  date    := $(shell date -u +%Y%m%d%H%M)
   revid   := $(shell hg tip --template '{node|short}')
   buildid := $(date)-$(revid)
 endif
