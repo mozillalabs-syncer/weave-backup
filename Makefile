@@ -72,7 +72,9 @@ endif
 
 buildid ?= ${WEAVE_BUILDID}
 ifeq ($(buildid),)
-  buildid:=$(shell build/gen-buildid.sh)
+  date    := $(shell date --utc +%Y%m%d%H%M)
+  revid   := $(shell hg tip --template '{node|short}')
+  buildid := $(date)-$(revid)
 endif
 ifeq ($(buildid),)
   $(warning Could not determine build id)
