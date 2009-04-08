@@ -135,10 +135,6 @@ FennecWeaveGlue.prototype = {
   _setPreferenceDefaults: function FennecWeaveGlue__setPrefDefaults() {
     // Some prefs need different defaults in Fennec than they have in
     // Firefox.  Set them here and they'll only apply to Fennec.
-    if (!this._pfs.prefHasUserValue("extensions.weave.client.name")) {
-      this._pfs.setCharPref("extensions.weave.client.name",
-                            this._getString("fennec.default.client.name"));
-    }
     if (!this._pfs.prefHasUserValue("extensions.weave.client.type")) {
       this._pfs.setCharPref("extensions.weave.client.type",
                             this._getString("fennec.default.client.type"));
