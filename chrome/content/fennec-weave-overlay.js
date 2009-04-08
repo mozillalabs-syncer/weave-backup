@@ -47,11 +47,6 @@ function FennecWeaveGlue() {
   Observers.add("weave:engine:sync:start", this.onEngineStart, this);
   Observers.add("weave:engine:sync:status", this.onEngineStatus, this);
 
-  // Register engines
-  let engines = ["Bookmarks", "History", "Password", "Tab"].
-    map(function(name) Weave[name + "Engine"]);
-  Weave.Engines.register(engines);
-
   /* Generating keypairs is an expensive operation, and we should never
    have to do it on Fennec because we don't support creating a Weave
    account from Fennec (yet). */

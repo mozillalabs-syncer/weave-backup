@@ -39,11 +39,6 @@
 function FxWeaveGlue() {
   this._log = Log4Moz.repository.getLogger("Chrome.Window");
   this._log.info("Initializing Firefox Weave embedding");
-
-  // Register engines
-  let engines = ["Bookmarks", "Form", "History", "Password", "Tab"].
-    map(function(name) Weave[name + "Engine"]);
-  Weave.Engines.register(engines);
 }
 FxWeaveGlue.prototype = {
 
