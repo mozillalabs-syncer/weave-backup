@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://weave/content/preferences.css"
+type="text/css"?>
+<!DOCTYPE overlay SYSTEM "chrome://weave/locale/preferences.dtd">
+
+<overlay id="weave_preftree_overlay"
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <treechildren id="prefsPanelChildren">
+    <treeitem id="weaveItem"
+              label="&prefpane.label;"
+              prefpane="sync-prefpane"
+              url="chrome://weave/content/fx-preferences.xul"/>
+  </treechildren>
+</overlay>

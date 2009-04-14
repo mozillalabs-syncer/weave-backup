@@ -40,6 +40,10 @@ if (typeof(Cc) == "undefined")
   var Cc = Components.classes;
 if (typeof(Ci) == "undefined")
   var Ci = Components.interfaces;
+if (typeof Cu == "undefined")
+  var Cu = Components.utils;
+if (typeof Cr == "undefined")
+  var Cr = Components.results;
 
 function WeaveWindow() {
   this._log = Log4Moz.repository.getLogger("Window");
@@ -282,10 +286,19 @@ WeaveWindow.prototype = {
   },
 
   doOpenPrefs: function WeaveWin_doOpenPrefs(event) {
-    try {
-      openPreferences("sync-prefpane");  // firefox
-    } catch (ex) {
-      openOptionsDialog("sync-prefpane");  // thunderbird
+    let pane = "sync-prefpane";
+    switch (Weave.Svc.AppInfo.name) {
+      case "Firefox":
+        openPreferences(pane);
+        break;
+
+      case "SeaMonkey":
+        goPreferences(pane);
+        break;
+
+      case "Thunderbird":
+        openOptionsDialog(pane);
+        break;
     }
   },
 

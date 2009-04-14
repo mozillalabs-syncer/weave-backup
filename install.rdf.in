@@ -38,7 +38,16 @@
         <em:maxVersion>1.0.*</em:maxVersion>
       </Description>
     </em:targetApplication>
-	
+
+    <!-- SeaMonkey -->
+    <em:targetApplication>
+      <Description>
+        <em:id>{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}</em:id>
+        <em:minVersion>2.0a3</em:minVersion>
+        <em:maxVersion>2.0b1pre</em:maxVersion>
+      </Description>
+    </em:targetApplication>
+
    
     <!-- Front End MetaData -->
     <em:name>Weave</em:name>
