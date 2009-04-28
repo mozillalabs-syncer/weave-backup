@@ -103,11 +103,10 @@ var gOpenIdMunger = {
     if (aURI.spec.substr(0, 37) == 
         'https://services.mozilla.com/openid/?') {
       /* Stop the redirect */
-      let uri = aURI.spec;
-      window.content.location = 'about:blank';
+      window.stop();
 
       /* Parse tokens */
-      let pstring = uri.substr(37);
+      let pstring = aURI.spec.substr(37);
       let params = pstring.split('&');
       let retURI = false;
       
