@@ -10,7 +10,7 @@
     <script type="application/x-javascript"
             src="chrome://weave/content/sync.js"/>
     <script type="application/x-javascript"
-            src="chrome://weave/content/oauth-listener.js"/>
+            src="chrome://weave/content/openid-listener.js"/>
 
     <stringbundleset id="stringbundleset">
         <stringbundle id="weaveStringBundle"

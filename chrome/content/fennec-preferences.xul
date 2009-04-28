@@ -13,9 +13,9 @@
     <richpref title="&fennecPrefsHeader.title;" type="button"
 	      insertafter="plugins.enabled">
       <label value="&fennecPrefsHeader.description;"
-	     id="fennec-weave-quick-status"/>
+	     id="fennec-weave-quick-status" crop="right"/>
       <button label="&fennecOpenPrefsButton.label;"
-	      command="cmd_weave_prefs"/>
+	      command="cmd_weave_prefs" flex="1"/>
     </richpref>
   </scrollbox>
 
