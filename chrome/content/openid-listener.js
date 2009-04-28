@@ -105,9 +105,9 @@ var gOpenIdMunger = {
       let pstring = aURI.spec.substr(49);
       let params = pstring.split('&');
       let tstring = params[0].split('=');
-      /* Parse token etc... */
       
-      window.content.location = 'chrome://weave/content/openid.xul';
+      /* Parse token etc */
+      window.stop();
     }
   }
 };

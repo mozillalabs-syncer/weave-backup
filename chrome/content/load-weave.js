@@ -36,7 +36,6 @@ Components.utils.import("resource://weave/engines/forms.js", {});
 Components.utils.import("resource://weave/engines/passwords.js", {});
 Components.utils.import("resource://weave/faultTolerance.js", {});
 Components.utils.import("resource://weave/notifications.js", {});
-//Components.utils.import("resource://weave/oauth.js", {});
 Components.utils.import("resource://weave/service.js", {});
 //Components.utils.import("resource://weave/xmpp/authenticationLayer.js", {});
 //Components.utils.import("resource://weave/xmpp/transportLayer.js", {});
