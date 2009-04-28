@@ -1,6 +1,26 @@
 /* Look at incoming pages for OpenID forms and munge them.
    This is hacky and makes a lot of unjustified assumptions about forms. */
 
+/* Listen for URLs that point to Weave OpenID provider and intercept */
+var gOpenIDProviderListener = {
+    QueryInterface: function(aIID) {
+       if (aIID.equals(Components.interfaces.nsIWebProgressListener) ||
+           aIID.equals(Components.interfaces.nsISupportsWeakReference) ||
+           aIID.equals(Components.interfaces.nsISupports))
+         return this;
+       throw Components.results.NS_NOINTERFACE;
+      },
+
+      onLocationChange: function(aProgress, aRequest, aURI) {
+        gOpenIdMunger.processNewURL(aURI);
+      },
+
+      onStateChange: function() {},
+      onProgressChange: function() {},
+      onStatusChange: function() {},
+      onSecurityChange: function() {},
+      onLinkIconAvailable: function() {}
+}
 /* According to OpenID docs at
  http://openid.net/specs/openid-authentication-2_0.html#initiation
  the form SHOULD have an input field with name = "openid_identifier". */
@@ -21,7 +41,7 @@ var gOpenIdMunger = {
   },
 
   init: function() {
-    // Listen for webpage loads
+    /* Listen for webpage loads */
     if ( gOpenIdMunger._prefs.getBoolPref( OPENID_PREF ) ) {
       if (typeof(gBrowser) != "undefined") {
         var appcontent = document.getElementById("appcontent");   // browser
@@ -30,6 +50,12 @@ var gOpenIdMunger = {
                                       gOpenIdMunger.detectForm, true);
         }
       }
+    }
+    
+    /* Listen for redirects to Weave OpenID provider regardless of pref */
+    if (typeof(gBrowser) != "undefined") {
+        gBrowser.addProgressListener(gOpenIDProviderListener,
+        Components.interfaces.nsIWebProgress.NOTIFY_STATE_DOCUMENT);
     }
   },
 
@@ -64,8 +90,26 @@ var gOpenIdMunger = {
         }
       }
     }
-  }
+  },
+  
+  processNewURL: function(aURI) {
+    if (aURI.spec == this.oldURL)
+      return;
 
+    // now we know the url is new...
+    if (aURI.spec.substr(0, 49) == 
+        'https://services.mozilla.com/openid-api/provider?') {
+      let token = null;
+      let cback = null;
+
+      let pstring = aURI.spec.substr(49);
+      let params = pstring.split('&');
+      let tstring = params[0].split('=');
+      /* Parse token etc... */
+      
+      window.content.location = 'chrome://weave/content/openid.xul';
+    }
+  }
 };
 
 window.addEventListener("load", function() {gOpenIdMunger.init();}, false);
