@@ -69,6 +69,9 @@ var gOpenIdMunger = {
         }
       }
     }
+    
+    if (typeof(gBrowser) != "undefined")
+      gBrowser.removeProgressListener(gOpenIDProviderListener);
   },
 
   detectForm: function(aEvent) {
@@ -93,21 +96,91 @@ var gOpenIdMunger = {
   },
   
   processNewURL: function(aURI) {
-    if (aURI.spec == this.oldURL)
+    if (!aURI || aURI.spec == this.oldURL)
       return;
 
-    // now we know the url is new...
-    if (aURI.spec.substr(0, 49) == 
-        'https://services.mozilla.com/openid-api/provider?') {
-      let token = null;
-      let cback = null;
+    /* Now we know the url is new... */
+    if (aURI.spec.substr(0, 37) == 
+        'https://services.mozilla.com/openid/?') {
+      /* Stop the redirect */
+      let uri = aURI.spec;
+      window.content.location = 'about:blank';
 
-      let pstring = aURI.spec.substr(49);
+      /* Parse tokens */
+      let pstring = uri.substr(37);
       let params = pstring.split('&');
-      let tstring = params[0].split('=');
+      let retURI = false;
       
-      /* Parse token etc */
-      window.stop();
+      for (let i = 0; i < params.length; i++) {
+        if (params[i].substr(0, 16)  == "openid.return_to") {
+          retURI = params[i].split('=');
+          retURI = decodeURIComponent(retURI[1]);
+          break;
+        }
+      }
+      
+      if (!retURI) {
+        /* No return_to was specified! */
+        window.back();
+      }
+      
+      /* Make the request */
+      this.authorize(retURI, this.authorizeDone);
+    }
+  },
+  
+  authorize: function (rurl, cb) {
+    let req = new XMLHttpRequest();
+    let usr = Weave.ID.get('WeaveID').username;
+    let pwd = Weave.ID.get('WeaveID').password;
+    
+    /* Extract hostname out of return URL */
+    let re = new RegExp('^(?:f|ht)tp(?:s)?\://([^/]+)', 'im');
+    let site = rurl.match(re)[1].toString();
+    
+    let params = 'uid=' + encodeURIComponent(usr);
+    params = params + '&pwd=' + encodeURIComponent(pwd);
+    params = params + '&site=' + encodeURIComponent(site);
+    
+    let uri = 'https://services.mozilla.com/openid-api/authorize.php';
+    req.onreadystatechange = function(e) {
+      if (req.readyState == 4) {
+        if (req.status == 200) {
+          cb(rurl, req.responseText, usr);
+        } else {
+          cb(rurl, false, usr);
+        }
+      }
+    };
+    req.open('POST', uri);
+    req.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    req.setRequestHeader('Content-length', params.length);
+    req.setRequestHeader('Connection', 'close');
+    req.send(params);
+  },
+  
+  authorizeDone: function(rurl, token, usr) {
+    if (!token) {
+      /* Could not authorize */
+      window.content.location = rurl + '&openid.mode=cancel';
+    } else {
+      let identity = encodeURIComponent(
+        'https://services.mozilla.com/openid/' + usr
+      );
+      /* TODO generate signature */
+      let signed = 'mode,identity,assoc_handle,return_to';
+      let sig = '';
+      
+      /* Construct return URL */
+      let uri = rurl + '&openid.mode=id_res';
+      uri = uri + '&openid.identity=' + identity;
+      uri = uri + '&openid.assoc_handle=' + token;
+      uri = uri + '&openid.return_to=' + encodeURIComponent(rurl);
+      uri = uri + '&openid.signed=' + encodeURIComponent(signed);
+      uri = uri + '&openid.signature=' + sig;
+      
+      /* Redirect user to consumer. We're done! */
+      window.content.location = uri;
     }
   }
 };
