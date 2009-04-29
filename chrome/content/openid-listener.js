@@ -127,9 +127,9 @@ var gOpenIdMunger = {
           retURI = params[i].split('=');
           retURI = decodeURIComponent(retURI[1]);
         }
-        if (params[i].substr(0, 16)  == "openid.trust_root") {
+        if (params[i].substr(0, 17)  == "openid.trust_root") {
           rootURI = params[i].split('=');
-          rootURI = decodeURIComponent(retURI[1]);
+          rootURI = decodeURIComponent(rootURI[1]);
         }
       }
 
@@ -154,7 +154,7 @@ var gOpenIdMunger = {
 
     if (root)
       params = params + '&trust_root=' + encodeURIComponent(root);
-      
+    
     let uri = 'https://services.mozilla.com/openid-api/authorize.php';
     req.onreadystatechange = function(e) {
       if (req.readyState == 4) {
