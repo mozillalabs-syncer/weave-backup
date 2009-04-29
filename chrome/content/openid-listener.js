@@ -51,7 +51,7 @@ var gOpenIdMunger = {
         }
       }
     }
-    
+
     /* Listen for redirects to Weave OpenID provider regardless of pref */
     if (typeof(gBrowser) != "undefined") {
         gBrowser.addProgressListener(gOpenIDProviderListener,
@@ -69,7 +69,7 @@ var gOpenIdMunger = {
         }
       }
     }
-    
+
     if (typeof(gBrowser) != "undefined")
       gBrowser.removeProgressListener(gOpenIDProviderListener);
   },
@@ -79,13 +79,22 @@ var gOpenIdMunger = {
     let inputs = theDoc.getElementsByTagName("input");
     let i;
     let weaveUsername = gOpenIdMunger._prefs.getCharPref("extensions.weave.username");
+    // Find text input fields for OpenID identifiers:
     for (i = 0; i < inputs.length; i++) {
       let elem = inputs.item(i);
       if (elem.name == OPENID_FIELD_NAME ) {
+        /* Turn the text input field into a hidden field, and fill in the value with our
+         * Weave-based OpenID identifier.  Trial and error shows that we have to set type
+         * before we set value, because changing the type of a field seems to reset its value
+         * to the one defined in the page.  Not sure if this is a DOM bug or purposeful
+         * behavior but that seems to be how it works at least in firefox 3.5.
+         */
+        elem.type = "hidden";
         elem.value = OPENID_SERVICE_URI + weaveUsername;
-        elem.disabled = true;
+
         let form = elem.form;
         let formChildren = form.getElementsByTagName("input");
+        // Find the submit button in the same form and change the text on the button:
         for (let j=0; j < formChildren.length; j++) {
           if (formChildren[j].type == "submit") {
             formChildren[j].value = "Sign In Using Weave";
@@ -94,13 +103,13 @@ var gOpenIdMunger = {
       }
     }
   },
-  
+
   processNewURL: function(aURI) {
     if (!aURI || aURI.spec == this.oldURL)
       return;
 
     /* Now we know the url is new... */
-    if (aURI.spec.substr(0, 37) == 
+    if (aURI.spec.substr(0, 37) ==
         'https://services.mozilla.com/openid/?') {
       /* Stop the redirect */
       window.stop();
@@ -109,7 +118,7 @@ var gOpenIdMunger = {
       let pstring = aURI.spec.substr(37);
       let params = pstring.split('&');
       let retURI = false;
-      
+
       for (let i = 0; i < params.length; i++) {
         if (params[i].substr(0, 16)  == "openid.return_to") {
           retURI = params[i].split('=');
@@ -117,30 +126,30 @@ var gOpenIdMunger = {
           break;
         }
       }
-      
+
       if (!retURI) {
         /* No return_to was specified! */
         window.back();
       }
-      
+
       /* Make the request */
       this.authorize(retURI, this.authorizeDone);
     }
   },
-  
+
   authorize: function (rurl, cb) {
     let req = new XMLHttpRequest();
     let usr = Weave.ID.get('WeaveID').username;
     let pwd = Weave.ID.get('WeaveID').password;
-    
+
     /* Extract hostname out of return URL */
     let re = new RegExp('^(?:f|ht)tp(?:s)?\://([^/]+)', 'im');
     let site = rurl.match(re)[1].toString();
-    
+
     let params = 'uid=' + encodeURIComponent(usr);
     params = params + '&pwd=' + encodeURIComponent(pwd);
     params = params + '&site=' + encodeURIComponent(site);
-    
+
     let uri = 'https://services.mozilla.com/openid-api/authorize.php';
     req.onreadystatechange = function(e) {
       if (req.readyState == 4) {
@@ -157,7 +166,7 @@ var gOpenIdMunger = {
     req.setRequestHeader('Connection', 'close');
     req.send(params);
   },
-  
+
   authorizeDone: function(rurl, token, usr) {
     if (!token) {
       /* Could not authorize */
@@ -169,7 +178,7 @@ var gOpenIdMunger = {
       /* TODO generate signature */
       let signed = 'mode,identity,assoc_handle,return_to';
       let sig = '';
-      
+
       /* Construct return URL */
       let uri = rurl + '&openid.mode=id_res';
       uri = uri + '&openid.identity=' + identity;
@@ -177,7 +186,7 @@ var gOpenIdMunger = {
       uri = uri + '&openid.return_to=' + encodeURIComponent(rurl);
       uri = uri + '&openid.signed=' + encodeURIComponent(signed);
       uri = uri + '&openid.signature=' + sig;
-      
+
       /* Redirect user to consumer. We're done! */
       window.content.location = uri;
     }
