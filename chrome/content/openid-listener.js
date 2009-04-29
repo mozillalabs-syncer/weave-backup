@@ -25,7 +25,7 @@ var gOpenIDProviderListener = {
  http://openid.net/specs/openid-authentication-2_0.html#initiation
  the form SHOULD have an input field with name = "openid_identifier". */
 const OPENID_FIELD_NAME = "openid_identifier";
-const OPENID_SERVICE_URI = "services.mozilla.com/openid/";
+const OPENID_SERVICE_URI = "services.mozilla.com/openid/?user=";
 const OPENID_PREF = "extensions.weave.openId.enabled";
 
 /* When we find an openID field, grey it out and put the user's Weave-based openID URI into
