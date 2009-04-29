@@ -111,9 +111,11 @@ var gOpenIdMunger = {
     /* Now we know the url is new... */
     if (aURI.spec.substr(0, 37) ==
         'https://services.mozilla.com/openid/?') {
+      
       /* Stop the redirect */
-      window.stop();
-
+      let uri = aURI;
+      this.redirect("chrome://weave/content/openid-wait.xul");
+      
       /* Parse tokens */
       let pstring = aURI.spec.substr(37);
       let params = pstring.split('&');
@@ -133,7 +135,7 @@ var gOpenIdMunger = {
       }
 
       /* Make the request */
-      this.authorize(retURI, this.authorizeDone);
+      this.authorize(retURI, this.redirect);
     }
   },
 
@@ -142,22 +144,19 @@ var gOpenIdMunger = {
     let usr = Weave.ID.get('WeaveID').username;
     let pwd = Weave.ID.get('WeaveID').password;
 
-    /* Extract hostname out of return URL */
-    let re = new RegExp('^(?:f|ht)tp(?:s)?\://([^/]+)', 'im');
-    let site = rurl.match(re)[1].toString();
-
     let params = 'uid=' + encodeURIComponent(usr);
     params = params + '&pwd=' + encodeURIComponent(pwd);
-    params = params + '&site=' + encodeURIComponent(site);
+    params = params + '&site=' + encodeURIComponent(rurl);
 
     let uri = 'https://services.mozilla.com/openid-api/authorize.php';
     req.onreadystatechange = function(e) {
       if (req.readyState == 4) {
-        if (req.status == 200) {
-          cb(rurl, req.responseText, usr);
-        } else {
-          cb(rurl, false, usr);
-        }
+        /* Our job is to just redirect,
+         * else everything has been setup by the server.
+         * We don't even know if the auth succeeded or not, the consumer
+         * will be informing the user.
+         */
+        cb(req.responseText);
       }
     };
     req.open('POST', uri);
@@ -166,30 +165,10 @@ var gOpenIdMunger = {
     req.setRequestHeader('Connection', 'close');
     req.send(params);
   },
-
-  authorizeDone: function(rurl, token, usr) {
-    if (!token) {
-      /* Could not authorize */
-      window.content.location = rurl + '&openid.mode=cancel';
-    } else {
-      let identity = encodeURIComponent(
-        'https://services.mozilla.com/openid/' + usr
-      );
-      /* TODO generate signature */
-      let signed = 'mode,identity,assoc_handle,return_to';
-      let sig = '';
-
-      /* Construct return URL */
-      let uri = rurl + '&openid.mode=id_res';
-      uri = uri + '&openid.identity=' + identity;
-      uri = uri + '&openid.assoc_handle=' + token;
-      uri = uri + '&openid.return_to=' + encodeURIComponent(rurl);
-      uri = uri + '&openid.signed=' + encodeURIComponent(signed);
-      uri = uri + '&openid.signature=' + sig;
-
-      /* Redirect user to consumer. We're done! */
-      window.content.location = uri;
-    }
+  
+  redirect: function(url) {
+    window.stop();
+    window.content.location = url;
   }
 };
 
