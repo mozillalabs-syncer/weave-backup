@@ -120,12 +120,16 @@ var gOpenIdMunger = {
       let pstring = aURI.spec.substr(37);
       let params = pstring.split('&');
       let retURI = false;
-
+      let rootURI = false;
+      
       for (let i = 0; i < params.length; i++) {
         if (params[i].substr(0, 16)  == "openid.return_to") {
           retURI = params[i].split('=');
           retURI = decodeURIComponent(retURI[1]);
-          break;
+        }
+        if (params[i].substr(0, 16)  == "openid.trust_root") {
+          rootURI = params[i].split('=');
+          rootURI = decodeURIComponent(retURI[1]);
         }
       }
 
@@ -135,11 +139,11 @@ var gOpenIdMunger = {
       }
 
       /* Make the request */
-      this.authorize(retURI, this.redirect);
+      this.authorize(retURI, rootURI, this.redirect);
     }
   },
 
-  authorize: function (rurl, cb) {
+  authorize: function (rurl, root, cb) {
     let req = new XMLHttpRequest();
     let usr = Weave.ID.get('WeaveID').username;
     let pwd = Weave.ID.get('WeaveID').password;
@@ -148,6 +152,9 @@ var gOpenIdMunger = {
     params = params + '&pwd=' + encodeURIComponent(pwd);
     params = params + '&site=' + encodeURIComponent(rurl);
 
+    if (root)
+      params = params + '&trust_root=' + encodeURIComponent(root);
+      
     let uri = 'https://services.mozilla.com/openid-api/authorize.php';
     req.onreadystatechange = function(e) {
       if (req.readyState == 4) {
