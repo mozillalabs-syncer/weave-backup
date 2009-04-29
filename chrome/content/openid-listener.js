@@ -25,7 +25,7 @@ var gOpenIDProviderListener = {
  http://openid.net/specs/openid-authentication-2_0.html#initiation
  the form SHOULD have an input field with name = "openid_identifier". */
 const OPENID_FIELD_NAME = "openid_identifier";
-const OPENID_SERVICE_URI = "services.mozilla.com/openid/?user=";
+const OPENID_SERVICE_URI = "services.mozilla.com/openid/";
 const OPENID_PREF = "extensions.weave.openId.enabled";
 
 /* When we find an openID field, grey it out and put the user's Weave-based openID URI into
@@ -111,17 +111,17 @@ var gOpenIdMunger = {
     /* Now we know the url is new... */
     if (aURI.spec.substr(0, 37) ==
         'https://services.mozilla.com/openid/?') {
-      
+
       /* Stop the redirect */
       let uri = aURI;
       this.redirect("chrome://weave/content/openid-wait.xul");
-      
+
       /* Parse tokens */
       let pstring = aURI.spec.substr(37);
       let params = pstring.split('&');
       let retURI = false;
       let rootURI = false;
-      
+
       for (let i = 0; i < params.length; i++) {
         if (params[i].substr(0, 16)  == "openid.return_to") {
           retURI = params[i].split('=');
@@ -154,7 +154,7 @@ var gOpenIdMunger = {
 
     if (root)
       params = params + '&trust_root=' + encodeURIComponent(root);
-    
+
     let uri = 'https://services.mozilla.com/openid-api/authorize.php';
     req.onreadystatechange = function(e) {
       if (req.readyState == 4) {
@@ -172,7 +172,7 @@ var gOpenIdMunger = {
     req.setRequestHeader('Connection', 'close');
     req.send(params);
   },
-  
+
   redirect: function(url) {
     window.stop();
     window.content.location = url;
