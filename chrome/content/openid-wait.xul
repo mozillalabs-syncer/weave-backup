@@ -7,6 +7,6 @@
         
     <vbox align="center">
         <image src="chrome://weave/skin/mozchomp.gif"/>
-        <label value="Please wait while be sign you in..."/>
+        <label value="Please wait while we sign you in..."/>
     </vbox>
 </window>
