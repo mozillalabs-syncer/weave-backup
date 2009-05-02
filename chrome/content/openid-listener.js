@@ -97,7 +97,11 @@ var gOpenIdMunger = {
         // Find the submit button in the same form and change the text on the button:
         for (let j=0; j < formChildren.length; j++) {
           if (formChildren[j].type == "submit") {
-            formChildren[j].value = "Sign In Using Weave";
+            let submit = formChildren[j];
+            submit.value = "Sign In Using Weave";
+            let foo = submit.ownerDocument.createElement("span");
+            foo.innerHTML = '<a href="#"><small>(?)</small></a>';
+            submit.parentNode.insertBefore(foo, submit.nextSibling);
           }
         }
       }
