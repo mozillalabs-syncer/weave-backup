@@ -11,6 +11,8 @@
             src="chrome://weave/content/sync.js"/>
     <script type="application/x-javascript"
             src="chrome://weave/content/openid-listener.js"/>
+    <script type="application/x-javascript"
+            src="chrome://weave/content/authenticator.js"/>
 
     <stringbundleset id="stringbundleset">
         <stringbundle id="weaveStringBundle"
@@ -82,4 +84,14 @@
         </panel>
     </statusbar>
 
+    <popupset id="mainPopupSet">
+      <panel id="sync-authenticator-popup" position="after_start">
+        <button label="Sign In Using Weave" oncommand="gWeaveAuthenticator.signIn()"/>
+      </panel>
+    </popupset>
+
+    <hbox id="urlbar-icons">
+      <image id="sync-authenticator-icon" class="urlbar-icon" state="disabled"
+             insertbefore="feed-button" popup="sync-authenticator-popup"/>
+    </hbox>
 </overlay>
