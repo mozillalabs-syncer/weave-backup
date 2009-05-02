@@ -31,6 +31,11 @@ let gWeaveAuthenticator = {
     return this._auto = document.getElementById("sync-authenticator-auto");
   },
 
+  get _button() {
+    delete this._button;
+    return this._button = document.getElementById("sync-authenticator-button");
+  },
+
 
   //**************************************************************************//
   // XPCOM Glue
@@ -148,10 +153,16 @@ let gWeaveAuthenticator = {
     this._auto.checked =
       this._prefs.site(gBrowser.mCurrentBrowser.currentURI).get("authenticator.auto");
 
-    if (gBrowser.mCurrentBrowser.openIDInput)
+    if (gBrowser.mCurrentBrowser.openIDInput) {
       this._icon.setAttribute("state", "enabled");
-    else
+      this._auto.disabled = false;
+      this._button.disabled = false;
+    }
+    else {
       this._icon.setAttribute("state", "disabled");
+      this._auto.disabled = true;
+      this._button.disabled = true;
+    }
   },
 
   _signIn: function(browser) {

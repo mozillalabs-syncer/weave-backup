@@ -86,9 +86,11 @@
 
     <popupset id="mainPopupSet">
       <panel id="sync-authenticator-popup" position="after_start">
-        <checkbox id="sync-authenticator-auto" label="Sign in automatically for this site"
+        <checkbox id="sync-authenticator-auto"
+                  label="Sign in automatically for this site"
                   oncommand="gWeaveAuthenticator.onSetAuto()"/>
-        <button label="Sign In Using Weave" oncommand="gWeaveAuthenticator.onSignIn()"/>
+        <button id="sync-authenticator-button" label="Sign In Using Weave"
+                oncommand="gWeaveAuthenticator.onSignIn()"/>
       </panel>
     </popupset>
 
