@@ -26,6 +26,11 @@ let gWeaveAuthenticator = {
     return this._popup = document.getElementById("sync-authenticator-popup");
   },
 
+  get _auto() {
+    delete this._auto;
+    return this._auto = document.getElementById("sync-authenticator-auto");
+  },
+
 
   //**************************************************************************//
   // XPCOM Glue
@@ -91,10 +96,34 @@ let gWeaveAuthenticator = {
   onDOMContentLoaded: function(event) {
     let doc = event.target;
     let browser = gBrowser.getBrowserForDocument(doc);
-    if (browser)
+
+    if (browser) {
       this._updateModel(doc, browser);
-    if (browser == gBrowser.mCurrentBrowser)
-      this._updateView();
+
+      if (browser == gBrowser.mCurrentBrowser)
+        this._updateView();
+
+      // Sign the user in automatically if the pref is set for this site.
+      // We only do this if the page is the last one in the session history
+      // for the given browser, so users can traverse history without us
+      // automatically submitting a form we find on one of the pages they
+      // encounter, which would be both unexpected and cause data loss
+      // of all the pages after the current one in history.
+      let sessionHistory = browser.webNavigation.sessionHistory;
+      if (browser.openIDInput &&
+          this._prefs.site(browser.currentURI).get("authenticator.auto") &&
+          sessionHistory.count == sessionHistory.index + 1)
+        this._signIn(browser);
+    }
+  },
+
+  onSetAuto: function() {
+    this._prefs.site(gBrowser.mCurrentBrowser.currentURI).
+                set("authenticator.auto", this._auto.checked);
+  },
+
+  onSignIn: function() {
+    this._signIn(gBrowser.mCurrentBrowser);
   },
 
 
@@ -116,19 +145,20 @@ let gWeaveAuthenticator = {
   },
 
   _updateView: function() {
+    this._auto.checked =
+      this._prefs.site(gBrowser.mCurrentBrowser.currentURI).get("authenticator.auto");
+
     if (gBrowser.mCurrentBrowser.openIDInput)
       this._icon.setAttribute("state", "enabled");
     else
       this._icon.setAttribute("state", "disabled");
   },
 
-  signIn: function() {
-    let element = gBrowser.mCurrentBrowser.openIDInput;
-
+  _signIn: function(browser) {
     // Strangely, if submission goes to a file: URL that doesn't exist,
     // this throws NS_ERROR_FILE_NOT_FOUND, so we catch and ignore that error.
     try {
-      element.form.submit();
+      browser.openIDInput.form.submit();
     }
     catch(ex) {}
 
