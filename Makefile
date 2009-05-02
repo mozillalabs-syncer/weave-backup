@@ -54,7 +54,7 @@ ifeq ($(sdkdir),)
   $(error)
 endif
 
-weave_version := 0.3.0
+weave_version := 0.3.1
 
 ifeq ($(release_build),)
   xpi_type := "dev"
