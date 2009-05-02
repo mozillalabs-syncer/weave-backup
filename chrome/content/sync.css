@@ -1,7 +1,7 @@
 #sync-authenticator-icon[state="disabled"] {
-  list-style-image: url("chrome://weave/skin/sync-16x16.png");
+  list-style-image: url("chrome://weave/skin/auth-disabled.png");
 }
 
 #sync-authenticator-icon[state="enabled"] {
-  list-style-image: url("chrome://weave/skin/cbox-check.gif");
+  list-style-image: url("chrome://weave/skin/auth-enabled.png");
 }
