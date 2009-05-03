@@ -36,6 +36,13 @@ let gWeaveAuthenticator = {
     return this._button = document.getElementById("sync-authenticator-button");
   },
 
+  // The times of automatic authentications, indexed by site.  We use this
+  // to detect and suppress potential auto-auth loops.  We share this across
+  // browser tabs in case the auth form submits to a new tab.
+  // FIXME: share this across browser windows (perhaps by moving this code
+  // into a module) in case the auth form submits to a new window.
+  _autoAuths: {},
+
 
   //**************************************************************************//
   // XPCOM Glue
@@ -108,17 +115,32 @@ let gWeaveAuthenticator = {
       if (browser == gBrowser.mCurrentBrowser)
         this._updateView();
 
-      // Sign the user in automatically if the pref is set for this site.
-      // We only do this if the page is the last one in the session history
-      // for the given browser, so users can traverse history without us
-      // automatically submitting a form we find on one of the pages they
-      // encounter, which would be both unexpected and cause data loss
-      // of all the pages after the current one in history.
-      let sessionHistory = browser.webNavigation.sessionHistory;
-      if (browser.openIDInput &&
-          this._prefs.site(browser.currentURI).get("authenticator.auto") &&
-          sessionHistory.count == sessionHistory.index + 1)
-        this._signIn(browser);
+      // Automatically authenticate the user if possible and preferred.
+      let host = null; try { host = browser.currentURI.host } catch(ex) {}
+      if (host) {
+        let sessionHistory = browser.webNavigation.sessionHistory;
+        let lastAuthed = (host in this._autoAuths) ? this._autoAuths[host] : 0;
+
+        if (// the web page supports OpenID-based authentication
+            browser.openIDInput &&
+  
+            // the auto-authenticate pref is true for the site
+            this._prefs.site(browser.currentURI).get("authenticator.auto") &&
+  
+            // the page is the last one in the session history, so users can
+            // traverse history without losing control over their browser
+            // and the history in front of the current page when they encounter
+            // a page we can auto-authenticate
+            sessionHistory.count == sessionHistory.index + 1 &&
+  
+            // auto-auth hasn't happened for this site in the last 60 seconds
+            // (to suppress auto-auth loops when auto-auth fails)
+            ((new Date() - lastAuthed) > 60000))
+        {
+          this._autoAuths[host] = new Date();
+          this._signIn(browser);
+        }
+      }
     }
   },
 
