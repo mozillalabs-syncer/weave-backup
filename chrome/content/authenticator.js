@@ -26,6 +26,11 @@ let gWeaveAuthenticator = {
     return this._popup = document.getElementById("sync-authenticator-popup");
   },
 
+  get _list() {
+    delete this._list;
+    return this._list = document.getElementById("sync-authenticator-list");
+  },
+
   get _auto() {
     delete this._auto;
     return this._auto = document.getElementById("sync-authenticator-auto");
@@ -58,6 +63,7 @@ let gWeaveAuthenticator = {
   onLoad: function() {
     gBrowser.addProgressListener(this, Ci.nsIWebProgress.NOTIFY_STATE_DOCUMENT);
     gBrowser.addEventListener("DOMContentLoaded", this, true);
+    Cu.import("resource://weave/LoginManager.js", this);
   },
 
   onUnload: function() {
@@ -149,8 +155,56 @@ let gWeaveAuthenticator = {
                 set("authenticator.auto", this._auto.checked);
   },
 
+  onSelectItem: function() {
+    let item = this._list.selectedItem;
+    if (item.auth)
+      this._fillForm(item);
+  },
+
+  _fillForm: function(item) {
+    if (item.auth.usernameField)
+      item.auth.usernameField.value = item.loginInfo.username;
+    item.auth.passwordField.value = item.loginInfo.password;
+  },
+
   onSignIn: function() {
-    this._signIn(gBrowser.mCurrentBrowser);
+    let item = this._list.selectedItem;
+    if (item.auth) {
+      // Fill out the form again in case it got changed somehow in the meantime.
+      this._fillForm(item);
+      item.auth.form.submit();
+    }
+    else
+      this._signIn(gBrowser.mCurrentBrowser);
+  },
+
+  onPopupShowing: function(event) {
+    // The popupshowing event fires for the menulist too, but we only want
+    // to handle the events for the panel as a whole.
+    if (event.target != this._popup)
+      return;
+
+    let browser = gBrowser.mCurrentBrowser;
+    this._list.removeAllItems();
+
+    if (browser.openIDInput)
+      item = this._list.appendItem("Weave");
+
+    if (browser.auths && browser.auths[0]) {
+      // We only provide UI for the first login form for the moment.
+      let auth = browser.auths[0];
+      for each (let loginInfo in auth.foundLogins) {
+        // FIXME: localize and improve label for logins without username.
+        let label = loginInfo.username || "no name";
+        let item = this._list.appendItem(label);
+        item.auth = auth;
+        item.loginInfo = loginInfo;
+      }
+    }
+
+    // XXX Select auth.selectedLogin?
+    if (this._list.itemCount > 0)
+      this._list.selectedIndex = 0;
   },
 
 
@@ -169,13 +223,17 @@ let gWeaveAuthenticator = {
         break;
       }
     }
+
+    browser.auths = this.WeaveLoginManager._fillDocument(doc);
   },
 
   _updateView: function() {
-    this._auto.checked =
-      this._prefs.site(gBrowser.mCurrentBrowser.currentURI).get("authenticator.auto");
+    let browser = gBrowser.mCurrentBrowser;
 
-    if (gBrowser.mCurrentBrowser.openIDInput) {
+    this._auto.checked =
+      this._prefs.site(browser.currentURI).get("authenticator.auto");
+
+    if (browser.openIDInput || (browser.auths && browser.auths.length > 0)) {
       this._icon.setAttribute("state", "enabled");
       this._auto.disabled = false;
       this._button.disabled = false;

@@ -85,7 +85,12 @@
     </statusbar>
 
     <popupset id="mainPopupSet">
-      <panel id="sync-authenticator-popup" position="after_start">
+      <panel id="sync-authenticator-popup" position="after_start"
+             onpopupshowing="gWeaveAuthenticator.onPopupShowing(event)">
+        <menulist id="sync-authenticator-list"
+                  onselect="gWeaveAuthenticator.onSelectItem()">
+          <menupopup/>
+        </menulist>
         <checkbox id="sync-authenticator-auto"
                   label="Sign in automatically for this site"
                   oncommand="gWeaveAuthenticator.onSetAuto()"/>
