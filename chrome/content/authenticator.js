@@ -115,67 +115,119 @@ let gWeaveAuthenticator = {
     let doc = event.target;
     let browser = gBrowser.getBrowserForDocument(doc);
 
-    if (browser) {
-      this._updateModel(doc, browser);
+    if (!browser)
+      return;
 
-      if (browser == gBrowser.mCurrentBrowser)
-        this._updateView();
+    this._updateModel(doc, browser);
+    if (browser == gBrowser.mCurrentBrowser)
+      this._updateView();
 
-      // Automatically authenticate the user if possible and preferred.
-      let host = null; try { host = browser.currentURI.host } catch(ex) {}
-      if (host) {
-        let sessionHistory = browser.webNavigation.sessionHistory;
-        let lastAuthed = (host in this._autoAuths) ? this._autoAuths[host] : 0;
+    let host; try { host = browser.currentURI.host } catch(ex) {}
 
-        if (// the web page supports OpenID-based authentication
-            browser.openIDInput &&
+    if (host) {
+      // Automatically authenticate the user if it's possible to do so
+      // and the user has specified that we should do so for this site.
+      let sessionHistory = browser.webNavigation.sessionHistory;
+      let lastAuthed = (host in this._autoAuths) ? this._autoAuths[host] : 0;
+
+      if (// the web page supports OpenID authentication (or we have form info)
+          (browser.auth.openIDField || browser.auth.formInfo) &&
   
-            // the auto-authenticate pref is true for the site
-            this._prefs.site(browser.currentURI).get("authenticator.auto") &&
-  
-            // the page is the last one in the session history, so users can
-            // traverse history without losing control over their browser
-            // and the history in front of the current page when they encounter
-            // a page we can auto-authenticate
-            sessionHistory.count == sessionHistory.index + 1 &&
-  
-            // auto-auth hasn't happened for this site in the last 60 seconds
-            // (to suppress auto-auth loops when auto-auth fails)
-            ((new Date() - lastAuthed) > 60000))
-        {
-          this._autoAuths[host] = new Date();
-          this._signIn(browser);
-        }
+          // the auto-authenticate pref is true for the site
+          this._prefs.site(browser.currentURI).get("authenticator.auto") &&
+
+          // the page is the last one in the session history, so users can
+          // traverse history without losing control over their browser
+          // and the history in front of the current page when they encounter
+          // a page we can auto-authenticate
+          sessionHistory.count == sessionHistory.index + 1 &&
+
+          // auto-auth hasn't happened for this site in the last 60 seconds
+          // (to suppress auto-auth loops when auto-auth fails)
+          ((new Date() - lastAuthed) > 60000))
+      {
+        this._autoAuth(browser, host);
       }
     }
   },
 
-  onSetAuto: function() {
-    this._prefs.site(gBrowser.mCurrentBrowser.currentURI).
-                set("authenticator.auto", this._auto.checked);
+  _autoAuth: function(browser, host) {
+    this._autoAuths[host] = new Date();
+
+    if (browser.auth.openIDField) {
+      // Other code in Weave has already inserted the Weave ID into the field,
+      // so the only thing we have to do here is submit the form.
+
+      // Strangely, if submission goes to a file: URL that doesn't exist,
+      // this throws NS_ERROR_FILE_NOT_FOUND, so we catch and ignore that error
+      // (not that we support form submission to file: URLs, so it probably
+      // doesn't matter; but what other events might throw exceptions here?).
+      try {
+        browser.auth.openIDField.form.submit();
+      }
+      catch(ex) {}
+    }
+    else { // browser.auth.formInfo
+      let loginInfo = JSON.parse(this._prefs.site(browser.currentURI).
+                                 get("authenticator.auto.loginInfo"));
+
+      let autoLoginInfo;
+      for each (let foundLogin in browser.auth.formInfo.foundLogins) {
+        if (foundLogin.matches(loginInfo, true)) {
+          autoLoginInfo = foundLogin;
+          break;
+        }
+      }
+    
+      if (autoLoginInfo) {
+        this._fillForm(browser.auth.formInfo, autoLoginInfo);
+        browser.auth.formInfo.passwordField.form.submit();
+      }
+    }
   },
+
+  //onSetAuto: function() {
+  //  this._prefs.site(gBrowser.mCurrentBrowser.currentURI).
+  //              set("authenticator.auto", this._auto.checked);
+  //},
 
   onSelectItem: function() {
     let item = this._list.selectedItem;
-    if (item.auth)
-      this._fillForm(item);
-  },
-
-  _fillForm: function(item) {
-    if (item.auth.usernameField)
-      item.auth.usernameField.value = item.loginInfo.username;
-    item.auth.passwordField.value = item.loginInfo.password;
+    if (item.loginInfo)
+      this._fillForm(item.formInfo, item.loginInfo);
   },
 
   onSignIn: function() {
+    this._prefs.site(gBrowser.mCurrentBrowser.currentURI).
+                set("authenticator.auto", this._auto.checked);
+    if (!this._auto.checked)
+      this._prefs.site(gBrowser.mCurrentBrowser.currentURI).
+                  reset("authenticator.auto.loginInfo");
+
     let item = this._list.selectedItem;
-    if (item.auth) {
+    if (item.loginInfo) {
       // Fill out the form again in case it got changed somehow in the meantime.
-      this._fillForm(item);
-      item.auth.form.submit();
+      this._fillForm(item.formInfo, item.loginInfo);
+
+      if (this._auto.checked) {
+        // Remove the password from the login info before saving it to prefs
+        // so we don't store it in the clear.
+        item.loginInfo.password = null;
+        this._prefs.site(gBrowser.mCurrentBrowser.currentURI).
+                    set("authenticator.auto.loginInfo",
+                        JSON.stringify(item.loginInfo));
+      }
+
+      item.formInfo.passwordField.form.submit();
     }
-    else
-      this._signIn(gBrowser.mCurrentBrowser);
+    else {
+      try {
+        gBrowser.mCurrentBrowser.auth.openIDField.form.submit();
+      }
+      catch(ex) {}
+    }
+
+    this._popup.hidePopup();
   },
 
   onPopupShowing: function(event) {
@@ -187,24 +239,33 @@ let gWeaveAuthenticator = {
     let browser = gBrowser.mCurrentBrowser;
     this._list.removeAllItems();
 
-    if (browser.openIDInput)
+    // Add an item for the OpenID field, if any.
+    if (browser.auth.openIDField)
       item = this._list.appendItem("Weave");
 
-    if (browser.auths && browser.auths[0]) {
-      // We only provide UI for the first login form for the moment.
-      let auth = browser.auths[0];
-      for each (let loginInfo in auth.foundLogins) {
+    // Add items for found logins, if any.
+    if (browser.auth.formInfo) {
+      let formInfo = browser.auth.formInfo;
+      for each (let foundLogin in formInfo.foundLogins) {
         // FIXME: localize and improve label for logins without username.
-        let label = loginInfo.username || "no name";
+        let label = foundLogin.username || "no name";
         let item = this._list.appendItem(label);
-        item.auth = auth;
-        item.loginInfo = loginInfo;
+        item.formInfo = formInfo;
+        item.loginInfo = foundLogin;
+        if (formInfo.selectedLogin && foundLogin.equals(formInfo.selectedLogin))
+          this._list.selectedItem = item;
       }
     }
 
-    // XXX Select auth.selectedLogin?
-    if (this._list.itemCount > 0)
+    // Select the first item.
+    if (this._list.itemCount > 0 && this._list.selectedIndex == -1)
       this._list.selectedIndex = 0;
+  },
+
+  _fillForm: function(formInfo, loginInfo) {
+    if (formInfo.usernameField)
+      formInfo.usernameField.value = loginInfo.username;
+    formInfo.passwordField.value = loginInfo.password;
   },
 
 
@@ -213,18 +274,19 @@ let gWeaveAuthenticator = {
 
   _updateModel: function(doc, browser) {
     let inputs = doc.getElementsByTagName("input");
-    browser.openIDInput = null;
+    browser.auth = {};
 
-    // Find the first OpenID input field.
+    // Find the first OpenID field.
     for (let i = 0; i < inputs.length; i++) {
       let element = inputs.item(i);
       if (element.name == OPENID_FIELD_NAME) {
-        browser.openIDInput = element;
+        browser.auth.openIDField = element;
         break;
       }
     }
 
-    browser.auths = this.WeaveLoginManager._fillDocument(doc);
+    // Get info about the first form that the login manager can fill.
+    [browser.auth.formInfo] = this.WeaveLoginManager._fillDocument(doc);
   },
 
   _updateView: function() {
@@ -233,7 +295,7 @@ let gWeaveAuthenticator = {
     this._auto.checked =
       this._prefs.site(browser.currentURI).get("authenticator.auto");
 
-    if (browser.openIDInput || (browser.auths && browser.auths.length > 0)) {
+    if (browser.auth.openIDField || browser.auth.formInfo) {
       this._icon.setAttribute("state", "enabled");
       this._auto.disabled = false;
       this._button.disabled = false;
@@ -243,18 +305,8 @@ let gWeaveAuthenticator = {
       this._auto.disabled = true;
       this._button.disabled = true;
     }
-  },
-
-  _signIn: function(browser) {
-    // Strangely, if submission goes to a file: URL that doesn't exist,
-    // this throws NS_ERROR_FILE_NOT_FOUND, so we catch and ignore that error.
-    try {
-      browser.openIDInput.form.submit();
-    }
-    catch(ex) {}
-
-    this._popup.hidePopup();
   }
+
 };
 
 window.addEventListener("load",   function() { gWeaveAuthenticator.onLoad()   }, false);
