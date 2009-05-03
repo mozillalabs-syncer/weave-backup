@@ -186,11 +186,6 @@ let gWeaveAuthenticator = {
     }
   },
 
-  //onSetAuto: function() {
-  //  this._prefs.site(gBrowser.mCurrentBrowser.currentURI).
-  //              set("authenticator.auto", this._auto.checked);
-  //},
-
   onSelectItem: function() {
     let item = this._list.selectedItem;
     if (item.loginInfo)

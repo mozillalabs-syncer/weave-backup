@@ -92,8 +92,7 @@
           <menupopup/>
         </menulist>
         <checkbox id="sync-authenticator-auto"
-                  label="Sign in automatically for this site"
-                  oncommand="gWeaveAuthenticator.onSetAuto()"/>
+                  label="Sign in automatically for this site"/>
         <button id="sync-authenticator-button" label="Sign In Using Weave"
                 oncommand="gWeaveAuthenticator.onSignIn()"/>
       </panel>
