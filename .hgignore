@@ -6,6 +6,7 @@ src/.*\.xpt
 src/.*\.o
 src/.*\.dylib
 src/I.*\.h
+^tests/harness/app/update.test$
 tests/profile/.*
 tests/.*/.*\.log$
 tests/unit/test_load_module_.*\.js$
