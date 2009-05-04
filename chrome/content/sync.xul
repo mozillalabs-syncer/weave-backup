@@ -84,22 +84,34 @@
         </panel>
     </statusbar>
 
+    <broadcasterset id="mainBroadcasterSet">
+      <broadcaster id="sync-auth-state" state="disabled"/>
+    </broadcasterset>
+
     <popupset id="mainPopupSet">
-      <panel id="sync-authenticator-popup" position="after_start"
+      <panel id="sync-auth-popup" position="after_start"
+             observes="sync-auth-state"
              onpopupshowing="gWeaveAuthenticator.onPopupShowing(event)">
-        <menulist id="sync-authenticator-list"
+        <menulist id="sync-auth-list"
                   onselect="gWeaveAuthenticator.onSelectItem()">
           <menupopup/>
         </menulist>
-        <checkbox id="sync-authenticator-auto"
+        <checkbox id="sync-auth-auto"
                   label="do this automatically from now on"/>
-        <button id="sync-authenticator-button" label="Sign In"
+        <button id="sync-auth-signIn" label="Sign In"
                 oncommand="gWeaveAuthenticator.onSignIn()"/>
+        <description id="sync-auth-autoDesc">
+          Weave will sign you in to this site automatically.
+        </description>
+        <button id="sync-auth-disableAuto"
+                label="Stop Signing In Automatically"
+                oncommand="gWeaveAuthenticator.onDisableAutoAuth()"/>
       </panel>
     </popupset>
 
     <hbox id="urlbar-icons">
-      <image id="sync-authenticator-icon" class="urlbar-icon" state="disabled"
-             insertbefore="feed-button" popup="sync-authenticator-popup"/>
+      <image id="sync-auth-icon" class="urlbar-icon"
+             observes="sync-auth-state"
+             insertbefore="feed-button" popup="sync-auth-popup"/>
     </hbox>
 </overlay>

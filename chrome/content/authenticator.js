@@ -16,29 +16,44 @@ let gWeaveAuthenticator = {
     return this._prefs = new this.Preferences("extensions.weave.");
   },
 
+  get _state() {
+    delete this._state;
+    return this._state = document.getElementById("sync-auth-state");
+  },
+
   get _icon() {
     delete this._icon;
-    return this._icon = document.getElementById("sync-authenticator-icon");
+    return this._icon = document.getElementById("sync-auth-icon");
   },
 
   get _popup() {
     delete this._popup;
-    return this._popup = document.getElementById("sync-authenticator-popup");
+    return this._popup = document.getElementById("sync-auth-popup");
   },
 
   get _list() {
     delete this._list;
-    return this._list = document.getElementById("sync-authenticator-list");
+    return this._list = document.getElementById("sync-auth-list");
   },
 
   get _auto() {
     delete this._auto;
-    return this._auto = document.getElementById("sync-authenticator-auto");
+    return this._auto = document.getElementById("sync-auth-auto");
   },
 
-  get _button() {
-    delete this._button;
-    return this._button = document.getElementById("sync-authenticator-button");
+  get _signIn() {
+    delete this._signIn;
+    return this._signIn = document.getElementById("sync-auth-signIn");
+  },
+
+  get _autoDesc() {
+    delete this._autoDesc;
+    return this._autoDesc = document.getElementById("sync-auth-autoDesc");
+  },
+
+  get _disableAuto() {
+    delete this._disableAuto;
+    return this._disableAuto = document.getElementById("sync-auth-disableAuto");
   },
 
   // The times of automatic authentications, indexed by site.  We use this
@@ -263,6 +278,13 @@ let gWeaveAuthenticator = {
     formInfo.passwordField.value = loginInfo.password;
   },
 
+  onDisableAutoAuth: function() {
+    this._prefs.site(gBrowser.mCurrentBrowser.currentURI).
+                set("authenticator.auto", false);
+    this._popup.hidePopup();
+    this._updateView();
+  },
+
 
   //**************************************************************************//
   // Implementation
@@ -287,18 +309,29 @@ let gWeaveAuthenticator = {
   _updateView: function() {
     let browser = gBrowser.mCurrentBrowser;
 
-    this._auto.checked =
-      this._prefs.site(browser.currentURI).get("authenticator.auto");
+    let autoAuth = this._prefs.site(browser.currentURI).get("authenticator.auto");
+    this._auto.checked = autoAuth;
 
-    if (browser.auth.openIDField || browser.auth.formInfo) {
-      this._icon.setAttribute("state", "enabled");
+    if (autoAuth) {
+      this._state.setAttribute("state", "auto");
+      this._auto.disabled = true;
+      this._signIn.disabled = true;
+      this._autoDesc.hidden = false;
+      this._disableAuto.hidden = false;
+    }
+    else if (browser.auth.openIDField || browser.auth.formInfo) {
+      this._state.setAttribute("state", "enabled");
       this._auto.disabled = false;
-      this._button.disabled = false;
+      this._signIn.disabled = false;
+      this._autoDesc.hidden = true;
+      this._disableAuto.hidden = true;
     }
     else {
-      this._icon.setAttribute("state", "disabled");
+      this._state.setAttribute("state", "disabled");
       this._auto.disabled = true;
-      this._button.disabled = true;
+      this._signIn.disabled = true;
+      this._autoDesc.hidden = true;
+      this._disableAuto.hidden = true;
     }
   }
 
