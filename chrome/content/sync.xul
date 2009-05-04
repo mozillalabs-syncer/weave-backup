@@ -92,20 +92,32 @@
       <panel id="sync-auth-popup" position="after_start"
              observes="sync-auth-state"
              onpopupshowing="gWeaveAuthenticator.onPopupShowing(event)">
-        <menulist id="sync-auth-list"
-                  onselect="gWeaveAuthenticator.onSelectItem()">
-          <menupopup/>
-        </menulist>
-        <checkbox id="sync-auth-auto"
-                  label="do this automatically from now on"/>
-        <button id="sync-auth-signIn" label="Sign In"
-                oncommand="gWeaveAuthenticator.onSignIn()"/>
-        <description id="sync-auth-autoDesc">
-          Weave will sign you in to this site automatically.
-        </description>
-        <button id="sync-auth-disableAuto"
-                label="Stop Signing In Automatically"
-                oncommand="gWeaveAuthenticator.onDisableAutoAuth()"/>
+        <vbox id="sync-auth-popup-disabled">
+          <description>
+            Weave cannot sign you in to this site on this page.
+          </description>
+        </vbox>
+        <vbox id="sync-auth-popup-enabled">
+          <description>
+            Weave can sign you in to this site.
+          </description>
+          <menulist id="sync-auth-list"
+                    onselect="gWeaveAuthenticator.onSelectItem()">
+            <menupopup/>
+          </menulist>
+          <checkbox id="sync-auth-auto"
+                    label="do this automatically from now on"/>
+          <button id="sync-auth-signIn" label="Sign In"
+                  oncommand="gWeaveAuthenticator.onSignIn()"/>
+        </vbox>
+        <vbox id="sync-auth-popup-auto">
+          <description>
+            Weave will sign you in to this site automatically.
+          </description>
+          <button id="sync-auth-disableAuto"
+                  label="Stop Signing In Automatically"
+                  oncommand="gWeaveAuthenticator.onDisableAutoAuth()"/>
+        </vbox>
       </panel>
     </popupset>
 

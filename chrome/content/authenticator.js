@@ -312,27 +312,12 @@ let gWeaveAuthenticator = {
     let autoAuth = this._prefs.site(browser.currentURI).get("authenticator.auto");
     this._auto.checked = autoAuth;
 
-    if (autoAuth) {
+    if (autoAuth)
       this._state.setAttribute("state", "auto");
-      this._auto.disabled = true;
-      this._signIn.disabled = true;
-      this._autoDesc.hidden = false;
-      this._disableAuto.hidden = false;
-    }
-    else if (browser.auth.openIDField || browser.auth.formInfo) {
+    else if (browser.auth.openIDField || browser.auth.formInfo)
       this._state.setAttribute("state", "enabled");
-      this._auto.disabled = false;
-      this._signIn.disabled = false;
-      this._autoDesc.hidden = true;
-      this._disableAuto.hidden = true;
-    }
-    else {
+    else
       this._state.setAttribute("state", "disabled");
-      this._auto.disabled = true;
-      this._signIn.disabled = true;
-      this._autoDesc.hidden = true;
-      this._disableAuto.hidden = true;
-    }
   }
 
 };
