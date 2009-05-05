@@ -250,7 +250,7 @@ let gWeaveAuthenticator = {
     this._list.removeAllItems();
 
     // Add an item for the OpenID field, if any.
-    if (browser.auth.openIDField)
+    if (this._prefs.get("openId.enabled") && browser.auth.openIDField)
       item = this._list.appendItem("Weave");
 
     // Add items for found logins, if any.
@@ -294,11 +294,13 @@ let gWeaveAuthenticator = {
     browser.auth = {};
 
     // Find the first OpenID field.
-    for (let i = 0; i < inputs.length; i++) {
-      let element = inputs.item(i);
-      if (element.name == OPENID_FIELD_NAME) {
-        browser.auth.openIDField = element;
-        break;
+    if (this._prefs.get("openId.enabled")) {
+      for (let i = 0; i < inputs.length; i++) {
+        let element = inputs.item(i);
+        if (element.name == OPENID_FIELD_NAME) {
+          browser.auth.openIDField = element;
+          break;
+        }
       }
     }
 
