@@ -76,14 +76,19 @@ let gWeaveAuthenticator = {
   // Initialization/Destruction
 
   onLoad: function() {
-    gBrowser.addProgressListener(this, Ci.nsIWebProgress.NOTIFY_STATE_DOCUMENT);
-    gBrowser.addEventListener("DOMContentLoaded", this, true);
-    Cu.import("resource://weave/LoginManager.js", this);
+    if (this._prefs.get("authenticator.enabled")) {
+      Cu.import("resource://weave/LoginManager.js", this);
+      this._icon.hidden = false;
+      gBrowser.addProgressListener(this, Ci.nsIWebProgress.NOTIFY_STATE_DOCUMENT);
+      gBrowser.addEventListener("DOMContentLoaded", this, true);
+    }
   },
 
   onUnload: function() {
-    gBrowser.removeProgressListener(this);
-    gBrowser.removeEventListener("DOMContentLoaded", this, true);
+    if (this._prefs.get("authenticator.enabled")) {
+      gBrowser.removeProgressListener(this);
+      gBrowser.removeEventListener("DOMContentLoaded", this, true);
+    }
   },
 
 

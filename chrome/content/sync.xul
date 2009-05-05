@@ -122,7 +122,7 @@
     </popupset>
 
     <hbox id="urlbar-icons">
-      <image id="sync-auth-icon" class="urlbar-icon"
+      <image id="sync-auth-icon" class="urlbar-icon" hidden="true"
              observes="sync-auth-state"
              insertbefore="feed-button" popup="sync-auth-popup"/>
     </hbox>
