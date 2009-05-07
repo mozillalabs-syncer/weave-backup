@@ -152,14 +152,15 @@ var gOpenIdMunger = {
     let usr = Weave.ID.get('WeaveID').username;
     let pwd = Weave.ID.get('WeaveID').password;
 
-    let params = 'uid=' + encodeURIComponent(usr);
-    params = params + '&pwd=' + encodeURIComponent(pwd);
-    params = params + '&site=' + encodeURIComponent(rurl);
+    usr = "https://services.mozilla.com/openid/" + usr;
+    let params = 'openid_identity=' + encodeURIComponent(usr);
+    params = params + '&weave_pwd=' + encodeURIComponent(pwd);
+    params = params + '&openid_return_to=' + encodeURIComponent(rurl);
 
     if (root)
-      params = params + '&trust_root=' + encodeURIComponent(root);
+      params = params + '&openid_trust_root=' + encodeURIComponent(root);
 
-    let uri = 'https://services.mozilla.com/openid-api/authorize.php';
+    let uri = 'https://services.mozilla.com/openid/?openid.mode=authorize_site';
     req.onreadystatechange = function(e) {
       if (req.readyState == 4) {
         /* Our job is to just redirect,
