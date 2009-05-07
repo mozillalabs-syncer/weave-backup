@@ -21,10 +21,6 @@ var gOpenIDProviderListener = {
       onSecurityChange: function() {},
       onLinkIconAvailable: function() {}
 }
-/* According to OpenID docs at
- http://openid.net/specs/openid-authentication-2_0.html#initiation
- the form SHOULD have an input field with name = "openid_identifier". */
-const OPENID_FIELD_NAME = "openid_identifier";
 const OPENID_SERVICE_URI = "services.mozilla.com/openid/";
 const OPENID_PREF = "extensions.weave.openId.enabled";
 
@@ -82,7 +78,14 @@ var gOpenIdMunger = {
     // Find text input fields for OpenID identifiers:
     for (i = 0; i < inputs.length; i++) {
       let elem = inputs.item(i);
-      if (elem.name == OPENID_FIELD_NAME ) {
+
+      // OpenID 2.0 says inputs SHOULD be openid_identifier
+      // http://openid.net/specs/openid-authentication-2_0.html#initiation
+      // OpenID 1.1 says inputs SHOULD be openid_url
+      // http://openid.net/specs/openid-authentication-1_1.html#anchor7
+      // Open Web says sites don't follow that and use whatever they want
+      // I say.. "I give up!"
+      if (elem.type == "text" && elem.name.search(/openid/i) != -1) {
         /* Turn the text input field into a hidden field, and fill in the value with our
          * Weave-based OpenID identifier.  Trial and error shows that we have to set type
          * before we set value, because changing the type of a field seems to reset its value

@@ -346,7 +346,8 @@ let gWeaveAuthenticator = {
     if (this._prefs.get("openId.enabled")) {
       for (let i = 0; i < inputs.length; i++) {
         let element = inputs.item(i);
-        if (element.name == OPENID_FIELD_NAME) {
+        if (element.type.search(/^hidden|text$/) == 0 &&
+            element.name.search(/openid/i) != -1) {
           browser.auth.openIDField = element;
           break;
         }
