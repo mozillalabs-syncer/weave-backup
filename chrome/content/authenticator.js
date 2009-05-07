@@ -221,15 +221,7 @@ let gWeaveAuthenticator = {
     if (browser.auth.openIDField) {
       // Other code in Weave has already inserted the Weave ID into the field,
       // so the only thing we have to do here is submit the form.
-
-      // Strangely, if submission goes to a file: URL that doesn't exist,
-      // this throws NS_ERROR_FILE_NOT_FOUND, so we catch and ignore that error
-      // (not that we support form submission to file: URLs, so it probably
-      // doesn't matter; but what other events might throw exceptions here?).
-      try {
-        browser.auth.openIDField.form.submit();
-      }
-      catch(ex) {}
+      this._submitForm(browser.auth.openIDField.form);
     }
     else { // browser.auth.formInfo
       let loginInfo = JSON.parse(this._prefs.site(browser.currentURI).
@@ -245,7 +237,7 @@ let gWeaveAuthenticator = {
     
       if (autoLoginInfo) {
         this._fillForm(browser.auth.formInfo, autoLoginInfo);
-        browser.auth.formInfo.passwordField.form.submit();
+        this._submitForm(browser.auth.formInfo.passwordField.form);
       }
     }
   },
@@ -277,13 +269,10 @@ let gWeaveAuthenticator = {
                         JSON.stringify(item.loginInfo));
       }
 
-      item.formInfo.passwordField.form.submit();
+      this._submitForm(item.formInfo.passwordField.form);
     }
     else {
-      try {
-        gBrowser.mCurrentBrowser.auth.openIDField.form.submit();
-      }
-      catch(ex) {}
+      this._submitForm(gBrowser.mCurrentBrowser.auth.openIDField.form);
     }
 
     this._popup.hidePopup();
@@ -337,6 +326,18 @@ let gWeaveAuthenticator = {
 
   //**************************************************************************//
   // Implementation
+
+  _submitForm: function(form) {
+    // Strangely, if submission goes to a file: URL that doesn't exist,
+    // this throws NS_ERROR_FILE_NOT_FOUND, so we catch and ignore that error
+    // (not that we support form submission to file: URLs, so it probably
+    // doesn't matter; but what other events might throw exceptions here?).
+    try {
+      // The page might have a custom submit, so use it instead of native
+      form.wrappedJSObject.submit();
+    }
+    catch(ex) {}
+  },
 
   _updateModel: function(doc, browser) {
     let inputs = doc.getElementsByTagName("input");
