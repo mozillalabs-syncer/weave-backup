@@ -12,7 +12,7 @@ var gOpenIDProviderListener = {
       },
 
       onLocationChange: function(aProgress, aRequest, aURI) {
-        gOpenIdMunger.processNewURL(aURI);
+        gOpenIdMunger.processNewURL(aURI, aProgress.DOMWindow);
       },
 
       onStateChange: function() {},
@@ -108,20 +108,29 @@ var gOpenIdMunger = {
     }
   },
 
-  processNewURL: function(aURI) {
-    if (!aURI || aURI.spec == this.oldURL)
-      return;
-
-    /* Now we know the url is new... */
-    if (aURI.spec.substr(0, 37) ==
+  processNewURL: function(aURI, domWin) {
+    let spec = aURI.spec;
+    if (spec.substr(0, 37) ==
         'https://services.mozilla.com/openid/?') {
 
+      let loadUrl = function(url) domWin.location = url;
+      if (domWin.location != spec) {
+        Array.forEach(domWin.document.getElementsByTagName("iframe"), function(frame) {
+          if (frame.src == spec)
+            loadUrl = function(url) frame.src = url;
+        });
+      }
+
+      let redirect = function(url) {
+        window.stop();
+        loadUrl(url);
+      };
+
       /* Stop the redirect */
-      let uri = aURI;
-      this.redirect("chrome://weave/content/openid-wait.xul");
+      redirect("chrome://weave/content/openid-wait.xul");
 
       /* Parse tokens */
-      let pstring = aURI.spec.substr(37);
+      let pstring = spec.substr(37);
       let params = pstring.split('&');
       let retURI = false;
       let rootURI = false;
@@ -143,7 +152,7 @@ var gOpenIdMunger = {
       }
 
       /* Make the request */
-      this.authorize(retURI, rootURI, this.redirect);
+      this.authorize(retURI, rootURI, redirect);
     }
   },
 
@@ -176,11 +185,6 @@ var gOpenIdMunger = {
     req.setRequestHeader('Content-length', params.length);
     req.setRequestHeader('Connection', 'close');
     req.send(params);
-  },
-
-  redirect: function(url) {
-    window.stop();
-    window.content.location = url;
   }
 };
 
