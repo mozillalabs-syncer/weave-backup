@@ -188,7 +188,15 @@ let gWeaveAuthenticator = {
 
       if (// the web page supports OpenID authentication (or we have form info)
           (browser.auth.openIDField || browser.auth.formInfo) &&
-  
+
+          // the user is authenticating on a page encrypted with SSL
+          // (to protect against MITM attacks when a user has stored credentials
+          // from a previous authentication against the encrypted version
+          // of the site but then loads the unencrypted version on an insecure
+          // network, f.e. by typing its domain name into the location bar,
+          // and the request is intercepted by evil.com)
+          browser.currentURI.scheme == "https" &&
+
           // the auto-authenticate pref is true for the site
           this._prefs.site(browser.currentURI).get("authenticator.auto") &&
 
@@ -352,15 +360,32 @@ let gWeaveAuthenticator = {
   _updateView: function() {
     let browser = gBrowser.mCurrentBrowser;
 
-    let autoAuth = this._prefs.site(browser.currentURI).get("authenticator.auto");
-    this._auto.checked = autoAuth;
+    // The user's preference for auto-auth on this site.
+    let autoAuth =
+      this._prefs.site(browser.currentURI).get("authenticator.auto");
 
-    if (autoAuth)
+    // Whether or not it's possible to authenticate automatically for this site.
+    // Even if the user has enabled auto-auth, we still don't do it if the user
+    // is on a non-encrypted version of the site, to protect against MITM
+    // attacks (see comment in onDOMContentLoaded for more info).
+    let autoAuthPossible = browser.currentURI.scheme == "https";
+
+    this._auto.checked = autoAuth;
+    this._auto.disabled = !autoAuthPossible;
+
+    if (autoAuth && autoAuthPossible) {
       this._state.setAttribute("state", "auto");
-    else if (browser.auth.openIDField || browser.auth.formInfo)
+      this._state.removeAttribute("message");
+    }
+    else if (browser.auth.openIDField || browser.auth.formInfo) {
       this._state.setAttribute("state", "enabled");
-    else
+      if (autoAuth)
+        this._state.setAttribute("message", "unencrypted");
+    }
+    else {
       this._state.setAttribute("state", "disabled");
+      this._state.removeAttribute("message");
+    }
   }
 
 };

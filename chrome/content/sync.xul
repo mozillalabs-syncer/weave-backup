@@ -118,6 +118,12 @@
                   label="Stop Signing In Automatically"
                   oncommand="gWeaveAuthenticator.onDisableAutoAuth()"/>
         </vbox>
+        <box id="sync-auth-message">
+          <description id="sync-auth-message-unencrypted" width="250">
+            Weave can't sign you in to this web site automatically
+            because your connection to the site is not encrypted.
+          </description>
+        </box>
       </panel>
     </popupset>
 

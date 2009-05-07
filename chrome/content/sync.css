@@ -30,3 +30,27 @@
 #sync-auth-popup[state="auto"] > #sync-auth-popup-auto {
   display: -moz-box;
 }
+
+
+#sync-auth-icon[state="disabled"] {
+  list-style-image: url("chrome://weave/skin/auth-disabled.png");
+}
+
+#sync-auth-icon[state="enabled"] {
+  list-style-image: url("chrome://weave/skin/auth-enabled.png");
+}
+
+#sync-auth-icon[state="auto"] {
+  list-style-image: url("chrome://weave/skin/auth-auto.png");
+}
+
+
+/* Show the specified message. */
+
+#sync-auth-message-unencrypted {
+  display: none;
+}
+
+#sync-auth-popup[message="unencrypted"] > #sync-auth-message > #sync-auth-message-unencrypted {
+  display: -moz-box;
+}
