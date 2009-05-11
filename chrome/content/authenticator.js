@@ -40,6 +40,12 @@ let gWeaveAuthenticator = {
   //**************************************************************************//
   // Shortcuts
 
+  get Authenticator() {
+    delete this.Authenticator;
+    Cu.import("resource://weave/Authenticator.js", this);
+    return this.Authenticator;
+  },
+
   // The Preferences service that is imported from the Preferences module below.
   get Preferences() {
     delete this.Preferences;
@@ -113,7 +119,6 @@ let gWeaveAuthenticator = {
 
   onLoad: function() {
     if (this._prefs.get("authenticator.enabled")) {
-      Cu.import("resource://weave/authenticator.js", this);
       this._icon.hidden = false;
       gBrowser.addProgressListener(this, Ci.nsIWebProgress.NOTIFY_STATE_DOCUMENT);
       gBrowser.addEventListener("DOMContentLoaded", this, true);
@@ -356,7 +361,7 @@ let gWeaveAuthenticator = {
     }
 
     // Get info about the first form that the login manager can fill.
-    [browser.auth.formInfo] = this.WeaveLoginManager._fillDocument(doc);
+    [browser.auth.formInfo] = this.Authenticator._fillDocument(doc);
   },
 
   _updateView: function() {
