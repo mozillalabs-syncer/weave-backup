@@ -53,6 +53,20 @@ let gWeaveAuthenticator = {
     return this.Preferences;
   },
 
+  get _log() {
+    delete this._log;
+    this._log = Log4Moz.repository.getLogger("Authenticator");
+    this._log.level = Log4Moz.Level[this._prefs.get("log.logger.authenticator",
+                                                    "Debug")];
+    return this._log;
+  },
+
+  get _loginManager() {
+    delete this._loginManager;
+    return this._loginManager = Cc["@mozilla.org/login-manager;1"].
+                                getService(Ci.nsILoginManager);
+  },
+
   get _prefs() {
     delete this._prefs;
     return this._prefs = new this.Preferences("extensions.weave.");
@@ -366,6 +380,7 @@ let gWeaveAuthenticator = {
 
   _updateView: function() {
     let browser = gBrowser.mCurrentBrowser;
+    let host; try { host = browser.currentURI.host } catch(ex) {}
 
     // The user's preference for auto-auth on this site.
     let autoAuth =
@@ -389,8 +404,15 @@ let gWeaveAuthenticator = {
       if (autoAuth)
         this._state.setAttribute("message", "unencrypted");
     }
-    else {
+    // Once we support HTTP authentication, update this to count logins
+    // from HTTP realms as well.
+    // FIXME: figure out why this doesn't work (countLogins always returns 0).
+    else if (host && this._loginManager.countLogins(host, "", null) > 0) {
       this._state.setAttribute("state", "disabled");
+      this._state.removeAttribute("message");
+    }
+    else {
+      this._state.setAttribute("state", "unavailable");
       this._state.removeAttribute("message");
     }
   }
