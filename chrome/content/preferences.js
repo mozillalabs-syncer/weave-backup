@@ -63,9 +63,37 @@ WeavePrefs.prototype = {
    }
   },
 
+  _loadEnginesList: function WeavePrefs__loadEnginesList() {
+    let list = document.getElementById("sync-engines-list");
+
+    // No need to add engines if we've already added them
+    if (list.itemCount > 0)
+      return;
+
+    Weave.Engines.getAll().forEach(function(engine) {
+      let item = document.createElement("richlistitem");
+      let check = document.createElement("checkbox");
+      item.appendChild(check);
+      list.appendChild(item);
+
+      // Check the box if the engine is enabled; disable the engine if null
+      if ((check.checked = engine.enabled) == null)
+        check.disabled = true;
+
+      check.flex = 1;
+      check.label = engine.displayName;
+
+      // Handle toggling of the checkbox
+      check.addEventListener("command", function(event) {
+        engine.enabled = check.checked;
+      }, false);
+    });
+  },
+
   onPaneLoad: function WeavePrefs_onPaneLoad() {
     this._checkAccountInfo();
     this._checkClientInfo();
+    this._loadEnginesList();
   },
 
   _onSyncStart: function WeavePrefs__onSyncStart(subject, data) {

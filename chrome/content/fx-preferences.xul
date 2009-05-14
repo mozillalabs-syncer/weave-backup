@@ -60,27 +60,6 @@
       <preference id="extensions.weave.encryption"
                   name="extensions.weave.encryption"
                   type="string"/>
-      <preference id="extensions.weave.engine.bookmarks"
-                  name="extensions.weave.engine.bookmarks"
-                  type="bool"/>
-      <preference id="extensions.weave.engine.history"
-                  name="extensions.weave.engine.history"
-                  type="bool"/>
-      <preference id="extensions.weave.engine.cookies"
-                  name="extensions.weave.engine.cookies"
-                  type="bool"/>
-      <preference id="extensions.weave.engine.passwords"
-                  name="extensions.weave.engine.passwords"
-                  type="bool"/>
-      <preference id="extensions.weave.engine.forms"
-                  name="extensions.weave.engine.forms"
-                  type="bool"/>
-      <preference id="extensions.weave.engine.tabs"
-                  name="extensions.weave.engine.tabs"
-                  type="bool"/>
-      <preference id="extensions.weave.engine.input"
-                  name="extensions.weave.engine.input"
-                  type="bool"/>
     </preferences>
 
     <tabbox id="sync-tabbox" flex="1">
@@ -168,57 +147,7 @@
             <separator/>
 
             <label value="&syncItemsList.label;"/>
-            <richlistbox>
-              <richlistitem>
-                  <checkbox id="sync-bookmarks-checkbox"
-                            label="&bookmarksCheckbox.label;"
-                            preference="extensions.weave.engine.bookmarks"/>
-              </richlistitem>
-              <richlistitem>
-                  <checkbox id="sync-bookmarks-checkbox"
-                            label="&historyCheckbox.label;"
-                            preference="extensions.weave.engine.history"/>
-              </richlistitem>
-              <richlistitem>
-                  <checkbox id="sync-tabs-checkbox"
-                            label="&tabsCheckbox.label;"
-                            preference="extensions.weave.engine.tabs"/>
-              </richlistitem>
-              <richlistitem>
-                  <checkbox id="sync-passwords-checkbox"
-                            label="&passwordsCheckbox.label;"
-                            preference="extensions.weave.engine.passwords"/>
-              </richlistitem>
-              <richlistitem>
-                  <checkbox id="sync-cookies-checkbox"
-                            label="&cookiesCheckbox.label;" disabled="true" checked="false"/>
-              </richlistitem>
-              <richlistitem>
-                  <checkbox id="sync-forms-checkbox"
-                            label="&formsCheckbox.label;"
-                            preference="extensions.weave.engine.forms"/>
-              </richlistitem>
-              <richlistitem>
-                  <checkbox id="sync-input-checkbox"
-                            label="&inputCheckbox.label;" disabled="true" checked="false"/>
-              </richlistitem>
-              <richlistitem>
-                  <checkbox id="sync-extensions-checkbox"
-                            label="&extensionsCheckbox.label;" disabled="true" checked="false"/>
-              </richlistitem>
-              <richlistitem>
-                  <checkbox id="sync-themes-checkbox"
-                            label="&themesCheckbox.label;" disabled="true" checked="false"/>
-              </richlistitem>
-              <richlistitem>
-                  <checkbox id="sync-plugins-checkbox"
-                            label="&pluginsCheckbox.label;" disabled="true" checked="false"/>
-              </richlistitem>
-              <richlistitem>
-                  <checkbox id="sync-microformats-checkbox"
-                            label="&microformatsCheckbox.label;" disabled="true" checked="false"/>
-              </richlistitem>
-            </richlistbox>
+            <richlistbox id="sync-engines-list"/>
           </groupbox>
         </tabpanel>
 
