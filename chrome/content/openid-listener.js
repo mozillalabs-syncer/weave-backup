@@ -69,7 +69,7 @@ var gOpenIdMunger = {
     if (typeof(gBrowser) != "undefined")
       gBrowser.removeProgressListener(gOpenIDProviderListener);
   },
-
+  
   detectForm: function(aEvent) {
     var theDoc = aEvent.originalTarget;
     let inputs = theDoc.getElementsByTagName("input");
@@ -101,9 +101,19 @@ var gOpenIdMunger = {
         for (let j=0; j < formChildren.length; j++) {
           if (formChildren[j].type == "submit") {
             let submit = formChildren[j];
+            let oldvalue = submit.value;
             submit.value = "Sign In Using Weave";
             let foo = submit.ownerDocument.createElement("span");
-            foo.innerHTML = '<a href="#"><small>(?)</small></a>';
+            let links = '<a href="#" id="revert"><small>(revert)</small></a>';
+
+            foo.innerHTML = links;            
+            foo.addEventListener('click', function() {
+              elem.value = "";
+              elem.type = "text";
+              submit.value = oldvalue;
+              submit.parentNode.removeChild(foo);
+            }, false);
+            
             submit.parentNode.insertBefore(foo, submit.nextSibling);
           }
         }
