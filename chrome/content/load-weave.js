@@ -33,6 +33,7 @@ Components.utils.import("resource://weave/engines/extensions.js", {});
 Components.utils.import("resource://weave/engines/forms.js", {});
 Components.utils.import("resource://weave/engines/history.js", {});
 Components.utils.import("resource://weave/engines/input.js", {});
+Components.utils.import("resource://weave/engines/prefs.js", {});
 Components.utils.import("resource://weave/engines/microformats.js", {});
 Components.utils.import("resource://weave/engines/passwords.js", {});
 Components.utils.import("resource://weave/engines/plugins.js", {});
