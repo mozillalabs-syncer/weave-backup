@@ -40,17 +40,25 @@ let gWeaveAuthenticator = {
   //**************************************************************************//
   // Shortcuts
 
-  get Authenticator() {
-    delete this.Authenticator;
-    Cu.import("resource://weave/Authenticator.js", this);
-    return this.Authenticator;
-  },
-
   // The Preferences service that is imported from the Preferences module below.
   get Preferences() {
     delete this.Preferences;
     Cu.import("resource://weave/ext/Preferences.js", this);
     return this.Preferences;
+  },
+
+  get Observers() {
+    delete this.Observers;
+    Cu.import("resource://weave/ext/Observers.js", this);
+    return this.Observers;
+  },
+
+  get _log() {
+    delete this._log;
+    this._log = Log4Moz.repository.getLogger("Authenticator");
+    this._log.level = Log4Moz.Level[this._prefs.get("log.logger.authenticator",
+                                                    "Debug")];
+    return this._log;
   },
 
   get _log() {
@@ -136,6 +144,7 @@ let gWeaveAuthenticator = {
       this._icon.hidden = false;
       gBrowser.addProgressListener(this, Ci.nsIWebProgress.NOTIFY_STATE_DOCUMENT);
       gBrowser.addEventListener("DOMContentLoaded", this, true);
+      this.Observers.add("passwordmgr-found-logins", this.onPasswordMgrFoundLogins, this);
     }
   },
 
@@ -143,6 +152,7 @@ let gWeaveAuthenticator = {
     if (this._prefs.get("authenticator.enabled")) {
       gBrowser.removeProgressListener(this);
       gBrowser.removeEventListener("DOMContentLoaded", this, true);
+      this.Observers.remove("passwordmgr-found-logins", this.onPasswordMgrFoundLogins, this);
     }
   },
 
@@ -159,6 +169,10 @@ let gWeaveAuthenticator = {
     // but I don't know of a way to distinguish between page loads
     // and history traversals here so that we only do this on history
     // traversal (perhaps do this on pageshow/pagehide instead?).
+    // Note: the login manager does this via a web progress listener
+    // that listens for Ci.nsIWebProgressListener.STATE_RESTORING; we could
+    // probably do the same, we should just make sure to do so before
+    // the login manager so its notifications build up our model.
     if (request) {
       let browser = gBrowser.mCurrentBrowser;
       let doc = browser.contentDocument;
@@ -197,66 +211,89 @@ let gWeaveAuthenticator = {
     if (browser == gBrowser.mCurrentBrowser)
       this._updateView();
 
-    let host; try { host = browser.currentURI.host } catch(ex) {}
+    this._autoAuth(browser);
+  },
 
-    if (host) {
-      // Automatically authenticate the user if it's possible to do so
-      // and the user has specified that we should do so for this site.
-      let sessionHistory = browser.webNavigation.sessionHistory;
-      let lastAuthed = (host in this._autoAuths) ? this._autoAuths[host] : 0;
+  onPasswordMgrFoundLogins: function(formInfo) {
+    this._log.debug("onPasswordMgrFoundLogins");
 
-      if (// the web page supports OpenID authentication (or we have form info)
-          (browser.auth.openIDField || browser.auth.formInfo) &&
+    formInfo.QueryInterface(Ci.nsIPropertyBag2);
 
-          // the user is authenticating on a page encrypted with SSL
-          // (to protect against MITM attacks when a user has stored credentials
-          // from a previous authentication against the encrypted version
-          // of the site but then loads the unencrypted version on an insecure
-          // network, f.e. by typing its domain name into the location bar,
-          // and the request is intercepted by evil.com)
-          browser.currentURI.scheme == "https" &&
+    let doc = formInfo.get("passwordField").ownerDocument;
+    if (!doc)
+      return;
 
-          // the auto-authenticate pref is true for the site
-          this._prefs.site(browser.currentURI).get("authenticator.auto") &&
+    let browser = gBrowser.getBrowserForDocument(doc);
+    if (!browser)
+      return;
 
-          // the page is the last one in the session history, so users can
-          // traverse history without losing control over their browser
-          // and the history in front of the current page when they encounter
-          // a page we can auto-authenticate
-          sessionHistory.count == sessionHistory.index + 1 &&
-
-          // auto-auth hasn't happened for this site in the last 60 seconds
-          // (to suppress auto-auth loops when auto-auth fails)
-          ((new Date() - lastAuthed) > 60000))
-      {
-        this._autoAuth(browser, host);
-      }
+    // If this is the first form the login manager can fill, update the model,
+    // update the view if on the active browser tab, and auto auth if possible.
+    // FIXME: support all forms the login manager can fill.
+    if (!browser.auth.formInfo) {
+      browser.auth.formInfo = formInfo;
+      if (browser == gBrowser.mCurrentBrowser)
+        this._updateView();
+      this._autoAuth(browser);
     }
   },
 
-  _autoAuth: function(browser, host) {
-    this._autoAuths[host] = new Date();
+  _autoAuth: function(browser) {
+    let host; try { host = browser.currentURI.host } catch(ex) {}
 
-    if (browser.auth.openIDField) {
-      // Other code in Weave has already inserted the Weave ID into the field,
-      // so the only thing we have to do here is submit the form.
-      this._submitForm(browser.auth.openIDField.form);
-    }
-    else { // browser.auth.formInfo
-      let loginInfo = JSON.parse(this._prefs.site(browser.currentURI).
-                                 get("authenticator.auto.loginInfo"));
+    if (!host)
+      return;
 
-      let autoLoginInfo;
-      for each (let foundLogin in browser.auth.formInfo.foundLogins) {
-        if (foundLogin.matches(loginInfo, true)) {
-          autoLoginInfo = foundLogin;
-          break;
-        }
+    let sessionHistory = browser.webNavigation.sessionHistory;
+    let lastAuthed = (host in this._autoAuths) ? this._autoAuths[host] : 0;
+
+    if (// the web page supports OpenID authentication (or we have form info)
+        (browser.auth.openIDField || browser.auth.formInfo) &&
+
+        // the user is authenticating on a page encrypted with SSL
+        // (to protect against MITM attacks when a user has stored credentials
+        // from a previous authentication against the encrypted version
+        // of the site but then loads the unencrypted version on an insecure
+        // network, f.e. by typing its domain name into the location bar,
+        // and the request is intercepted by evil.com)
+        browser.currentURI.scheme == "https" &&
+
+        // the auto-authenticate pref is true for the site
+        this._prefs.site(browser.currentURI).get("authenticator.auto") &&
+
+        // the page is the last one in the session history, so users can
+        // traverse history without losing control over their browser
+        // and the history in front of the current page when they encounter
+        // a page we can auto-authenticate
+        sessionHistory.count == sessionHistory.index + 1 &&
+
+        // auto-auth hasn't happened for this site in the last 60 seconds
+        // (to suppress auto-auth loops when auto-auth fails)
+        ((new Date() - lastAuthed) > 60000))
+    {
+      this._autoAuths[host] = new Date();
+  
+      if (browser.auth.openIDField) {
+        // Other code in Weave has already inserted the Weave ID into the field,
+        // so the only thing we have to do here is submit the form.
+        this._submitForm(browser.auth.openIDField.form);
       }
-    
-      if (autoLoginInfo) {
-        this._fillForm(browser.auth.formInfo, autoLoginInfo);
-        this._submitForm(browser.auth.formInfo.passwordField.form);
+      else { // browser.auth.formInfo
+        let loginInfo = JSON.parse(this._prefs.site(browser.currentURI).
+                                   get("authenticator.auto.loginInfo"));
+  
+        let autoLoginInfo;
+        for each (let foundLogin in browser.auth.formInfo.get("foundLogins")) {
+          if (foundLogin.matches(loginInfo, true)) {
+            autoLoginInfo = foundLogin;
+            break;
+          }
+        }
+      
+        if (autoLoginInfo) {
+          this._fillForm(browser.auth.formInfo, autoLoginInfo);
+          this._submitForm(browser.auth.formInfo.get("passwordField").form);
+        }
       }
     }
   },
@@ -288,7 +325,7 @@ let gWeaveAuthenticator = {
                         JSON.stringify(item.loginInfo));
       }
 
-      this._submitForm(item.formInfo.passwordField.form);
+      this._submitForm(item.formInfo.get("passwordField").form);
     }
     else {
       this._submitForm(gBrowser.mCurrentBrowser.auth.openIDField.form);
@@ -313,13 +350,13 @@ let gWeaveAuthenticator = {
     // Add items for found logins, if any.
     if (browser.auth.formInfo) {
       let formInfo = browser.auth.formInfo;
-      for each (let foundLogin in formInfo.foundLogins) {
+      for each (let foundLogin in formInfo.get("foundLogins")) {
         // FIXME: localize and improve label for logins without username.
         let label = foundLogin.username || "no name";
         let item = this._list.appendItem(label);
         item.formInfo = formInfo;
         item.loginInfo = foundLogin;
-        if (formInfo.selectedLogin && foundLogin.equals(formInfo.selectedLogin))
+        if (formInfo.get("selectedLogin") && foundLogin.equals(formInfo.get("selectedLogin")))
           this._list.selectedItem = item;
       }
     }
@@ -330,9 +367,9 @@ let gWeaveAuthenticator = {
   },
 
   _fillForm: function(formInfo, loginInfo) {
-    if (formInfo.usernameField)
-      formInfo.usernameField.value = loginInfo.username;
-    formInfo.passwordField.value = loginInfo.password;
+    if (formInfo.get("usernameField"))
+      formInfo.get("usernameField").value = loginInfo.username;
+    formInfo.get("passwordField").value = loginInfo.password;
   },
 
   onDisableAutoAuth: function() {
@@ -359,6 +396,8 @@ let gWeaveAuthenticator = {
   },
 
   _updateModel: function(doc, browser) {
+    this._log.debug("_updateModel\n");
+
     let inputs = doc.getElementsByTagName("input");
     browser.auth = {};
 
@@ -373,9 +412,6 @@ let gWeaveAuthenticator = {
         }
       }
     }
-
-    // Get info about the first form that the login manager can fill.
-    [browser.auth.formInfo] = this.Authenticator._fillDocument(doc);
   },
 
   _updateView: function() {
