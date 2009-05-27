@@ -287,16 +287,16 @@ WeaveWindow.prototype = {
 
   doOpenPrefs: function WeaveWin_doOpenPrefs(event) {
     let pane = "sync-prefpane";
-    switch (Weave.Svc.AppInfo.name) {
-      case "Firefox":
+    switch (Weave.Svc.AppInfo.ID) {
+      case Weave.FIREFOX_ID:
         openPreferences(pane);
         break;
 
-      case "SeaMonkey":
+      case Weave.SEAMONKEY_ID:
         goPreferences(pane);
         break;
 
-      case "Thunderbird":
+      case Weave.THUNDERBIRD_ID:
         openOptionsDialog(pane);
         break;
     }
