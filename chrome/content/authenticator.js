@@ -435,7 +435,7 @@ let gWeaveAuthenticator = {
       this._state.setAttribute("state", "auto");
       this._state.removeAttribute("message");
     }
-    else if (browser.auth.openIDField || browser.auth.formInfo) {
+    else if ("auth" in browser && (browser.auth.openIDField || browser.auth.formInfo)) {
       this._state.setAttribute("state", "enabled");
       if (autoAuth)
         this._state.setAttribute("message", "unencrypted");
