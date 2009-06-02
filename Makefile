@@ -122,7 +122,7 @@ chrome_files := chrome/content/* chrome/skin/* chrome/locale/*
 
 # fixme: use explicit file list instead of glob?
 chrome/sync.jar: $(chrome_files)
-	cd chrome; zip -9 -ur sync.jar *; cd ..
+	cd chrome; zip -0 -ur sync.jar *; cd ..
 
 xpi: build chrome/sync.jar $(xpi_files)
 	zip -9 -ur $(xpi_name) $(xpi_files)
