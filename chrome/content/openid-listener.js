@@ -12,7 +12,8 @@ var gOpenIDProviderListener = {
       },
 
       onLocationChange: function(aProgress, aRequest, aURI) {
-        gOpenIdMunger.processNewURL(aURI, aProgress.DOMWindow);
+        if (aURI)
+          gOpenIdMunger.processNewURL(aURI, aProgress.DOMWindow);
       },
 
       onStateChange: function() {},
