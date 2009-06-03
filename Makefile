@@ -71,10 +71,12 @@ else
 endif
 
 buildid ?= ${WEAVE_BUILDID}
+buildid_short := $(buildid)
 ifeq ($(buildid),)
   date    := $(shell date -u +%Y%m%d%H%M)
   revid   := $(shell hg tip --template '{node|short}')
   buildid := $(date)-$(revid)
+  buildid_short := $(date)
 endif
 ifeq ($(buildid),)
   $(warning Could not determine build id)
@@ -90,7 +92,7 @@ else
   jar=\# 
 endif
 
-subst_names := weave_version buildid update_url update_url_tag unpacked jar
+subst_names := weave_version buildid buildid_short update_url update_url_tag unpacked jar
 export $(subst_names)
 substitute  := perl -p -e 's/@([^@]+)@/defined $$ENV{$$1} ? $$ENV{$$1} : $$&/ge'
 
