@@ -779,12 +779,9 @@ WeaveWiz = {
       }
     };
 
-    Weave.Service.createAccount(onComplete,
-                                $('username-create-field').value,
-                                $('password-create-field').value,
-                                $('email-create-field').value,
-                                $('lastCaptchaChallenge').value,
-                                $('captcha-input').value);
+    onComplete(Weave.Service.createAccount($('username-create-field').value,
+      $('password-create-field').value, $('email-create-field').value,
+      $('lastCaptchaChallenge').value, $('captcha-input').value));
 
     return false;
   },
