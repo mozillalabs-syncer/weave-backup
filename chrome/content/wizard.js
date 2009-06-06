@@ -216,7 +216,8 @@ WeaveWiz = {
     // The observer will handle success and failure notifications
     // checkVerificationFields() will take care of allowing advance if this works
     WeaveWiz._log.debug("Verifying username/password...");
-    Weave.Service.verifyLogin(null, $('username').value, $('password').value);
+    setTimeout(function() Weave.Service.verifyLogin($("username").value,
+      $("password").value), 0);
 
     // In case the server is hanging...
     setTimeout(function() {
@@ -876,24 +877,22 @@ WeaveWiz = {
       $('strings').getString("initialLogin-progress.label");
     $('final-status-icon').hidden = false;
 
-    Weave.Service.login(
-      function() {
-        WeaveWiz._log.info("Initial login finished");
-        $('final-account-status').style.color = SUCCESS_COLOR;
-        $('final-status-label').value =
-          $('strings').getString("initialSync-progress.label");
-        setTimeout(function() {
-          Weave.Service.sync(true);
-          WeaveWiz._log.info("Initial sync finished");
-          $('final-sync-status').style.color = SUCCESS_COLOR;
-          $('final-status-label').value = $('strings').getString("installation-complete.label");
-          $('final-status-link').hidden = true;
-          $('final-status-icon').hidden = true;
-          WeaveWiz._syncSuccess = true;
-          $('weave-setup-wizard').canAdvance = true;
-          $('weave-setup-wizard').advance('sync-wizard-thankyou');
-        }, 0);
-      });
+    Weave.Service.login();
+    WeaveWiz._log.info("Initial login finished");
+    $("final-account-status").style.color = SUCCESS_COLOR;
+    $("final-status-label").value = $("strings").getString("initialSync-progress.label");
+
+    setTimeout(function() {
+      Weave.Service.sync(true);
+      WeaveWiz._log.info("Initial sync finished");
+      $("final-sync-status").style.color = SUCCESS_COLOR;
+      $("final-status-label").value = $("strings").getString("installation-complete.label");
+      $("final-status-link").hidden = true;
+      $("final-status-icon").hidden = true;
+      WeaveWiz._syncSuccess = true;
+      $("weave-setup-wizard").canAdvance = true;
+      $("weave-setup-wizard").advance("sync-wizard-thankyou");
+    }, 0);
 
 //          $('final-account-status').style.color = ERROR_COLOR;
 //          $('final-status-label').value =
