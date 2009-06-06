@@ -263,8 +263,8 @@ WeaveWiz = {
     // The observer will handle success and failure notifications
     // checkVerificationFields() will take care of allowing advance if this works
     WeaveWiz._log.debug("Verifying passphrase...");
-    Weave.Service.verifyPassphrase(null, $('username').value,
-                                   $('password').value, $('passphrase').value);
+    setTimeout(function() Weave.Service.verifyPassphrase($("username").value,
+      $("password").value, $("passphrase").value), 0);
 
     // In case the server is hanging...
     let strings = $('strings');
