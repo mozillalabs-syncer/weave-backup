@@ -432,9 +432,7 @@ FennecWeaveGlue.prototype = {
   syncNow: function FennecWeaveGlue_syncNow() {
     if (Weave.Service.isLoggedIn) {
       if (!Weave.Service.isQuitting) {
-	// Note: we can pass a function(success) {} in here if we need
-	// to respond to success or failure... but the observer handles that.
-	Weave.Service.sync(null, true);
+	setTimeout(function() Weave.Service.sync(true), 0);
       } else {
 	this.setWeaveStatusField("fennec.quitting");
       }

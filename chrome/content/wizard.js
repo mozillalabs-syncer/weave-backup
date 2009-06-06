@@ -882,18 +882,17 @@ WeaveWiz = {
         $('final-account-status').style.color = SUCCESS_COLOR;
         $('final-status-label').value =
           $('strings').getString("initialSync-progress.label");
-        Weave.Service.sync(
-          function() {
-            WeaveWiz._log.info("Initial sync finished");
-            $('final-sync-status').style.color = SUCCESS_COLOR;
-            $('final-status-label').value =
-              $('strings').getString("installation-complete.label");
-            $('final-status-link').hidden = true;
-            $('final-status-icon').hidden = true;
-            WeaveWiz._syncSuccess = true;
-            $('weave-setup-wizard').canAdvance = true;
-            $('weave-setup-wizard').advance('sync-wizard-thankyou');
-          }, true);
+        setTimeout(function() {
+          Weave.Service.sync(true);
+          WeaveWiz._log.info("Initial sync finished");
+          $('final-sync-status').style.color = SUCCESS_COLOR;
+          $('final-status-label').value = $('strings').getString("installation-complete.label");
+          $('final-status-link').hidden = true;
+          $('final-status-icon').hidden = true;
+          WeaveWiz._syncSuccess = true;
+          $('weave-setup-wizard').canAdvance = true;
+          $('weave-setup-wizard').advance('sync-wizard-thankyou');
+        }, 0);
       });
 
 //          $('final-account-status').style.color = ERROR_COLOR;
