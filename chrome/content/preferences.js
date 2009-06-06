@@ -292,8 +292,10 @@ WeavePrefs.prototype = {
   eraseServer: function WeavePrefs_eraseServer() {
     if (Weave.Svc.Prompt.confirm(null,
                   this._stringBundle.getString("erase.server.warning.title"),
-                  this._stringBundle.getString("erase.server.warning")))
-      Weave.Service.wipeServer(Weave.Utils.openStatus);
+                  this._stringBundle.getString("erase.server.warning"))) {
+      Weave.Service.wipeServer();
+      Weave.Utils.openStatus();
+    }
   },
 
   observe: function WeaveSvc__observe(subject, topic, data) {

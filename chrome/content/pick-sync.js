@@ -34,7 +34,8 @@ let Sync = {
 
     // Run the sync type then do the actual sync
     let engines = Weave.Engines.getEnabled().map(function(i) i.name);
-    Weave.Service[this._syncType](Weave.Utils.openStatus, engines);
+    Weave.Service[this._syncType](engines);
+    Weave.Utils.openStatus();
 
     return true;
   },
