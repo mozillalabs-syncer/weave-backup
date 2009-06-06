@@ -67,12 +67,11 @@ function FennecWeaveGlue() {
   /* startup Weave service after a delay, so that it will happen after the
    * UI is loaded. */
    let self = this;
-   setTimeout( function() {
-	         self._log.info("Timeout done, starting Weave service.\n");
-		 Weave.Service.onStartup( function() {
-					    self.showLoginErrors();
-					  });
-	       }, 3000);
+   setTimeout(function() {
+     self._log.info("Timeout done, starting Weave service.\n");
+     Weave.Service.onStartup();
+     self.showLoginErrors();
+   }, 3000);
 
 }
 FennecWeaveGlue.prototype = {
