@@ -11,7 +11,6 @@ Components.utils.import("resource://weave/log4moz.js", {});
 
 Components.utils.import("resource://weave/constants.js", {});
 Components.utils.import("resource://weave/util.js", {});
-Components.utils.import("resource://weave/async.js", {});
 Components.utils.import("resource://weave/auth.js", {});
 Components.utils.import("resource://weave/identity.js", {});
 Components.utils.import("resource://weave/stores.js", {});
@@ -24,7 +23,6 @@ Components.utils.import("resource://weave/base_records/collection.js", {});
 Components.utils.import("resource://weave/type_records/bookmark.js", {});
 Components.utils.import("resource://weave/type_records/history.js", {});
 Components.utils.import("resource://weave/type_records/clientData.js", {});
-Components.utils.import("resource://weave/wrap.js", {});
 Components.utils.import("resource://weave/engines.js", {});
 Components.utils.import("resource://weave/engines/bookmarks.js", {});
 Components.utils.import("resource://weave/engines/clientData.js", {});
