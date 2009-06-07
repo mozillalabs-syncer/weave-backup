@@ -94,10 +94,10 @@ let WeaveStatus = {
     try {
       // XXX Should we set a timeout to cancel sync if it takes too long?
       if(Weave.Service.isLoggedIn && !Weave.Service.isQuitting) {
-        setTimeout(function() Weave.Service.sync(null, true), 0);
+        setTimeout(function() Weave.Service.sync(true), 0);
       } else if(Weave.Service.isLoggedIn && Weave.Service.isQuitting &&
                 Weave.Utils.prefs.getBoolPref("syncOnQuit.enabled")) {
-        setTimeout(function() Weave.Service.sync(null, true), 0);
+        setTimeout(function() Weave.Service.sync(true), 0);
       } else {
         this._log.info("Skipping modal sync");
         window.close();
