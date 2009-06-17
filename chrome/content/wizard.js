@@ -522,7 +522,7 @@ WeaveWiz = {
   //  Checks that password and passphrase reentry fields are the same, and that password
   //  and passphrase are different values.
   checkAccountInput: function WeaveWiz_checkAccountInput(field) {
-    WeaveWiz._log.debug("Checking account input");
+    WeaveWiz._log.debug("Checking account input for " + field);
 
     let username = $('username-create-field').value;
     let password1 = $('password-create-field').value;
@@ -541,6 +541,17 @@ WeaveWiz = {
       if (password1 != password2)  {
         $('password-match-error').value =
           $('strings').getString("passwordsUnmatched.label");
+        $('password-match-error').style.color = ERROR_COLOR;
+        $('weave-setup-wizard').canAdvance = false;
+        WeaveWiz._passwordVerified = false;
+        return false;
+      }
+
+      // check that the username and password are not the same
+      WeaveWiz._log.debug("Checking username != password: " + username + " :: " + password1);
+      if (password1 == username) {
+        $('password-match-error').value =
+          $('strings').getString("samePasswordAndUsername.label");
         $('password-match-error').style.color = ERROR_COLOR;
         $('weave-setup-wizard').canAdvance = false;
         WeaveWiz._passwordVerified = false;
