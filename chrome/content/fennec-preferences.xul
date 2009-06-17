@@ -9,7 +9,7 @@
     <command id="cmd_weave_prefs" name="&fennecOpenPrefsCmd.label;" 
 	     oncommand="gFennecWeaveGlue.openWeavePane();"/>
   </commandset>
-  <scrollbox id="pref-list">
+  <richlistbox id="prefs-list">
     <richpref title="&fennecPrefsHeader.title;" type="button"
 	      insertafter="plugins.enabled">
       <label value="&fennecPrefsHeader.description;"
@@ -17,7 +17,7 @@
       <button label="&fennecOpenPrefsButton.label;"
 	      command="cmd_weave_prefs" flex="1"/>
     </richpref>
-  </scrollbox>
+  </richlistbox>
 
   <deck id="panel-items">
     <vbox id="weave-detail-connect-pane" flex="1">
