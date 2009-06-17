@@ -10,10 +10,10 @@
 	     oncommand="gFennecWeaveGlue.openWeavePane();"/>
   </commandset>
   <richlistbox id="prefs-list">
-    <richpref title="&fennecPrefsHeader.title;" type="button"
-	      insertafter="plugins.enabled">
-      <label value="&fennecPrefsHeader.description;"
-	     id="fennec-weave-quick-status" crop="right"/>
+    <richpref id="fennec-weave-quick-status" type="button"
+              title="&fennecPrefsHeader.title;"
+              desc="&fennecPrefsHeader.description;"
+              insertafter="plugins.enabled">
       <button label="&fennecOpenPrefsButton.label;"
 	      command="cmd_weave_prefs" flex="1"/>
     </richpref>
@@ -95,8 +95,9 @@
 		      title="&cookiesCheckbox.label;" type="disabled">
 	      &fennecPrefs.notImplemented.label;
 	    </richpref>
-	    <richpref title="&fennecPrefs.weaveUserAccount.label;" type="button">
-	      <label id="username-label" value="&fennecPrefs.youAreUser.label;"/>
+            <richpref id="username-status" type="button"
+                      title="&fennecPrefs.weaveUserAccount.label;"
+                      desc="&fennecPrefs.youAreUser.label;">
 	      <button label="&fennecPrefs.changeUser.label;" id="change-account-button"
 		      oncommand = "gFennecWeaveGlue.openConnectPane();"/>
 	    </richpref>
