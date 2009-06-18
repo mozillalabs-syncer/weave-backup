@@ -16,6 +16,14 @@ richlistitem[type="remotetab"] {
     padding-bottom: 5px;
 }
 
+#retrievetab-button {
+  list-style-image: url("chrome://weave/skin/weave-default-64.png");
+}
+
+#retrievetab-button:hover:active {
+  list-style-image: url("chrome://weave/skin/weave-active-64.png");
+}
+
 #remote-tabs-richlist {
     margin-top: 5px;
     margin-left: 0px;
