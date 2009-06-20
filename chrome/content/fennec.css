@@ -1,7 +1,3 @@
-richpref[type="disabled"] {
-    -moz-binding: url("chrome://weave/content/richpref.xml#richpref-disabled");
-}
-
 #synced-tabs-panel {
     background: rgb(87, 87, 87);
 }

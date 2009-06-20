@@ -91,8 +91,8 @@
 	    </richpref>
 	  </row>
 	  <row>
-	    <richpref pref="extensions.weave.engine.cookies" 
-		      title="&cookiesCheckbox.label;" type="disabled">
+	    <richpref pref="extensions.weave.engine.cookies" disabled="true"
+		      title="&cookiesCheckbox.label;" type="bool">
 	      &fennecPrefs.notImplemented.label;
 	    </richpref>
             <richpref id="username-status" type="button"
@@ -134,15 +134,15 @@
 	    </richpref>
 	  </row>
 	  <row>
-	    <richpref pref="extensions.weave.engine.forms" 
-		      title="&formsCheckbox.label;" type="disabled">
+	    <richpref pref="extensions.weave.engine.forms" disabled="true"
+		      title="&formsCheckbox.label;" type="bool">
 	      &fennecPrefs.notImplemented.label;
 	    </richpref>
 	    <box/>
 	  </row>
 	  <row>
-	    <richpref pref="extensions.weave.engine.input"
-		      title="&inputCheckbox.label;" type="disabled">
+	    <richpref pref="extensions.weave.engine.input" disabled="true"
+		      title="&inputCheckbox.label;" type="bool">
 	      &fennecPrefs.notImplemented.label;
 	    </richpref>
 	    <box/>
