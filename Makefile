@@ -54,11 +54,11 @@ ifeq ($(sdkdir),)
   $(error)
 endif
 
-weave_version := 0.3.2
+weave_version := 0.3.3
 
 ifeq ($(release_build),)
   xpi_type := "dev"
-  update_url := https://people.mozilla.com/~cbeard/sync/dist/update-dev.rdf
+  update_url := https://people.mozilla.com/~cbeard/weave/dist/update-dev.rdf
 else
   xpi_type := "rel"
   update_url := 
