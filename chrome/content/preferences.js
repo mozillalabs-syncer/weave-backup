@@ -8,6 +8,12 @@ function WeavePrefs() {
   Observers.add("weave:service:sync:start", this._onSyncStart, this);
   Observers.add("weave:service:sync:finish", this._onSync, this);
   Weave.Utils.prefs.addObserver("", this, false);
+
+  window.addEventListener("unload", Weave.Utils.bind2(this, function() {
+    Observers.remove("weave:service:sync:start", this._onSyncStart, this);
+    Observers.remove("weave:service:sync:finish", this._onSync, this);
+    Weave.Utils.prefs.removeObserver("", this);
+  }), false);
 }
 WeavePrefs.prototype = {
   get _stringBundle() {
