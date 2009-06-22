@@ -81,7 +81,13 @@ let WeaveStatus = {
     }
   },
 
-  onUnload: function WeaveStatus_onUnload() {},
+  onUnload: function WeaveStatus_onUnload() {
+    Observers.remove("weave:service:sync:start", this.onSyncStart, this);
+    Observers.remove("weave:service:sync:finish", this.onSyncFinish, this);
+    Observers.remove("weave:service:sync:error", this.onSyncError, this);
+    Observers.remove("weave:engine:sync:start", this.onEngineStart, this);
+    Observers.remove("weave:engine:sync:status", this.onEngineStatus, this);
+  },
 
   doCancel: function WeaveStatus_doCancel() {
     this._statusText.value = this._stringBundle.getString("status.cancel");
