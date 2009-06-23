@@ -158,9 +158,7 @@
               <rows>
                 <row align="center">
                   <label value="&instanceName.label;" control="sync-instanceName-field"/>
-                  <textbox id="sync-instanceName-field"
-                           class="padded" width="100%" flex="1"
-                           type="timed" timeout="600"
+                  <textbox id="sync-instanceName-field" class="padded"
                            preference="extensions.weave.client.name"/>
                   <menulist preference="extensions.weave.client.type">
                     <menupopup>
