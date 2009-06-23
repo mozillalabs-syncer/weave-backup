@@ -48,15 +48,22 @@ if (typeof Cr == "undefined")
 function WeaveWindow() {
   this._log = Log4Moz.repository.getLogger("Window");
 
-  Observers.add("weave:service:sync:start", this.onSyncStart, this);
-  Observers.add("weave:service:sync:finish", this.onSyncFinish, this);
-  Observers.add("weave:service:sync:error", this.onSyncError, this);
-  Observers.add("weave:service:login:start", this.onLoginStart, this);
-  Observers.add("weave:service:login:finish", this.onLoginFinish, this);
-  Observers.add("weave:service:login:error", this.onLoginError, this);
-  Observers.add("weave:service:logout:finish", this.onLogout, this);
-  Observers.add("weave:notification:added", this.onNotificationAdded, this);
-  Observers.add("weave:notification:removed", this.onNotificationRemoved, this);
+  let obs = [["weave:service:sync:start", "onSyncStart"],
+    ["weave:service:sync:finish", "onSyncFinish"],
+    ["weave:service:sync:error", "onSyncError"],
+    ["weave:service:login:start", "onLoginStart"],
+    ["weave:service:login:finish", "onLoginFinish"],
+    ["weave:service:login:error", "onLoginError"],
+    ["weave:service:logout:finish", "onLogout"],
+    ["weave:notification:added", "onNotificationAdded"],
+    ["weave:notification:removed", "onNotificationRemoved"]];
+
+  // Add the observers now and remove them on unload
+  let weaveWin = this;
+  let addRem = function(add) obs.forEach(function([topic, func])
+    Observers[add ? "add" : "remove"](topic, weaveWin[func], weaveWin));
+  addRem(true);
+  window.addEventListener("unload", function() addRem(false), false);
 
   if (Weave.Svc.Prefs.get("ui.syncnow"))
     document.getElementById("sync-syncnowitem").setAttribute("hidden", false);
