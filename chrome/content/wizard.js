@@ -548,6 +548,16 @@ WeaveWiz = {
         return false;
       }
 
+      // check that the username and password are not the same
+      if (password1 == username) {
+        $('password-match-error').value =
+          $('strings').getString("samePasswordAndUsername.label");
+        $('password-match-error').style.color = ERROR_COLOR;
+        $('weave-setup-wizard').canAdvance = false;
+        WeaveWiz._passwordVerified = false;
+        return false;
+      }
+
       WeaveWiz._passwordVerified = true;
       $('password-match-error').value = "";
 

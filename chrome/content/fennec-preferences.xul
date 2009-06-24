@@ -9,15 +9,15 @@
     <command id="cmd_weave_prefs" name="&fennecOpenPrefsCmd.label;" 
 	     oncommand="gFennecWeaveGlue.openWeavePane();"/>
   </commandset>
-  <scrollbox id="pref-list">
-    <richpref title="&fennecPrefsHeader.title;" type="button"
-	      insertafter="plugins.enabled">
-      <label value="&fennecPrefsHeader.description;"
-	     id="fennec-weave-quick-status" crop="right"/>
+  <richlistbox id="prefs-list">
+    <richpref id="fennec-weave-quick-status" type="button"
+              title="&fennecPrefsHeader.title;"
+              desc="&fennecPrefsHeader.description;"
+              insertafter="plugins.enabled">
       <button label="&fennecOpenPrefsButton.label;"
 	      command="cmd_weave_prefs" flex="1"/>
     </richpref>
-  </scrollbox>
+  </richlistbox>
 
   <deck id="panel-items">
     <vbox id="weave-detail-connect-pane" flex="1">
@@ -91,12 +91,13 @@
 	    </richpref>
 	  </row>
 	  <row>
-	    <richpref pref="extensions.weave.engine.cookies" 
-		      title="&cookiesCheckbox.label;" type="disabled">
+	    <richpref pref="extensions.weave.engine.cookies" disabled="true"
+		      title="&cookiesCheckbox.label;" type="bool">
 	      &fennecPrefs.notImplemented.label;
 	    </richpref>
-	    <richpref title="&fennecPrefs.weaveUserAccount.label;" type="button">
-	      <label id="username-label" value="&fennecPrefs.youAreUser.label;"/>
+            <richpref id="username-status" type="button"
+                      title="&fennecPrefs.weaveUserAccount.label;"
+                      desc="&fennecPrefs.youAreUser.label;">
 	      <button label="&fennecPrefs.changeUser.label;" id="change-account-button"
 		      oncommand = "gFennecWeaveGlue.openConnectPane();"/>
 	    </richpref>
@@ -133,15 +134,15 @@
 	    </richpref>
 	  </row>
 	  <row>
-	    <richpref pref="extensions.weave.engine.forms" 
-		      title="&formsCheckbox.label;" type="disabled">
+	    <richpref pref="extensions.weave.engine.forms" disabled="true"
+		      title="&formsCheckbox.label;" type="bool">
 	      &fennecPrefs.notImplemented.label;
 	    </richpref>
 	    <box/>
 	  </row>
 	  <row>
-	    <richpref pref="extensions.weave.engine.input"
-		      title="&inputCheckbox.label;" type="disabled">
+	    <richpref pref="extensions.weave.engine.input" disabled="true"
+		      title="&inputCheckbox.label;" type="bool">
 	      &fennecPrefs.notImplemented.label;
 	    </richpref>
 	    <box/>

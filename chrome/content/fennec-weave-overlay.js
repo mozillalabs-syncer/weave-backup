@@ -268,14 +268,11 @@ FennecWeaveGlue.prototype = {
     } else {
       theButton.label = this._getString("fennec.turn.weave.on");
     }
-    var usernameLabel =  document.getElementById("username-label");
-    if (this._username) {
-      usernameLabel.value = this._getFormattedString("fennec.username.is",
-                                                     [this._username]);
-    } else {
-      usernameLabel.value = this._getString("fennec.no.username");
-      // can't happen?
-    }
+
+    let status = document.getElementById("username-status");
+    if (status && this._username)
+      status.setAttribute("desc", this._getFormattedString("fennec.username.is",
+        [this._username]));
   },
 
   openWeavePane: function FennecWeaveGlue__openWeavePane() {
@@ -401,7 +398,7 @@ FennecWeaveGlue.prototype = {
     }
     var elem = document.getElementById("fennec-weave-quick-status");
     if (elem) {
-      elem.value = text;
+      elem.setAttribute("desc", text);
     }
     var elem2 = document.getElementById("fennec-weave-full-status");
     if (elem2) {
