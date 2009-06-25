@@ -217,45 +217,22 @@ FennecWeaveGlue.prototype = {
                              [subject, this._lastRunningEngine]);
   },
 
-  showHidePasswordFields: function FennecWeaveGlue__showHidePassFields() {
-    var passwordField = document.getElementById("password-input");
-    var passphraseField = document.getElementById("passphrase-input");
-    var lockIcon = document.getElementById("hide-password-button");
-
-    this._passwordsHidden = !this._passwordsHidden;
-    if (this._passwordsHidden) {
-      passwordField.type = "password";
-      passphraseField.type = "password";
-      lockIcon.src="chrome://weave/skin/lock-closed.png";
-    } else {
-      passwordField.type = "";
-      passphraseField.type = "";
-      lockIcon.src="chrome://weave/skin/lock-open.png";
-    }
-  },
-
   openConnectPane: function FennecWeaveGlue__openConnectPane() {
     var password = Weave.Service.password;
     var passphrase = Weave.Service.passphrase;
 
     BrowserUI.switchPane("weave-detail-connect-pane");
-    if (this._username) {
+    if (this._username)
       document.getElementById("username-input").value = this._username;
-    } else {
-      document.getElementById("username-input").value =
-        this._getString("fennec.username.here");
-    }
     if (password) {
-      document.getElementById("password-input").value = password;
-    } else {
-      document.getElementById("password-input").value =
-        this._getString("fennec.password.here");
+      let input = document.getElementById("password-input");
+      input.value = password;
+      input.setAttribute("type", "password");
     }
     if (passphrase) {
-      document.getElementById("passphrase-input").value = passphrase;
-    } else {
-      document.getElementById("passphrase-input").value =
-        this._getString("fennec.passphrase.here");
+      let input = document.getElementById("passphrase-input");
+      input.value = passphrase;
+      input.setAttribute("type", "password");
     }
   },
 
@@ -366,12 +343,6 @@ FennecWeaveGlue.prototype = {
 			     }
 			   });
     }
-  },
-
-  selectField: function FennecWeaveGlue__selectField(id) {
-    var field = document.getElementById(id);
-    field.focus();
-    field.select();
   },
 
   showLoginErrors: function FennecWeaveGlue__showLoginErrors() {

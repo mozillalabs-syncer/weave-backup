@@ -56,11 +56,14 @@ richlistitem[type="remotetab"] {
 }
 
 #weave-detail-prefs-pane button,
-#weave-detail-prefs-pane textbox {
+#weave-detail-prefs-pane textbox,
+#weave-detail-connect-pane button,
+#weave-detail-connect-pane textbox {
     width: 16em;
 }
 
-#weave-detail-prefs-pane textbox {
+#weave-detail-prefs-pane textbox,
+#weave-detail-connect-pane textbox {
     font-size: 1em !important;
     padding: .3em 0;
 }

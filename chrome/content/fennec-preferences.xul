@@ -20,50 +20,25 @@
   </richlistbox>
 
   <deck id="panel-items">
-    <vbox id="weave-detail-connect-pane" flex="1">
-      <vbox class="prefsection">
-	<label value="&signIntoAccount.description;"
-	       id="fennec-weave-login-status"/>
-      </vbox>
-
-      <grid>
-	<columns>
-	  <column flex="1"/>
-	  <column flex="1"/>
-	  <column flex="0"/>
-	</columns>
-	<rows>
-	  <row>
-	    <label value="&extensions.weave.username.title;"/>
-	    <textbox class="embiggened" id="username-input" 
-		     onclick="gFennecWeaveGlue.selectField('username-input');"/>
-	    <box/>
-	  </row>
-	  <row>
-	    <label value="&extensions.weave.password.title;"/>
-	    <textbox class="embiggened" id="password-input" 
-		     onclick="gFennecWeaveGlue.selectField('password-input');"/>
-	    <image src="chrome://weave/skin/lock-open.png"
-		   id="hide-password-button" 
-		   onclick="gFennecWeaveGlue.showHidePasswordFields();"/>
-	  </row>
-	  <row>
-	    <label value="&extensions.weave.passphrase.title;"/>
-	    <box/>
-	    <box/>
-	  </row>
-	  
-	  <textbox size="48" class="embiggened" id="passphrase-input"
-		   onclick="gFennecWeaveGlue.selectField('passphrase-input');"/>
-	  <row>
-	    <box/>
-	    <button label="&signInButton.label;"
-		    oncommand="gFennecWeaveGlue.submitConnectForm('fennec-weave-login-status');"/>
-	    <box/>
-	  </row>
-	</rows>
-      </grid>
-    </vbox>
+    <richlistbox id="weave-detail-connect-pane">
+      <hbox class="prefbox">
+        <label class="preftitle" value="&extensions.weave.username.title;" flex="1"/>
+        <textbox id="username-input"/>
+      </hbox>
+      <hbox class="prefbox">
+        <label class="preftitle" value="&extensions.weave.password.title;" flex="1"/>
+        <textbox id="password-input"/>
+      </hbox>
+      <hbox class="prefbox">
+        <label class="preftitle" value="&extensions.weave.passphrase.title;" flex="1"/>
+        <textbox id="passphrase-input"/>
+      </hbox>
+      <richpref type="button">
+        <label class="preftitle" id="fennec-weave-login-status" crop="center" flex="1"/>
+        <button label="&signInButton.label;"
+                oncommand="gFennecWeaveGlue.submitConnectForm('fennec-weave-login-status');"/>
+      </richpref>
+    </richlistbox>
 
     <richlistbox id="weave-detail-prefs-pane">
       <richpref id="fennec-weave-full-status" type="button">
