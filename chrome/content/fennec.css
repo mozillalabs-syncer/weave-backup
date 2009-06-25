@@ -54,3 +54,13 @@ richlistitem[type="remotetab"] {
     width: 32px;
     height: 32px;
 }
+
+#weave-detail-prefs-pane button,
+#weave-detail-prefs-pane textbox {
+    width: 16em;
+}
+
+#weave-detail-prefs-pane textbox {
+    font-size: 1em !important;
+    padding: .3em 0;
+}

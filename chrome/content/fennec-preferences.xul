@@ -65,92 +65,59 @@
       </grid>
     </vbox>
 
-    <vbox id="weave-detail-prefs-pane" flex="1">
-      <grid>
-	<columns>
-	  <column flex="1"/>
-	  <column flex="1"/>
-	</columns>
-	<rows>
-	  <row>
-	    <vbox class="prefsection">
-	      <label value="&fennecPrefsHeader.status.label;"/>
-	    </vbox>
-	    <vbox class="prefsection">
-	      <label value="" id="fennec-weave-full-status"/>
-	    </vbox>
-	  </row>
-	  <row>
-	    <richpref pref="extensions.weave.engine.bookmarks" 
-		      title="&bookmarksCheckbox.label;" type="bool">
-	      &bookmarksCheckbox.label;
-	    </richpref>
-	    <richpref title="" type="button">
-	      <button label="&fennecPrefs.turnWeaveOff.label;" id="weave-on-off-button" 
-		  oncommand="gFennecWeaveGlue.toggleWeaveOnOff();"/>
-	    </richpref>
-	  </row>
-	  <row>
-	    <richpref pref="extensions.weave.engine.cookies" disabled="true"
-		      title="&cookiesCheckbox.label;" type="bool">
-	      &fennecPrefs.notImplemented.label;
-	    </richpref>
-            <richpref id="username-status" type="button"
-                      title="&fennecPrefs.weaveUserAccount.label;"
-                      desc="&fennecPrefs.youAreUser.label;">
-	      <button label="&fennecPrefs.changeUser.label;" id="change-account-button"
-		      oncommand = "gFennecWeaveGlue.openConnectPane();"/>
-	    </richpref>
-	  </row>
-	  <row>
-	    <richpref pref="extensions.weave.engine.history"
-		      title="&historyCheckbox.label;" type="bool">
-	      &historyCheckbox.label;
-	    </richpref>
-	    <richpref pref="extensions.weave.serverURL"
-		      title="&extensions.weave.serverURL.title;" type="string">
-	      &extensions.weave.serverURL.description;
-	    </richpref>
-	  </row>
-	  <row>
-	    <richpref pref="extensions.weave.engine.tabs" 
-		      title="&tabsCheckbox.label;" type="bool">
-	      &tabsCheckbox.label;
-	    </richpref>
-	    <richpref pref="extensions.weave.client.name"
-		      title="&extensions.weave.client.name.title;" type="string">
-	      &extensions.weave.client.name.description;
-	    </richpref>
-	  </row>
-	  <row>
-	    <richpref pref="extensions.weave.engine.passwords" 
-		      title="&passwordsCheckbox.label;" type="bool">
-	      &passwordsCheckbox.label;
-	    </richpref>
-	    <richpref title="&syncNowButton.label;" type="button">
-	      &fennecPrefs.debug.label;
-	      <button id="sync-now-button" label="&syncNowButton.label;"
-                      oncommand="gFennecWeaveGlue.syncNow();"/>
-	    </richpref>
-	  </row>
-	  <row>
-	    <richpref pref="extensions.weave.engine.forms" disabled="true"
-		      title="&formsCheckbox.label;" type="bool">
-	      &fennecPrefs.notImplemented.label;
-	    </richpref>
-	    <box/>
-	  </row>
-	  <row>
-	    <richpref pref="extensions.weave.engine.input" disabled="true"
-		      title="&inputCheckbox.label;" type="bool">
-	      &fennecPrefs.notImplemented.label;
-	    </richpref>
-	    <box/>
-	  </row>
-	</rows>
-      </grid>
-
-    </vbox>
+    <richlistbox id="weave-detail-prefs-pane">
+      <richpref id="fennec-weave-full-status" type="button">
+        <button label="&fennecPrefs.turnWeaveOff.label;" id="weave-on-off-button"
+                oncommand="gFennecWeaveGlue.toggleWeaveOnOff();"/>
+      </richpref>
+      <richpref id="username-status" type="button"
+                title="&fennecPrefs.weaveUserAccount.label;"
+                desc="&fennecPrefs.youAreUser.label;">
+        <button label="&fennecPrefs.changeUser.label;" id="change-account-button"
+                oncommand = "gFennecWeaveGlue.openConnectPane();"/>
+      </richpref>
+      <richpref title="&syncNowButton.label;" type="button">
+        &fennecPrefs.debug.label;
+        <button id="sync-now-button" label="&syncNowButton.label;"
+                oncommand="gFennecWeaveGlue.syncNow();"/>
+      </richpref>
+      <richpref pref="extensions.weave.serverURL" type="string"
+                title="&extensions.weave.serverURL.title;">
+        &extensions.weave.serverURL.description;
+      </richpref>
+      <richpref pref="extensions.weave.client.name" type="string"
+                title="&extensions.weave.client.name.title;">
+        &extensions.weave.client.name.description;
+      </richpref>
+      <richpref pref="extensions.weave.engine.bookmarks" type="bool"
+                title="&bookmarksCheckbox.label;">
+        &bookmarksCheckbox.label;
+      </richpref>
+      <richpref pref="extensions.weave.engine.cookies" type="bool"
+                title="&cookiesCheckbox.label;" disabled="true">
+        &fennecPrefs.notImplemented.label;
+      </richpref>
+      <richpref pref="extensions.weave.engine.history" type="bool"
+                title="&historyCheckbox.label;">
+        &historyCheckbox.label;
+      </richpref>
+      <richpref pref="extensions.weave.engine.tabs" type="bool"
+                title="&tabsCheckbox.label;">
+        &tabsCheckbox.label;
+      </richpref>
+      <richpref pref="extensions.weave.engine.passwords" type="bool"
+                title="&passwordsCheckbox.label;">
+        &passwordsCheckbox.label;
+      </richpref>
+      <richpref pref="extensions.weave.engine.forms" type="bool"
+                title="&formsCheckbox.label;" disabled="true">
+        &fennecPrefs.notImplemented.label;
+      </richpref>
+      <richpref pref="extensions.weave.engine.input" type="bool"
+                title="&inputCheckbox.label;" disabled="true">
+        &fennecPrefs.notImplemented.label;
+      </richpref>
+    </richlistbox>
 
   </deck>
 </overlay>
