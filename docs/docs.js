@@ -1,4 +1,4 @@
-/* ***** BEGIN LICENSE BLOCK *****
+/* ======* BEGIN LICENSE BLOCK ======*
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
  * The contents of this file are subject to the Mozilla Public License Version
@@ -34,7 +34,7 @@
  * the provisions above, a recipient may use your version of this file under
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
- * ***** END LICENSE BLOCK ***** */
+ * ======* END LICENSE BLOCK ======* */
 
 // = App =
 //
@@ -44,15 +44,14 @@
 var App = {
 };
 
-// ** {{{ App.trim() }}} **
-//
-// Returns {{{str}}} without whitespace at the beginning and the end.
-
+// FIXME: use jQuery instead.
 App.trim = function trim(str) {
   return str.replace(/^\s+|\s+$/g,"");
 };
 
-// ** {{{ App.processors }}} **
+// == Page processing ==
+
+// === {{{ App.processors }}} ===
 //
 // An array of user-defined processor functions.  They should take one
 // argument, the DOM node containing the documentation.  User-defined
@@ -60,9 +59,7 @@ App.trim = function trim(str) {
 
 App.processors = [];
 
-App.menuItems = {};   // Has a {label, urlOrCallback} dict for each keyword.
-
-// ** {{{ App.processCode() }}} **
+// === {{{ App.processCode() }}} ===
 //
 // Splits {{{code}}} in documented blocks and puts them in {{{div}}}.
 // The used structure for each block is:
@@ -94,15 +91,15 @@ App.processCode = function processCode(code, div) {
     function(lineNum) {
       var line = this;
       var isCode = true;
-      var isComment = (App.trim(line).indexOf("//") == 0);
+      var isComment = (App.trim(line).indexOf("//") === 0);
       if (isComment) {
         var startIndex = line.indexOf("//");
         var text = App.trim(line.slice(startIndex + 3));
-        if (lineNum == lastCommentLine + 1) {
+        if (lineNum === lastCommentLine + 1) {
           blockText += text + "\n";
           lastCommentLine += 1;
           isCode = false;
-        } else if (text.charAt(0) == "=" || text.charAt(0) == "*") {
+        } else if (text.charAt(0) === "=" || text.charAt(0) === "*") {
           maybeAppendBlock();
           firstCommentLine = lineNum;
           lastCommentLine = lineNum;
@@ -158,7 +155,52 @@ App.processCode = function processCode(code, div) {
     });
 };
 
-// ** {{{ App.addMenuItem() }}} **
+// === {{{ App.updateToC() }}} ===
+
+App.updateToC = function updateToC() {
+  var headings = $("h2, h3");
+  var toc = "<p>On this page: <ol>";
+  var lastLevel = 1;
+
+  if (!headings)
+    $("#toc").html("");
+
+  jQuery.each(
+    headings,
+    function(i) {
+      var anchor = App.currentPage + "#" + i;
+      var level = headings[i].tagName.slice(1);
+
+      // FIXME: look for other ancestors too.
+      if ($(headings[i]).parent().css("display") == "none")
+	return;
+
+      while (level > lastLevel) {
+	toc += "<ol>";
+	lastLevel++;
+      }
+
+      while (level < lastLevel) {
+	toc += "</ol>";
+	lastLevel--;
+      }
+
+      toc += "<li><a href='#" + anchor + "'>"
+	+ jQuery.trim($(headings[i]).text()) + "</a>";
+
+      $(headings[i]).prepend("<a name='" + anchor + "'></a>");
+    });
+
+  toc += "</ol>";
+
+  $("#toc").html(toc);
+};
+
+// == Context menus ==
+
+App.menuItems = {};   // Has a {label, urlOrCallback} dict for each keyword.
+
+// === {{{ App.addMenuItem() }}} ===
 //
 // Adds a menu item to the {{{element}}} DOM node showing the {{{label}}}
 // text.  If {{{urlOrCallback}}} is an URL, choosing the item causes a new
@@ -187,7 +229,7 @@ App.addMenuItem = function addMenuItem(element, label, urlOrCallback) {
           function onOverOrOut() { $(this).toggleClass("selected"); }
           menuItem.mouseover(onOverOrOut);
           menuItem.mouseout(onOverOrOut);
-          if (typeof(urlOrCallback) == "string")
+          if (typeof(urlOrCallback) === "string")
             callback = function() {
               window.open(urlOrCallback);
             };
@@ -219,11 +261,13 @@ App.addMenuItem = function addMenuItem(element, label, urlOrCallback) {
   App.menuItems[text].push({ label: label, urlOrCallback: urlOrCallback });
 };
 
+// == Navigation ==
+
 App.currentPage = null;
 
 App.pages = {};
 
-// ** {{{ App.navigate() }}} **
+// === {{{ App.navigate() }}} ===
 //
 // Navigates to a different view if needed.  The appropriate view is
 // fetched from the URL hash.  If that is empty, the original page content
@@ -232,7 +276,7 @@ App.pages = {};
 App.navigate = function navigate() {
   var newPage;
   if (window.location.hash)
-    newPage = window.location.hash.slice(1);
+    newPage = window.location.hash.split("#")[1];
   else
     newPage = "overview";
 
@@ -246,8 +290,9 @@ App.navigate = function navigate() {
       App.pages[newPage] = newDiv;
       jQuery.get(newPage,
                  {},
-                 function(code) { 
-                   App.processCode(code, newDiv);                       
+                 function(code) {
+                   App.processCode(code, newDiv);
+		   App.updateToC();
                    prettyPrint();
                  },
                  "text");
@@ -257,7 +302,11 @@ App.navigate = function navigate() {
   }
 };
 
+// == Layout ==
+
 App.CHARS_PER_ROW = 80;
+
+// === {{{ App.initColumnSizes() }}} ===
 
 App.initColumnSizes = function initSizes() {
   // Get the width of a single monospaced character of code.
@@ -270,25 +319,30 @@ App.initColumnSizes = function initSizes() {
   // Dynamically determine the column widths and padding based on
   // the font size.
   var padding = App.charWidth * 2;
+  var docWidth = $(".documentation").width();
+  var magic = 28;  // FIXME: without magic, the layout currently breaks.
   App.columnCss = {width: App.columnWidth,
                    paddingLeft: padding,
                    paddingRight: padding};
-  $("#content").css({width: (App.columnWidth + padding*2) * 2});
-  $(".documentation").css(App.columnCss);
+  $("#content").css({width: App.columnWidth + padding*2 + docWidth + magic});
   $(".code").css(App.columnCss);
 };
 
-$(window).ready(   
-  function() {      
+// == Initialisation ==
+
+$(window).ready(
+  function() {
     App.pages["overview"] = $("#overview").get(0);
     App.initColumnSizes();
     window.setInterval(
       function() { App.navigate(); },
       100
     );
-    App.navigate();       
-      
-    // Get the selected text in a cross-browser fashion      
+    App.navigate();
+
+    // **** Add yellow highlighting to double-clicked text.
+
+    // Get the selected text in a cross-browser fashion
     function getSelectedText(){
       if(window.getSelection){
         return window.getSelection().toString();
@@ -298,9 +352,9 @@ $(window).ready(
         return document.selection.createRange().text;
       }
     }
-    
-    // Double clicking on a word, it will be yellow highlighted 
-    // in the documentation and code section 
+
+    // Double clicking on a word, it will be yellow highlighted
+    // in the documentation and code section
     $("#content").bind("dblclick", function () {
       var text = App.trim(getSelectedText());
       if (text) {
