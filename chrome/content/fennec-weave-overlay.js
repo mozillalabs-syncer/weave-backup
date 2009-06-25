@@ -419,10 +419,11 @@ FennecWeaveGlue.prototype = {
     } else {
       theButton.label = this._getString("fennec.logging-in");
       theButton.enabled = false;
-      this._turnWeaveOn( function() {
-			   theButton.enabled = true;
-			   theButton.label = this._getString("fennec.turn.weave.off");
-			 });
+      let off = this._getString("fennec.turn.weave.off");
+      this._turnWeaveOn(function() {
+        theButton.enabled = true;
+        theButton.label = off;
+      });
     }
   },
 
