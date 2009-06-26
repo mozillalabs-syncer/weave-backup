@@ -115,22 +115,23 @@ test: build
 	python scripts/makeloadertests.py
 	$(MAKE) -k -C tests/unit
 
+chrome_jar := chrome/sync.jar
 xpi_name := weave-$(weave_version)-$(xpi_type).xpi
-xpi_files := chrome/sync.jar defaults components modules platform \
+xpi_files := $(chrome_jar) defaults components modules platform \
              install.rdf chrome.manifest
 chrome_files := chrome/content/* chrome/skin/* chrome/locale/*
 
 # fixme: use explicit file list instead of glob?
-chrome/sync.jar: $(chrome_files)
-	cd chrome; zip -0 -ur sync.jar *; cd ..
+$(chrome_jar): $(chrome_files)
+	cd chrome; rm -f sync.jar; zip -0r sync.jar *; cd ..
 
-xpi: build chrome/sync.jar $(xpi_files)
-	zip -9 -ur $(xpi_name) $(xpi_files)
+xpi: build $(xpi_files)
+	rm -f $(xpi_name); zip -9r $(xpi_name) $(xpi_files)
 
 clean:
 	$(MAKE) -C src clean
 	$(MAKE) -C tests/unit clean
-	rm -f $(dotin_files) $(xpi_name)
+	rm -f $(dotin_files) $(chrome_jar) $(xpi_name)
 
 help:
 	@echo Targets:
