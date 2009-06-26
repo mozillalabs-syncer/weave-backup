@@ -57,10 +57,10 @@ endif
 weave_version := 0.3.3
 
 ifeq ($(release_build),)
-  xpi_type := "dev"
+  xpi_type := dev
   update_url := https://people.mozilla.com/~cbeard/weave/dist/update-dev.rdf
 else
-  xpi_type := "rel"
+  xpi_type := rel
   update_url := 
 endif
 
