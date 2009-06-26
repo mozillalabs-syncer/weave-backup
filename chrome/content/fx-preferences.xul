@@ -67,7 +67,7 @@
         <tab id="accountTab" label="&accountTab.label;" helpTopic="prefs-sync-account"/>
         <tab id="syncTab" label="&syncTab.label;" helpTopic="prefs-sync-sync"/>
         <tab id="clientsTab" label="&clientsTab.label;" helpTopic="prefs-sync-clients"/>
-        <tab id="serviceaddonsTab" label="&addonsTab.label;" helpTopic="prefs-sync-serviceaddons"/>
+        <!--<tab id="serviceaddonsTab" label="&addonsTab.label;" helpTopic="prefs-sync-serviceaddons"/>-->
         <tab id="advancedTab" label="&advancedTab.label;" helpTopic="prefs-advanced-advanced"/>
       </tabs>
 
@@ -182,12 +182,13 @@
           </groupbox>
         </tabpanel>
       
-        <!-- Add-ons -->
+        <!-- Add-ons
         <tabpanel id="serviceaddonsTab">
           <groupbox id="sync-addons-group" flex="1">
             <description>&addonsGroupbox.description;</description>
           </groupbox>
         </tabpanel>
+        -->
 
         <!-- Advanced -->
         <tabpanel id="advancedTab" orient="vertical">
