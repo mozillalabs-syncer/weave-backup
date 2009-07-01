@@ -112,7 +112,6 @@ build: subst
 	$(MAKE) -C src install
 
 test: build
-	python scripts/makeloadertests.py
 	$(MAKE) -k -C tests/unit
 
 chrome_jar := chrome/sync.jar
