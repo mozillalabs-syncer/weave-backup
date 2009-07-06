@@ -384,6 +384,17 @@ let gWeaveAuthenticator = {
   // Implementation
 
   _submitForm: function(form) {
+    // Calling the submit() action on a form doesn't seem to do everything
+    // that clicking the submit button does. We try simulating the click
+    // first, but if we don't find a button with type=submit, fallback 
+    // to calling the action.
+    for (let i = 0; i < form.elements.length; i++) {
+        if (form.elements[i].getAttribute('type') == 'submit') {
+            form.elements[i].click();
+            return;
+        }
+    }
+    
     // Strangely, if submission goes to a file: URL that doesn't exist,
     // this throws NS_ERROR_FILE_NOT_FOUND, so we catch and ignore that error
     // (not that we support form submission to file: URLs, so it probably
