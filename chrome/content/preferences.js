@@ -77,14 +77,17 @@ WeavePrefs.prototype = {
       return;
 
     Weave.Engines.getAll().forEach(function(engine) {
+      // Only show UI if the engine is functional
+      if (engine.enabled == null)
+        return;
+
       let item = document.createElement("richlistitem");
       let check = document.createElement("checkbox");
       item.appendChild(check);
       list.appendChild(item);
 
-      // Check the box if the engine is enabled; disable the engine if null
-      if ((check.checked = engine.enabled) == null)
-        check.disabled = true;
+      // Check the box if the engine is enabled
+      check.checked = engine.enabled;
 
       check.flex = 1;
       check.label = engine.displayName;
