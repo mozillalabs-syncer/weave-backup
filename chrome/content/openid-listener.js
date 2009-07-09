@@ -75,7 +75,12 @@ var gOpenIdMunger = {
     var theDoc = aEvent.originalTarget;
     let inputs = theDoc.getElementsByTagName("input");
     let i;
-    let weaveUsername = gOpenIdMunger._prefs.getCharPref("extensions.weave.username");
+
+    // Can't replace OpenID fields without a weave id
+    let weaveUsername = Weave.ID.get("WeaveID").username;
+    if (weaveUsername == "")
+      return;
+
     // Find text input fields for OpenID identifiers:
     for (i = 0; i < inputs.length; i++) {
       let elem = inputs.item(i);

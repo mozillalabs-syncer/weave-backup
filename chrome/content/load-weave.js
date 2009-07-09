@@ -1,3 +1,5 @@
+// = load-weave =
+//
 // These are here because of bug 408412.
 // Note: they are here depth-first so that it is *this* import() which
 // triggers the first exception, otherwise it'll be obscured (see the bug).
@@ -44,6 +46,8 @@ Components.utils.import("resource://weave/service.js", {});
 //Components.utils.import("resource://weave/xmpp/transportLayer.js", {});
 //Components.utils.import("resource://weave/xmpp/xmppClient.js", {});
 
+// = load-weave-actual =
+//
 // These are the only ones we *really* need in this file.
 // We import them into the global namespace because the symbols they export
 // are carefully named to minimize the risk of conflicts.

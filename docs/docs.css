@@ -1,0 +1,153 @@
+body {
+    font-family: palatino, palatino linotype, georgia, serif;
+    font-size: 10pt;
+    text-align: center;
+}
+
+#title {
+    font-size: 13pt;
+    text-align: center;
+    text-transform: lowercase;
+    font-variant: small-caps;
+    margin-bottom: 1em;
+}
+#title i {
+    font-size: 14pt;
+    font-variant: normal;
+    text-transform: none;
+}
+
+.popup-enabled {
+    cursor: pointer;
+    border-bottom: dotted 1px black;
+}
+
+.popup {
+    position: absolute;
+    z-index: 100;
+}
+
+.popup .item {
+    cursor: pointer;
+    font-family: helvetica neue, arial, sans-serif;
+    background-color: #f0f0f0;
+    color: black;
+    padding: 3px;
+    border: black dotted;
+    border-width: 1px 1px 0 1px;
+}
+
+.popup .selected {
+    background-color: black;
+    color: white;
+}
+
+.popup .bottom {
+    border-bottom: 1px black dotted;
+}
+
+#content {
+    text-align: left;
+    margin: 0 auto;
+}
+
+.documentation {
+    float: left;
+    line-height: 1.4em;
+    width: 24em !important;
+}
+
+.documentation h1, .documentation h2, .documentation h3 {
+    font-weight: normal;
+    line-height: 1.4em;
+}
+
+pre, code, .code, tt {
+    font-family: monaco, consolas, andale mono, monospace;
+}
+
+.documentation pre {
+    font-size: 6pt;
+    line-height: 1.4em;
+}
+
+.code {
+    float: left;
+    white-space: pre;
+    font-size: 9pt;
+    background-color: #f0f0f0;
+    margin: 0;
+}
+
+/*
+ * Add a small triangle to each code block, to make it easy to distinguish
+ * sections. The triangle is drawn usng Tantek Celik's CSS polygon hack.
+ */
+.code::before {
+    content: "";
+    display: block;
+    position: absolute;
+    margin-top: 1.4em;
+    margin-left: -2ex;
+    width: 0;
+    height: 0;
+    border: .6em solid transparent;
+    border-left-color: #bbbbbb;
+    border-right: 0;
+}
+
+.divider {
+    clear: both;
+    height: 0;
+    line-height: 0;
+}
+
+.intra-wiki {
+    color: black;
+    text-decoration: none;
+    border-bottom: solid 1px gray;
+}
+
+.highlight { 
+    background-color: yellow;
+}
+
+a {
+    color: black;
+    text-decoration: underline;
+}
+
+#toc {
+    padding: 16px;
+    margin-bottom: 7em;
+}
+#toc p {
+    float: left;
+    margin-right: 1ex;
+}
+#toc ol {
+    padding: 0;
+}
+#toc ol ol {
+    float: left;
+}
+#toc li {
+    clear: both;
+    display: block;
+    list-style: none;
+}
+#toc li a {
+    float: left;
+    font-style: normal;
+}
+#toc li li a {
+    float: none;
+    font-style: italic;
+}
+#toc li li {
+    clear: none;
+    float: left;
+    display: list-item;
+    list-style: square inside;
+    margin-left: 1ex;
+}
