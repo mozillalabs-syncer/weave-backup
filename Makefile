@@ -36,25 +36,11 @@
 #
 # ***** END LICENSE BLOCK *****
 
-xulrunner_bin ?= ${XULRUNNER_BIN}
-ifeq ($(xulrunner_bin),)
-  $(warning No 'xulrunner_bin' variable given)
-  $(warning It should point to the location of a XULRunner/Firefox executable)
-  $(warning For example: "make xulrunner_bin=/foo/bar/xulrunner")
-  $(warning Or set the XULRUNNER_BIN environment variable to point to it)
-  $(error)
-endif
+objdir=dist
+stage_dir=$(objdir)/stage
+xpi_dir=$(objdir)/xpi
 
-sdkdir ?= ${MOZSDKDIR}
-ifeq ($(sdkdir),)
-  $(warning No 'sdkdir' variable given)
-  $(warning It should point to the location of the Gecko SDK)
-  $(warning For example: "make sdkdir=/foo/bar/baz")
-  $(warning Or set the MOZSDKDIR environment variable to point to it)
-  $(error)
-endif
-
-weave_version := 0.4.0
+weave_version := 0.5pre2.newbuildsys
 
 ifeq ($(release_build),)
   xpi_type := dev
@@ -92,6 +78,12 @@ else
   jar=\# 
 endif
 
+ifeq ($(rebuild_crypto),)
+  crypto_build_target :=
+else
+	crypto_build_target := rebuild
+endif
+
 subst_names := weave_version buildid buildid_short update_url update_url_tag unpacked jar
 export $(subst_names)
 substitute  := perl -p -e 's/@([^@]+)@/defined $$ENV{$$1} ? $$ENV{$$1} : $$&/ge'
@@ -99,38 +91,30 @@ substitute  := perl -p -e 's/@([^@]+)@/defined $$ENV{$$1} ? $$ENV{$$1} : $$&/ge'
 dotin_files := $(shell find . -type f -name \*.in)
 dotin_files := $(dotin_files:.in=)
 
-all: test
+all: build
 
-.PHONY: build test xpi clean $(dotin_files) subst
-
-$(dotin_files): $(dotin_files:=.in)
-	$(substitute) $@.in > $@
-
-subst: $(dotin_files)
-
-build: subst
-	$(MAKE) -C src install
+.PHONY: setup chrome build test xpi clean
 
 test: build
 	$(MAKE) -k -C tests/unit
 
-chrome_jar := chrome/sync.jar
-xpi_name := weave-$(weave_version)-$(xpi_type).xpi
-xpi_files := $(chrome_jar) defaults components modules platform \
-             install.rdf chrome.manifest
-chrome_files := chrome/content/* chrome/skin/* chrome/locale/*
+setup:
+	mkdir -p $(objdir)
+	mkdir -p $(stage_dir)
+	mkdir -p $(xpi_dir)
 
-# fixme: use explicit file list instead of glob?
-$(chrome_jar): $(chrome_files)
-	cd chrome; rm -f sync.jar; zip -0r sync.jar *; cd ..
 
-xpi: build $(xpi_files)
-	rm -f $(xpi_name); zip -9r $(xpi_name) $(xpi_files)
+crypto: setup
+	$(MAKE) -C crypto $(crypto_build_target)
+
+chrome: setup
+	$(MAKE) -C source
+
+xpi: build $(xpi_files)  
+	rm -f $(xpi_dir)/$(xpi_name); zip -9r $(xpi_dir)/$(xpi_name) $(xpi_files)
 
 clean:
-	$(MAKE) -C src clean
-	$(MAKE) -C tests/unit clean
-	rm -f $(dotin_files) $(chrome_jar) $(xpi_name)
+	rm -rf $(objdir)
 
 help:
 	@echo Targets:

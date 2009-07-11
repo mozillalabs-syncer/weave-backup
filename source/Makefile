@@ -36,26 +36,77 @@
 #
 # ***** END LICENSE BLOCK *****
 
-stage_dir=../dist/stage
+destdir = ../dist/stage
 
-sdkdir ?= ${MOZSDKDIR}
-ifeq ($(sdkdir),)
-  $(warning No 'sdkdir' variable given)
-  $(warning It should point to the location of the Gecko SDK)
-  $(warning For example: "make sdkdir=/foo/bar/baz")
-  $(warning Or set the MOZSDKDIR environment variable to point to it)
+ifneq ($(release_build),)
+  xpi_type := dev
+  update_url := https://people.mozilla.com/~cbeard/weave/dist/update-dev.rdf
+else
+  xpi_type := rel
+  update_url := 
+endif
+
+ifeq ($(update_url),)
+  update_url_tag :=
+else
+  update_url_tag := <em:updateURL>$(update_url)</em:updateURL>
+endif
+
+buildid ?= ${WEAVE_BUILDID}
+buildid_short := $(buildid)
+ifeq ($(buildid),)
+  date    := $(shell date -u +%Y%m%d%H%M)
+  revid   := $(shell hg tip --template '{node|short}')
+  buildid := $(date)-$(revid)
+  buildid_short := $(date)
+endif
+ifeq ($(buildid),)
+  $(warning Could not determine build id)
+  $(warning Install hg or set WEAVE_BUILDID the checkout id)
   $(error)
 endif
 
+ifeq ($(MAKECMDGOALS),xpi)
+  unpacked =\# 
+  jar=
+else
+  unpacked=
+  jar=\# 
+endif
+
+subst_names := weave_version buildid buildid_short update_url update_url_tag unpacked jar
+export $(subst_names)
+substitute  := perl -p -e 's/@([^@]+)@/defined $$ENV{$$1} ? $$ENV{$$1} : $$&/ge'
+
+dotin_files := $(shell find . -type f -name \*.in)
+dotin_files := $(dotin_files:.in=)
+
 all: build
 
-.PHONY: build crypto rebuild_all
+.PHONY: chrome modules components $(dotin_files) subst
 
-crypto:
-	$(MAKE) -C src install
+chrome_jar := $(destdir)/sync.jar
+xpi_name := weave-$(weave_version)-$(xpi_type).xpi
+xpi_files := $(chrome_jar) defaults components modules platform \
+             install.rdf chrome.manifest
+chrome_files := chrome/content/* chrome/skin/* chrome/locale/*
 
-build: 
-	cp -R -v platform $(stage_dir)
-	cp -R -v components $(stage_dir)
+build: chrome modules components subst jar
 
-rebuild_all: crypto build
+chrome:
+	cp -R -v chrome $(destdir)
+
+modules:
+	cp -R -v modules $(destdir)
+
+components:
+	cp -R -v components $(destdir)
+
+$(dotin_files): $(dotin_files:=.in)
+	$(substitute) $@.in > $(destdir)/$@
+	rm -rf $(destdir)/$@.in
+
+subst: $(dotin_files)
+
+jar: 
+	cd $(destdir)/chrome;zip -0r sync.jar *
