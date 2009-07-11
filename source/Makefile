@@ -83,7 +83,7 @@ dotin_files := $(dotin_files:.in=)
 
 all: build
 
-.PHONY: chrome modules components $(dotin_files) subst
+.PHONY: chrome modules components defaults $(dotin_files) subst
 
 chrome_jar := $(destdir)/sync.jar
 xpi_name := weave-$(weave_version)-$(xpi_type).xpi
@@ -91,7 +91,7 @@ xpi_files := $(chrome_jar) defaults components modules platform \
              install.rdf chrome.manifest
 chrome_files := chrome/content/* chrome/skin/* chrome/locale/*
 
-build: chrome modules components subst jar
+build: chrome modules components defaults subst jar
 
 chrome:
 	cp -R -v chrome $(destdir)
@@ -102,11 +102,14 @@ modules:
 components:
 	cp -R -v components $(destdir)
 
+defaults:
+	cp -R -v defaults $(destdir)
+
 $(dotin_files): $(dotin_files:=.in)
 	$(substitute) $@.in > $(destdir)/$@
 	rm -rf $(destdir)/$@.in
 
 subst: $(dotin_files)
 
-jar: 
+jar: build
 	cd $(destdir)/chrome;zip -0r sync.jar *

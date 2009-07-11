@@ -81,7 +81,7 @@ endif
 ifeq ($(rebuild_crypto),)
   crypto_build_target :=
 else
-	crypto_build_target := rebuild
+	crypto_build_target := rebuild_all
 endif
 
 subst_names := weave_version buildid buildid_short update_url update_url_tag unpacked jar
@@ -93,7 +93,7 @@ dotin_files := $(dotin_files:.in=)
 
 all: build
 
-.PHONY: setup chrome build test xpi clean
+.PHONY: setup chrome build test xpi clean $(xpi_files)
 
 test: build
 	$(MAKE) -k -C tests/unit
@@ -103,15 +103,26 @@ setup:
 	mkdir -p $(stage_dir)
 	mkdir -p $(xpi_dir)
 
-
 crypto: setup
 	$(MAKE) -C crypto $(crypto_build_target)
 
 chrome: setup
 	$(MAKE) -C source
 
-xpi: build $(xpi_files)  
-	rm -f $(xpi_dir)/$(xpi_name); zip -9r $(xpi_dir)/$(xpi_name) $(xpi_files)
+build: crypto chrome
+
+xpi_name := weave-$(weave_version)-$(xpi_type).xpi
+xpi_files := chrome/sync.jar defaults components modules platform \
+             install.rdf chrome.manifest
+
+remove_xpi: build
+	rm -f $(xpi_dir)/$(xpi_name)
+
+$(xpi_files): build  
+	cd $(stage_dir);zip -9r $(xpi_name) $@
+
+xpi: remove_xpi $(xpi_files)
+	mv $(stage_dir)/$(xpi_name) $(xpi_dir)/$(xpi_name)
 
 clean:
 	rm -rf $(objdir)
