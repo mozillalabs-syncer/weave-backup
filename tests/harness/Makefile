@@ -47,12 +47,7 @@ ifeq ($(xulrunner_bin),)
 endif
 
 harnessdir = ../harness
-# profiledir needs to be an absolute path on Mac OS X (FIXME: file bug).
-profiledir = $(abspath ../profile)
-topsrcdir ?= ${TOPSRCDIR}
-native_topsrcdir ?= ${NATIVE_TOPSRCDIR}
 sys := $(shell uname -s)
-configure_profile ?=
 
 # OS detection
 
@@ -74,6 +69,9 @@ endif
 endif
 endif
 
+topsrcdir ?= ${TOPSRCDIR}
+native_topsrcdir ?= ${NATIVE_TOPSRCDIR}
+
 ifeq ($(topsrcdir),)
 topsrcdir = ../..
 endif
@@ -85,6 +83,12 @@ else
 native_topsrcdir = ../..
 endif
 endif
+
+configure_profile ?=
+testing_directory := $(topsrcdir)/test_files
+test_output_dir := $(testing_directory)/test_output
+# profiledir needs to be an absolute path on Mac OS X (FIXME: file bug).
+profiledir = $(abspath $(testing_directory)/profile)
 
 # NO_EM_RESTART prevents XULRunner from restarting when registering components.
 # XPCOM_DEBUG_BREAK="warn" prevents XULRunner from showing an alert dialog
@@ -138,6 +142,10 @@ all: $(tests:.js=)
 
 # fixme: hiding commands here means they can't be copy-and-pasted to run by hand
 $(tests:.js=): $(tests)
+# this will create testing_directory as well
+	@if [ ! -e "$(test_output_dir)" ]; then \
+	  mkdir -p $(test_output_dir); \
+	fi
 	@if [ ! -e "$(profiledir)" ]; then \
 	  mkdir $(profiledir); \
 	  $(xulrunner) 2> /dev/null 1>&2; \
@@ -146,11 +154,11 @@ $(tests:.js=): $(tests)
 	  sleep 5; \
 	fi
 	@if [ $(os) = Darwin ]; then \
-	  $(xulrunner_env) $(xulrunner) $(head) -f $(abspath $(@).js) $(tail) 2> $(@).log 1>&2; \
+	  $(xulrunner_env) $(xulrunner) $(head) -f $(abspath $(@).js) $(tail) 2> $(test_output_dir)/$(@).log 1>&2; \
 	else \
 	  $(xulrunner_env) $(xulrunner) $(head) -f $(@).js $(tail) 2> $(@).log 1>&2; \
 	fi
-	@if [ `grep -c '\*\*\* PASS' $(@).log` = 0 ]; then \
+	@if [ `grep -c '\*\*\* PASS' $(test_output_dir)/$(@).log` = 0 ]; then \
 	  echo $(echo_opts) "$(@):\tFAIL"; \
 	else \
 	  echo $(echo_opts) "$(@):\tPASS"; \
@@ -158,5 +166,4 @@ $(tests:.js=): $(tests)
 
 .PHONY: clean
 clean:
-	rm -rf $(profiledir)
-	rm -f test*.log
+	rm -rf $(testing_directory)
