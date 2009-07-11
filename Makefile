@@ -115,13 +115,9 @@ xpi_name := weave-$(weave_version)-$(xpi_type).xpi
 xpi_files := chrome/sync.jar defaults components modules platform \
              install.rdf chrome.manifest
 
-remove_xpi: build
+xpi: build
 	rm -f $(xpi_dir)/$(xpi_name)
-
-$(xpi_files): build  
-	cd $(stage_dir);zip -9r $(xpi_name) $@
-
-xpi: remove_xpi $(xpi_files)
+	cd $(stage_dir);zip -9r $(xpi_name) $(xpi_files)
 	mv $(stage_dir)/$(xpi_name) $(xpi_dir)/$(xpi_name)
 
 clean:

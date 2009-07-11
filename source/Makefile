@@ -81,7 +81,7 @@ substitute  := perl -p -e 's/@([^@]+)@/defined $$ENV{$$1} ? $$ENV{$$1} : $$&/ge'
 dotin_files := $(shell find . -type f -name \*.in)
 dotin_files := $(dotin_files:.in=)
 
-all: build
+all: build jar
 
 .PHONY: chrome modules components defaults $(dotin_files) subst
 
@@ -91,7 +91,7 @@ xpi_files := $(chrome_jar) defaults components modules platform \
              install.rdf chrome.manifest
 chrome_files := chrome/content/* chrome/skin/* chrome/locale/*
 
-build: chrome modules components defaults subst jar
+build: chrome modules components defaults subst
 
 chrome:
 	cp -R -v chrome $(destdir)
@@ -111,5 +111,5 @@ $(dotin_files): $(dotin_files:=.in)
 
 subst: $(dotin_files)
 
-jar: build
+jar:
 	cd $(destdir)/chrome;zip -0r sync.jar *
