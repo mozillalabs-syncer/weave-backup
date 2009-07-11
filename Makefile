@@ -122,6 +122,7 @@ xpi: build
 
 clean:
 	rm -rf $(objdir)
+	$(MAKE) -C tests/unit clean
 
 help:
 	@echo Targets:
