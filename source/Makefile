@@ -93,17 +93,8 @@ chrome_files := chrome/content/* chrome/skin/* chrome/locale/*
 
 build: chrome modules components defaults subst
 
-chrome:
-	cp -R -v chrome $(destdir)
-
-modules:
-	cp -R -v modules $(destdir)
-
-components:
-	cp -R -v components $(destdir)
-
-defaults:
-	cp -R -v defaults $(destdir)
+chrome modules components defaults:
+	cp -R -v $@ $(destdir)
 
 $(dotin_files): $(dotin_files:=.in)
 	$(substitute) $@.in > $(destdir)/$@
