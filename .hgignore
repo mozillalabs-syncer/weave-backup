@@ -1,3 +1,4 @@
+^dist/
 .*~
 ^chrome.manifest$
 chrome/sync.jar
