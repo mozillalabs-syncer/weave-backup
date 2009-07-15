@@ -20,7 +20,7 @@
 
   <menupopup id="goPopup">
     <menu id="sync-tabs-menu" class="menu-iconic"
-          insertafter="historyUndoMenu" label="&syncTabsMenu.label;"
+          insertafter="endHistorySeparator" label="&syncTabsMenu.label;"
           image="chrome://weave/skin/sync-16x16.png"
           oncommand="gFxWeaveGlue.onCommandTabsMenu(event);"
           onclick="checkForMiddleClick(this, event);">
