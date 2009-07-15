@@ -40,8 +40,22 @@ objdir=dist
 stage_dir=$(objdir)/stage
 xpi_dir=$(objdir)/xpi
 
+<<<<<<< local
 weave_version := 0.5pre2.newbuildsys
 storage_version := 0.5pre1
+=======
+sdkdir ?= ${MOZSDKDIR}
+ifeq ($(sdkdir),)
+  $(warning No 'sdkdir' variable given)
+  $(warning It should point to the location of the Gecko SDK)
+  $(warning For example: "make sdkdir=/foo/bar/baz")
+  $(warning Or set the MOZSDKDIR environment variable to point to it)
+  $(error)
+endif
+
+weave_version := 0.5pre2
+storage_version := 0.5pre2
+>>>>>>> other
 
 ifeq ($(release_build),)
   xpi_type := dev

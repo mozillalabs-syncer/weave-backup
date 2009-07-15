@@ -290,11 +290,10 @@ FennecWeaveGlue.prototype = {
     Weave.Service.password = passwordInput;
     Weave.Service.passphrase = passphraseInput;
     dump("Turning Weave on...\n");
+
     // redirect you to the full prefs page if login succeeds.
-    var self = this;
-    this._turnWeaveOn( function() {
-			 self.openPrefsPane();
-		       });
+    if (this._turnWeaveOn())
+      this.openPrefsPane();
   },
 
   _turnWeaveOff: function FennecWeaveGlue__turnWeaveOff() {
@@ -306,41 +305,25 @@ FennecWeaveGlue.prototype = {
     this.setWeaveStatusField("fennec.turned-off");
   },
 
-  _turnWeaveOn: function FennecWeaveGlue__turnWeaveOn( onSuccess ) {
-    // TODO there are times when this runs and nothing happens.  We get:
-    // Chrome.Window INFO Turning Weave on...
-    // and then nothing.  It hangs there displaying the "logging in" message.
-    // Clicking it off and back on again fixes it.
-    // I wonder if that's because Weave.Service.isLoggedIn is already true
-    // for some reason, and therefore the other stuff never runs??
-
-    // onSuccess is an optional callback function that gets called
-    // when login completes successfully.
+  _turnWeaveOn: function FennecWeaveGlue__turnWeaveOn() {
     this._log.info("Turning Weave on...");
     this._pfs.setBoolPref("extensions.weave.enabled", true);
-    var log = this._log;
 
     this.setWeaveStatusField("fennec.logging-in");
-    var self = this;
     if (!Weave.Service.isLoggedIn) {
       // Report on success or failure...
-      Weave.Service.login( function(success) {
-                             if (success) {
-			       self.setWeaveStatusField("fennec.logged-in");
-                               if (onSuccess) {
-                                 onSuccess();
-                               }
-                             } else {
-                               let err = Weave.Service.detailedStatus.sync;
-                               // TODO do localization based on constants
-                               // instead of using the bare error string
-                               if (err)
-				 self.setWeaveStatusField("fennec.login.error.detail",
-                                           [err]);
-			       else
-				 self.setWeaveStatusField("fennec.login.error");
-			     }
-			   });
+      if (Weave.Service.login()) {
+        this.setWeaveStatusField("fennec.logged-in");
+        return true;
+      }
+
+      let err = Weave.Service.detailedStatus.sync;
+      // TODO do localization based on constants instead of using the bare error
+      // string
+      if (err)
+        this.setWeaveStatusField("fennec.login.error.detail", [err]);
+      else
+        this.setWeaveStatusField("fennec.login.error");
     }
   },
 
@@ -389,11 +372,10 @@ FennecWeaveGlue.prototype = {
     } else {
       theButton.label = this._getString("fennec.logging-in");
       theButton.enabled = false;
-      let off = this._getString("fennec.turn.weave.off");
-      this._turnWeaveOn(function() {
+      if (this._turnWeaveOn()) {
         theButton.enabled = true;
-        theButton.label = off;
-      });
+        theButton.label = this._getString("fennec.turn.weave.off");
+      }
     }
   },
 
