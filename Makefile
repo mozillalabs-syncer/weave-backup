@@ -55,6 +55,7 @@ ifeq ($(sdkdir),)
 endif
 
 weave_version := 0.5pre1
+storage_version := 0.5pre1
 
 ifeq ($(release_build),)
   xpi_type := dev
@@ -92,7 +93,7 @@ else
   jar=\# 
 endif
 
-subst_names := weave_version buildid buildid_short update_url update_url_tag unpacked jar
+subst_names := weave_version storage_version buildid buildid_short update_url update_url_tag unpacked jar
 export $(subst_names)
 substitute  := perl -p -e 's/@([^@]+)@/defined $$ENV{$$1} ? $$ENV{$$1} : $$&/ge'
 
