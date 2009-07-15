@@ -38,7 +38,7 @@
 
 destdir = ../dist/stage
 
-ifneq ($(release_build),)
+ifneq ($(release_build),1)
   xpi_type := dev
   update_url := https://people.mozilla.com/~cbeard/weave/dist/update-dev.rdf
 else
@@ -81,9 +81,9 @@ substitute  := perl -p -e 's/@([^@]+)@/defined $$ENV{$$1} ? $$ENV{$$1} : $$&/ge'
 dotin_files := $(shell find . -type f -name \*.in)
 dotin_files := $(dotin_files:.in=)
 
-all: build jar
+all: build
 
-.PHONY: chrome modules components defaults $(dotin_files) subst
+.PHONY: chrome modules components defaults $(dotin_files) subst xpi
 
 chrome_jar := $(destdir)/sync.jar
 xpi_name := weave-$(weave_version)-$(xpi_type).xpi
@@ -104,3 +104,5 @@ subst: $(dotin_files)
 
 jar:
 	cd $(destdir)/chrome;zip -0r sync.jar *
+	
+xpi: build jar

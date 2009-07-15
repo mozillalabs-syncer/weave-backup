@@ -74,9 +74,11 @@ endif
 ifeq ($(MAKECMDGOALS),xpi)
   unpacked =\# 
   jar=
+  chrometarget=xpi
 else
   unpacked=
   jar=\# 
+  chrometarget=
 endif
 
 ifeq ($(rebuild_crypto),)
@@ -108,7 +110,7 @@ crypto: setup
 	$(MAKE) -C crypto $(crypto_build_target)
 
 chrome: setup
-	$(MAKE) -C source
+	$(MAKE) -C source $(chrometarget) release_build=$(release_build)
 
 build: crypto chrome
 
@@ -129,12 +131,16 @@ help:
 	@echo Targets:
 	@echo build
 	@echo "test (default; implies build)"
+	@echo "crypto (only updates the source directory)"
+	@echo "chrome (only updates the source directory)"
+	@echo "test (default; implies build)"
 	@echo "xpi (sets manifest to use jars, make build to undo)"
 	@echo clean
 	@echo
 	@echo Variables:
 	@echo sdkdir
 	@echo "release_build (set to 1 when not building a snapshot)"
+	@echo "rebuild_crypto (set to 1 when building a new crypto binary)"
 	@echo
 	@echo Substitutions for .in files:
 	@echo $(subst_names)
