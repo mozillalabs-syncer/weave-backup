@@ -79,17 +79,13 @@ else
   jar=\# 
 endif
 
-<<<<<<< local
 ifeq ($(rebuild_crypto),)
   crypto_build_target :=
 else
 	crypto_build_target := rebuild_all
 endif
 
-subst_names := weave_version buildid buildid_short update_url update_url_tag unpacked jar
-=======
 subst_names := weave_version storage_version buildid buildid_short update_url update_url_tag unpacked jar
->>>>>>> other
 export $(subst_names)
 substitute  := perl -p -e 's/@([^@]+)@/defined $$ENV{$$1} ? $$ENV{$$1} : $$&/ge'
 
