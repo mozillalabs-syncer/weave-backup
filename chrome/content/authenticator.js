@@ -215,7 +215,7 @@ let gWeaveAuthenticator = {
   },
 
   onPasswordMgrFoundLogins: function(formInfo) {
-    this._log.debug("onPasswordMgrFoundLogins");
+    this._log.trace("onPasswordMgrFoundLogins");
 
     formInfo.QueryInterface(Ci.nsIPropertyBag2);
 
@@ -407,7 +407,7 @@ let gWeaveAuthenticator = {
   },
 
   _updateModel: function(doc, browser) {
-    this._log.debug("_updateModel\n");
+    this._log.trace("_updateModel\n");
 
     let inputs = doc.getElementsByTagName("input");
     browser.auth = {};
