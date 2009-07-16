@@ -38,44 +38,6 @@
 
 destdir = ../dist/stage
 
-ifneq ($(release_build),1)
-  xpi_type := dev
-  update_url := https://people.mozilla.com/~cbeard/weave/dist/update-dev.rdf
-else
-  xpi_type := rel
-  update_url := 
-endif
-
-ifeq ($(update_url),)
-  update_url_tag :=
-else
-  update_url_tag := <em:updateURL>$(update_url)</em:updateURL>
-endif
-
-buildid ?= ${WEAVE_BUILDID}
-buildid_short := $(buildid)
-ifeq ($(buildid),)
-  date    := $(shell date -u +%Y%m%d%H%M)
-  revid   := $(shell hg tip --template '{node|short}')
-  buildid := $(date)-$(revid)
-  buildid_short := $(date)
-endif
-ifeq ($(buildid),)
-  $(warning Could not determine build id)
-  $(warning Install hg or set WEAVE_BUILDID the checkout id)
-  $(error)
-endif
-
-ifeq ($(MAKECMDGOALS),xpi)
-  unpacked =\# 
-  jar=
-else
-  unpacked=
-  jar=\# 
-endif
-
-subst_names := weave_version buildid buildid_short update_url update_url_tag unpacked jar
-export $(subst_names)
 substitute  := perl -p -e 's/@([^@]+)@/defined $$ENV{$$1} ? $$ENV{$$1} : $$&/ge'
 
 dotin_files := $(shell find . -type f -name \*.in)
