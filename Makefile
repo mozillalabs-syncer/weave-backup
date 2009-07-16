@@ -74,11 +74,9 @@ endif
 ifeq ($(MAKECMDGOALS),xpi)
   unpacked =\# 
   jar=
-  chrometarget=xpi
 else
   unpacked=
   jar=\# 
-  chrometarget=
 endif
 
 ifeq ($(rebuild_crypto),)
@@ -109,7 +107,7 @@ crypto: setup
 	$(MAKE) -C crypto $(crypto_build_target)
 
 chrome: setup
-	$(MAKE) -C source $(chrometarget) release_build=$(release_build)
+	$(MAKE) -C source $(MAKECMDGOALS)
 
 build: crypto chrome
 
