@@ -47,12 +47,6 @@ all: build
 
 .PHONY: chrome modules components defaults $(dotin_files) subst xpi
 
-chrome_jar := $(destdir)/sync.jar
-xpi_name := weave-$(weave_version)-$(xpi_type).xpi
-xpi_files := $(chrome_jar) defaults components modules platform \
-             install.rdf chrome.manifest
-chrome_files := chrome/content/* chrome/skin/* chrome/locale/*
-
 build: chrome modules components defaults subst
 
 chrome modules components defaults:
