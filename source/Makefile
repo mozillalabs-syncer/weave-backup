@@ -52,7 +52,6 @@ build: $(bundle_dirs) subst
 $(bundle_dirs):
 	cp -R -v $@ $(destdir)
 
-substitute = perl -p -e 's/@([^@]+)@/defined $$ENV{$$1} ? $$ENV{$$1} : $$&/ge'
 $(dotin_files): $(dotin_files:=.in)
 	$(substitute) $@.in > $(destdir)/$@
 	rm -f $(destdir)/$@.in

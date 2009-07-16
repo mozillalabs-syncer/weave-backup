@@ -89,6 +89,7 @@ endif
 
 subst_names := weave_version storage_version buildid buildid_short update_url update_url_tag unpacked jar
 export $(subst_names)
+export substitute = perl -pe 's/@([^@]+)@/defined $$$$ENV{$$$$1} ? $$$$ENV{$$$$1} : $$$$&/ge'
 
 dotin_files := $(shell find . -type f -name \*.in)
 dotin_files := $(dotin_files:.in=)
