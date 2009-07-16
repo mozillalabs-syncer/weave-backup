@@ -54,7 +54,7 @@ all: build
 crypto:
 	$(MAKE) -C src install
 
-build: 
+build:
 	cp -R -v platform $(stage_dir)
 	cp -R -v components $(stage_dir)
 

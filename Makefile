@@ -48,7 +48,7 @@ ifeq ($(release_build),)
   update_url := https://people.mozilla.com/~cbeard/weave/dist/update-dev.rdf
 else
   xpi_type := rel
-  update_url := 
+  update_url :=
 endif
 
 ifeq ($(update_url),)
@@ -72,19 +72,19 @@ ifeq ($(buildid),)
 endif
 
 ifeq ($(MAKECMDGOALS),xpi)
-  unpacked =\# 
+  unpacked =\#
   jar=
   chrometarget=xpi
 else
   unpacked=
-  jar=\# 
+  jar=\#
   chrometarget=
 endif
 
 ifeq ($(rebuild_crypto),)
-	crypto_build_target :=
+  crypto_build_target =
 else
-	crypto_build_target := rebuild_all
+  crypto_build_target = rebuild_all
 endif
 
 subst_names := weave_version storage_version buildid buildid_short update_url update_url_tag unpacked jar
