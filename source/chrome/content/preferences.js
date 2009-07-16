@@ -303,7 +303,6 @@ WeavePrefs.prototype = {
                   this._stringBundle.getString("erase.server.warning.title"),
                   this._stringBundle.getString("erase.server.warning"))) {
       Weave.Service.wipeServer();
-      Weave.Utils.openStatus();
     }
   },
 
