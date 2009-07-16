@@ -91,9 +91,6 @@ subst_names := weave_version storage_version buildid buildid_short update_url up
 export $(subst_names)
 export substitute = perl -pe 's/@([^@]+)@/defined $$$$ENV{$$$$1} ? $$$$ENV{$$$$1} : $$$$&/ge'
 
-dotin_files := $(shell find . -type f -name \*.in)
-dotin_files := $(dotin_files:.in=)
-
 all: build
 
 .PHONY: setup chrome build test xpi clean $(xpi_files)
