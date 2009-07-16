@@ -47,7 +47,7 @@ dotin_files := $(dotin_files:.in=)
 
 all: build
 
-.PHONY: $(bundle_dirs) $(dotin_files) subst xpi
+.PHONY: $(bundle_dirs) $(dotin_files) jar subst xpi
 
 build: $(bundle_dirs) subst
 
@@ -58,9 +58,9 @@ $(dotin_files): $(dotin_files:=.in)
 	$(substitute) $@.in > $(destdir)/$@
 	rm -f $(destdir)/$@.in
 
-subst: $(dotin_files)
-
 jar:
 	cd $(destdir)/chrome;zip -0r sync.jar *
-	
+
+subst: $(dotin_files)
+
 xpi: build jar
