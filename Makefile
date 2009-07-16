@@ -40,7 +40,7 @@ objdir=dist
 stage_dir=$(objdir)/stage
 xpi_dir=$(objdir)/xpi
 
-weave_version := 0.5pre2.newbuildsys
+weave_version := 0.5pre3
 storage_version := 0.5pre2
 
 ifeq ($(release_build),)
@@ -128,10 +128,9 @@ clean:
 help:
 	@echo Targets:
 	@echo build
-	@echo "test (default; implies build)"
-	@echo "crypto (only updates the source directory)"
+	@echo "crypto (only updates the crypto directory)"
 	@echo "chrome (only updates the source directory)"
-	@echo "test (default; implies build)"
+	@echo "test (runs tests, runs a build first)"
 	@echo "xpi (sets manifest to use jars, make build to undo)"
 	@echo clean
 	@echo
