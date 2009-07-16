@@ -1,8 +1,5 @@
 ^dist/
 .*~
-^chrome.manifest$
-chrome/sync.jar
-sync.*.xpi
 src/.*\.xpt
 src/.*\.o
 src/.*\.dylib
@@ -17,5 +14,3 @@ src/fake\.exp$
 src/fake\.lib$
 .*\.pyc
 nose-.*
-install.rdf
-modules/constants.js
