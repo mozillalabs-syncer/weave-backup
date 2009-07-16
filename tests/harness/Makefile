@@ -156,7 +156,7 @@ $(tests:.js=): $(tests)
 	@if [ $(os) = Darwin ]; then \
 	  $(xulrunner_env) $(xulrunner) $(head) -f $(abspath $(@).js) $(tail) 2> $(test_output_dir)/$(@).log 1>&2; \
 	else \
-	  $(xulrunner_env) $(xulrunner) $(head) -f $(@).js $(tail) 2> $(@).log 1>&2; \
+	  $(xulrunner_env) $(xulrunner) $(head) -f $(@).js $(tail) 2> $(test_output_dir)/$(@).log 1>&2; \
 	fi
 	@if [ `grep -c '\*\*\* PASS' $(test_output_dir)/$(@).log` = 0 ]; then \
 	  echo $(echo_opts) "$(@):\tFAIL"; \
