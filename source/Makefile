@@ -98,7 +98,7 @@ chrome modules components defaults:
 
 $(dotin_files): $(dotin_files:=.in)
 	$(substitute) $@.in > $(destdir)/$@
-	rm -rf $(destdir)/$@.in
+	rm -f $(destdir)/$@.in
 
 subst: $(dotin_files)
 
