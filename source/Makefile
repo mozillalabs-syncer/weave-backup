@@ -38,8 +38,6 @@
 
 destdir = ../dist/stage
 
-substitute  := perl -p -e 's/@([^@]+)@/defined $$ENV{$$1} ? $$ENV{$$1} : $$&/ge'
-
 bundle_dirs = chrome components defaults modules
 
 dotin_files := $(shell find . -type f -name \*.in)
@@ -54,6 +52,7 @@ build: $(bundle_dirs) subst
 $(bundle_dirs):
 	cp -R -v $@ $(destdir)
 
+substitute = perl -p -e 's/@([^@]+)@/defined $$ENV{$$1} ? $$ENV{$$1} : $$&/ge'
 $(dotin_files): $(dotin_files:=.in)
 	$(substitute) $@.in > $(destdir)/$@
 	rm -f $(destdir)/$@.in
