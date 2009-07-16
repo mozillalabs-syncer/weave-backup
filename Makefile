@@ -82,7 +82,7 @@ else
 endif
 
 ifeq ($(rebuild_crypto),)
-  crypto_build_target :=
+	crypto_build_target :=
 else
 	crypto_build_target := rebuild_all
 endif
@@ -126,6 +126,7 @@ xpi: build
 clean:
 	rm -rf $(objdir)
 	$(MAKE) -C tests/unit clean
+	$(MAKE) -C crypto/src clean
 
 help:
 	@echo Targets:

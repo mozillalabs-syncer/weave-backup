@@ -258,11 +258,11 @@ endif
 
 ######################################################################
 
-.PHONY: all build install clean
+.PHONY: all build install clean subst
 
 all: build # default target
 
-build: $(so_target) $(idl_typelib)
+build: subst $(so_target) $(idl_typelib)
 
 install: build
 	mkdir -p $(destdir)/components
@@ -273,7 +273,12 @@ install: build
 clean: 
 	rm -f $(so_target) $(so_target_i386) $(so_target_ppc) \
           $(cpp_objects) $(cpp_objects_i386) $(cpp_objects_ppc) \
-          $(idl_typelib) $(idl_headers) $(target:=.res) fake.lib fake.exp
+          $(idl_typelib) $(idl_headers) $(target:=.res) fake.lib fake.exp WeaveCrypto.rc
+
+substitute  := perl -p -e 's/@([^@]+)@/defined $$ENV{$$1} ? $$ENV{$$1} : $$&/ge'
+
+subst:
+	$(substitute) WeaveCrypto.rc.in > WeaveCrypto.rc
 
 # rules to build the c headers and .xpt from idl
 $(idl_headers): $(idl)
