@@ -91,6 +91,10 @@ subst_names := weave_version storage_version buildid buildid_short update_url up
 export $(subst_names)
 export substitute = perl -pe 's/@([^@]+)@/defined $$$$ENV{$$$$1} ? $$$$ENV{$$$$1} : $$$$&/ge'
 
+ifneq ($(findstring MINGW,$(shell uname -s)),)
+  export NO_SYMLINK = 1
+endif
+
 all: build
 
 .PHONY: setup chrome build test xpi clean $(xpi_files)

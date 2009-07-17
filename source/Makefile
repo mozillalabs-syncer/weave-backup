@@ -50,7 +50,12 @@ all: build
 build: $(bundle_dirs) subst
 
 $(bundle_dirs):
+ifdef NO_SYMLINK
 	cp -R -v $@ $(destdir)
+else
+	find $@ -type d -exec mkdir -p $(destdir)/{} \;
+	find $@ -type f -exec ln -sf `pwd`/{} $(destdir)/{} \;
+endif
 
 $(dotin_files): $(dotin_files:=.in)
 	$(substitute) $@.in > $(destdir)/$@
