@@ -98,12 +98,15 @@
             <groupbox id="sync-signout-button">
               <caption label="&signedIn.label;"/>
               <hbox align="center">
-                 <label flex="1" control="signOutButton" id="sync-username-field"/>
-                 <button id="change-password-button"
-                         label="&changePasswordButton.label;"
-                         oncommand="gWeavePrefs.doChangePassword()"/>
-                 <button id="signOutButton" label="&signOutButton.label;"
-                         oncommand="gWeavePrefs.doSignOut()"/>
+                <label flex="1" control="signOutButton" id="sync-username-field"/>
+                <button id="change-password-button"
+                        label="&changePasswordButton.label;"
+                        oncommand="gWeavePrefs.doChangePassword()"/>
+                <button id="change-passphrase-button"
+                        label="&changePassphraseButton.label;"
+                        oncommand="Weave.Utils.openDialog('ChangePassphrase', 'changepph.xul')"/>
+                <button id="signOutButton" label="&signOutButton.label;"
+                        oncommand="gWeavePrefs.doSignOut()"/>
               </hbox>
             </groupbox>
 

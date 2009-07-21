@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+
+<?xml-stylesheet href="chrome://global/skin/global.css" type="text/css"?>
+<?xml-stylesheet href="chrome://weave/content/login.css" type="text/css"?>
+
+<!DOCTYPE overlay SYSTEM "chrome://weave/locale/preferences.dtd">
+
+<dialog xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        id="changepph-dialog" 
+        windowtype="Weave:ChangePassphrase"
+        title="&pph.title;"
+        buttons="accept,cancel"
+        buttonlabelaccept="&pph.accept;"
+        buttonlabelcancel="&pph.cancel;"
+        ondialogaccept="return Login.doResetPassphrase();"
+        ondialogcancel="return true;"
+        defaultButton="accept">
+    
+  <script type="application/x-javascript" src="chrome://weave/content/load-weave.js"/>
+  <script type="application/x-javascript" src="chrome://weave/content/preferences.js"/>
+
+  <stringbundleset id="stringbundleset">
+    <stringbundle id="weaveStringBundle" src="chrome://weave/locale/preferences.properties"/>
+  </stringbundleset>
+
+  <hbox align="center">
+    <label class="title" value="&pph.message;"/>
+  </hbox>
+
+  <vbox>
+    <grid>
+      <columns>
+        <column pack="left" align="right"/>
+        <column/>
+      </columns>
+      <rows>
+        <row align="center">
+          <hbox flex="1" align="right">
+            <label value="&pph.enterNew1;"/>
+          </hbox>
+          <textbox id="newPassphrase1" type="password"/>
+        </row>
+        <row align="center">
+          <hbox flex="1" align="right">
+            <label value="&pph.enterNew2;"/>
+          </hbox>
+          <textbox id="newPassphrase2" type="password"/>
+        </row>
+        <row><label value=""/></row>
+      </rows>
+    </grid>
+
+    <hbox align="center">
+      <image id="pphStatusIcon" class="statusIcon"/>
+      <label id="pphStatus" class="status"/>
+    </hbox>
+  </vbox>
+</dialog>

@@ -3,11 +3,6 @@
   padding-right: 5px;
 }
 
-#loginTitle {
-  font-size: 14px;
-  font-weight: bold;
-}
-
 #loginStatusBox {
   margin-top: 10px;
   height: 16px;
@@ -18,18 +13,23 @@
   font-weight: bold;
 }
 
-#loginStatus {
+.title {
+  font-size: 14px;
   font-weight: bold;
 }
 
-#loginStatusIcon[status="active"] {
+.status {
+  font-weight: bold;
+}
+
+.statusIcon[status="active"] {
   list-style-image: url("chrome://global/skin/icons/loading_16.png");
 }
 
-#loginStatusIcon[status="error"] {
+.statusIcon[status="error"] {
   list-style-image: url("chrome://global/skin/icons/error-16.png");
 }
 
-#loginStatusIcon[status="success"] {
+.statusIcon[status="success"] {
   list-style-image: url("chrome://global/skin/icons/information-16.png");
 }

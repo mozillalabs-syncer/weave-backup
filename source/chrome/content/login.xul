@@ -38,21 +38,21 @@
       <rows>
         <row align="center">
           <hbox flex="1" align="right">
-	    <label id="loginUsernameLabel" value="&username.label;"/>
-	  </hbox>
+            <label id="loginUsernameLabel" value="&username.label;"/>
+          </hbox>
           <textbox id="username"/>
         </row>
         <row align="center">
           <hbox flex="1" align="right">
             <label id="loginPasswordLabel" value="&password.label;"/>
-	  </hbox>
+          </hbox>
           <textbox id="password" type="password"/>
         </row>
         <row><label value=""/></row>
         <row id="passphrase-ui" align="center">
           <hbox flex="1" align="right">
             <label id="loginPassphraseLabel" value="&encryptionPassphrase.label;"/>
-	  </hbox>
+          </hbox>
           <textbox id="passphrase" type="password"/>
         </row>
         <row id="whats-this-row" align="center"> 
@@ -60,6 +60,7 @@
           <label class="text-link" value="&whatsThis.label;"
                  onclick="window.open('https://services.mozilla.com/help/login/');"/>
           </hbox>
+          <label class="text-link" value="&forgotPhrase.label;" onclick="Login.showResetPassphrase();"/>
         </row>
         <row><label value=""/></row>
       </rows>
@@ -69,8 +70,8 @@
     <checkbox id="autoconnect-checkbox" label="&autoconnect.label;"/>
 
     <hbox id="loginStatusBox" align="center">
-      <image id="loginStatusIcon"/>
-      <label id="loginStatus"/>
+      <image id="loginStatusIcon" class="statusIcon"/>
+      <label id="loginStatus" class="status"/>
     </hbox>
   </vbox>
 </dialog>
