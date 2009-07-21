@@ -104,7 +104,7 @@
                         oncommand="gWeavePrefs.doChangePassword()"/>
                 <button id="change-passphrase-button"
                         label="&changePassphraseButton.label;"
-                        oncommand="Weave.Utils.openDialog('ChangePassphrase', 'changepph.xul')"/>
+                        oncommand="gWeavePrefs.openPassphraseDialog()"/>
                 <button id="signOutButton" label="&signOutButton.label;"
                         oncommand="gWeavePrefs.doSignOut()"/>
               </hbox>

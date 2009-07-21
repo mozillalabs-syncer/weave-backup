@@ -72,7 +72,12 @@ WeavePrefs.prototype = {
       syncNowButton.setAttribute("disabled", "false");
       syncUserName.setAttribute("value", signedInDescription);
       changePasswordButton.setAttribute("hidden", "true"); // FIXME: temp
-      changePassphraseButton.setAttribute("hidden", "false");
+      
+      // We check if we have the crypto requirements first
+      if ('rewrapPrivateKey' in Weave.Svc.Crypto)
+        changePassphraseButton.setAttribute("hidden", "false");
+      else
+        changePassphraseButton.setAttribute("hidden", "true");
    }
   },
 
@@ -130,6 +135,10 @@ WeavePrefs.prototype = {
     Weave.Utils.openLog();
   },
 
+  openPassphraseDialog: function WeavePrefs_openPassphraseDialog() {
+    Weave.Utils.openGenericDialog('ChangePassphrase');
+  },
+  
   doSyncNow: function WeavePrefs_doSyncNow() {
     Weave.Utils.openSync();
   },
@@ -151,30 +160,6 @@ WeavePrefs.prototype = {
   doChangePassword: function WeavePrefs_doChangePassword() {
     let url = "https://services.mozilla.com/";
     setTimeout(function() { window.openUILinkIn(url, "tab"); }, 500);
-  },
-  
-  doChangePassphrase: function WeavePrefs_doChangePassphrase() {
-    let pph1 = document.getElementById('newPassphrase1');
-    let pph2 = document.getElementById('newPassphrase2');
-
-    if (!pph1.value || !pph2.value) {
-      alert(this._stringBundle.getString("change.passphrase.noPassAlert"));
-    } else if (pph1.value != pph2.value) {    
-      alert(this._stringBundle.getString("change.passphrase.noMatchAlert"));
-    } else {
-      document.getElementById('pphStatusIcon').setAttribute("status", "active");
-      let status = document.getElementById('pphStatus');
-      status.value = this._stringBundle.getString("change.passphrase.label");
-      status.style.color = "-moz-dialogtext";    
-      
-      let dialog = document.getElementById('changepph-dialog');
-      dialog.getButton("cancel").setAttribute("disabled", "true");
-      dialog.getButton("accept").setAttribute("disabled", "true");
-      Weave.Service.changePassphrase(pph1.value);
-      return true;
-    }
-        
-    return false;
   },
   
   doCreateAccount: function WeavePrefs_doCreateAccount() {

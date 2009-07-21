@@ -21,30 +21,15 @@ let Login = {
     delete this._loginDialog;
     return this._loginDialog = document.getElementById("login-dialog");
   },
-
-  get _forgotDialog() {
-    delete this._forgotDialog;
-    return this._forgotDialog = document.getElementById("forgotpph-dialog");
-  },
   
   get _loginStatus() {
     delete this._loginStatus;
     return this._loginStatus = document.getElementById("loginStatus");
   },
-
-  get _forgotStatus() {
-    delete this._forgotStatus;
-    return this._forgotStatus = document.getElementById("pphStatus");
-  },
   
   get _loginStatusIcon() {
     delete this._loginStatusIcon;
     return this._loginStatusIcon = document.getElementById("loginStatusIcon");
-  },
-
-  get _forgotStatusIcon() {
-    delete this._forgotStatusIcon;
-    return this._forgotStatusIcon = document.getElementById("pphStatusIcon");
   },
   
   onLoad: function Login_onLoad() {
@@ -54,8 +39,6 @@ let Login = {
     this._os.addObserver(this, "weave:service:login:start", false);
     this._os.addObserver(this, "weave:service:login:error", false);
     this._os.addObserver(this, "weave:service:login:finish", false);
-    this._os.addObserver(this, "weave:service:resetpph:error", false);
-    this._os.addObserver(this, "weave:service:resetpph:finish", false);
     
     if (Weave.Utils.prefs.getBoolPref("rememberpassword"))
       document.getElementById("save-password-checkbox").checked = true;
@@ -86,8 +69,6 @@ let Login = {
     this._os.removeObserver(this, "weave:service:login:start");
     this._os.removeObserver(this, "weave:service:login:error");
     this._os.removeObserver(this, "weave:service:login:finish");
-    this._os.removeObserver(this, "weave:service:resetpph:error");
-    this._os.removeObserver(this, "weave:service:resetpph:finish");
     
     this._log.trace("Sync login window closed");
   },
@@ -123,21 +104,6 @@ let Login = {
     this._loginStatusIcon.setAttribute("status", "success");
     this._loginStatus.value = this._stringBundle.getString("loginSuccess.label");
     this._loginStatus.style.color = "blue";
-    window.setTimeout(window.close, 1500);
-    break;
-
-    case "weave:service:resetpph:error":
-    this._forgotStatusIcon.setAttribute("status", "error");
-    this._forgotStatus.value = this._stringBundle.getString("pphError.label");
-    this._forgotStatus.style.color = "red";
-    this._forgotDialog.getButton("cancel").setAttribute("disabled", "false");
-    this._forgotDialog.getButton("accept").setAttribute("disabled", "false");
-    break;
-
-    case "weave:service:resetpph:finish":
-    this._forgotStatusIcon.setAttribute("status", "success");
-    this._forgotStatus.value = this._stringBundle.getString("pphSuccess.label");
-    this._forgotStatus.style.color = "blue";
     window.setTimeout(window.close, 1500);
     break;
     }
@@ -197,7 +163,7 @@ let Login = {
 
   doCancel: function Login_doCancel() { return true; },
   
-  showResetPassphrase: function Login_showResetPassphrase() {
+  openPassphraseDialog: function Login_openPassphraseDialog() {
     let username = document.getElementById("username");
     let password = document.getElementById("password");
     
@@ -211,29 +177,7 @@ let Login = {
       return false;
     }
 
-    Weave.Utils.openDialog('ForgotPassphrase', 'forgotpph.xul');
-  },
-  
-  doResetPassphrase: function Login_doResetPassphrase() {
-    let pph1 = document.getElementById("newPassphrase1");
-    let pph2 = document.getElementById("newPassphrase2");
-    
-    if (!pph1.value) {
-      alert(this._stringBundle.getString("noPassphrase.alert"));
-    } else if (pph1.value != pph2.value) {
-      alert(this._stringBundle.getString("pphNoMatch.alert"));
-    } else {
-      this._forgotStatusIcon.setAttribute("status", "active");
-      this._forgotStatus.value = this._stringBundle.getString("pphStart.label");
-      this._forgotStatus.style.color = "-moz-dialogtext";
-      this._forgotDialog.getButton("cancel").setAttribute("disabled", "true");
-      this._forgotDialog.getButton("accept").setAttribute("disabled", "true");
-      Weave.Service.resetPassphrase(pph1.value);
-      this._loginDialog.cancelDialog();
-      return true;
-    }
-
-    return false;
+    Weave.Utils.openGenericDialog('ResetPassphrase');
   }
 };
 

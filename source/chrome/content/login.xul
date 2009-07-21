@@ -60,7 +60,7 @@
           <label class="text-link" value="&whatsThis.label;"
                  onclick="window.open('https://services.mozilla.com/help/login/');"/>
           </hbox>
-          <label class="text-link" value="&forgotPhrase.label;" onclick="Login.showResetPassphrase();"/>
+          <label class="text-link" value="&forgotPhrase.label;" onclick="Login.openPassphraseDialog();"/>
         </row>
         <row><label value=""/></row>
       </rows>
