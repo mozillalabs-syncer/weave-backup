@@ -101,10 +101,10 @@
                 <label flex="1" control="signOutButton" id="sync-username-field"/>
                 <button id="change-password-button"
                         label="&changePasswordButton.label;"
-                        oncommand="gWeavePrefs.doChangePassword()"/>
+                        oncommand="Weave.Utils.openGenericDialog('ChangePassword')"/>
                 <button id="change-passphrase-button"
                         label="&changePassphraseButton.label;"
-                        oncommand="gWeavePrefs.openPassphraseDialog()"/>
+                        oncommand="Weave.Utils.openGenericDialog('ChangePassphrase')"/>
                 <button id="signOutButton" label="&signOutButton.label;"
                         oncommand="gWeavePrefs.doSignOut()"/>
               </hbox>

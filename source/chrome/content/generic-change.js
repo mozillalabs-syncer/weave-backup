@@ -86,7 +86,25 @@ let Change = {
           "return Change.doChangePassphrase();"
         );
         break;
+      case "ChangePassword":
+        this._title.value = this._stringBundle.getString(
+          "change.password.title"
+        );
+        box1label.value = this._stringBundle.getString(
+          "new.password.label"
+        );
+        box2label.value = this._stringBundle.getString(
+          "new.password.confirm"
+        );
+        this._dialog.setAttribute(
+          "ondialogaccept",
+          "return Change.doChangePassword();"
+        );
+        break;
     }
+    this._os.addObserver(this, "weave:service:changepwd:start", false);
+    this._os.addObserver(this, "weave:service:changepwd:error", false);
+    this._os.addObserver(this, "weave:service:changepwd:finish", false);
     this._os.addObserver(this, "weave:service:changepph:start", false);
     this._os.addObserver(this, "weave:service:changepph:error", false);
     this._os.addObserver(this, "weave:service:changepph:finish", false);
@@ -96,6 +114,9 @@ let Change = {
   },
   
   shutDown: function Change_shutDown() {
+    this._os.removeObserver(this, "weave:service:changepwd:start", false);
+    this._os.removeObserver(this, "weave:service:changepwd:error", false);
+    this._os.removeObserver(this, "weave:service:changepwd:finish", false);
     this._os.removeObserver(this, "weave:service:changepph:start", false);
     this._os.removeObserver(this, "weave:service:changepph:error", false);
     this._os.removeObserver(this, "weave:service:changepph:finish", false);
@@ -109,6 +130,7 @@ let Change = {
   observe: function Change_observer(subject, topic, data) {
     switch (topic) {
       case "weave:service:resetpph:start":
+      case "weave:service:changepwd:start":
       case "weave:service:changepph:start":
         this._statusIcon.setAttribute("status", "active");
         this._status.style.color = "-moz-dialogtext";
@@ -116,13 +138,15 @@ let Change = {
         this._dialog.getButton("accept").setAttribute("disabled", "true");
         break;
       case "weave:service:resetpph:error":
+      case "weave:service:changepwd:error":
       case "weave:service:changepph:error":
         this._statusIcon.setAttribute("status", "error");
         this._status.style.color = "-moz-dialogtext";
-        this._dialog.getButton("cancel").setAttribute("disabled", "true");
-        this._dialog.getButton("accept").setAttribute("disabled", "true");
+        this._dialog.getButton("cancel").setAttribute("disabled", "false");
+        this._dialog.getButton("accept").setAttribute("disabled", "false");
         break;
       case "weave:service:resetpph:finish":
+      case "weave:service:changepwd:finish":
       case "weave:service:changepph:finish":
         this._statusIcon.setAttribute("status", "success");
         this._status.style.color = "-moz-dialogtext";
@@ -133,7 +157,7 @@ let Change = {
     }
   },
   
-  doResetPassphrase: function Login_doResetPassphrase() {
+  doResetPassphrase: function Change_doResetPassphrase() {
     if (!this._firstBox.value || !this._secondBox.value) {
       alert(this._stringBundle.getString("noPassphrase.alert"));
     } else if (this._firstBox.value != this._secondBox.value) {
@@ -148,7 +172,6 @@ let Change = {
           "reset.passphrase.success"
         );
         this._loginDialog.cancelDialog();
-        return true;
       } else {
         this._status.value = this._stringBundle.getString(
           "reset.passphrase.error"
@@ -159,7 +182,7 @@ let Change = {
     return false;
   },
   
-  doChangePassphrase: function WeavePrefs_doChangePassphrase() {
+  doChangePassphrase: function Change_doChangePassphrase() {
     if (!this._firstBox.value || !this._secondBox.value) {
       alert(this._stringBundle.getString("noPassphrase.alert"));
     } else if (this._firstBox.value != this._secondBox.value) {
@@ -173,10 +196,41 @@ let Change = {
         this._status.value = this._stringBundle.getString(
           "change.passphrase.success"
         );
-        return true;
       } else {
         this._status.value = this._stringBundle.getString(
           "change.passphrase.error"
+        );
+      }
+    }
+
+    return false;
+  },
+  
+  doChangePassword: function Change_doChangePassword() {
+    if (!this._firstBox.value || !this._secondBox.value) {
+      alert(this._stringBundle.getString("noPassword.alert"));
+    } else if (this._firstBox.value != this._secondBox.value) {
+      alert(this._stringBundle.getString("passwordNoMatch.alert"));
+    } else if (this._firstBox.value == Weave.Service.username) {
+      alert(this._stringBundle.getString(
+        "change.password.status.passwordSameAsUsername"
+      ));
+    } else if (this._firstBox.value == Weave.Service.passphrase) {
+      alert(this._stringBundle.getString(
+        "change.password.status.passwordSameAsPassphrase"
+      ));
+    } else {
+      this._status.value = this._stringBundle.getString(
+        "change.password.status.active"
+      );
+      
+      if (Weave.Service.changePassword(this._firstBox.value)) {
+        this._status.value = this._stringBundle.getString(
+          "change.password.status.success"
+        );
+      } else {
+        this._status.value = this._stringBundle.getString(
+          "change.password.status.error"
         );
       }
     }

@@ -71,7 +71,7 @@ WeavePrefs.prototype = {
       createButton.setAttribute("hidden", "true");
       syncNowButton.setAttribute("disabled", "false");
       syncUserName.setAttribute("value", signedInDescription);
-      changePasswordButton.setAttribute("hidden", "true"); // FIXME: temp
+      changePasswordButton.setAttribute("hidden", "false");
       
       // We check if we have the crypto requirements first
       if ('rewrapPrivateKey' in Weave.Svc.Crypto)
@@ -134,10 +134,6 @@ WeavePrefs.prototype = {
   openActivityLog: function WeavePrefs_openActivityLog() {
     Weave.Utils.openLog();
   },
-
-  openPassphraseDialog: function WeavePrefs_openPassphraseDialog() {
-    Weave.Utils.openGenericDialog('ChangePassphrase');
-  },
   
   doSyncNow: function WeavePrefs_doSyncNow() {
     Weave.Utils.openSync();
@@ -155,11 +151,6 @@ WeavePrefs.prototype = {
   doSignOut: function WeavePrefs_doSignOut() {
     Weave.Service.logout();
     this._checkAccountInfo();
-  },
-  
-  doChangePassword: function WeavePrefs_doChangePassword() {
-    let url = "https://services.mozilla.com/";
-    setTimeout(function() { window.openUILinkIn(url, "tab"); }, 500);
   },
   
   doCreateAccount: function WeavePrefs_doCreateAccount() {

@@ -14,7 +14,7 @@
   <script type="application/x-javascript" src="chrome://weave/content/generic-change.js"/>
 
   <stringbundleset id="stringbundleset">
-    <stringbundle id="weaveStringBundle" src="chrome://weave/locale/change.properties"/>
+    <stringbundle id="weaveStringBundle" src="chrome://weave/locale/generic-change.properties"/>
   </stringbundleset>
 
   <hbox align="center">
