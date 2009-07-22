@@ -217,7 +217,7 @@ WeaveWiz = {
     // checkVerificationFields() will take care of allowing advance if this works
     WeaveWiz._log.debug("Verifying username/password...");
     setTimeout(function() Weave.Service.verifyLogin($("username").value,
-      $("password").value), 0);
+      $("password").value), null, 0);
 
     // In case the server is hanging...
     setTimeout(function() {
