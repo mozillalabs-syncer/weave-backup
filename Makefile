@@ -41,7 +41,7 @@ stage_dir=$(objdir)/stage
 xpi_dir=$(objdir)/xpi
 
 weave_version := 0.5pre3
-storage_version := 0.5pre2
+compatible_version := 0.5pre2
 
 ifeq ($(release_build),)
   xpi_type := dev
@@ -87,7 +87,7 @@ else
   crypto_build_target = rebuild_all
 endif
 
-subst_names := weave_version storage_version buildid buildid_short update_url update_url_tag unpacked jar
+subst_names := weave_version compatible_version buildid buildid_short update_url update_url_tag unpacked jar
 export $(subst_names)
 export substitute = perl -pe 's/@([^@]+)@/defined $$$$ENV{$$$$1} ? $$$$ENV{$$$$1} : $$$$&/ge'
 
