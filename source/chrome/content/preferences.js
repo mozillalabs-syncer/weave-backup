@@ -72,12 +72,7 @@ WeavePrefs.prototype = {
       syncNowButton.setAttribute("disabled", "false");
       syncUserName.setAttribute("value", signedInDescription);
       changePasswordButton.setAttribute("hidden", "false");
-      
-      // We check if we have the crypto requirements first
-      if ('rewrapPrivateKey' in Weave.Svc.Crypto)
-        changePassphraseButton.setAttribute("hidden", "false");
-      else
-        changePassphraseButton.setAttribute("hidden", "true");
+      changePassphraseButton.setAttribute("hidden", "false");
    }
   },
 
