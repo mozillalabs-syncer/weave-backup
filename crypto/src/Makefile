@@ -67,7 +67,15 @@ ifeq ($(sys), MINGW32_NT-5.1)
   cxx = cl
   so = dll
 else
+ifeq ($(sys), SunOS)
+  os = SunOS
+  compiler = cc
+  cxx = CC
+  so = so
+  cppflags += -G
+else
   $(error Sorry, your os is unknown/unsupported: $(sys))
+endif
 endif
 endif
 endif
@@ -99,6 +107,7 @@ ifeq ($(machine), x86_64)
   arch = x86_64
 else
   $(error: Sorry, your architecture is unknown/unsupported: $(machine))
+endif
 endif
 endif
 endif
@@ -236,6 +245,14 @@ endif
              $(sdkdir)/lib/libxpcomglue_s.a \
              $(libdirs) $(libs)
 else
+ifeq ($(os), SunOS)
+  libdirs := $(patsubst %,-L%,$(libdirs))
+  libs := $(patsubst %,-l%,$(libs))
+  cppflags += -xO5 -s -ztext $(headers)
+  ldflags += -DMOZILLA_STRICT_API \
+             $(sdkdir)/lib/libxpcomglue_s.a \
+             $(libdirs) $(libs)
+else
 ifeq ($(os), WINNT)
   libdirs := $(patsubst %,-LIBPATH:%,$(libdirs))
   libs := $(patsubst %,$(sdkdir)/lib/%.lib,$(libs))
@@ -252,6 +269,7 @@ ifeq ($(os), WINNT)
     $(libdirs) $(libs) \
     kernel32.lib user32.lib gdi32.lib winmm.lib wsock32.lib advapi32.lib
   rcflags := -r $(headers)
+endif
 endif
 endif
 endif
@@ -313,6 +331,11 @@ ifeq ($(os), Linux)
 	$(cxx) $(cppflags) -o $@ $(cpp_sources) $(ldflags)
 	chmod +x $@
 else
+ifeq ($(os), SunOS)
+  $(so_target): $(idl_headers)
+	$(cxx) $(cppflags) -o $@ $(cpp_sources) $(ldflags)
+	chmod +x $@
+else
 ifeq ($(os), WINNT)
   $(target:=.res): $(target:=.rc)
 	rc -Fo$@ $(rcflags) $(target:=.rc)
@@ -323,6 +346,7 @@ ifeq ($(os), WINNT)
   $(so_target): $(idl_headers) $(cpp_objects) $(target:=.res)
 	link -OUT:$@ -PDB:$(@:.dll=.pdb) $(cpp_objects) $(target:=.res) $(ldflags)
 	chmod +x $@
+endif
 endif
 endif
 endif
