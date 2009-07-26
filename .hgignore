@@ -12,6 +12,7 @@ tests/.*/.*\.log$
 src/.*\.dll$
 src/.*\.rc$
 src/.*\.res$
+src/.*\.so$
 src/fake\.exp$
 src/fake\.lib$
 .*\.pyc
