@@ -1,4 +1,6 @@
 ^dist/
+^unittest/
+
 .*~
 src/.*\.xpt
 src/.*\.o

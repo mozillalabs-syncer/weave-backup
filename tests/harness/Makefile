@@ -85,7 +85,7 @@ endif
 endif
 
 configure_profile ?=
-testing_directory := $(topsrcdir)/test_files
+testing_directory := $(topsrcdir)/unittest
 test_output_dir := $(testing_directory)/test_output
 # profiledir needs to be an absolute path on Mac OS X (FIXME: file bug).
 profiledir = $(abspath $(testing_directory)/profile)
