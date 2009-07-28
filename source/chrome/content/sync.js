@@ -123,9 +123,6 @@ WeaveWindow.prototype = {
       }
       else
         label = Weave.Service.username;
-
-      // Don't show the username in the common case for now..
-      label = "";
     }
 
     let button = document.getElementById("sync-menu-button");
