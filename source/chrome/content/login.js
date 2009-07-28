@@ -111,7 +111,8 @@ let Login = {
 
   doHelp: function Login_doHelp() {
     let url = "https://services.mozilla.com/help/login/";
-    window.open(url);
+    Weave.Utils._openWin("Help", "Window", null, url,
+      "", "chrome,dialog=no,all", null);
   },
 
   doOK: function Login_doOK() {
