@@ -285,21 +285,20 @@ WeaveWiz = {
 
     let res = new Weave.Resource(WeaveWiz._serverURL + REGISTER_STATUS);
     res.authenticator = new Weave.NoOpAuthenticator();
-    res.get(
-      function(data) {
-        if (res.lastChannel.responseStatus == 200) {
-          if (data == 0) {
-            WeaveWiz._log.info("Registration closed");
-            WeaveWiz.registrationClosed = true;
-          } else {
-            WeaveWiz._log.info("Registration open");
-            WeaveWiz.registrationClosed = false;
-          }
-        } else {
-          WeaveWiz._log.info("Error getting registration status:" +
-                             res.lastChannel.responseStatus);
-        }
-      });
+    let data = res.get();
+    
+    if (res.lastChannel.responseStatus == 200) {
+      if (data == 0) {
+        WeaveWiz._log.info("Registration closed");
+        WeaveWiz.registrationClosed = true;
+      } else {
+        WeaveWiz._log.info("Registration open");
+        WeaveWiz.registrationClosed = false;
+      }
+    } else {
+        WeaveWiz._log.info("Error getting registration status:" +
+                           res.lastChannel.responseStatus);
+    }
   },
 
   /////ACCOUNT CREATION - USERNAME, PASSWORD, PASSPHRASE/////
@@ -382,47 +381,46 @@ WeaveWiz = {
     let res = new Weave.Resource(WeaveWiz._serverURL +
                                  CHECK_USERNAME_URL + username);
     res.authenticator = new Weave.NoOpAuthenticator();
-    res.get(
-      function(data) {
-        if (res.lastChannel.responseStatus == 200) {
-          statusIcon.hidden = true;
-          statusLink.hidden = true;
+    let data = res.get();
 
-          if (data == 1) {
-            statusLabel.value = usernameTaken;
-            statusLabel.style.color = ERROR_COLOR;
-            $('weave-setup-wizard').canAdvance = false;
-            WeaveWiz._createCheck = false;
-            WeaveWiz._usernameVerified = false;
-          } else {
-            statusLabel.value = usernameAvailable;
-            statusLabel.style.color = SUCCESS_COLOR;
-            WeaveWiz._usernameVerified = true;
-          }
-        } else {
-          WeaveWiz._log.info("Error: received status " +
-                             res.lastChannel.responseStatus);
-          statusIcon.hidden = true;
-          statusLink.hidden = false;
-          // TODO: add more descriptive server errors in this case, we know what the status was
-          statusLabel.value = serverError;
-          statusLabel.style.color = SERVER_ERROR_COLOR;
-          $('weave-setup-wizard').canAdvance = false;
-          WeaveWiz._usernameVerified = false;
-          WeaveWiz._createCheck = false;
-        }
-      });
+    if (res.lastChannel.responseStatus == 200) {
+      statusIcon.hidden = true;
+      statusLink.hidden = true;
+
+      if (data == 1) {
+        statusLabel.value = usernameTaken;
+        statusLabel.style.color = ERROR_COLOR;
+        $('weave-setup-wizard').canAdvance = false;
+        WeaveWiz._createCheck = false;
+        WeaveWiz._usernameVerified = false;
+      } else {
+        statusLabel.value = usernameAvailable;
+        statusLabel.style.color = SUCCESS_COLOR;
+        WeaveWiz._usernameVerified = true;
+      }
+    } else {
+      WeaveWiz._log.info("Error: received status " +
+                         res.lastChannel.responseStatus);
+      statusIcon.hidden = true;
+      statusLink.hidden = false;
+      // TODO: add more descriptive server errors in this case, we know what the status was
+      statusLabel.value = serverError;
+      statusLabel.style.color = SERVER_ERROR_COLOR;
+      $('weave-setup-wizard').canAdvance = false;
+      WeaveWiz._usernameVerified = false;
+      WeaveWiz._createCheck = false;
+    }
 
     // In case the server is hanging...
     setTimeout(function() {
-            if (statusLabel.value == checkingUsername) {
-              WeaveWiz._log.info("Server timeout (username check)");
-              statusIcon.hidden = true;
-              statusLink.hidden = false;
-              statusLabel.value = serverTimeoutError;
-              statusLabel.style.color = SERVER_ERROR;
-            }
-      }, SERVER_TIMEOUT);
+      if (statusLabel.value == checkingUsername) {
+        WeaveWiz._log.info("Server timeout (username check)");
+        statusIcon.hidden = true;
+        statusLink.hidden = false;
+        statusLabel.value = serverTimeoutError;
+        statusLabel.style.color = SERVER_ERROR;
+      }
+    }, SERVER_TIMEOUT);
 
     return false;
   },
