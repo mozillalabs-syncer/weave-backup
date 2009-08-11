@@ -28,6 +28,12 @@
         <column/>
       </columns>
       <rows>
+        <row id="oldBoxRow" align="center" hidden="true">
+          <hbox flex="1" align="right">
+            <label id="currentBoxLabel"/>
+          </hbox>
+          <textbox id="currentBoxText" type="password"/>
+        </row>
         <row align="center">
           <hbox flex="1" align="right">
             <label id="textBox1Label"/>

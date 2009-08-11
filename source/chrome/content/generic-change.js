@@ -37,6 +37,16 @@ let Change = {
     return this._statusIcon = document.getElementById("mainStatusIcon");
   },
   
+  get _oldBoxRow() {
+    delete this._oldBoxRow;
+    return this._oldBoxRow = document.getElementById("oldBoxRow");
+  },
+  
+  get _currentBox() {
+    delete this._currentBox;
+    return this._currentBox = document.getElementById("currentBoxText");
+  },
+  
   get _firstBox() {
     delete this._firstBox;
     return this._firstBox = document.getElementById("textBox1");
@@ -52,6 +62,7 @@ let Change = {
     this._log.trace("Sync login window opened");
 
     /* Load labels */
+    let cboxlabel = document.getElementById("currentBoxLabel");
     let box1label = document.getElementById("textBox1Label");
     let box2label = document.getElementById("textBox2Label");
     
@@ -75,6 +86,9 @@ let Change = {
         this._title.value = this._stringBundle.getString(
           "change.passphrase.title"
         );
+        cboxlabel.value = this._stringBundle.getString(
+          "new.passphrase.old"
+        );
         box1label.value = this._stringBundle.getString(
           "new.passphrase.label"
         );
@@ -85,10 +99,14 @@ let Change = {
           "ondialogaccept",
           "return Change.doChangePassphrase();"
         );
+        this._oldBoxRow.setAttribute("hidden", "false");
         break;
       case "ChangePassword":
         this._title.value = this._stringBundle.getString(
           "change.password.title"
+        );
+        cboxlabel.value = this._stringBundle.getString(
+          "new.password.old"
         );
         box1label.value = this._stringBundle.getString(
           "new.password.label"
@@ -100,6 +118,7 @@ let Change = {
           "ondialogaccept",
           "return Change.doChangePassword();"
         );
+        this._oldBoxRow.setAttribute("hidden", "false");
         break;
     }
     this._os.addObserver(this, "weave:service:changepwd:start", false);
@@ -187,6 +206,8 @@ let Change = {
       alert(this._stringBundle.getString("noPassphrase.alert"));
     } else if (this._firstBox.value != this._secondBox.value) {
       alert(this._stringBundle.getString("passphraseNoMatch.alert"));
+    } else if (this._currentBox.value != Weave.Service.passphrase) {
+      alert(this._stringBundle.getString("incorrectPassphrase.alert"));
     } else {
       this._status.value = this._stringBundle.getString(
         "change.passphrase.label"
@@ -219,6 +240,8 @@ let Change = {
       alert(this._stringBundle.getString(
         "change.password.status.passwordSameAsPassphrase"
       ));
+    } else if (this._currentBox.value != Weave.Service.password) {
+      alert(this._stringBundle.getString("incorrectPassword.alert"));
     } else {
       this._status.value = this._stringBundle.getString(
         "change.password.status.active"
