@@ -73,6 +73,8 @@ function FennecWeaveGlue() {
      self.showLoginErrors();
    }, 3000);
 
+   /* Add remote tabs tab */
+   Browser.addTab("chrome://weave/content/fennec-tabs.html");
 }
 FennecWeaveGlue.prototype = {
   __prefService: null,
@@ -389,132 +391,6 @@ FennecWeaveGlue.prototype = {
     } else {
       this.setWeaveStatusField("fennec.no.sync");
     }
-  },
-
-  showSyncedTabs: function FennecWeaveGlue_showSyncedTabs() {
-    if ( this._hasBeenConfigured ) {
-      RemoteTabViewer.show();
-    } else {
-      document.getElementById("cmd_panel").doCommand();
-      this.openConnectPane();
-    }
-  },
-
-  hideSyncedTabs: function FennecWeaveGlue_hideSyncedTabs() {
-    RemoteTabViewer.close();
-  }
-};
-
-var RemoteTabViewer = {
-  _panel: null,
-  _remoteClients: null,
-
-  show: function RemoteTabViewer_show() {
-    // Show the panel, make sure it's the correct size
-    let container = document.getElementById("browser-container");
-    this._panel = document.getElementById("synced-tabs-panel");
-    this._panel.hidden = false;
-    this._panel.width = container.boxObject.width;
-    this._panel.height = container.boxObject.height;
-
-    // Make sure the right radio button is selected for the current sort
-    // mode preference:
-    let prefName = "extensions.weave.tabs.sortMode";
-    let sortMode = gFennecWeaveGlue._pfs.getCharPref(prefName);
-    let btnSet = document.getElementById("sort-tabs-radioset");
-    let btn = document.getElementById("sort-tabs-" + sortMode);
-    btnSet.selectedItem = btn;
-
-    // Get all of the remote tabs and populate the list.
-    let tabEngine = Weave.Engines.get("tabs");
-    this._remoteClients = tabEngine.getAllClients();
-    let richlist = document.getElementById("remote-tabs-richlist");
-    this._populateTabs(richlist);
-  },
-
-  close: function() {
-    this._panel.hidden = true;
-  },
-
-  _populateTabs: function RemoteTabViewer__populateTabs(holder) {
-    /* Clear out all child elements from holder first, so we don't
-     * end up adding duplicate columns: */
-    let engine = Weave.Engines.get("tabs");
-    while (holder.firstChild) {
-      holder.removeChild(holder.firstChild);
-    }
-
-    // Get a list of all tabs:
-    let allTabs = [];
-    for each (record in this._remoteClients) {
-      let tabs = record.getAllTabs();
-      for each (tab in tabs) {
-        if (!tab.title) {
-          tab.title = tab.urlHistory[0];
-        }
-        if (!tab.lastUsed) {
-          tab.lastUsed = 0;
-        }
-        allTabs.push(tab);
-      }
-    }
-
-    // Sort list according to sort mode:
-    let prefName = "extensions.weave.tabs.sortMode";
-    let sortMode = gFennecWeaveGlue._pfs.getCharPref(prefName);
-    switch (sortMode) {
-      case 'alphabetical':
-        allTabs.sort(function(a, b) {
-                       return a.title.localeCompare( b.title );
-                     });
-        break;
-      case 'recency':
-        allTabs.sort(function(a, b) {
-                     return (parseInt(b.lastUsed) - parseInt(a.lastUsed));
-                   });
-        break;
-      case 'client':
-        // List is already ordered by client, no need to change.
-        break;
-    }
-
-    // Now actually add them to the menu:
-    for each (let tab in allTabs) {
-      // Skip those that are already open:
-      if ( engine.locallyOpenTabMatchesURL(tab.urlHistory[0]) ) {
-        return;
-      }
-      let newItem = document.createElement("richlistitem");
-      newItem.setAttribute("type", "remotetab");
-      holder.appendChild(newItem);
-      let url = tab.urlHistory[0];
-      let domain = Utils.makeURI(url).prePath;
-      let favicon = domain + "/favicon.ico";
-      let sourceClient = record.getClientName();
-      newItem.updatePreview(tab.title, favicon, sourceClient, url);
-      newItem.setTabData(tab);
-    }
-  },
-
-  openSyncedTab: function RemoteTabViewer_openSyncedTab(richlist, event) {
-    let tabData = richlist.selectedItem.getTabData();
-    this.close();
-    try {
-      // Newer versions of fennec do it this way:
-      Browser.addTab(tabData.urlHistory[0], true);
-      // TODO how to include back history in the tab?
-    } catch (e) {
-      // Older versions do it this way:
-      // (This code can probably be removed...)
-      Browser.newTab(true);
-      BrowserUI.goToURI(tabData.urlHistory[0]);
-    }
-  },
-
-  setSort: function RemoteTabViewer_setSort( sortMode ) {
-    let prefName = "extensions.weave.tabs.sortMode";
-    gFennecWeaveGlue._pfs.setCharPref( prefName, sortMode );
-    this.show();
   }
 };
 
