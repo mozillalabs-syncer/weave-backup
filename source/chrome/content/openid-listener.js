@@ -24,6 +24,7 @@ var gOpenIDProviderListener = {
 }
 const OPENID_SERVICE_URI = "services.mozilla.com/openid/";
 const OPENID_PREF = "extensions.weave.openId.enabled";
+const OPENID_CUSTOM_PREF = "extensions.weave.openId.custom";
 
 /* When we find an openID field, grey it out and put the user's Weave-based openID URI into
  * it, while changing the submit button to say "Sign In with Weave".  But only do this if
@@ -99,7 +100,11 @@ var gOpenIdMunger = {
          * behavior but that seems to be how it works at least in firefox 3.5.
          */
         elem.type = "hidden";
-        elem.value = OPENID_SERVICE_URI + weaveUsername;
+        
+        if (gOpenIdMunger._prefs.prefHasUserValue(OPENID_CUSTOM_PREF))
+          elem.value = gOpenIdMunger._prefs.getCharPref(OPENID_CUSTOM_PREF);
+        else
+          elem.value = OPENID_SERVICE_URI + weaveUsername;
 
         let form = elem.form;
         let formChildren = form.getElementsByTagName("input");

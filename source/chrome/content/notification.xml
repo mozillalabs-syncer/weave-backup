@@ -62,7 +62,7 @@
           // If the view of the notification hasn't been removed yet, remove it.
           var notifications = this.allNotifications;
           for each (var notification in notifications) {
-            if (notification == subject) {
+            if (notification.notification == subject) {
               notification.close();
               break;
             }
@@ -78,9 +78,9 @@
           // but should the notification box or its notifications really know
           // they are located inside the panel?
           var panel = document.getElementById("sync-notifications-panel");
-          if (panel.state == "open" && Notifications.notifications.length == 0)
+          if (panel.state == "open" &&
+            Notifications.notifications.length == 0)
             panel.hidePopup();
-
         ]]></body>
       </method>
 
