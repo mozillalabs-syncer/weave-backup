@@ -1,0 +1,278 @@
+/*
+ * Fonts
+ */
+
+@font-face{
+font-family: 'DroidSans'; 
+src: url('../fonts/DroidSans.ttf') format('truetype');
+}
+
+@font-face{
+font-family: 'Museo'; 
+src: url('../fonts/Museo500-Regular.otf') format('opentype');
+}
+
+/*
+ * Base text elements
+ */
+
+h1 {font-size: 18px;}
+
+p, ul, label {font-size: 10px;}
+
+a:link, a:hover, a:active, a:focus, a:visited {color: #9f423b; text-decoration: none;}
+a:hover {color: #9f423b; text-decoration: none;}
+
+/*
+ * Document structure
+ */
+
+html {
+    padding-bottom: 0px; 
+    padding-top: 20px;
+    padding-left: 0px;
+    padding-right: 0px;
+}
+
+body { 
+    font-family: 'Lucida Grande', 'Lucida Sans Unicode', Lucida, Arial, Helvetica, sans-serif;
+    font-family: 'DroidSans';
+    background: #fff url('../images/background.png') repeat-x top center;
+    padding: 0px; 
+    color:#787878;
+    font-size:12px;
+    line-height: 18px;
+    margin: 0 auto;
+}
+
+#header {
+    z-index: 1;
+    position: relative;
+    padding-left: 20px;
+    height: 100px;
+    width: 900px;
+}
+.welcome {
+    float: left;
+    width: 400px;
+    margin-left: 20px;
+    font-family: 'DroidSans';
+    font-size: 10px;
+    color: rgba(0, 0, 0, 0.4);
+}
+.logo {float: left;}
+
+#container {
+    z-index: 1;
+    position: relative;
+    top: 10px;
+    margin: 0px auto;
+    text-align: center;
+    background: transparent url('../images/bg_clouds.png') no-repeat center center;
+    height: 300px;
+}
+
+#footer {
+    position: absolute;
+    bottom: 0px;
+    padding: 8px 24px 24px 24px;
+    font-size: 9px;
+
+}
+.mozLogo {
+    margin-bottom: -10px;
+    margin-right: 6px;
+}
+
+/*
+ * Device, status, cloud
+ */
+
+#elements {width: 850px; margin: 0px auto;}
+#elements div{display: table-cell; padding: 0px 12px;}
+
+#device {vertical-align: bottom; width: 300px;}
+
+#status {vertical-align: middle;}
+
+#cloud {
+    vertical-align: middle;
+    background: transparent url('../images/weave_cloud.png') no-repeat center center;
+    width: 300px; 
+    height: 240px;
+    text-align: center;
+}
+
+.progressBar {
+    padding: 8px;
+    width: 160px;
+    height: 20px;
+    margin: 0px auto;
+    color: rgba(0, 0, 0, 0.8);
+    font-family: 'Museo';
+    font-size: 14px;
+    -moz-border-radius: 0.5em;
+    -webkit-border-radius: 0.5em;
+    -moz-box-shadow: 
+        inset rgba(141, 178, 198, 0.4) 140px 0px 0px,
+        inset rgba(141, 178, 198, 0.9) 0px 0px 6px,
+        inset rgba(82, 105, 118, 1) 0px 0px 1px,
+        rgba(255, 255, 255, 1) 0px 0px 20px;
+    background-color: rgba(141, 178, 198, 0.1);
+}
+
+/*
+ * Bubble structure
+ */
+
+#bubble {
+    z-index: 2;
+    position: relative;
+    top: -80px;
+    margin: 0px auto;
+    width: 850px;
+}
+
+.bubbleArrow {
+    height: 18px;
+    width: 200px;
+    margin: 0px auto;
+    margin-bottom: -5px;
+    background: transparent url('../images/box_top_arrow.png') no-repeat center center;    
+}
+
+.bubbleShape {
+    width: 200px;
+/*    height: 200px; */
+    margin: 0px auto;
+    font-family: 'Museo';
+    font-size: 16px;
+    padding: 8px 12px 50px;
+    color: rgba(255, 255, 255, 1);
+    -moz-border-radius: 0.5em;
+    -webkit-border-radius: 0.5em;
+    -moz-box-shadow: 
+        rgba(0, 0, 0, 0.3) 0px 4px 4px;
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+.bubblePage {
+    display: none
+}
+
+/*
+ * Bubble elements
+ */
+
+/* prev/next buttons */
+.prev {float: left;}
+.next {float: right;}
+
+.center {margin: 0px auto;}
+
+/* text boxes */
+input[type=text],input[type=password] {
+    padding: 2px 12px;
+    width: 160px;
+    text-align: left;
+    margin: 6px auto;
+    border: 0px;
+    color: rgba(255, 255, 255, 0.3);
+    font-family: 'DroidSans';
+    font-size: 11px;
+    -moz-border-radius: 0.5em;
+    -webkit-border-radius: 0.5em;
+    -moz-box-shadow: 
+        inset rgba(0, 0, 0, 0.6) 0px 0px 6px,
+        inset rgba(0, 0, 0, 1) 0px 0px 1px,
+        rgba(255, 255, 255, 0.1) 0px 0px 6px;
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+/* buttons wrapper to keep buttons aligned at the bottom */
+.buttons {
+    clear: both;
+}
+
+/* form buttons */
+input[type=button],input[type=button][disabled] {
+    padding: 2px 12px;
+    margin: 8px;
+    border: 0px;
+    color: rgba(255, 255, 255, 1);
+    font-family: 'Museo';
+    font-size: 14px;
+    -moz-border-radius: 0.5em;
+    -webkit-border-radius: 0.5em;
+    -moz-box-shadow: 
+        inset rgba(79, 99, 109, 0.6) 0px 0px 6px,
+        inset rgba(145, 145, 145, 0.1) 0px 8px 1px,
+        inset rgba(255, 255, 255, 0.6) 0px 0px 1px,
+        rgba(0, 0, 0, 0.4) 0px 0px 6px;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+input[type=button][disabled] {
+    color: rgba(255, 255, 255, 0.3);
+    -moz-box-shadow:
+        inset rgba(79, 99, 109, 0.2) 0px 0px 6px,
+        inset rgba(145, 145, 145, 0.1) 0px 8px 1px,
+        inset rgba(255, 255, 255, 0.2) 0px 0px 1px,
+        rgba(0, 0, 0, 0.2) 0px 0px 6px;
+}
+
+/*
+ * ok/error colors used in various forms
+ */
+
+.ok {
+    background-color: darkgreen !important;
+}
+.error {
+    background-color: darkred !important;
+}
+
+/*
+ * Sign In bubble
+ */
+
+#signin-newacct {
+    margin: auto auto 4px;
+}
+
+#signin-passphrase {
+    width: 120px;
+    margin: 6px 0px;
+    padding: 2px 6px 2px 12px;
+}
+
+#signin-help {
+    width: 40px;
+    margin: 6px 0px;
+    padding: 2px 12px;
+    font-size: 10px;
+}
+
+#newacct-captcha {
+    width: 200px;
+    padding-top: 5px;
+}
+#recaptcha_image {
+    float: right;
+    margin: 0px;
+    width: 170px;
+    height: 56px;
+}
+#newacct-captcha-controls {
+    float: right;
+    width: 16px;
+    height: 50px;
+    padding-right: 5px;
+}
+#recaptcha_image img {
+    width: 170px;
+    height: 56px;
+}
+.captcha-control {
+    padding: 0;
+    margin: 0;
+}

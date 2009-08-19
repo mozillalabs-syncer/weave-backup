@@ -1,0 +1,113 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <base href="chrome://weave/content/about/"/>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>About:Weave</title>
+    <link rel="stylesheet" type="text/css" media="all" href="css/screen.css" />
+    <link rel="stylesheet" type="text/css" media="all" href="../ext/jquery.fancybox/jquery.fancybox.css" />
+    <script type="text/javascript" src="../ext/jquery/js/jquery-1.3.2.min.js"></script>
+    <script type="text/javascript" src="../ext/jquery/js/jquery-ui-1.7.1.custom.min.js"></script>
+    <script type="text/javascript" src="../ext/jquery.fancybox/jquery.fancybox-1.2.1.js"></script>
+    <script type="application/javascript;version=1.8" src="../load-weave.js"></script>
+    <script type="application/javascript;version=1.8" src="about.js"></script>
+</head>
+
+<body>
+   <div id="header">
+        <div class="logo"><img src="images/weave_logo.png"></div>
+        <div class="welcome localized">Welcome message</div>
+    </div>
+
+    <div id="container">
+        <div id="elements">
+            <div id="device"><img src="images/desktop_device.png"></div>
+            <div id="status"><img src="images/sync_disconnected.png"></div>
+            <div id="cloud"><span class="center"><div id="quotaBar" class="progressBar">70%</div></span></div>
+        </div>
+
+        <div id="bubble">
+            <div class="bubbleArrow"></div>
+            <div class="bubbleShape">
+
+                <div id="signedin" class="bubblePage">
+                  <h1 id="signedin-title">Signed In</h1>
+                  <p id="signedin-text">You are currently signed in as user foo</p>
+                  <input id="signedin-signout" type="button" onclick="Weave.Service.logout();" />
+                </div>
+
+                <!-- fixme: need forgot passphrase ui -->
+                <div id="signin" class="bubblePage">
+                   <h1 id="signin-title">Sign Into Weave</h1>
+
+                    <input id="signin-newacct" type="button" value="new account"
+                           onclick="About.showBubble('newacct');" />
+
+                    <input id="signin-username" type="text" oninput="About.onSigninInput();" />
+                    <input id="signin-password" type="password" oninput="About.onSigninInput();" />
+                    <input id="signin-passphrase" type="password" oninput="About.onSigninInput();" />
+                    <input id="signin-help" type="button" value="help" />
+
+                    <div class="buttons">
+                        <input type="button" class="prev" disabled="true" />
+                        <input type="button" class="next" disabled="true"
+                               onclick="About.signIn();" />
+                    </div>
+                </div>
+
+               <div id="newacct" class="bubblePage">
+                    <h1 id="newacct-title">New Weave Account</h1>
+
+                    <input id="newacct-username" type="text" oninput="About.onNewacctUsernameInput();" />
+                    <input id="newacct-password" type="password" oninput="About.onNewacctInput();" />
+                    <input id="newacct-passphrase" type="password" oninput="About.onNewacctInput();"  />
+                    <input id="newacct-email" type="text" oninput="About.onNewacctInput();" />
+
+                    <div id="newacct-captcha">
+                        <div id="newacct-captcha-controls">
+                            <img id="recaptcha-zoom" src="images/magnify.png"
+                                 class="captcha-control" onclick="About.zoomCaptcha();">
+                            <img src="images/reload.png" class="captcha-control"
+                                 onclick="Recaptcha.reload();">
+                            <img src="images/audio.png" class="captcha-control"
+                                 onclick="About.toggleCaptchaAudio();">
+                        </div>
+                        <div id="recaptcha_image"></div>
+                    </div>
+                    <input id="recaptcha_response_field" name="recaptcha_response_field" type="text" />
+                   <!-- <a href="javascript:Recaptcha.showhelp()">Help</a> -->
+
+                   <script type="text/javascript">
+                      var RecaptchaOptions = {theme:"custom", custom_theme_widget: "newacct-captcha"};
+                      $.getScript("http://api.recaptcha.net/challenge?" +
+                                  "k=6LebwwcAAAAAACKvpotr2zA5dgu5UZod7JSFYaIi");
+                    </script>
+
+                    <input id="newacct-tos-checkbox" type="checkbox" onclick="About.onNewacctInput();" />
+                    <label for="newacct-tos-checkbox">
+                        <span id="newacct-tos-label" class="localized">I agree to the</span>
+                        <a id="newacct-tos-link" class="iframe" href="#" onclick="return false;">TOS</a>
+                        <span id="newacct-tos-label2" class="localized"></span>
+                    </label>
+
+                    <div class="buttons">
+                        <input type="button" class="prev" onclick="About.showBubble('signin');" />
+                        <input type="button" class="next" disabled="true"
+                               onclick="About.onNewacctNext();" />
+                    </div>
+                </div>
+
+                <div id="willsync" class="bubblePage">
+                    <h1>Yay</h1>
+                    <p>Syncing your data in 3,2,1....</p>
+                    <input type="button" value="advanced config" onclick="" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="footer"><img class="mozLogo" src="images/mozilla-logo.png">Copyright &copy; 2005-2009 Mozilla. All rights reserved. &nbsp; &nbsp; <a href="">Privacy Policy</a> &nbsp; &nbsp; <a href="">Legal Notices</a></div>
+</body>
+</html>
