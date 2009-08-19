@@ -280,13 +280,12 @@ let About = {
   onNewacctUsernameInput: function onNewacctUsernameInput() {
     if (About._newacct_username_timer)
       window.clearTimeout(About._newacct_username_timer);
-    About._newacct_username_timer = window.setTimeout(About._checkUsername, 1000);
+    About._newacct_username_timer = window.setTimeout(About._checkUsername, 750);
   },
   _checkUsername: function _checkUsername() {
-    let user = $('#newacct-username').val();
-    if (user == '' || user == $('#newacct-username').data('default'))
+    if (!About._hasInput('#newacct-username'))
       return;
-    if (Weave.Service.checkUsername(user) == "available")
+    if (Weave.Service.checkUsername($('#newacct-username').val()) == "available")
       $('#newacct-username').removeClass('error').addClass('ok');
     else
       $('#newacct-username').removeClass('ok').addClass('error');
@@ -294,12 +293,31 @@ let About = {
     // update next button now that we've determined if the username is taken
     About.onNewacctInput();
   },
+  onNewacctPassInput: function onNewacctPassInput() {
+    if (About._newacct_pass_timer)
+      window.clearTimeout(About._newacct_pass_timer);
+    About._newacct_pass_timer = window.setTimeout(About._checkPass, 750);
+  },
+  _checkPass: function _checkPass() {
+    if (!About._hasInput('#newacct-password') ||
+        !About._hasInput('#newacct-passphrase'))
+      return;
+    if ($('#newacct-password').val() == $('#newacct-passphrase').val())
+      $('#newacct-password,#newacct-passphrase')
+        .removeClass('ok').addClass('error');
+    else
+      $('#newacct-password,#newacct-passphrase')
+        .removeClass('error').addClass('ok');
+    About.onNewacctInput(); // update next button
+  },
   onNewacctInput: function onSigninInput() {
     if (About._hasInput('#newacct-username') &&
         About._hasInput('#newacct-password') &&
         About._hasInput('#newacct-passphrase') &&
         About._hasInput('#newacct-email') &&
         $('#newacct-username').hasClass('ok') &&
+        $('#newacct-password').hasClass('ok') &&
+        $('#newacct-passphrase').hasClass('ok') &&
         $('#newacct-tos-checkbox')[0].checked)
       $('#newacct .buttons .next')[0].disabled = false;
     else
