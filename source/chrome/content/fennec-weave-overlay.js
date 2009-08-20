@@ -142,9 +142,7 @@ FennecWeaveGlue.prototype = {
     let lastVersion = this._pfs.getCharPref("extensions.weave.lastversion");
     if (lastVersion != Weave.WEAVE_VERSION) {
       if (lastVersion == "firstrun")
-        // Open the fennec-specific version of the first-run page.
-	url = "http://services.mozilla.com/fennec-firstrun/?version=" +
-	Weave.WEAVE_VERSION;
+	url = "about:weave";
       else
 	url = "http://services.mozilla.com/updated/?version=" +
 	Weave.WEAVE_VERSION;

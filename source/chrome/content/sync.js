@@ -69,9 +69,7 @@ function WeaveWindow() {
     document.getElementById("sync-syncnowitem").setAttribute("hidden", false);
 
   if (Weave.Svc.Prefs.get("lastversion") == "firstrun") {
-    let url = "http://services.mozilla.com/firstrun/?version=" +
-      Weave.WEAVE_VERSION;
-    setTimeout(function() { window.openUILinkIn(url, "tab"); }, 500);
+    setTimeout(function() { window.openUILinkIn("about:weave", "tab"); }, 500);
     Weave.Svc.Prefs.set("lastversion", Weave.WEAVE_VERSION);
 
   } else if (Weave.Svc.Prefs.get("lastversion") != Weave.WEAVE_VERSION) {
@@ -257,7 +255,7 @@ WeaveWindow.prototype = {
   shutDown: function WeaveWin_shutDown(event) {},
 
   doLoginPopup : function WeaveWin_doLoginPopup(event) {
-    Weave.Utils.openLogin();
+    setTimeout(function() { window.openUILinkIn("about:weave", "tab"); }, 0);
   },
 
   doLogin: function WeaveWin_doLogin(event) {
