@@ -92,7 +92,8 @@ let Login = {
     
     case "weave:service:login:error":
     this._loginStatusIcon.setAttribute("status", "error");
-    this._loginStatus.value = this._stringBundle.getString("loginError.label");
+    this._loginStatus.value = 
+      this._stringBundle.getFormattedString("error.login.description", [Weave.Service.detailedStatus.sync]);
     this._loginStatus.style.color = "red";
     this._loginDialog.getButton("extra2").setAttribute("disabled", "false");
     this._loginDialog.getButton("cancel").setAttribute("label", this._origCancel);
