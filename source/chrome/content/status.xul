@@ -10,7 +10,6 @@
         title="&dialog.title;"
         windowtype="Weave:Status"
         buttons="accept"
-        ondialogcancel="return WeaveStatus.doCancel();"
         onload="WeaveStatus.onLoad()"
         onunload="WeaveStatus.onUnload()">
 

@@ -89,13 +89,6 @@ let WeaveStatus = {
     Observers.remove("weave:engine:sync:status", this.onEngineStatus, this);
   },
 
-  doCancel: function WeaveStatus_doCancel() {
-    this._statusText.value = this._stringBundle.getString("status.cancel");
-    this._statusDialog.getButton("cancel").setAttribute("disabled", "true");
-    Weave.Service.cancelRequested = true;
-    return false;
-  },
-
   doSync: function WeaveStatus_doSync() {
     try {
       // XXX Should we set a timeout to cancel sync if it takes too long?
@@ -131,19 +124,12 @@ let WeaveStatus = {
       return;
     }
 
-    this._statusDialog.getButton("cancel").setAttribute("disabled", "true");
+    this._statusIcon.setAttribute("status", "success");
+    this._statusProgress.value = "100";
+    this._statusEngine.value = this._stringBundle.getString("status.success");
+    this._statusEngine.style.color = "blue";
+    this._statusText.value = this._stringBundle.getString("status.closing");
 
-    if (Weave.Service.cancelRequested) {
-      Weave.Service.cancelRequested = false;
-      this._statusIcon.setAttribute("status", "cancelled");
-      this._statusText.value = this._stringBundle.getString("status.cancelled");
-    } else {
-      this._statusIcon.setAttribute("status", "success");
-      this._statusProgress.value = "100";
-      this._statusEngine.value = this._stringBundle.getString("status.success");
-      this._statusEngine.style.color = "blue";
-      this._statusText.value = this._stringBundle.getString("status.closing");
-    }
     // Delay closing the window for a couple seconds to give the user time
     // to see the result of the sync.
     window.setTimeout(window.close, 2000);
@@ -160,11 +146,6 @@ let WeaveStatus = {
       }
       return;
     }
-
-    this._statusDialog.getButton("cancel").setAttribute("disabled", "true");
-
-    if (Weave.Service.cancelRequested)
-      Weave.Service.cancelRequested = false;
 
     if (Weave.FaultTolerance.Service.lastException == "Could not acquire lock") {
       this._statusIcon.setAttribute("status", "info");
@@ -197,10 +178,5 @@ let WeaveStatus = {
 
   onEngineStatus: function WeaveStatus_onEngineStatus(subject, data) {
     this._statusText.value = this._stringBundle.getString("status.engine." + subject);
-  },
-
-  onCancelRequested: function WeaveStatus_onCancelRequested(subject, data) {
-    // if(!Weave.Service.cancelRequested)
-    //   this._statusText.value = this._stringBundle.getString(data);
   }
 };
