@@ -279,9 +279,13 @@ let About = {
   onBubble_signin: function() {
     let user = Weave.Service.username;
     let server = Weave.Svc.Prefs.get("serverURL");
-    if (About.isNewUser)
+    if (About.isNewUser) {
       $('#signin-newacct').css('display', '');
-    else {
+      $('#signin-password')
+        .val($('#signin-password').data('default'))[0].type = 'text';
+      $('#signin-passphrase')
+        .val($('#signin-passphrase').data('default'))[0].type = 'text';
+    } else {
       $('#status img')[0].src = 'images/sync_disconnected_user.png';
       $('#signin-newacct').css('display', 'none');
       $('#signin-username').val(user);
