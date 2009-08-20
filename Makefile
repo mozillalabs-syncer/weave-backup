@@ -41,7 +41,7 @@ stage_dir=$(objdir)/stage
 xpi_dir=$(objdir)/xpi
 
 weave_version := 0.6pre3
-compatible_version := 0.5pre2
+compatible_version := 0.6pre3
 
 ifeq ($(release_build),)
   xpi_type := dev
