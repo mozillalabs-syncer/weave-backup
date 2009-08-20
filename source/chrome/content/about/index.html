@@ -22,10 +22,16 @@
     </div>
 
     <div id="container">
-        <div id="elements">
+       <div id="elements">
             <div id="device"><img src="images/desktop_device.png"></div>
-            <div id="status"><img src="images/sync_disconnected.png"></div>
-            <div id="cloud"><span class="center"><div id="quotaBar" class="progressBar">70%</div></span></div>
+            <div id="status">
+                <div id="status-arrow"><img src="images/sync_disconnected.png"></div>
+                <div id="status-1">signed in</div>
+                <div id="status-2">(idle)</div>
+            </div>
+            <div id="cloud">
+                <span class="center"><div id="quota-bar" class="progress-bar">70%</div></span>
+            </div>
         </div>
 
         <div id="bubble">
@@ -100,10 +106,16 @@
                 </div>
 
                 <div id="willsync" class="bubblePage">
-                    <h1>Yay</h1>
-                    <p>Syncing your data in 3,2,1....</p>
-                    <input type="button" value="advanced config" onclick="" />
+                    <h1 id="willsync-title">Account Created!</h1>
+                    <p id="willsync-text">Syncing your data in %S seconds...</p>
+                    <input id="willsync-config" type="button" value="modify sync settings"
+                           onclick="About.willsyncSettings();" />
                 </div>
+
+                <div id="setup" class="bubblePage">
+                    <h1 id="setup-title">Sync Settings</h1>
+                    <p id="setup-text">Foo bar baz...</p>
+               </div>
             </div>
         </div>
     </div>

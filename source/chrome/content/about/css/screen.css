@@ -88,12 +88,29 @@ body {
  * Device, status, cloud
  */
 
-#elements {width: 850px; margin: 0px auto;}
-#elements div{display: table-cell; padding: 0px 12px;}
+#elements {
+    width: 850px;
+    margin: 0px auto;
+}
+#elements > div {
+    display: table-cell;
+    padding: 0px 12px;
+}
 
-#device {vertical-align: bottom; width: 300px;}
+#device {
+    vertical-align: bottom;
+    width: 300px;
+}
 
-#status {vertical-align: middle;}
+#status {
+    width: 180px;
+    vertical-align: middle;
+    font-family: 'Museo';
+    font-size: 12px;
+    padding: 0px;
+    margin: -20px 0px 0px 0px;
+    color: black;
+}
 
 #cloud {
     vertical-align: middle;
@@ -103,7 +120,11 @@ body {
     text-align: center;
 }
 
-.progressBar {
+#quota-bar {
+    display: none;
+}
+
+.progress-bar {
     padding: 8px;
     width: 160px;
     height: 20px;
@@ -126,6 +147,7 @@ body {
  */
 
 #bubble {
+    display: none;
     z-index: 2;
     position: relative;
     top: -80px;
@@ -157,7 +179,7 @@ body {
 }
 
 .bubblePage {
-    display: none
+    display: none;
 }
 
 /*

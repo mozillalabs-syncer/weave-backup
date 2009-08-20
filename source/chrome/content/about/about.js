@@ -42,17 +42,14 @@ Cu.import("resource://weave/ext/Observers.js");
 
 let About = {
   _curBubble: null,
+  _timers: null,
 
   init: function init() {
     About._log = Log4Moz.repository.getLogger("About:Weave");
     About._log.info("Loading About:Weave");
 
-    About._localizePage();
     About.hideQuota();
-    if (Weave.Service.isLoggedIn)
-      About.showBubble("signedin");
-    else
-      About.showBubble("signin");
+    About._localizePage();
 
     [['login:start', About.onLoginStart],
      ['login:finish', About.onLoginFinish],
@@ -62,6 +59,15 @@ let About = {
      ['sync:finish', About.onSyncFinish],
      ['sync:error', About.onSyncError]]
      .forEach(function(i) Observers.add("weave:service:" + i[0], i[1]));
+
+    // FIXME: service doesn't have a getter to tell us if it's
+    // syncing, so we just checked for logged-in-ness
+    if (Weave.Service.isLoggedIn)
+      About.setStatus('idle');
+    else {
+      About.setStatus('offline');
+      About.showBubble('signin');
+    }
   },
 
   // Returns the localized string for a name (generally an element id)
@@ -81,7 +87,7 @@ let About = {
       .data('default', (About.str(About._l10nId(element), null, $(element).val())));
     if ($(element)[0].type == "password")
       $(element).data('type', 'password');
-    About.resetField(element);
+    $(element).val($(element).data('default'));
   },
   _localizeElt: function _localizeElt(element) {
     let str = About.str(About._l10nId(element));
@@ -120,6 +126,20 @@ let About = {
   },
 
   //
+  // Timers
+  //
+  clearTimer: function clearTimer(name) {
+    if (!About._timers)
+      About._timers = {};
+    if (About._timers[name])
+      window.clearTimeout(About._timers[name]);
+  },
+  setTimer: function setTimer(name, callback, ms) {
+    About.clearTimer(name);
+    About._timers[name] = window.setTimeout(callback, ms);
+  },
+
+  //
   // Getters
   //
   get isNewUser() {
@@ -133,9 +153,9 @@ let About = {
 
   // Quota meter inside the cloud
   setQuota: function setQuota(percent) {
-    $('#quotaBar').show();
-    $('#quotaBar').text(percent + "%");
-    $('#quotaBar').css("MozBoxShadow",
+    $('#quota-bar').show();
+    $('#quota-bar').text(percent + "%");
+    $('#quota-bar').css("MozBoxShadow",
       "inset rgba(141, 178, 198, 0.4) " + (percent*183/100) + "px 0px 0px, " +
       "inset rgba(141, 178, 198, 0.9) 0px 0px 6px, " +
       "inset rgba(82, 105, 118, 1) 0px 0px 1px, " +
@@ -143,7 +163,7 @@ let About = {
 
   },
   hideQuota: function hideQuota() {
-    $('#quotaBar').hide();
+    $('#quota-bar').hide();
   },
 
   // Bubble dialog
@@ -159,7 +179,41 @@ let About = {
       About["onBubble_" + name]();
   },
   hideBubble: function hideBubble() {
+    About._curBubble.hide();
+    About._curBubble = null;
     $('#bubble').hide();
+  },
+  get curBubble() {
+    if (About._curBubble)
+      return About._curBubble[0].id;
+    return '';
+  },
+
+  setStatus: function setStatus(status) {
+    let user = '<a href="#" onclick="return About.onUsernameClick();">'
+      + Weave.Service.username + '</a>';
+    switch (status) {
+    case "offline":
+      $('#status-arrow img')[0].src = 'images/sync_disconnected_user.png';
+      $('#status-1').html(About.str('status-offline'));
+      $('#status-2').html(About.str('status-offline-2'));
+      break;
+    case "signing-in":
+      $('#status-arrow img')[0].src = 'images/sync_active.png';
+      $('#status-1').html(About.str('status-signing-in'));
+      $('#status-2').html(About.str('status-signing-in-2'));
+      break;
+    case "idle":
+      $('#status-arrow img')[0].src = 'images/sync_idle.png';
+      $('#status-1').html(About.str('status-idle', [user]));
+      $('#status-2').html(About.str('status-idle-2'));
+      break;
+    case "sync":
+      $('#status img')[0].src = 'images/sync_active.png';
+      $('#status-1').html(About.str('status-sync', [user]));
+      $('#status-2').html(About.str('status-sync-2'));
+      break;
+    }
   },
 
   //
@@ -167,37 +221,35 @@ let About = {
   //
 
   onLoginStart: function onLoginStart() {
-    $('#status img')[0].src = 'images/sync_active.png';
+    About.setStatus('signing-in');
   },
   onLoginFinish: function onLoginFinish() {
-    $('#status img')[0].src = 'images/sync_idle.png';
-    // if login was not associated with an about:weave action,
-    // automatically show the signed in bubble
+    About.setStatus('idle');
     if (!About._waitingForLogin)
-      About.showBubble('signedin');
+      About.hideBubble();
     else
       About._waitingForLogin = false;
   },
   onLoginError: function onLoginError() {
-    $('#status img')[0].src = 'images/sync_disconnected_user.png';
+    About.setStatus('offline');
+    // fixme?
   },
   onLogout: function onLogout() {
-    $('#status img')[0].src = 'images/sync_disconnected_user.png';
-    // if logout was not associated with an about:weave action,
-    // automatically show the sign in bubble
+    About.setStatus('offline');
     if (!About._waitingForLogout)
       About.showBubble('signin');
     else
       About._waitingForLogout = false;
   },
   onSyncStart: function onSyncStart() {
-    $('#status img')[0].src = 'images/sync_active.png';
+    About.setStatus('sync');
   },
   onSyncFinish: function onSyncFinish() {
-    $('#status img')[0].src = 'images/sync_idle.png';
+    About.setStatus('idle');
   },
   onSyncError: function onSyncError() {
-    $('#status img')[0].src = 'images/sync_idle.png';
+    About.setStatus('idle');
+    // fixme?
   },
 
 
@@ -212,6 +264,13 @@ let About = {
     $('#signedin-text')
       .html(About.str('signedin-text', [Weave.Service.username]));
     About.onSigninInput(); // update next button if everything is prefilled
+  },
+  onUsernameClick: function onUsernameClick() {
+    if (About.curBubble == 'signedin')
+      About.hideBubble();
+    else
+      About.showBubble('signedin');
+    return false;
   },
 
   //
@@ -228,6 +287,7 @@ let About = {
       $('#signin-username').val(user);
       $('#signin-password').val(Weave.Service.password)[0].type = 'password';
       $('#signin-passphrase').val(Weave.Service.passphrase)[0].type = 'password';
+      About.onSigninInput(); // enable next button
     }
     $('#signin-help').fancybox()[0].href = About.str('signin-help-url');
   },
@@ -278,9 +338,7 @@ let About = {
 //    $('#newacct-username').focus(); - fixme
   },
   onNewacctUsernameInput: function onNewacctUsernameInput() {
-    if (About._newacct_username_timer)
-      window.clearTimeout(About._newacct_username_timer);
-    About._newacct_username_timer = window.setTimeout(About._checkUsername, 750);
+    About.setTimer("newacct-username", About._checkUsername, 750);
   },
   _checkUsername: function _checkUsername() {
     if (!About._hasInput('#newacct-username'))
@@ -294,9 +352,7 @@ let About = {
     About.onNewacctInput();
   },
   onNewacctPassInput: function onNewacctPassInput() {
-    if (About._newacct_pass_timer)
-      window.clearTimeout(About._newacct_pass_timer);
-    About._newacct_pass_timer = window.setTimeout(About._checkPass, 750);
+    About.setTimer("newacct-pass", About._checkPass, 750);
   },
   _checkPass: function _checkPass() {
     if (!About._hasInput('#newacct-password') ||
@@ -349,6 +405,30 @@ let About = {
       this._log.warn("Account creation error: " + ret.error);
       alert("Could not create account: " + ret.error);
     }
+  },
+
+  //
+  // Temporary bubble after sign-up (timed)
+  //
+  onBubble_willsync: function onBubble_willsync() {
+    About._willsyncCount = 10;
+    About.setTimer("willsync", About._willsyncTick, 0);
+  },
+  _willsyncTick: function _willsyncTick() {
+    $('#willsync-text')
+      .html(About.str('willsync-text', [About._willsyncCount]));
+    if (About._willsyncCount-- > 0)
+      About.setTimer("willsync", About._willsyncTick, 1000);
+    else
+      About._willsync_go();
+  },
+  _willsync_go: function _willsync_go() {
+    About.hideBubble();
+    Weave.Service.sync();
+  },
+  willsyncSettings: function willsyncSettings() {
+    About.clearTimer("willsync");
+    About.showBubble("setup");
   }
 };
 
