@@ -56,7 +56,8 @@ function WeaveWindow() {
     ["weave:service:login:error", "onLoginError"],
     ["weave:service:logout:finish", "onLogout"],
     ["weave:notification:added", "onNotificationAdded"],
-    ["weave:notification:removed", "onNotificationRemoved"]];
+    ["weave:notification:removed", "onNotificationRemoved"],
+    ["network:offline-status-changed", "onNetworkStatusChanged"]];
 
   // Add the observers now and remove them on unload
   let weaveWin = this;
@@ -139,9 +140,25 @@ WeaveWindow.prototype = {
   onLoginError: function WeaveWin_onLoginError() {
     this._log.info("Login Error");
     this._setStatus("offline");
-
+    
     let title = this._stringBundle.getString("error.login.title");
-    let reason = this._stringBundle.getString("error.login.reason.unknown");
+    let reasonString;
+    switch (Weave.Service.detailedStatus.sync) {
+      case Weave.LOGIN_FAILED_NETWORK_ERROR:
+        reasonString = "error.login.reason.network";
+        break;
+      case Weave.LOGIN_FAILED_INVALID_PASSPHRASE:
+        reasonString = "error.login.reason.passphrase";
+        break;
+      case Weave.LOGIN_FAILED_LOGIN_REJECTED:
+        reasonString = "error.login.reason.password";
+        break;
+      default:
+        reasonString = "error.login.reason.unknown";
+        break;
+    }
+
+    let reason = this._stringBundle.getString(reasonString);
     let description =
       this._stringBundle.getFormattedString("error.login.description", [reason]);
     let notification = new Weave.Notification(title, description, null,
@@ -328,6 +345,13 @@ WeaveWindow.prototype = {
   onNotificationRemoved: function WeaveWin_onNotificationRemoved() {
     if (Weave.Notifications.notifications.length == 0)
       document.getElementById("sync-notifications-button").hidden = true;
+  },
+
+  onNetworkStatusChanged: function WeaveWin_onNetworkStatusChanged() {
+    var offline = Weave.Svc.IO.offline;
+    document.getElementById("sync-loginitem").setAttribute("disabled", offline);
+    var disableSync = offline || !Weave.Service.isLoggedIn;
+    document.getElementById("sync-syncnowitem").setAttribute("disabled", disableSync);
   },
 
   _updateLastSyncItem: function WeaveWin__updateLastSyncItem() {

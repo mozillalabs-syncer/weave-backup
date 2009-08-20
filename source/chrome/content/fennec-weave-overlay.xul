@@ -18,46 +18,4 @@
                   src="chrome://weave/locale/fennec.properties"/>
   </stringbundleset>
 
-  <!-- TABS -->
-  <!-- Panel for browsing tabs synced in from remote clients -->
-  <stack id="browser-container">
-    <vbox id="synced-tabs-panel" style="-moz-stack-sizing: ignore;" 
-          hidden="true" top="0" left="0">
-      <hbox>
-        <hbox pack="start" align="center" flex="1">
-          <label value="&tabs.sortBy.label;" style="color:white;"/>
-          <radiogroup id="sort-tabs-radioset">
-            <radio label="&tabs.sortBy.date.label;"
-                   oncommand="RemoteTabViewer.setSort('recency');"
-                   id="sort-tabs-recency"/>
-            <radio label="&tabs.sortBy.title.label;"
-                   oncommand="RemoteTabViewer.setSort('alphabetical');"
-                   id="sort-tabs-alphabetical"/>
-            <radio label="&tabs.sortBy.source.label;"
-                   oncommand="RemoteTabViewer.setSort('client');"
-                   id="sort-tabs-client"/>
-          </radiogroup>
-        </hbox>
-        <hbox pack="end" flex="1">
-          <button label="Close"
-                  oncommand="gFennecWeaveGlue.hideSyncedTabs();"
-                  class="square-button-not-selected"/>
-        </hbox>
-      </hbox>
-      <richlistbox id="remote-tabs-richlist" flex="1"
-		   onselect="RemoteTabViewer.openSyncedTab(this, event);">
-      </richlistbox>
-    </vbox>
-  </stack>
-  <!-- Command to show the panel -->
-  <commandset id="mainCommandSet">
-    <command id="cmd_showSyncedTabs" name="Show Synced Tabs"
-	     oncommand="gFennecWeaveGlue.showSyncedTabs();"/>
-  </commandset>
-  <!-- Button to execute the command -->
-  <hbox id="tabs-controls">
-    <toolbarbutton id="retrievetab-button" command="cmd_showSyncedTabs"
-		   hidden="false"/>
-  </hbox>
-
 </overlay>

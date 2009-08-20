@@ -11,6 +11,7 @@ function WeavePrefs() {
   this._log.level = Log4Moz.Level["Debug"];
   Observers.add("weave:service:sync:start", this._onSyncStart, this);
   Observers.add("weave:service:sync:finish", this._onSync, this);
+  Observers.add("network:offline-status-changed", this._checkAccountInfo, this);
   Weave.Utils.prefs.addObserver("", this, false);
 
   window.addEventListener("unload", Weave.Utils.bind2(this, function() {
@@ -54,25 +55,31 @@ WeavePrefs.prototype = {
     let changePasswordButton = document.getElementById('change-password-button');
     let changePassphraseButton = document.getElementById('change-passphrase-button');
 
+    var offline = Weave.Svc.IO.offline;
     if (!Weave.Service.isLoggedIn) {
       signOnButton.setAttribute("hidden", "false");
+      signOnButton.setAttribute("disabled", offline);
       signOutButton.setAttribute("hidden", "true");
       createButton.setAttribute("hidden", "false");
+      createButton.setAttribute("disabled", offline);
       syncNowButton.setAttribute("disabled", "true");
       syncUserName.setAttribute("value", "");
       changePasswordButton.setAttribute("hidden", "true");
       changePassphraseButton.setAttribute("hidden", "true");
-    } else {
+    }
+    else {
       let signedInDescription =
         this._stringBundle.getFormattedString("signedIn.description",
                                               [Weave.Service.username]);
       signOnButton.setAttribute("hidden", "true");
       signOutButton.setAttribute("hidden", "false");
       createButton.setAttribute("hidden", "true");
-      syncNowButton.setAttribute("disabled", "false");
+      syncNowButton.setAttribute("disabled", offline);
       syncUserName.setAttribute("value", signedInDescription);
       changePasswordButton.setAttribute("hidden", "false");
+      changePasswordButton.setAttribute("disabled", offline);
       changePassphraseButton.setAttribute("hidden", "false");
+      changePassphraseButton.setAttribute("disabled", offline);      
    }
   },
 
