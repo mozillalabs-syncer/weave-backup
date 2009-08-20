@@ -398,7 +398,7 @@ let About = {
                                           $('#newacct-email').val(),
                                           $('#recaptcha_challenge_field').val(),
                                           $('#recaptcha_response_field').val());
-    if (ret.status == 200) {
+    if (ret.error == null) {
       $('#signin-username').val($('#newacct-username').val());
       $('#signin-password').val($('#newacct-password').val());
       $('#signin-passphrase').val($('#newacct-passphrase').val());
