@@ -86,7 +86,7 @@ let About = {
     $(element)
       .data('default', (About.str(About._l10nId(element), null, $(element).val())));
     if ($(element)[0].type == "password")
-      $(element).data('type', 'password');
+      $(element).data('type', 'password')[0].type = "text";
     $(element).val($(element).data('default'));
   },
   _localizeElt: function _localizeElt(element) {
@@ -281,10 +281,6 @@ let About = {
     let server = Weave.Svc.Prefs.get("serverURL");
     if (About.isNewUser) {
       $('#signin-newacct').css('display', '');
-      $('#signin-password')
-        .val($('#signin-password').data('default'))[0].type = 'text';
-      $('#signin-passphrase')
-        .val($('#signin-passphrase').data('default'))[0].type = 'text';
     } else {
       $('#status img')[0].src = 'images/sync_disconnected_user.png';
       $('#signin-newacct').css('display', 'none');
@@ -334,12 +330,23 @@ let About = {
     $('#newacct-tos-link')
       .fancybox()[0].href = About.str('newacct-tos-url');
     $('#newacct-tos-checkbox')[0].checked = false;
-    $('#recaptcha_image')
-      .css('width', '').css('height', '');
-    $('#recaptcha-zoom')
+    $('#captcha-zoom')
       .fancybox({frameWidth: 300, frameHeight: 56})[0]
-      .href = '#recaptcha_image';
+      .href = '#captcha-image';
+    About.loadCaptcha();
 //    $('#newacct-username').focus(); - fixme
+  },
+  loadCaptcha: function loadCaptcha() {
+    $('#captcha-iframe')[0].src =
+      "https://services.mozilla.com/0.3/api/register/captcha/";
+  },
+  onCaptchaLoaded: function onCaptchaLoaded() {
+    let img = $('#captcha-iframe')[0]
+      .contentDocument.getElementById('recaptcha_image').firstChild;
+    let challenge = $('#captcha-iframe')[0]
+      .contentDocument.getElementById('recaptcha_challenge_field').value;
+    $('#captcha-image').empty().append(img);
+    $('#captcha-challenge').val(challenge);
   },
   onNewacctUsernameInput: function onNewacctUsernameInput() {
     About.setTimer("newacct-username", About._checkUsername, 750);
@@ -396,8 +403,8 @@ let About = {
     let ret = Weave.Service.createAccount($('#newacct-username').val(),
                                           $('#newacct-password').val(),
                                           $('#newacct-email').val(),
-                                          $('#recaptcha_challenge_field').val(),
-                                          $('#recaptcha_response_field').val());
+                                          $('#captcha-challenge').val(),
+                                          $('#captcha-response').val());
     if (ret.error == null) {
       $('#signin-username').val($('#newacct-username').val());
       $('#signin-password').val($('#newacct-password').val());
@@ -407,6 +414,7 @@ let About = {
 
     } else {
       this._log.warn("Account creation error: " + ret.error);
+      About.loadCaptcha();
       alert("Could not create account: " + ret.error);
     }
   },

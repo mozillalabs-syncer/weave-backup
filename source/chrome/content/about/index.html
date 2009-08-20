@@ -72,24 +72,21 @@
                     <input id="newacct-email" type="text" oninput="About.onNewacctInput();" />
 
                     <div id="newacct-captcha">
-                        <div id="newacct-captcha-controls">
-                            <img id="recaptcha-zoom" src="images/magnify.png"
+                        <iframe id="captcha-iframe" style="display:none;"
+                                onload="About.onCaptchaLoaded();"></iframe>
+                        <input id="captcha-challenge" type="text" style="display:none;" />
+
+                        <div id="captcha-controls">
+                            <img id="captcha-zoom" src="images/magnify.png"
                                  class="captcha-control" onclick="About.zoomCaptcha();">
                             <img src="images/reload.png" class="captcha-control"
-                                 onclick="Recaptcha.reload();">
+                                 onclick="About.loadCaptcha();">
                             <img src="images/audio.png" class="captcha-control"
                                  onclick="About.toggleCaptchaAudio();">
                         </div>
-                        <div id="recaptcha_image"></div>
-                    </div>
-                    <input id="recaptcha_response_field" name="recaptcha_response_field" type="text" />
-                   <!-- <a href="javascript:Recaptcha.showhelp()">Help</a> -->
-
-                   <script type="text/javascript">
-                      var RecaptchaOptions = {theme:"custom", custom_theme_widget: "newacct-captcha"};
-                      $.getScript("http://api.recaptcha.net/challenge?" +
-                                  "k=6LebwwcAAAAAACKvpotr2zA5dgu5UZod7JSFYaIi");
-                    </script>
+                        <div id="captcha-image"></div>
+                  </div>
+                    <input id="captcha-response" type="text" />
 
                     <input id="newacct-tos-checkbox" type="checkbox" onclick="About.onNewacctInput();" />
                     <label for="newacct-tos-checkbox">

@@ -278,21 +278,21 @@ input[type=button][disabled] {
     width: 200px;
     padding-top: 5px;
 }
-#recaptcha_image {
+#captcha-image {
     float: right;
     margin: 0px;
     width: 170px;
     height: 56px;
 }
-#newacct-captcha-controls {
+#captcha-image img {
+    width: 170px;
+    height: 56px;
+}
+#captcha-controls {
     float: right;
     width: 16px;
     height: 50px;
     padding-right: 5px;
-}
-#recaptcha_image img {
-    width: 170px;
-    height: 56px;
 }
 .captcha-control {
     padding: 0;

@@ -138,7 +138,7 @@ WeaveWindow.prototype = {
   onLoginError: function WeaveWin_onLoginError() {
     this._log.info("Login Error");
     this._setStatus("offline");
-    
+
     let title = this._stringBundle.getString("error.login.title");
     let reasonString;
     switch (Weave.Service.detailedStatus.sync) {
@@ -271,20 +271,10 @@ WeaveWindow.prototype = {
 
   shutDown: function WeaveWin_shutDown(event) {},
 
-  doLoginPopup : function WeaveWin_doLoginPopup(event) {
-    setTimeout(function() { window.openUILinkIn("about:weave", "tab"); }, 0);
-  },
-
   doLogin: function WeaveWin_doLogin(event) {
     if (Weave.Service.isLoggedIn)
       return;
-
-    let username = Weave.Svc.Prefs.get("username");
-    let server = Weave.Svc.Prefs.get("serverURL");
-    if (!username && server == 'https://auth.services.mozilla.com/')
-      this.doOpenSetupWizard();
-    else
-      this.doLoginPopup();
+    setTimeout(function() { window.openUILinkIn("about:weave", "tab"); }, 0);
   },
 
   doOpenSetupWizard : function WeaveWin_doOpenSetupWizard(event) {
