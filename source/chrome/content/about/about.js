@@ -285,8 +285,12 @@ let About = {
       $('#status img')[0].src = 'images/sync_disconnected_user.png';
       $('#signin-newacct').css('display', 'none');
       $('#signin-username').val(user);
-      $('#signin-password').val(Weave.Service.password)[0].type = 'password';
-      $('#signin-passphrase').val(Weave.Service.passphrase)[0].type = 'password';
+      let pass = Weave.Service.password;
+      if (pass)
+        $('#signin-password').val(pass)[0].type = 'password';
+      let passph = Weave.Service.passphrase;
+      if (passph)
+        $('#signin-passphrase').val(passph)[0].type = 'password';
       About.onSigninInput(); // enable next button
     }
     $('#signin-help').fancybox()[0].href = About.str('signin-help-url');
@@ -313,9 +317,11 @@ let About = {
 
     // Save login settings if successful
     if (Weave.Service.isLoggedIn) {
-      Weave.Service.username = user;
-      Weave.Service.password = pass;
-      Weave.Service.passphrase = passph;
+      try {
+        Weave.Service.username = user;
+        Weave.Service.password = pass;
+        Weave.Service.passphrase = passph;
+      } catch (e) { /* storing passwords may fail if master password is declined */ }
 
     } else {
       //?
@@ -407,8 +413,8 @@ let About = {
                                           $('#captcha-response').val());
     if (ret.error == null) {
       $('#signin-username').val($('#newacct-username').val());
-      $('#signin-password').val($('#newacct-password').val());
-      $('#signin-passphrase').val($('#newacct-passphrase').val());
+      $('#signin-password').val($('#newacct-password').val())[0].type = "password";
+      $('#signin-passphrase').val($('#newacct-passphrase').val())[0].type = "password";
       About.signIn(true);
       About.showBubble("willsync");
 
