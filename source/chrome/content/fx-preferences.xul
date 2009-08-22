@@ -1,7 +1,5 @@
 <?xml version="1.0"?>
 
-<?xml-stylesheet href="chrome://weave/content/preferences.css" type="text/css"?>
-
 <!DOCTYPE overlay SYSTEM "chrome://weave/locale/preferences.dtd">
 
 <overlay id="sync-preferences"
@@ -39,24 +37,12 @@
       <preference id="extensions.weave.client.type"
                   name="extensions.weave.client.type"
                   type="string"/>
-      <preference id="extensions.weave.username"
-                  name="extensions.weave.username"
-                  type="string"/>
-      <preference id="extensions.weave.rememberpassword"
-                  name="extensions.weave.rememberpassword"
-                  type="bool"/>
-      <preference id="extensions.weave.autoconnect"
-                  name="extensions.weave.autoconnect"
-                  type="bool"/>
       <preference id="extensions.weave.serverURL"
                   name="extensions.weave.serverURL"
                   type="string"/>
       <preference id="extensions.weave.enabled"
                   name="extensions.weave.enabled"
                   type="bool"/>
-      <preference id="extensions.weave.schedule"
-                  name="extensions.weave.schedule"
-                  type="int"/>
       <preference id="extensions.weave.encryption"
                   name="extensions.weave.encryption"
                   type="string"/>
@@ -64,72 +50,12 @@
 
     <tabbox id="sync-tabbox" flex="1">
       <tabs>
-        <tab id="accountTab" label="&accountTab.label;" helpTopic="prefs-sync-account"/>
         <tab id="syncTab" label="&syncTab.label;" helpTopic="prefs-sync-sync"/>
         <tab id="clientsTab" label="&clientsTab.label;" helpTopic="prefs-sync-clients"/>
-        <!--<tab id="serviceaddonsTab" label="&addonsTab.label;" helpTopic="prefs-sync-serviceaddons"/>-->
         <tab id="advancedTab" label="&advancedTab.label;" helpTopic="prefs-advanced-advanced"/>
       </tabs>
 
       <tabpanels flex="1">
-
-        <!-- Account -->
-        <tabpanel id="accountTab" orient="vertical">
-
-            <groupbox align="center">
-              <description style="font-weight:bold;">
-                &footerNotice.description;
-              </description>
-            </groupbox>
-
-            <!-- Sign In -->
-            <groupbox id="sync-signon-button">
-              <caption label="&alreadyHaveAccount.description;"/>
-              <hbox align="center">
-                <description flex="1" control="signOnButton">
-                  &signIntoAccount.description;
-                </description>
-                <button id="signOnButton" label="&signInButton.label;"
-                        oncommand="gWeavePrefs.doSignOn()"/>
-              </hbox>
-            </groupbox>
-
-            <!-- Account Status and Sign Out -->
-            <groupbox id="sync-signout-button">
-              <caption label="&signedIn.label;"/>
-              <hbox align="center">
-                <label flex="1" control="signOutButton" id="sync-username-field"/>
-                <button id="change-password-button"
-                        label="&changePasswordButton.label;"
-                        oncommand="Weave.Utils.openGenericDialog('ChangePassword')"/>
-                <button id="change-passphrase-button"
-                        label="&changePassphraseButton.label;"
-                        oncommand="Weave.Utils.openGenericDialog('ChangePassphrase')"/>
-                <button id="signOutButton" label="&signOutButton.label;"
-                        oncommand="gWeavePrefs.doSignOut()"/>
-              </hbox>
-            </groupbox>
-
-            <!-- Create Account -->
-            <groupbox id="sync-create-button">
-              <caption label="&createAccount.description;"/>
-              <hbox align="center">
-                <description flex="1" control="createAccountButton">
-                  &signUpForAccount.description;
-                </description>
-	          <button id="createAccountButton" label="&createAccountButton.label;"
-                        oncommand="gWeavePrefs.doCreateAccount()"/>
-              </hbox>
-            </groupbox>
-
-            <!-- Account Settings -->
-            <groupbox align="start">
-              <caption label="&accountSettings.label;"/>
-                <checkbox id="sync-autoconnect-checkbox" class="indent"
-                          label="&autoconnectCheckbox.label;"
-                          preference="extensions.weave.autoconnect"/>
-            </groupbox>
-        </tabpanel>
 
         <!-- Data -->
         <tabpanel id="syncTab">
@@ -185,14 +111,6 @@
           </groupbox>
         </tabpanel>
       
-        <!-- Add-ons
-        <tabpanel id="serviceaddonsTab">
-          <groupbox id="sync-addons-group" flex="1">
-            <description>&addonsGroupbox.description;</description>
-          </groupbox>
-        </tabpanel>
-        -->
-
         <!-- Advanced -->
         <tabpanel id="advancedTab" orient="vertical">
           <groupbox id="sync-advanced-group" flex="1">

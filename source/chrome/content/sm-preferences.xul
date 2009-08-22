@@ -1,6 +1,4 @@
 <?xml version="1.0"?>
-<?xml-stylesheet href="chrome://weave/content/preferences.css"
-type="text/css"?>
 <!DOCTYPE overlay SYSTEM "chrome://weave/locale/preferences.dtd">
 
 <overlay id="weave_preftree_overlay"

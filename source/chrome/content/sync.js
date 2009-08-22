@@ -199,19 +199,6 @@ WeaveWindow.prototype = {
       syncnowitem.setAttribute("disabled", "true");
   },
 
-  _onGetPassword: function WeaveWin_onGetPassword(identity) {
-    let self = yield;
-    this._log.info("getting password...");
-    self.done();
-  },
-
-  _onGetPassphrase: function WeaveWin_onGetPassphrase(identity) {
-    let self = yield;
-    this._log.info("getting passphrase...");
-//    Weave.Utils.openLogin();
-    self.done();
-  },
-
   onSyncStart: function WeaveWin_onSyncStart() {
     this._setStatus("active");
 
@@ -275,10 +262,6 @@ WeaveWindow.prototype = {
     if (Weave.Service.isLoggedIn)
       return;
     setTimeout(function() { window.openUILinkIn("about:weave", "tab"); }, 0);
-  },
-
-  doOpenSetupWizard : function WeaveWin_doOpenSetupWizard(event) {
-    Weave.Utils.openWizard();
   },
 
   doLogout: function WeaveWin_doLogout(event) {

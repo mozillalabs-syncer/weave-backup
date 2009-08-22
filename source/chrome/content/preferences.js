@@ -47,40 +47,9 @@ WeavePrefs.prototype = {
   },
 
   _checkAccountInfo: function WeavePrefs__checkAccountInfo() {
-    let signOnButton = document.getElementById('sync-signon-button');
-    let signOutButton = document.getElementById('sync-signout-button');
     let syncNowButton = document.getElementById('sync-syncnow-button');
-    let createButton = document.getElementById('sync-create-button');
-    let syncUserName = document.getElementById('sync-username-field');
-    let changePasswordButton = document.getElementById('change-password-button');
-    let changePassphraseButton = document.getElementById('change-passphrase-button');
-
-    var offline = Weave.Svc.IO.offline;
-    if (!Weave.Service.isLoggedIn) {
-      signOnButton.setAttribute("hidden", "false");
-      signOnButton.setAttribute("disabled", offline);
-      signOutButton.setAttribute("hidden", "true");
-      createButton.setAttribute("hidden", "false");
-      createButton.setAttribute("disabled", offline);
-      syncNowButton.setAttribute("disabled", "true");
-      syncUserName.setAttribute("value", "");
-      changePasswordButton.setAttribute("hidden", "true");
-      changePassphraseButton.setAttribute("hidden", "true");
-    }
-    else {
-      let signedInDescription =
-        this._stringBundle.getFormattedString("signedIn.description",
-                                              [Weave.Service.username]);
-      signOnButton.setAttribute("hidden", "true");
-      signOutButton.setAttribute("hidden", "false");
-      createButton.setAttribute("hidden", "true");
-      syncNowButton.setAttribute("disabled", offline);
-      syncUserName.setAttribute("value", signedInDescription);
-      changePasswordButton.setAttribute("hidden", "false");
-      changePasswordButton.setAttribute("disabled", offline);
-      changePassphraseButton.setAttribute("hidden", "false");
-      changePassphraseButton.setAttribute("disabled", offline);      
-   }
+    syncNowButton.setAttribute("disabled", !Weave.Service.isLoggedIn ||
+      Weave.Svc.IO.offline);
   },
 
   _loadEnginesList: function WeavePrefs__loadEnginesList() {
@@ -141,51 +110,12 @@ WeavePrefs.prototype = {
     Weave.Utils.openSync();
   },
 
-  openAdvancedPrefs: function WeavePrefs_openAdvancedPrefs() {
-    Weave.Utils.openDialog("AdvancedPrefs", "advanced.xul");
-  },
-
-  doSignOn: function WeavePrefs_doSignOn() {
-    Weave.Utils.openLogin();
-    this.onPaneLoad();
-  },
-
-  doSignOut: function WeavePrefs_doSignOut() {
-    Weave.Service.logout();
-    this._checkAccountInfo();
-  },
-  
-  doCreateAccount: function WeavePrefs_doCreateAccount() {
-    Weave.Utils.openWizard();
-  },
-
-  resetLoginCredentials: function WeavePrefs_resetLoginCredentials() {
-    if (Weave.Svc.Prompt.confirm(null,
-                  this._stringBundle.getString("reset.login.warning.title"),
-                  this._stringBundle.getString("reset.login.warning"))) {
-      Weave.Service.logout();
-      Weave.Service.password = null;
-      Weave.Service.passphrase = null;
-      Weave.Service.username = null;
-      this._checkAccountInfo();
-      this._checkClientInfo();
-    }
-  },
-
   resetServerURL: function WeavePrefs_resetServerURL() {
     Weave.Svc.Prefs.reset("serverURL");
     let serverURL = Weave.Svc.Prefs.get("serverURL");
     let serverField = document.getElementById('sync-server-field');
     serverField.setAttribute("value", serverURL);
     Weave.Service.logout();
-  },
-
-  resetLock: function WeavePrefs_resetLock() {
-    if (Weave.Svc.Prompt.confirm(null,
-                  this._stringBundle.getString("reset.lock.warning.title"),
-                  this._stringBundle.getString("reset.lock.warning"))) {
-       Weave.Service.resetLock();
-    }
   },
 
   eraseServer: function WeavePrefs_eraseServer() {
