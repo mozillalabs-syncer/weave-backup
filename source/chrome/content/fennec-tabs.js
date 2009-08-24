@@ -12,8 +12,9 @@ let RemoteTabViewer = {
       let list = document.getElementById("tabList");
       this._populateTabs(list);
     } else {
-      let item = document.createElement("h1");
-      item.innerHTML = "Weave is synchronizing your data, please wait...";
+      let item = document.createElement("img");
+      item.setAttribute("class", "center");
+      item.src = "chrome://weave/content/about/images/sync_active.png";
       document.getElementsByTagName('body')[0].appendChild(item);
       
       // Reload in 3 seconds
