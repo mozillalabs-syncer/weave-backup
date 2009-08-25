@@ -19,6 +19,7 @@
   <prefpane id="sync-prefpane" onpaneload="gWeavePrefs.onPaneLoad();" 
             helpURI="chrome://browser/locale/help/help.rdf"
             label="&prefpane.label;"
+            flex="1"
             image="chrome://weave/skin/sync-32x32.png">
 
     <script type="application/x-javascript"
@@ -48,112 +49,30 @@
                   type="string"/>
     </preferences>
 
-    <tabbox id="sync-tabbox" flex="1">
-      <tabs>
-        <tab id="syncTab" label="&syncTab.label;" helpTopic="prefs-sync-sync"/>
-        <tab id="clientsTab" label="&clientsTab.label;" helpTopic="prefs-sync-clients"/>
-        <tab id="advancedTab" label="&advancedTab.label;" helpTopic="prefs-advanced-advanced"/>
-      </tabs>
-
-      <tabpanels flex="1">
-
-        <!-- Data -->
-        <tabpanel id="syncTab">
           <groupbox id="sync-settings-group" flex="1">
             <hbox align="center">
               <vbox>
                 <checkbox id="sync-autosync-checkbox"
                           label="&backUpCheckbox.label;"
                           preference="extensions.weave.enabled"/>
-                <checkbox label="&encryptOnServerCheckbox.label;"
-                          disabled="true" checked="true"/>
               </vbox>
               <spacer flex="1"/>
               <button id="sync-syncnow-button" label="&syncNowButton.label;"
                       oncommand="gWeavePrefs.doSyncNow()"/>
+
             </hbox>
-
-            <separator/>
-
-            <label value="&syncItemsList.label;"/>
-            <richlistbox id="sync-engines-list"/>
-          </groupbox>
-        </tabpanel>
-
-        <!-- Clients -->
-        <tabpanel id="serviceclientsTab">
-          <groupbox id="sync-clients-group" flex="1">
-            <grid width="100%">
-              <rows>
-                <row align="center">
-                  <label value="&instanceName.label;" control="sync-instanceName-field"/>
-                  <textbox id="sync-instanceName-field" class="padded"
-                           preference="extensions.weave.client.name"/>
-                  <menulist preference="extensions.weave.client.type">
-                    <menupopup>
-                      <menuitem label="Desktop" value="desktop"/>
-                      <menuitem label="Laptop" value="laptop"/>
-                      <menuitem label="Mobile" value="mobile"/>
-                    </menupopup>
-                  </menulist>
-                </row>
-                <row>
-                  <spacer flex="1"/>
-                  <label width="100%" disabled="true" value="&examples.label;"/>
-                </row>
-              </rows>
-            </grid>
-
-            <separator/>
-
-            <label value="&clientList.label;"/>
-            <richlistbox id="sync-clients-list"/>
-          </groupbox>
-        </tabpanel>
-      
-        <!-- Advanced -->
-        <tabpanel id="advancedTab" orient="vertical">
-          <groupbox id="sync-advanced-group" flex="1">
-            <caption label="&serverSettingsCaption.label;"/>
-            <hbox align="center">
-              <label value="&serverLocation.label;" control="sync-server-field"/>
-              <textbox id="sync-server-field" class="padding" flex="1"
-                       preference="extensions.weave.serverURL"/>
-              <button label="&resetServerURLButton.label;"
-                      oncommand="gWeavePrefs.resetServerURL()"/>
-            </hbox>
-            <hbox align="center">
-              <label value="&encryption.label;"/>
-              <menulist preference="extensions.weave.encryption" disabled="true">
-                <menupopup>
-                  <menuitem label="&aesAlgorithmItem.label;" value="0" />
-                  <menuitem label="&teaAlgorithmItem.label;" value="1"/>
-                  <menuitem label="&noEncryptionItem.label;" value="none"/>
-                </menupopup>
-              </menulist>
-            </hbox>
-            <description class="indent">
-              &defaultServerRequiresEncryption.description;
-            </description>
-          </groupbox>
-          <groupbox>
-            <caption label="&debugCaption.label;"/>
             <hbox align="center">
               <label value="&eraseServerDataButton.description;" flex="1"/>
               <button id="eraseserver-button" label="&eraseServerDataButton.label;"
                       oncommand="gWeavePrefs.eraseServer();"/>
             </hbox>
-            <hbox>
-              <label value="&openActivityLogButton.description;" flex="1"/>
-              <button label="&openActivityLogButton.label;"
-                      oncommand="gWeavePrefs.openActivityLog()"/>
-            </hbox>
+            <separator/>
+
+            <label value="&syncItemsList.label;"/>
+            <richlistbox id="sync-engines-list"/>
+
+
           </groupbox>
 
-        </tabpanel>
-
-      </tabpanels>
-
-    </tabbox>
   </prefpane>
 </overlay>

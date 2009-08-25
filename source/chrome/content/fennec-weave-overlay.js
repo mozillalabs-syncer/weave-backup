@@ -180,25 +180,23 @@ FennecWeaveGlue.prototype = {
 
     switch (topic) {
       case "weave:service:sync:start":
-	this.setWeaveStatusField("Syncing Now...");
+        this.setWeaveStatusField("fennec.sync.start");
         this._enableButtons(false);
       break;
       case "weave:service:sync:finish":
         let now = new Date();
         let time = now.toLocaleTimeString();
         let date = now.toLocaleDateString();
-          this.setWeaveStatusField("fennec.sync.complete.time", [time, date]);
-          this._enableButtons(true);
+        this.setWeaveStatusField("fennec.sync.complete.time", [time, date]);
+        this._enableButtons(true);
       break;
       case "weave:service:sync:error":
-        let err = Weave.Service.detailedStatus.sync;
+        let err = Weave.Utils.getErrorString(Weave.Service.detailedStatus.sync);
         if (err) {
-          // TODO do localization based on constants
-          // instead of using the bare error string
           this.setWeaveStatusField("fennec.sync.error.detail", [err]);
         } else {
           this.setWeaveStatusField("fennec.sync.error.generic");
-	}
+	      }
         this._enableButtons(true);
       break;
     }

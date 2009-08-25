@@ -84,7 +84,7 @@ WeavePrefs.prototype = {
 
   onPaneLoad: function WeavePrefs_onPaneLoad() {
     this._checkAccountInfo();
-    this._checkClientInfo();
+//    this._checkClientInfo();
     this._loadEnginesList();
   },
 

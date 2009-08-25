@@ -156,7 +156,9 @@ let WeaveStatus = {
         this._statusText.value = this._stringBundle.getString("status.tryagain");
     } else {
       this._statusIcon.setAttribute("status", "error");
-      this._statusEngine.value = this._stringBundle.getString("status.error") + " (" + Weave.Service.detailedStatus.sync + ")";
+      let reasonString = Weave.Utils.getErrorString(Weave.Service.detailedStatus.sync);
+      this._statusEngine.value = 
+        this._stringBundle.getFormattedString("status.error", [reasonString]);
       this._statusText.value = this._stringBundle.getString("status.closing");
       this._statusEngine.style.color = "red";
     }

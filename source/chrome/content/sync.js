@@ -117,8 +117,8 @@ WeaveWindow.prototype = {
     else {
       if (!Weave.Service.username) {
         this._log.error("status is " + status + ", but username not set");
-        // Fall back to a generic string.
-        label = this._stringBundle.getString("status." + status);
+        // don't add a label
+        label = "";
       }
       else
         label = Weave.Service.username;
@@ -140,23 +140,9 @@ WeaveWindow.prototype = {
     this._setStatus("offline");
 
     let title = this._stringBundle.getString("error.login.title");
-    let reasonString;
-    switch (Weave.Service.detailedStatus.sync) {
-      case Weave.LOGIN_FAILED_NETWORK_ERROR:
-        reasonString = "error.login.reason.network";
-        break;
-      case Weave.LOGIN_FAILED_INVALID_PASSPHRASE:
-        reasonString = "error.login.reason.passphrase";
-        break;
-      case Weave.LOGIN_FAILED_LOGIN_REJECTED:
-        reasonString = "error.login.reason.password";
-        break;
-      default:
-        reasonString = "error.login.reason.unknown";
-        break;
-    }
+ 
 
-    let reason = this._stringBundle.getString(reasonString);
+    let reason = Weave.Utils.getErrorString(Weave.Service.detailedStatus.sync);
     let description =
       this._stringBundle.getFormattedString("error.login.description", [reason]);
     let notification = new Weave.Notification(title, description, null,

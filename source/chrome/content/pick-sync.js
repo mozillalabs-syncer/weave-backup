@@ -8,13 +8,6 @@ let Sync = {
   // Public Methods
 
   onLoad: function Sync_onLoad() {
-    let dialogStr = this._getString("dialog");
-    this._set("syncDialog", "title", "syncTitle", "value", dialogStr("title"));
-    this._set("syncButton", "label", dialogStr("accept"));
-
-    this._set("dirCaption", "label", this._getString("dir.caption"));
-    this._set("dataCaption", "label", this._getString("data.caption"));
-
     this.updateDir();
   },
 
@@ -41,7 +34,10 @@ let Sync = {
   },
 
   updateDir: function Sync_updateDir() {
-    this._set("dirDesc", "value", this._getString("dir", this._syncType));
+    document.getElementById("dirDescWipeClient").hidden = (this._syncType != "wipeClient");
+    document.getElementById("dirDescWipeRemote").hidden = (this._syncType != "wipeRemote");
+    document.getElementById("dirDescResetClient").hidden = (this._syncType != "resetClient");
+    window.sizeToContent();
   },
 
   //////////////////////////////////////////////////////////////////////////////
