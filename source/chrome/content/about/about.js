@@ -143,8 +143,7 @@ let About = {
   // Getters
   //
   get isNewUser() {
-    return !Weave.Service.username &&
-      Weave.Svc.Prefs.get("serverURL") == 'https://auth.services.mozilla.com/';
+    return !Weave.Service.username;
   },
 
   //
