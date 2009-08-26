@@ -411,7 +411,7 @@ let About = {
                                           $('#newacct-email').val(),
                                           $('#captcha-challenge').val(),
                                           $('#captcha-response').val());
-    if (ret.error == null) {
+    if (ret == null) {
       $('#signin-username').val($('#newacct-username').val());
       $('#signin-password').val($('#newacct-password').val())[0].type = "password";
       $('#signin-passphrase').val($('#newacct-passphrase').val())[0].type = "password";
@@ -419,9 +419,9 @@ let About = {
       About.showBubble("willsync");
 
     } else {
-      this._log.warn("Account creation error: " + ret.error);
+      this._log.warn("Account creation error: " + ret);
       About.loadCaptcha();
-      alert("Could not create account: " + ret.error);
+      alert("Could not create account: " + ret);
     }
   },
 
