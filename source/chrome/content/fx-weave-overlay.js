@@ -35,26 +35,13 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-const WEAVE_ALERT_TITLE = "Weave Alert!";
 
 function FxWeaveGlue() {
   this._log = Log4Moz.repository.getLogger("Chrome.Window");
   this._log.info("Initializing Firefox Weave embedding");
-  this._init();
 }
 FxWeaveGlue.prototype = {
-  __os: null,
-  get _os() {
-    if (!this.__os)
-      this.__os = Cc["@mozilla.org/observer-service;1"]
-        .getService(Ci.nsIObserverService);
-    return this.__os;
-  },
-  
-  _init: function FxWeaveGlue__init() {
-    this._os.addObserver(this, "weave:service:alerts:changed", false);
-  },
-  
+
   doInitTabsMenu: function FxWeaveGlue__doInitTabsMenu() {
     let menu = document.getElementById("sync-tabs-menu");
 
@@ -138,22 +125,7 @@ FxWeaveGlue.prototype = {
 
     // FIXME: update a notification that lists the opened tab, if any.
   },
-  
-  observe: function Login__observer(subject, topic, data) {
-    if (topic == "weave:service:alerts:changed") {
-      let alerts = Weave.Service.alerts;
-      Weave.Notifications.removeAll(WEAVE_ALERT_TITLE);
-      if (alerts) {
-        for (let i = 0; i < alerts.length; i++) {
-          Weave.Notifications.add(new Weave.Notification(
-            WEAVE_ALERT_TITLE, alerts[i], null, 
-            Weave.Notifications.PRIORITY_WARNING
-          ));
-        }
-      }
-    }
-  },
-  
+
   shutdown: function FxWeaveGlue__shutdown() {
   }
 }
