@@ -143,7 +143,8 @@ let About = {
   // Getters
   //
   get isNewUser() {
-    return !Weave.Service.username;
+    // Allow new user creation when there's no user for the default server
+    return !Weave.Service.username && !Weave.Svc.Prefs.isSet("serverURL");
   },
 
   //
