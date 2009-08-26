@@ -143,8 +143,8 @@ let About = {
   // Getters
   //
   get isNewUser() {
-    // Allow new user creation when there's no user for the default server
-    return !Weave.Service.username && !Weave.Svc.Prefs.isSet("serverURL");
+    return !Weave.Service.username &&
+      Weave.Svc.Prefs.get("serverURL") == 'https://auth.services.mozilla.com/';
   },
 
   //
@@ -344,7 +344,7 @@ let About = {
   },
   loadCaptcha: function loadCaptcha() {
     $('#captcha-iframe')[0].src =
-      "https://services.mozilla.com/0.3/api/register/captcha/";
+      Weave.Service.miscURL + "1/captcha_html";
   },
   onCaptchaLoaded: function onCaptchaLoaded() {
     let img = $('#captcha-iframe')[0]
