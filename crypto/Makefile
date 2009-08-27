@@ -47,6 +47,12 @@ ifeq ($(sdkdir),)
   $(error)
 endif
 
+ifdef platform_target
+  platform=$(platform_target)
+else
+  platform=*
+endif
+
 all: build
 
 .PHONY: build crypto rebuild_all
@@ -55,7 +61,7 @@ crypto:
 	$(MAKE) -C src install
 
 build:
-	cp -R -v platform $(stage_dir)
 	cp -R -v components $(stage_dir)
+	cd platform;mkdir -p ../$(stage_dir)/platform;cp -R -v $(platform) ../$(stage_dir)/platform
 
 rebuild_all: crypto build
