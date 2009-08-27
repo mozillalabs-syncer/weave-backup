@@ -66,8 +66,8 @@ let RemoteTabViewer = {
           // Trim title and url to 80 chars
           let fTitle = tab.title;
           let uTitle = tab.urlHistory[0];
-          if (fTitle.length > 80) fTitle = substr(fTitle, 0, 80);
-          if (uTitle.length > 80) uTitle = substr(uTitle, 0, 80);
+          if (fTitle.length > 80) fTitle = fTitle.substr(0, 80);
+          if (uTitle.length > 80) uTitle = uTitle.substr(0, 80);
           
           let item = document.createElement("div");
           item.setAttribute("onClick",
