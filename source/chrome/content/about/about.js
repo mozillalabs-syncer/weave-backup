@@ -595,7 +595,7 @@ let About = {
   // Temporary bubble after sign-up (timed)
   //
   onBubble_willsync: function onBubble_willsync() {
-    About._willsyncCount = 10;
+    About._willsyncCount = 5;
     About.setTimer("willsync", About._willsyncTick, 0);
   },
   _willsyncTick: function _willsyncTick() {
@@ -608,7 +608,7 @@ let About = {
   },
   _willsync_go: function _willsync_go() {
     About.hideBubble();
-    Weave.Service.sync();
+    Weave.Service.syncOnIdle();
   },
   willsyncSettings: function willsyncSettings() {
     About.clearTimer("willsync");
