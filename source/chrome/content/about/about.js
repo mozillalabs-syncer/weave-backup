@@ -39,6 +39,7 @@ const Ci = Components.interfaces;
 const Cu = Components.utils;
 
 Cu.import("resource://weave/ext/Observers.js");
+Cu.import("resource://weave/ext/Preferences.js");
 
 let About = {
   init: function init() {
@@ -276,8 +277,6 @@ let About = {
   },
 
   setStatus: function setStatus(status) {
-    let user = '<a href="#" onclick="return About.onUsernameClick();">'
-      + Weave.Service.username + '</a>';
     switch (status) {
     case "offline":
       $('#status-arrow img')[0].src = 'images/sync_disconnected_user.png';
@@ -291,12 +290,12 @@ let About = {
       break;
     case "idle":
       $('#status-arrow img')[0].src = 'images/sync_idle.png';
-      $('#status-1').html(About.str('status-idle', [user]));
+      $('#status-1').html(About.str('status-idle', [Weave.Service.username]));
       $('#status-2').html(About.str('status-idle-2'));
       break;
     case "sync":
       $('#status img')[0].src = 'images/sync_active.png';
-      $('#status-1').html(About.str('status-sync', [user]));
+      $('#status-1').html(About.str('status-sync', [Weave.Service.username]));
       $('#status-2').html(About.str('status-sync-2'));
       break;
     }
@@ -468,10 +467,10 @@ let About = {
     alert("Sorry, this functionality is not implemented yet!"); //FIXME
   },
   changePassword: function changePassword() {
-    alert("Sorry, this functionality is not implemented yet!"); //FIXME
+    Weave.Utils.openGenericDialog('ChangePassword');
   },
   changePassphrase: function changePassphrase() {
-    alert("Sorry, this functionality is not implemented yet!"); //FIXME
+    Weave.Utils.openGenericDialog('ChangePassphrase');
   },
 
   //
@@ -481,7 +480,7 @@ let About = {
     About.resetNewacct();
 
     let url = Weave.Svc.Prefs.get('termsURL')
-      .replace('%LOCALE%', Weave.Svc.GPrefs.get('general.useragent.locale'));
+      .replace('%LOCALE%', Preferences.get('general.useragent.locale'));
     let link = '<a>' + About.str('newacct-tos') + '</a>';
 
     $('#newacct-tos-label')
