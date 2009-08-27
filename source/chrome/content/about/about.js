@@ -457,7 +457,7 @@ let About = {
       } catch (e) { /* storing passwords may fail if master password is declined */ }
 
     } else {
-      alert("Couldn't sign in!"); //FIXME
+      alert("Couldn't sign in: " + Weave.Service.detailedStatus.sync); //FIXME
     }
     return ret;
   },
