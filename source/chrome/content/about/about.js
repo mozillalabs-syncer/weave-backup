@@ -344,7 +344,7 @@ let About = {
   },
   loadCaptcha: function loadCaptcha() {
     $('#captcha-iframe')[0].src =
-      "https://services.mozilla.com/0.3/api/register/captcha/";
+      Weave.Service.miscURL + "1/captcha_html";
   },
   onCaptchaLoaded: function onCaptchaLoaded() {
     let img = $('#captcha-iframe')[0]
