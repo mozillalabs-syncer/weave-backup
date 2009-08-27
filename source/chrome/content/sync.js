@@ -70,7 +70,7 @@ function WeaveWindow() {
     document.getElementById("sync-syncnowitem").setAttribute("hidden", false);
 
   if (Weave.Svc.Prefs.get("lastversion") == "firstrun") {
-    setTimeout(function() { window.openUILinkIn("about:weave", "tab"); }, 500);
+    setTimeout(this.openAboutWeave, 500);
     Weave.Svc.Prefs.set("lastversion", Weave.WEAVE_VERSION);
 
   } else if (Weave.Svc.Prefs.get("lastversion") != Weave.WEAVE_VERSION) {
@@ -244,10 +244,8 @@ WeaveWindow.prototype = {
 
   shutDown: function WeaveWin_shutDown(event) {},
 
-  doLogin: function WeaveWin_doLogin(event) {
-    if (Weave.Service.isLoggedIn)
-      return;
-    setTimeout(function() { window.openUILinkIn("about:weave", "tab"); }, 0);
+  openAboutWeave: function openAboutWeave() {
+    window.openUILinkIn("about:weave", "tab");
   },
 
   doLogout: function WeaveWin_doLogout(event) {
@@ -256,35 +254,6 @@ WeaveWindow.prototype = {
 
   doSync: function WeaveWin_doSync(event) {
     Weave.Utils.openStatus();
-  },
-
-  doShare: function WeaveWin_doShare(event) {
-    Weave.Utils.openShare();
-  },
-
-  doCancelSync: function WeaveWin_doCancelSync(event) {
-    this._log.error("cancel sync unimplemented");
-  },
-
-  doOpenPrefs: function WeaveWin_doOpenPrefs(event) {
-    let pane = "sync-prefpane";
-    switch (Weave.Svc.AppInfo.ID) {
-      case Weave.FIREFOX_ID:
-        openPreferences(pane);
-        break;
-
-      case Weave.SEAMONKEY_ID:
-        goPreferences(pane);
-        break;
-
-      case Weave.THUNDERBIRD_ID:
-        openOptionsDialog(pane);
-        break;
-    }
-  },
-
-  onOpenPrefs : function WeaveWin_onOpenPrefs(event) {
-    // XXX called when prefpane opens, setup password and login states
   },
 
   doOpenActivityLog: function WeaveWin_doOpenActivityLog(event) {

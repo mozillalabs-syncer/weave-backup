@@ -39,7 +39,7 @@
                       hidden="false" disabled="false"
                       checked="false" autocheck="false"
                       label="&logInItem.label;"
-                      oncommand="gWeaveWin.doLogin();"/>
+                      oncommand="gWeaveWin.openAboutWeave();"/>
             <menuitem id="sync-logoutitem"
                       hidden="true" disabled="false"
                       checked="false" autocheck="false"
@@ -55,7 +55,7 @@
                       disabled="false"
                       checked="false" autocheck="false"
                       label="&openPrefsItem.label;"
-                      oncommand="gWeaveWin.doOpenPrefs(event);"/>
+                      oncommand="gWeaveWin.openAboutWeave();"/>
             <menuitem id="sync-openlogitem"
                       disabled="false"
                       checked="false" autocheck="false"
