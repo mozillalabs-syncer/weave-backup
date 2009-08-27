@@ -179,7 +179,7 @@ ul li {
     display: none;
     position: relative;
     top: 2em;
-    width: 200px;
+    width: 220px;
     margin: 0px auto;
     font-family: 'Museo';
     font-size: 16px;
@@ -291,7 +291,7 @@ input[type=text], input[type=password] {
 /* buttons wrapper to keep buttons aligned at the bottom */
 .buttons {
     clear: both;
-    height: 2em;
+    display: inline-block;
 }
 
 /* form buttons */
