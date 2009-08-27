@@ -178,7 +178,7 @@ ul li {
     display: none;
     position: relative;
     top: 2em;
-    width: 220px;
+    width: 200px;
     margin: 0px auto;
     font-family: 'Museo';
     font-size: 16px;
@@ -289,14 +289,13 @@ input[type=text], input[type=password] {
 
 /* buttons wrapper to keep buttons aligned at the bottom */
 .buttons {
-    clear: both;
     display: inline-block;
 }
 
 /* form buttons */
 input[type=button], input[type=button][disabled] {
     padding: 2px 12px;
-    margin: 8px;
+    margin: 8px 2px;
     border: 0px;
     color: rgba(255, 255, 255, 1);
     font-family: 'Museo';
