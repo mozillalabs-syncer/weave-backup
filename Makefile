@@ -40,7 +40,7 @@ objdir=dist
 stage_dir=$(objdir)/stage
 xpi_dir=$(objdir)/xpi
 
-weave_version := 0.6pre4
+weave_version := 0.6
 compatible_version := 0.6pre3
 
 ifeq ($(release_build),)
