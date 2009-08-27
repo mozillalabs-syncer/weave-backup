@@ -661,6 +661,13 @@ let About = {
   // Cloud information (data synced, etc)
   //
   onBubble_cloudinfo: function onBubble_cloudinfo() {
+  },
+
+  wipeServer: function wipeServer() {
+    let title = About.str("erase-title");
+    let mesg = About.str("erase-warning");
+    if (Weave.Svc.Prompt.confirm(null, title, mesg))
+      Weave.Service.wipeServer()
   }
 };
 
