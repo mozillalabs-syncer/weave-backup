@@ -289,12 +289,13 @@ input[type=text], input[type=password] {
 
 /* buttons wrapper to keep buttons aligned at the bottom */
 .buttons {
+    width: 190px;
     display: inline-block;
 }
 
 /* form buttons */
 input[type=button], input[type=button][disabled] {
-    padding: 2px 12px;
+    padding: 2px 10px;
     margin: 8px 2px;
     border: 0px;
     color: rgba(255, 255, 255, 1);
