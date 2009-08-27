@@ -247,13 +247,16 @@ let About = {
     return '';
   },
   toggleBubble: function toggleBubble(name) {
-    if (About.curBubble == name) {
+    if (About.curBubble == name)
       About.hideBubble();
-      if (!Weave.Service.isLoggedIn)
-        About.showBubble('signin');
-    } else {
+    else
       About.showBubble(name);
-    }
+  },
+  toggleMiddleBubble: function toggleMiddleBubble() {
+    if (Weave.Service.isLoggedIn)
+      About.toggleBubble('signedin');
+    else
+      About.toggleBubble('signin');
   },
   showBubble: function showBubble(name) {
     if (About._curBubble)

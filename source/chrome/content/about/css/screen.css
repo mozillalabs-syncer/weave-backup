@@ -60,7 +60,6 @@ ul li {
     position: relative;
     padding-left: 20px;
     height: 100px;
-    width: 900px;
 }
 .welcome {
     float: left;
@@ -75,7 +74,7 @@ ul li {
 #container {
     z-index: 1;
     position: relative;
-    top: 10px;
+    top: -60px;
     margin: 0px auto;
     text-align: center;
     background: transparent url('../images/bg_clouds.png') no-repeat center center;
