@@ -640,7 +640,7 @@ let About = {
 
   syncNow: function syncNow() {
     About.hideBubble();
-    Weave.Service.sync();
+    Weave.Utils.openSync();
   },
 
   //
