@@ -3,7 +3,6 @@ overlay chrome://browser/content/browser.xul chrome://weave/content/sync.xul app
 overlay chrome://browser/content/browser.xul chrome://weave/content/fx-weave-overlay.xul application={ec8030f7-c20a-464f-9b0e-13a3a9e97384}
 
 # Fennec only
-overlay chrome://browser/content/browser.xul chrome://weave/content/fennec-preferences.xul application={a23983c0-fd0e-11dc-95ff-0800200c9a66}
 overlay chrome://browser/content/browser.xul chrome://weave/content/fennec-weave-overlay.xul application={a23983c0-fd0e-11dc-95ff-0800200c9a66}
 
 # Thunderbird only

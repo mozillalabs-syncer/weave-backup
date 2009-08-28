@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?xml-stylesheet href="chrome://weave/content/sync.css" type="text/css"?>
 <?xml-stylesheet href="chrome://weave/content/notification.css" type="text/css"?>
-<?xml-stylesheet href="chrome://weave/content/fennec.css" type="text/css"?>
 
 <!DOCTYPE overlay SYSTEM "chrome://weave/locale/preferences.dtd">
 <overlay id="fx-weave-overlay"
@@ -12,10 +10,5 @@
           src="chrome://weave/content/load-weave.js"/>
   <script type="application/x-javascript"
           src="chrome://weave/content/fennec-weave-overlay.js"/>
-
-  <stringbundleset id="stringbundleset">
-    <stringbundle id="weaveStringBundle"
-                  src="chrome://weave/locale/fennec.properties"/>
-  </stringbundleset>
 
 </overlay>
