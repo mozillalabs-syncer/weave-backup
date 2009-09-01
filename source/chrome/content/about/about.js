@@ -39,15 +39,14 @@ const Ci = Components.interfaces;
 const Cu = Components.utils;
 
 Cu.import("resource://weave/ext/Observers.js");
+Cu.import("resource://weave/ext/Preferences.js");
 
 let About = {
-  _curBubble: null,
-  _timers: null,
-
   init: function init() {
     About._log = Log4Moz.repository.getLogger("About:Weave");
     About._log.info("Loading About:Weave");
 
+    About.refreshClientType();
     About.hideQuota();
     About._localizePage();
 
@@ -60,15 +59,27 @@ let About = {
      ['sync:error', About.onSyncError]]
      .forEach(function(i) Observers.add("weave:service:" + i[0], i[1]));
 
+    // Make the '+' icons underneath each element more visible on mouseover
+    $('#device,#status,#cloud')
+      .hover(function() $(this).find('.plus-toggle').css('opacity', 1),
+             function() $(this).find('.plus-toggle').css('opacity', ''));
+
     // FIXME: service doesn't have a getter to tell us if it's
-    // syncing, so we just checked for logged-in-ness
-    if (Weave.Service.isLoggedIn)
-      About.setStatus('idle');
-    else {
+    // syncing, so we co-opt the locked getter
+    if (Weave.Service.isLoggedIn) {
+      if (Weave.Service.locked)
+        About.setStatus('sync');
+      else
+        About.setStatus('idle');
+    } else {
       About.setStatus('offline');
       About.showBubble('signin');
     }
   },
+
+  //
+  // Localization
+  //
 
   // Returns the localized string for a name (generally an element id)
   str: function str(id, extra, defaultStr) {
@@ -81,6 +92,15 @@ let About = {
 
   _l10nId: function _l10nId(element) {
     return $(element)[0].id || $(element)[0].className.split(' ')[0];
+  },
+  _localizeHelpTitle: function _localizeHelpTitle(item) {
+    // ignore items we don't have a localized string for
+    let str = About.str($(item)[0].id);
+    if (!str)
+      return;
+    $(item).find('.help-item-title')
+      .data('default', About.str($(item)[0].id))
+      .html($(item).find('.help-item-title').data('default'));
   },
   _localizeFormElt: function _localizeFormElt(element) {
     $(element)
@@ -96,12 +116,17 @@ let About = {
   },
   _localizePage: function _localizePage() {
     // localize forms, set default values for input boxes, setup callbacks
-    $('input[type=text],input[type=password]')
+    $('input[type=text]:not(.no-field-helper)')
+      .add('input[type=password]:not(.no-field-helper)')
       .each(function() { $(this)
                            .focus(function() About.clearField(this))
                            .blur(function() About.resetField(this)); });
     $('input')
       .each(function() About._localizeFormElt(this));
+
+    // Localize help item titles
+    $('.help-item')
+      .each(function() About._localizeHelpTitle(this));
 
     // localize other html elts
     $('.localized,h1,p,a,label')
@@ -128,6 +153,7 @@ let About = {
   //
   // Timers
   //
+  _timers: null,
   clearTimer: function clearTimer(name) {
     if (!About._timers)
       About._timers = {};
@@ -143,77 +169,7 @@ let About = {
   // Getters
   //
   get isNewUser() {
-    return !Weave.Service.username &&
-      Weave.Svc.Prefs.get("serverURL") == 'https://auth.services.mozilla.com/';
-  },
-
-  //
-  // Show/hide helpers for various UI pieces
-  //
-
-  // Quota meter inside the cloud
-  setQuota: function setQuota(percent) {
-    $('#quota-bar').show();
-    $('#quota-bar').text(percent + "%");
-    $('#quota-bar').css("MozBoxShadow",
-      "inset rgba(141, 178, 198, 0.4) " + (percent*183/100) + "px 0px 0px, " +
-      "inset rgba(141, 178, 198, 0.9) 0px 0px 6px, " +
-      "inset rgba(82, 105, 118, 1) 0px 0px 1px, " +
-      "rgba(255, 255, 255, 1) 0px 0px 20px");
-
-  },
-  hideQuota: function hideQuota() {
-    $('#quota-bar').hide();
-  },
-
-  // Bubble dialog
-  // Will automatically call About.onBubble_<name>()
-  showBubble: function showBubble(name) {
-    if (About._curBubble)
-      About._curBubble.hide();
-
-    $('#bubble').show();
-    About._curBubble = $("#" + name).show();
-
-    if (About["onBubble_" + name])
-      About["onBubble_" + name]();
-  },
-  hideBubble: function hideBubble() {
-    About._curBubble.hide();
-    About._curBubble = null;
-    $('#bubble').hide();
-  },
-  get curBubble() {
-    if (About._curBubble)
-      return About._curBubble[0].id;
-    return '';
-  },
-
-  setStatus: function setStatus(status) {
-    let user = '<a href="#" onclick="return About.onUsernameClick();">'
-      + Weave.Service.username + '</a>';
-    switch (status) {
-    case "offline":
-      $('#status-arrow img')[0].src = 'images/sync_disconnected_user.png';
-      $('#status-1').html(About.str('status-offline'));
-      $('#status-2').html(About.str('status-offline-2'));
-      break;
-    case "signing-in":
-      $('#status-arrow img')[0].src = 'images/sync_active.png';
-      $('#status-1').html(About.str('status-signing-in'));
-      $('#status-2').html(About.str('status-signing-in-2'));
-      break;
-    case "idle":
-      $('#status-arrow img')[0].src = 'images/sync_idle.png';
-      $('#status-1').html(About.str('status-idle', [user]));
-      $('#status-2').html(About.str('status-idle-2'));
-      break;
-    case "sync":
-      $('#status img')[0].src = 'images/sync_active.png';
-      $('#status-1').html(About.str('status-sync', [user]));
-      $('#status-2').html(About.str('status-sync-2'));
-      break;
-    }
+    return !Weave.Service.username;
   },
 
   //
@@ -252,6 +208,176 @@ let About = {
     // fixme?
   },
 
+  //
+  // Show/hide helpers for various UI pieces
+  //
+
+  // Quota meter inside the cloud
+  setQuota: function setQuota(percent) {
+    $('#quota-bar').show();
+    $('#quota-bar').text(percent + "%");
+    $('#quota-bar').css("MozBoxShadow",
+      "inset rgba(141, 178, 198, 0.4) " + (percent*183/100) + "px 0px 0px, " +
+      "inset rgba(141, 178, 198, 0.9) 0px 0px 6px, " +
+      "inset rgba(82, 105, 118, 1) 0px 0px 1px, " +
+      "rgba(255, 255, 255, 1) 0px 0px 20px");
+
+  },
+  hideQuota: function hideQuota() {
+    $('#quota-bar').hide();
+  },
+
+  // Device type
+  set clientType(type) {
+    // we only have images for desktop and mobile atm
+    if (Weave.Clients.clientType != "mobile")
+      type = "desktop";
+    $('#device > img')
+      .attr('src', 'images/' + type + '_device.png');
+  },
+  refreshClientType: function refreshClientType() {
+    About.clientType = Weave.Clients.clientType;
+  },
+
+  // Bubble dialog
+  // Will automatically call About.onBubble_<name>() when shown
+  _curBubble: null,
+  get curBubble() {
+    if (About._curBubble)
+      return About._curBubble[0].id;
+    return '';
+  },
+  toggleBubble: function toggleBubble(name) {
+    if (About.curBubble == name)
+      About.hideBubble();
+    else
+      About.showBubble(name);
+  },
+  toggleMiddleBubble: function toggleMiddleBubble() {
+    if (Weave.Service.isLoggedIn)
+      About.toggleBubble('signedin');
+    else
+      About.toggleBubble('signin');
+  },
+  showBubble: function showBubble(name) {
+    if (About._curBubble)
+      About._curBubble.hide();
+    About.closeHelp();
+
+    About._curBubble = $("#" + name).show();
+    if (About._curBubble.find('.bubble-arrow').length == 0)
+      About._curBubble.prepend('<div class="bubble-arrow"></div>');
+
+    if (About["onBubble_" + name])
+      About["onBubble_" + name]();
+  },
+  hideBubble: function hideBubble() {
+    $('.bubble-center,.bubble-left,.bubble-right').hide();
+    About._curBubble = null;
+  },
+
+  setStatus: function setStatus(status) {
+    switch (status) {
+    case "offline":
+      $('#status-arrow img')[0].src = 'images/sync_disconnected_user.png';
+      $('#status-1').html(About.str('status-offline'));
+      $('#status-2').html(About.str('status-offline-2'));
+      break;
+    case "signing-in":
+      $('#status-arrow img')[0].src = 'images/sync_active.png';
+      $('#status-1').html(About.str('status-signing-in'));
+      $('#status-2').html(About.str('status-signing-in-2'));
+      break;
+    case "idle":
+      $('#status-arrow img')[0].src = 'images/sync_idle.png';
+      $('#status-1').html(About.str('status-idle', [Weave.Service.username]));
+      $('#status-2').html(About.str('status-idle-2'));
+      break;
+    case "sync":
+      $('#status img')[0].src = 'images/sync_active.png';
+      $('#status-1').html(About.str('status-sync', [Weave.Service.username]));
+      $('#status-2').html(About.str('status-sync-2'));
+      break;
+    }
+  },
+
+  //
+  // Help drawer
+  //
+
+  _setupHelpLinks: function _setupHelpLinks() {
+    if (About.__setupHelpLinks)
+      return;
+    About.__setupHelpLinks = true;
+    $('.help-item-title').each(
+      function() {
+        $(this).wrapInner('<a href="#" onclick="return About.onHelp(\'' +
+                          this.parentNode.id + '\');"></a>');
+      });
+  },
+
+  _setupHelpMe: function _setupHelpMe() {
+    if (About.__setupHelpMe)
+      return;
+    About.__setupHelpMe = true;
+    let faq = '<a href="http://wiki.mozilla.org/Labs/Weave/FAQ">'
+      + About.str('help-helpme-faq') + '</a>';
+    let forum = '<a href="http://groups.google.com/group/mozilla-labs-weave">'
+      + About.str('help-helpme-forum') + '</a>';
+    $('#help-helpme-1').html(About.str('help-helpme-1', [faq, forum]));
+  },
+
+  onHelp: function onHelp(helpid) {
+    $('.help-item-content').hide();
+    $('#' + helpid + " > .help-item-content").show();
+    return false;
+  },
+
+  toggleHelp: function toggleHelp() {
+    if (!About._curBubble)
+      return;
+    if (About._curBubble.find('.bubble-help').data('open'))
+      About.closeHelp();
+    else
+      About.openHelp();
+  },
+  openHelp: function openHelp() {
+    if (!About._curBubble)
+      return;
+
+    About._setupHelpLinks();
+    About._setupHelpMe();
+
+    // note: we move the help tab (icon that sticks out to open the drawer)
+    //       into the drawer because it's absolutely positioned and want it to
+    //       stay "attached" to the drawer
+    // note2: the help-helpme item is special, it's a pointer to the faq and
+    //        forum, and we want it always available
+    About._curBubble.find('.bubble-help')
+      .prepend($(About._curBubble.find('.help-tab')))
+      .append($('#help-helpme'))
+      .show()
+      .data('open', true);
+
+    // hide any previously open help items
+    $('.help-item-content').hide();
+
+    // hook for further customizing help drawers
+    if (About["onHelp_" + About.curBubble])
+      About["onHelp_" + About.curBubble]();
+  },
+  closeHelp: function closeHelp() {
+    if (!About._curBubble)
+      return;
+
+    // note: we move the help tab to the main bubble because we hide the help
+    // drawer, and want the tab to remain visible
+    About._curBubble.find('.bubble-help')
+      .hide()
+      .data('open', false)
+      .find('.help-tab')
+      .appendTo(About._curBubble);
+  },
 
   //
   // Bubble dialogs
@@ -261,9 +387,7 @@ let About = {
   // Signed in page
   //
   onBubble_signedin: function onBubble_signedin() {
-    $('#signedin-text')
-      .html(About.str('signedin-text', [Weave.Service.username]));
-    About.onSigninInput(); // update next button if everything is prefilled
+    $('#signedin-title').html(Weave.Service.username);
   },
   onUsernameClick: function onUsernameClick() {
     if (About.curBubble == 'signedin')
@@ -280,10 +404,11 @@ let About = {
     let user = Weave.Service.username;
     let server = Weave.Svc.Prefs.get("serverURL");
     if (About.isNewUser) {
-      $('#signin-newacct').css('display', '');
+      $('#signin-newacct')[0].disabled = "";
+      About.resetLogin();
     } else {
       $('#status img')[0].src = 'images/sync_disconnected_user.png';
-      $('#signin-newacct').css('display', 'none');
+      $('#signin-newacct')[0].disabled = "true";
       $('#signin-username').val(user);
       let pass = Weave.Service.password;
       if (pass)
@@ -293,7 +418,14 @@ let About = {
         $('#signin-passphrase').val(passph)[0].type = 'password';
       About.onSigninInput(); // enable next button
     }
-    $('#signin-help').fancybox()[0].href = About.str('signin-help-url');
+  },
+  resetLogin: function resetLogin() {
+    Weave.Service.username = '';
+    ['signin-username', 'signin-password', 'signin-passphrase'].forEach(
+      function(item) {
+        $(item).val('');
+        About.resetField(item);
+      });
   },
   _hasInput: function _hasInput(elt) {
     let def = $(elt).data('default');
@@ -324,27 +456,61 @@ let About = {
       } catch (e) { /* storing passwords may fail if master password is declined */ }
 
     } else {
-      //?
+      alert("Couldn't sign in: " + Weave.Service.detailedStatus.sync); //FIXME
     }
     return ret;
+  },
+  forgotPassword: function forgotPassword() {
+    alert("Sorry, this functionality is not implemented yet!"); //FIXME
+  },
+  forgotPassphrase: function forgotPassphrase() {
+    alert("Sorry, this functionality is not implemented yet!"); //FIXME
+  },
+  changePassword: function changePassword() {
+    Weave.Utils.openGenericDialog('ChangePassword');
+  },
+  changePassphrase: function changePassphrase() {
+    Weave.Utils.openGenericDialog('ChangePassphrase');
   },
 
   //
   // New account bubble page
   //
   onBubble_newacct: function onBubble_newacct() {
-    $('#newacct-tos-link')
-      .fancybox()[0].href = About.str('newacct-tos-url');
-    $('#newacct-tos-checkbox')[0].checked = false;
+    About.resetNewacct();
+
+    let url = Weave.Svc.Prefs.get('termsURL')
+      .replace('%LOCALE%', Preferences.get('general.useragent.locale'));
+    let link = '<a>' + About.str('newacct-tos') + '</a>';
+
+    $('#newacct-tos-label')
+      .html(About.str('newacct-tos-label', [link]))
+      .find('a')
+      .attr('href', url)
+      .attr('class', 'iframe')
+      .fancybox();
+    $('#newacct-tos > input').attr('checked', false);
+
     $('#captcha-zoom')
       .fancybox({frameWidth: 300, frameHeight: 56})[0]
       .href = '#captcha-image';
     About.loadCaptcha();
+
 //    $('#newacct-username').focus(); - fixme
   },
+  resetNewacct: function resetNewacct() {
+    Weave.Service.username = '';
+    ['newacct-username', 'newacct-password', 'newacct-passphrase',
+     'newacct-email', 'captcha-response'].forEach(
+      function(item) {
+        $(item).val('');
+        About.resetField(item);
+      });
+    $('newacct-tos-checkbox').attr('checked', false);
+  },
   loadCaptcha: function loadCaptcha() {
-    $('#captcha-iframe')[0].src =
-      "https://services.mozilla.com/0.3/api/register/captcha/";
+    $('#captcha-iframe')
+      .attr('src', Weave.Service.miscURL + "1/captcha_html");
   },
   onCaptchaLoaded: function onCaptchaLoaded() {
     let img = $('#captcha-iframe')[0]
@@ -411,7 +577,7 @@ let About = {
                                           $('#newacct-email').val(),
                                           $('#captcha-challenge').val(),
                                           $('#captcha-response').val());
-    if (ret.error == null) {
+    if (ret == null) {
       $('#signin-username').val($('#newacct-username').val());
       $('#signin-password').val($('#newacct-password').val())[0].type = "password";
       $('#signin-passphrase').val($('#newacct-passphrase').val())[0].type = "password";
@@ -419,9 +585,9 @@ let About = {
       About.showBubble("willsync");
 
     } else {
-      this._log.warn("Account creation error: " + ret.error);
+      this._log.warn("Account creation error: " + ret);
       About.loadCaptcha();
-      alert("Could not create account: " + ret.error);
+      alert("Could not create account: " + ret);
     }
   },
 
@@ -429,12 +595,12 @@ let About = {
   // Temporary bubble after sign-up (timed)
   //
   onBubble_willsync: function onBubble_willsync() {
-    About._willsyncCount = 10;
+    About._willsyncCount = 5;
     About.setTimer("willsync", About._willsyncTick, 0);
   },
   _willsyncTick: function _willsyncTick() {
-    $('#willsync-text')
-      .html(About.str('willsync-text', [About._willsyncCount]));
+    $('#willsync-1')
+      .html(About.str('willsync-1', [About._willsyncCount]));
     if (About._willsyncCount-- > 0)
       About.setTimer("willsync", About._willsyncTick, 1000);
     else
@@ -442,11 +608,65 @@ let About = {
   },
   _willsync_go: function _willsync_go() {
     About.hideBubble();
-    Weave.Service.sync();
+    Weave.Service.syncOnIdle();
   },
   willsyncSettings: function willsyncSettings() {
     About.clearTimer("willsync");
     About.showBubble("setup");
+  },
+
+  //
+  // Device configuration (what to sync, etc)
+  //
+  onBubble_setup: function onBubble_setup() {
+    $('#choose-data-list').empty();
+
+    Weave.Engines.getAll().forEach(
+      function(engine) {
+        // null engines are not functional at all, skip
+        if (engine.enabled == null)
+          return;
+        $(document.createElement("input"))
+          .attr('type', 'checkbox')
+          .attr('checked', engine.enabled)
+          .click(function() { engine.enabled = this.checked;
+                              return true; })
+          .appendTo('#choose-data-list')
+          .wrap('<li><label></label></li>')
+          .after(engine.displayName);
+      }, false);
+  },
+
+  syncNow: function syncNow() {
+    About.hideBubble();
+    Weave.Utils.openSync();
+  },
+
+  //
+  // Device information (name, etc)
+  //
+  onBubble_clientinfo: function onBubble_clientinfo() {
+    $('#clientinfo-name').val(Weave.Clients.clientName);
+  },
+  onNameChange: function onNameChange() {
+    Weave.Clients.clientName = $('#clientinfo-name').val();
+  },
+  setDeviceType: function setDeviceType(type) {
+    Weave.Clients.clientType = type;
+    About.clientType = type;
+  },
+
+  //
+  // Cloud information (data synced, etc)
+  //
+  onBubble_cloudinfo: function onBubble_cloudinfo() {
+  },
+
+  wipeServer: function wipeServer() {
+    let title = About.str("erase-title");
+    let mesg = About.str("erase-warning");
+    if (Weave.Svc.Prompt.confirm(null, title, mesg))
+      Weave.Service.wipeServer()
   }
 };
 

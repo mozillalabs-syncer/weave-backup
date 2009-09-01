@@ -147,19 +147,12 @@ let WeaveStatus = {
       return;
     }
 
-    if (Weave.FaultTolerance.Service.lastException == "Could not acquire lock") {
-      this._statusIcon.setAttribute("status", "info");
-      this._statusEngine.value = this._stringBundle.getString("status.locked");
-      if (Weave.Service.isQuitting)
-        this._statusText.value = this._stringBundle.getString("status.closing");
-      else
-        this._statusText.value = this._stringBundle.getString("status.tryagain");
-    } else {
-      this._statusIcon.setAttribute("status", "error");
-      this._statusEngine.value = this._stringBundle.getString("status.error") + " (" + Weave.Service.detailedStatus.sync + ")";
-      this._statusText.value = this._stringBundle.getString("status.closing");
-      this._statusEngine.style.color = "red";
-    }
+    this._statusIcon.setAttribute("status", "error");
+    let reasonString = Weave.Utils.getErrorString(Weave.Service.detailedStatus.sync);
+    this._statusEngine.value = 
+      this._stringBundle.getFormattedString("status.error", [reasonString]);
+    this._statusText.value = this._stringBundle.getString("status.closing");
+    this._statusEngine.style.color = "red";
 
     // Delay closing the window for a couple seconds to give the user time
     // to see the result of the sync.

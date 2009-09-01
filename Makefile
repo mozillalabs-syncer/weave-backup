@@ -40,7 +40,7 @@ objdir=dist
 stage_dir=$(objdir)/stage
 xpi_dir=$(objdir)/xpi
 
-weave_version := 0.6pre4
+weave_version := 0.6
 compatible_version := 0.6pre3
 
 ifeq ($(release_build),)
@@ -142,6 +142,10 @@ help:
 	@echo sdkdir
 	@echo "release_build (set to 1 when not building a snapshot)"
 	@echo "rebuild_crypto (set to 1 when building a new crypto binary)"
+	@echo "platform_target (takes a space-separated list of platforms to package):"
+	@echo "    make xpi platform_target='Linux_x86-gcc3'"
+	@echo "  this also supports * as a wildcard:"
+	@echo "    make xpi platform_target='Linux_x86* WINNT* Darwin'"
 	@echo
 	@echo Substitutions for .in files:
 	@echo $(subst_names)

@@ -39,7 +39,6 @@ Components.utils.import("resource://weave/engines/passwords.js", {});
 Components.utils.import("resource://weave/engines/plugins.js", {});
 Components.utils.import("resource://weave/engines/tabs.js", {});
 Components.utils.import("resource://weave/engines/themes.js", {});
-Components.utils.import("resource://weave/faultTolerance.js", {});
 Components.utils.import("resource://weave/notifications.js", {});
 Components.utils.import("resource://weave/service.js", {});
 //Components.utils.import("resource://weave/xmpp/authenticationLayer.js", {});

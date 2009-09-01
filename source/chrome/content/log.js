@@ -19,12 +19,8 @@ let gSyncLog = {
     return logFile;
   },
 
-  _frame: function SyncLog__frame(type) {
-    return document.getElementById("sync-log-" + type + "-frame");
-  },
-
-  get _logTypes() {
-    return ["brief", "verbose"];
+  get _frame() {
+    return document.getElementById("sync-log-frame");
   },
 
   get _stringBundle() {
@@ -47,22 +43,13 @@ let gSyncLog = {
   // Event Handlers
 
   init: function SyncLog_init(event) {
-    let tabbox = document.getElementById("syncLogTabs");
-    let index = document.getElementById("extensions.weave.log.selectedTabIndex");
-    if (index.value != null)
-      tabbox.selectedIndex = index.value;
-
-    for each (let type in this._logTypes) {
-      let frame = this._frame(type);
-
-      // The first frame load is of the text log
-      let handleLoad = function SyncLog__handleLoad(event) {
-        frame.removeEventListener("load", handleLoad, true);
-        gSyncLog.onFrameLoad(event, frame);
-      };
-      frame.addEventListener("load", handleLoad, true);
-      frame.setAttribute("src", this._uriLog(type));
-    }
+    let frame = this._frame;
+    let handleLoad = function SyncLog__handleLoad(event) {
+      frame.removeEventListener("load", handleLoad, true);
+      gSyncLog.onFrameLoad(event, frame);
+    };
+    frame.addEventListener("load", handleLoad, true);
+    frame.setAttribute("src", this._uriLog("verbose"));
   },
 
   onFrameLoad: function SyncLog_onFrameLoad(event, frame) {
@@ -128,18 +115,11 @@ let gSyncLog = {
     frame.setAttribute("src", "data:text/html," + html);
   },
 
-  onSelectionChanged: function SyncLog_onSelectionChanged(event) {
-    let tabbox = document.getElementById("syncLogTabs");
-    let index = document.getElementById("extensions.weave.log.selectedTabIndex");
-    index.valueFromPreferences = tabbox.selectedIndex;
-  },
-
   //////////////////////////////////////////////////////////////////////////////
   // Public Methods
 
   saveAs: function SyncLog_saveAs() {
-    let tabbox = document.getElementById("syncLogTabs");
-    let file = this._file(this._logTypes[tabbox.selectedIndex]);
+    let file = this._file("verbose");
 
     if (!file.exists()) {
       alert(this._stringBundle.getString("noLogAvailable.alert"));
@@ -165,9 +145,7 @@ let gSyncLog = {
 
   clear: function SyncLog_clear() {
     Weave.Service.clearLogs();
-
-    for each (let type in this._logTypes)
-      this._frame(type).setAttribute("src", this._uriLog());
+    this._frame.setAttribute("src", this._uriLog());
   }
 }
 

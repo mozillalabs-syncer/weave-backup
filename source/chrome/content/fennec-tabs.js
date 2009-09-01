@@ -62,6 +62,13 @@ let RemoteTabViewer = {
           if ( engine.locallyOpenTabMatchesURL(tab.urlHistory[0]) ) {
             continue;
           }
+          
+          // Trim title and url to 80 chars
+          let fTitle = tab.title;
+          let uTitle = tab.urlHistory[0];
+          if (fTitle.length > 80) fTitle = fTitle.substr(0, 80);
+          if (uTitle.length > 80) uTitle = uTitle.substr(0, 80);
+          
           let item = document.createElement("div");
           item.setAttribute("onClick",
             "window.open('" + tab.urlHistory[0] + "')");
@@ -77,10 +84,10 @@ let RemoteTabViewer = {
           tabDiv.setAttribute("class", "info");
           let title = document.createElement("div");
           title.setAttribute("class", "title");
-          title.innerHTML = tab.title;
+          title.innerHTML = fTitle;
           let url = document.createElement("div");
           url.setAttribute("class", "url");
-          url.innerHTML = tab.urlHistory[0];
+          url.innerHTML = uTitle;
           tabDiv.appendChild(title);
           tabDiv.appendChild(url);
         

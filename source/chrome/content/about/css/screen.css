@@ -13,12 +13,13 @@ src: url('../fonts/Museo500-Regular.otf') format('opentype');
 }
 
 /*
- * Base text elements
+ * Text elements
  */
 
 h1 {font-size: 18px;}
+h3 {font-size: 11px;}
 
-p, ul, label {font-size: 10px;}
+p, ul, ul li, label {font-size: 11px;}
 
 a:link, a:hover, a:active, a:focus, a:visited {color: #9f423b; text-decoration: none;}
 a:hover {color: #9f423b; text-decoration: none;}
@@ -28,6 +29,7 @@ a:hover {color: #9f423b; text-decoration: none;}
  */
 
 html {
+    height: 80% !important;
     padding-bottom: 0px; 
     padding-top: 20px;
     padding-left: 0px;
@@ -45,12 +47,19 @@ body {
     margin: 0 auto;
 }
 
+ul {
+    padding-left: 0;
+}
+ul li {
+    display: block;
+    text-align: left;
+}
+
 #header {
     z-index: 1;
     position: relative;
     padding-left: 20px;
     height: 100px;
-    width: 900px;
 }
 .welcome {
     float: left;
@@ -65,7 +74,7 @@ body {
 #container {
     z-index: 1;
     position: relative;
-    top: 10px;
+    top: -60px;
     margin: 0px auto;
     text-align: center;
     background: transparent url('../images/bg_clouds.png') no-repeat center center;
@@ -92,7 +101,8 @@ body {
     width: 850px;
     margin: 0px auto;
 }
-#elements > div {
+
+#device, #status, #cloud {
     display: table-cell;
     padding: 0px 12px;
 }
@@ -104,11 +114,10 @@ body {
 
 #status {
     width: 180px;
-    vertical-align: middle;
+    vertical-align: bottom;
     font-family: 'Museo';
     font-size: 12px;
-    padding: 0px;
-    margin: -20px 0px 0px 0px;
+    padding: 0px 12px 40px;
     color: black;
 }
 
@@ -118,6 +127,20 @@ body {
     width: 300px; 
     height: 240px;
     text-align: center;
+}
+
+.plus-toggle {
+    position: absolute;
+    bottom: 34px;
+    width: 300px;
+    opacity: .2;
+}
+.plus-toggle:hover {
+    opacity: .8;
+}
+#status .plus-toggle {
+    bottom: 64px;
+    width: 180px;
 }
 
 #quota-bar {
@@ -133,7 +156,6 @@ body {
     font-family: 'Museo';
     font-size: 14px;
     -moz-border-radius: 0.5em;
-    -webkit-border-radius: 0.5em;
     -moz-box-shadow: 
         inset rgba(141, 178, 198, 0.4) 140px 0px 0px,
         inset rgba(141, 178, 198, 0.9) 0px 0px 6px,
@@ -147,38 +169,93 @@ body {
  */
 
 #bubble {
-    display: none;
     z-index: 2;
-    position: relative;
-    top: -80px;
-    margin: 0px auto;
     width: 850px;
-}
-
-.bubbleArrow {
-    height: 18px;
-    width: 200px;
     margin: 0px auto;
-    margin-bottom: -5px;
-    background: transparent url('../images/box_top_arrow.png') no-repeat center center;    
 }
 
-.bubbleShape {
+.bubble-center, .bubble-left, .bubble-right {
+    display: none;
+    position: relative;
+    top: 2em;
     width: 200px;
-/*    height: 200px; */
     margin: 0px auto;
     font-family: 'Museo';
     font-size: 16px;
-    padding: 8px 12px 50px;
+    padding: 8px 12px 12px;
     color: rgba(255, 255, 255, 1);
     -moz-border-radius: 0.5em;
-    -webkit-border-radius: 0.5em;
     -moz-box-shadow: 
         rgba(0, 0, 0, 0.3) 0px 4px 4px;
     background-color: rgba(0, 0, 0, 0.8);
 }
 
+.bubble-center {
+    top: 0.2em;
+}
+.bubble-left {
+    left: -263px;
+}
+.bubble-right {
+    right: -265px;
+}
+
+.bubble-arrow {
+    position: absolute;
+    top: -13px;
+    height: 18px;
+    width: 200px;
+    background: transparent url('../images/box_top_arrow.png') no-repeat center center;    
+}
+
 .bubblePage {
+    display: none;
+}
+
+.bubble-help {
+    display:none;
+    position: absolute;
+    top: 4.5em;
+    right: -200px;
+    width: 200px;
+    color: rgba(255, 255, 255, 1);
+    -moz-border-radius: 0em 0.5em 0.5em 0.5em;
+    -moz-box-shadow: 
+        rgba(0, 0, 0, 0.3) 0px 4px 4px;
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+.help-tab {
+    position: absolute;
+    top: 5.2em;
+    right: -30px;
+    width: 30px;
+    height: 31px;
+    color: rgba(255, 255, 255, 1);
+    -moz-border-radius: 0em 0.5em 0.5em 0em;
+    -moz-box-shadow: 
+        inset rgba(101, 196, 251, 0.3) 0 16px 8px,
+        rgba(255, 255, 255, 0.1) 0px 1px;
+    background-color: #396ccb;
+}
+.bubble-help > .help-tab {
+    top: 0.7em;
+}
+.help-tab > img {
+    position: absolute;
+    top: 5px;
+    right: 6px;
+}
+
+.bubble-help .help-item {
+    padding-left: 10px;
+    text-align: left;
+}
+
+.help-item-title {
+    clear: both;
+}
+.help-item-content {
     display: none;
 }
 
@@ -193,7 +270,7 @@ body {
 .center {margin: 0px auto;}
 
 /* text boxes */
-input[type=text],input[type=password] {
+input[type=text], input[type=password] {
     padding: 2px 12px;
     width: 160px;
     text-align: left;
@@ -203,7 +280,6 @@ input[type=text],input[type=password] {
     font-family: 'DroidSans';
     font-size: 11px;
     -moz-border-radius: 0.5em;
-    -webkit-border-radius: 0.5em;
     -moz-box-shadow: 
         inset rgba(0, 0, 0, 0.6) 0px 0px 6px,
         inset rgba(0, 0, 0, 1) 0px 0px 1px,
@@ -213,19 +289,19 @@ input[type=text],input[type=password] {
 
 /* buttons wrapper to keep buttons aligned at the bottom */
 .buttons {
-    clear: both;
+    width: 190px;
+    display: inline-block;
 }
 
 /* form buttons */
-input[type=button],input[type=button][disabled] {
-    padding: 2px 12px;
-    margin: 8px;
+input[type=button], input[type=button][disabled] {
+    padding: 2px 10px;
+    margin: 8px 2px;
     border: 0px;
     color: rgba(255, 255, 255, 1);
     font-family: 'Museo';
     font-size: 14px;
     -moz-border-radius: 0.5em;
-    -webkit-border-radius: 0.5em;
     -moz-box-shadow: 
         inset rgba(79, 99, 109, 0.6) 0px 0px 6px,
         inset rgba(145, 145, 145, 0.1) 0px 8px 1px,
@@ -254,25 +330,8 @@ input[type=button][disabled] {
 }
 
 /*
- * Sign In bubble
+ * CAPTCHA in new account bubble
  */
-
-#signin-newacct {
-    margin: auto auto 4px;
-}
-
-#signin-passphrase {
-    width: 120px;
-    margin: 6px 0px;
-    padding: 2px 6px 2px 12px;
-}
-
-#signin-help {
-    width: 40px;
-    margin: 6px 0px;
-    padding: 2px 12px;
-    font-size: 10px;
-}
 
 #newacct-captcha {
     width: 200px;
@@ -288,6 +347,11 @@ input[type=button][disabled] {
     width: 170px;
     height: 56px;
 }
+#captcha-image img.throbber {
+    height: 32px;
+    width: 32px;
+    padding-top: 12px;
+}
 #captcha-controls {
     float: right;
     width: 16px;
@@ -297,4 +361,16 @@ input[type=button][disabled] {
 .captcha-control {
     padding: 0;
     margin: 0;
+}
+
+/*
+ * Device info bubble
+ */
+
+#clientinfo-name {
+    font-size: 18px;
+}
+
+#choose-data-list {
+    -moz-column-count: 2;
 }

@@ -9,8 +9,6 @@
   <script type="application/x-javascript"
           src="chrome://weave/content/load-weave.js"/>
   <script type="application/x-javascript"
-          src="chrome://weave/content/bookmark-menu-overlay.js"/>
-  <script type="application/x-javascript"
           src="chrome://weave/content/fx-weave-overlay.js"/>
 
   <stringbundleset id="stringbundleset">

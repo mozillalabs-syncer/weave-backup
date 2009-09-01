@@ -18,105 +18,198 @@
 <body>
    <div id="header">
         <div class="logo"><img src="images/weave_logo.png"></div>
-        <div class="welcome localized">Welcome message</div>
+        <div class="welcome localized"></div>
     </div>
 
-    <div id="container">
+   <div id="container">
        <div id="elements">
-            <div id="device"><img src="images/desktop_device.png"></div>
-            <div id="status">
+            <div id="device" onclick="About.toggleBubble('clientinfo');">
+                <img src="images/desktop_device.png">
+                <div class="plus-toggle"><img src="images/plus.png"></div>
+          </div>
+            <div id="status" onclick="About.toggleMiddleBubble();">
                 <div id="status-arrow"><img src="images/sync_disconnected.png"></div>
                 <div id="status-1">signed in</div>
                 <div id="status-2">(idle)</div>
-            </div>
-            <div id="cloud">
+                <div class="plus-toggle"><img src="images/plus.png"></div>
+           </div>
+            <div id="cloud" onclick="About.toggleBubble('cloudinfo');">
                 <span class="center"><div id="quota-bar" class="progress-bar">70%</div></span>
-            </div>
+                <div class="plus-toggle"><img src="images/plus.png"></div>
+           </div>
         </div>
 
         <div id="bubble">
-            <div class="bubbleArrow"></div>
-            <div class="bubbleShape">
 
-                <div id="signedin" class="bubblePage">
-                  <h1 id="signedin-title">Signed In</h1>
-                  <p id="signedin-text">You are currently signed in as user foo</p>
-                  <input id="signedin-signout" type="button" onclick="Weave.Service.logout();" />
-                </div>
+            <!-- Bubbles in the center, under the arrow/status -->
 
-                <!-- fixme: need forgot passphrase ui -->
-                <div id="signin" class="bubblePage">
-                   <h1 id="signin-title">Sign Into Weave</h1>
-
-                    <input id="signin-newacct" type="button" value="new account"
-                           onclick="About.showBubble('newacct');" />
-
-                    <input id="signin-username" type="text" oninput="About.onSigninInput();" />
-                    <input id="signin-password" type="password" oninput="About.onSigninInput();" />
-                    <input id="signin-passphrase" type="password" oninput="About.onSigninInput();" />
-                    <input id="signin-help" type="button" value="help" />
-
-                    <div class="buttons">
-                        <input type="button" class="prev" disabled="true" />
-                        <input type="button" class="next" disabled="true"
-                               onclick="About.signIn();" />
-                    </div>
-                </div>
-
-               <div id="newacct" class="bubblePage">
-                    <h1 id="newacct-title">New Weave Account</h1>
-
-                    <input id="newacct-username" type="text" oninput="About.onNewacctUsernameInput();" />
-                    <input id="newacct-password" type="password" oninput="About.onNewacctPassInput();" />
-                    <input id="newacct-passphrase" type="password" oninput="About.onNewacctPassInput();"  />
-                    <input id="newacct-email" type="text" oninput="About.onNewacctInput();" />
-
-                    <div id="newacct-captcha">
-                        <iframe id="captcha-iframe" style="display:none;"
-                                onload="About.onCaptchaLoaded();"></iframe>
-                        <input id="captcha-challenge" type="text" style="display:none;" />
-
-                        <div id="captcha-controls">
-                            <img id="captcha-zoom" src="images/magnify.png"
-                                 class="captcha-control" onclick="About.zoomCaptcha();">
-                            <img src="images/reload.png" class="captcha-control"
-                                 onclick="About.loadCaptcha();">
-                            <img src="images/audio.png" class="captcha-control"
-                                 onclick="About.toggleCaptchaAudio();">
-                        </div>
-                        <div id="captcha-image"></div>
-                  </div>
-                    <input id="captcha-response" type="text" />
-
-                    <input id="newacct-tos-checkbox" type="checkbox" onclick="About.onNewacctInput();" />
-                    <label for="newacct-tos-checkbox">
-                        <span id="newacct-tos-label" class="localized">I agree to the</span>
-                        <a id="newacct-tos-link" class="iframe" href="#" onclick="return false;">TOS</a>
-                        <span id="newacct-tos-label2" class="localized"></span>
-                    </label>
-
-                    <div class="buttons">
-                        <input type="button" class="prev" onclick="About.showBubble('signin');" />
-                        <input type="button" class="next" disabled="true"
-                               onclick="About.onNewacctNext();" />
-                    </div>
-                </div>
-
-                <div id="willsync" class="bubblePage">
-                    <h1 id="willsync-title">Account Created!</h1>
-                    <p id="willsync-text">Syncing your data in %S seconds...</p>
-                    <input id="willsync-config" type="button" value="modify sync settings"
-                           onclick="About.willsyncSettings();" />
-                </div>
-
-                <div id="setup" class="bubblePage">
-                    <h1 id="setup-title">Sync Settings</h1>
-                    <p id="setup-text">Sorry! Nothing here yet. Please use the Weave Preferences window for now.</p>
-               </div>
+            <div id="signedin" class="bubble-center">
+                <h1 id="signedin-title">username</h1>
+                <input id="signedin-signout" type="button" onclick="Weave.Service.logout();" />
+                <input id="signedin-change-password" type="button" onclick="About.changePassword();" />
+                <input id="signedin-change-passphrase" type="button" onclick="About.changePassphrase();" />
             </div>
+
+            <div id="signin" class="bubble-center">
+                <h1 id="signin-title">Sign Into Weave</h1>
+
+                <input id="signin-username" type="text" oninput="About.onSigninInput();" />
+                <input id="signin-password" type="password" oninput="About.onSigninInput();" />
+                <input id="signin-passphrase" type="password" oninput="About.onSigninInput();" />
+
+                <div class="buttons">
+                    <input id="signin-newacct" type="button" class="prev"
+                           onclick="About.showBubble('newacct');" />
+                    <input id="signin-next" type="button" class="next" disabled="true"
+                           onclick="About.signIn();" />
+                </div>
+
+                <div class="help-tab">
+                    <img src="images/help.png" onclick="About.toggleHelp();">
+                </div>
+                <div class="bubble-help">
+                    <div id="help-forgot-password" class="help-item">
+                        <h3 class="help-item-title">I forgot my password</h3>
+                        <div class="help-item-content">
+                            <p id="forgot-password-1">Type in your username and we'll
+                                send you an email so you can reset it:</p>
+                            <input id="forgot-password-box" type="text" />
+                            <input id="forgot-password-ok" type="button" class="next" value="ok"
+                                   onclick="About.forgotPassword();" />
+                        </div>
+                    </div>
+                    <div id="help-forgot-passphrase" class="help-item">
+                        <h3 class="help-item-title">I forgot my passphrase</h3>
+                        <div class="help-item-content">
+                            <p id="forgot-passphrase-1">You can pick a new passphrase,
+                                but all your server data will need to be deleted (it cannot be
+                                recovered).</p>
+                            <p id="forgot-passphrase-2">To go ahead, click the button below:</p>
+                            <input id="forgot-passphrase-ok" type="button" class="next"
+                                   value="reset passphrase" onclick="About.forgotPassphrase();" />
+                        </div>
+                    </div>
+                    <div id="help-helpme" class="help-item">
+                        <h3 class="help-item-title">I'm stuck! What do I do?</h3>
+                        <div class="help-item-content">
+                            <p id="help-helpme-1">If you're stuck, you might want to try the FAQ or the Weave discussion group.</p>
+                       </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="newacct" class="bubble-center">
+                <h1 id="newacct-title">New Weave Account</h1>
+
+                <input id="newacct-username" type="text" oninput="About.onNewacctUsernameInput();" />
+                <input id="newacct-password" type="password" oninput="About.onNewacctPassInput();" />
+                <input id="newacct-passphrase" type="password" oninput="About.onNewacctPassInput();"  />
+                <input id="newacct-email" type="text" oninput="About.onNewacctInput();" />
+
+                <div id="newacct-captcha">
+                    <iframe id="captcha-iframe" style="display:none;"
+                            onload="About.onCaptchaLoaded();"></iframe>
+                    <input id="captcha-challenge" type="text" style="display:none;" />
+
+                    <div id="captcha-controls">
+                        <img id="captcha-zoom" src="images/magnify.png"
+                             class="captcha-control" onclick="About.zoomCaptcha();">
+                        <img src="images/reload.png" class="captcha-control"
+                             onclick="About.loadCaptcha();">
+                        <img src="images/audio.png" class="captcha-control"
+                             onclick="About.toggleCaptchaAudio();">
+                    </div>
+                    <div id="captcha-image"><img src="images/throbber.gif" class="throbber"></div>
+                </div>
+                <input id="captcha-response" type="text" />
+
+                <label>
+                    <input id="newacct-tos-checkbox" type="checkbox"
+                           onclick="About.onNewacctInput();" />
+                    <span id="newacct-tos-label">
+                        I agree to the <a href="#" onclick="return false;">TOS</a>
+                    </span>
+                </label>
+
+                <div class="buttons">
+                    <input type="button" class="prev" onclick="About.showBubble('signin');" />
+                    <input type="button" class="next" disabled="true"
+                           onclick="About.onNewacctNext();" />
+                </div>
+                <div class="help-tab">
+                    <img src="images/help.png" onclick="About.toggleHelp();">
+                </div>
+                <div class="bubble-help">
+                    <div id="help-user-taken" class="help-item">
+                        <h3 class="help-item-title">My username won't work</h3>
+                        <div class="help-item-content">
+                            <p id="help-user-taken-1">Your username might be taken, try adding numbers or additional words to it.</p>
+                            <p id="help-user-taken-2">Additionally, you can't use special symbols or spaces inside usernames.</p>
+                        </div>
+                    </div>
+                    <div id="help-newacct-pass" class="help-item">
+                        <h3 class="help-item-title">Weave won't accept my password or passphrase</h3>
+                        <div class="help-item-content">
+                            <p id="help-newacct-pass-1">The password and passphrase must be different.</p>
+                        </div>
+                    </div>
+                    <div id="help-no-captcha" class="help-item">
+                        <h3 class="help-item-title">I can't see the verification image</h3>
+                        <div class="help-item-content">
+                            <p id="help-no-captcha-1">Some add-ons can interfere with the verification image.  Try disabling NoScript or similar add-ons.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="willsync" class="bubble-center">
+                <h1 id="willsync-title">Account Created!</h1>
+                <p id="willsync-1">Syncing your data in %S seconds...</p>
+                <input id="willsync-config" type="button" value="modify sync settings"
+                       onclick="About.willsyncSettings();" />
+            </div>
+
+            <!-- Bubbles under the device -->
+
+            <div id="setup" class="bubble-left">
+                <h1 id="setup-title">Sync Settings</h1>
+                <p id="setup-1">Check the things you'd like to sync:</p>
+                <ul id="choose-data-list">
+                    <!-- auto-generated list here -->
+                </ul>
+                <input id="setup-sync" type="button" onclick="About.syncNow();" />
+            </div>
+
+            <div id="clientinfo" class="bubble-left">
+                <input id="clientinfo-name" type="text" class="no-field-helper"
+                       oninput="About.onNameChange();" />
+
+                <!-- fixme: make these images and bypass localization -->
+                <input id="clientinfo-type-desktop" type="button" value="desktop"
+                       onclick="About.setDeviceType('desktop');" />
+<!--                <input id="clientinfo-type-laptop" type="button" value="laptop"
+                           onclick="About.setDeviceType('laptop');" /> -->
+                <input id="clientinfo-type-mobile" type="button" value="mobile"
+                       onclick="About.setDeviceType('mobile');" />
+
+                <input id="clientinfo-prefs" type="button" onclick="About.showBubble('setup');" />
+            </div>
+
+            <!-- Bubbles under the cloud -->
+
+            <div id="cloudinfo" class="bubble-right">
+                <h1 id="cloudinfo-title">What's In The Cloud?</h1>
+                <!-- fixme: figure out how to localize these -->
+                <ul id="cloud-data-list">
+                    <li>123 bookmarks</li>
+                    <li>456 history URLs</li>
+                    <li>78 tabs</li>
+                    <li>(these are made up, sorry!)</li>
+                </ul>
+                <input id="cloudinfo-erase" type="button" value="erase"
+                       onclick="About.wipeServer();" />
+           </div>
         </div>
     </div>
-
-    <div id="footer"><img class="mozLogo" src="images/mozilla-logo.png">Copyright &copy; 2005-2009 Mozilla. All rights reserved. &nbsp; &nbsp; <a href="">Privacy Policy</a> &nbsp; &nbsp; <a href="">Legal Notices</a></div>
 </body>
 </html>
