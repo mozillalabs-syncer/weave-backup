@@ -78,7 +78,7 @@ var gOpenIdMunger = {
     let i;
 
     // Can't replace OpenID fields without a weave id
-    let weaveUsername = Weave.ID.get("WeaveID").username;
+    let weaveUsername = Weave.Service.username;
     if (weaveUsername == "")
       return;
 
