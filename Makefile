@@ -45,9 +45,12 @@ compatible_version := 0.6pre3
 
 ifeq ($(release_build),)
   xpi_type := dev
+  server_url := https://weave-dev.services.mozilla.com/user/
+  server_url := https://auth.services.mozilla.com/user/
   update_url := https://people.mozilla.com/~cbeard/weave/dist/update-dev.rdf
 else
   xpi_type := rel
+  server_url := https://auth.services.mozilla.com/user/
   update_url :=
 endif
 
@@ -87,7 +90,16 @@ else
   crypto_build_target = rebuild_all
 endif
 
-subst_names := weave_version compatible_version buildid buildid_short update_url update_url_tag unpacked jar
+subst_names := \
+  weave_version \
+  compatible_version \
+  buildid \
+  buildid_short \
+  server_url \
+  update_url \
+  update_url_tag \
+  unpacked \
+  jar
 export $(subst_names)
 export substitute = perl -pe 's/@([^@]+)@/defined $$$$ENV{$$$$1} ? $$$$ENV{$$$$1} : $$$$&/ge'
 
