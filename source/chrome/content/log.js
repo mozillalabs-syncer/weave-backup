@@ -25,6 +25,43 @@ let gSyncLog = {
     return this._stringBundle = stringBundle;
   },
 
+  get _lineRE() {
+    delete this._lineRE;
+    let re = "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\t([^\\s]+)\\s+([^\\s]+)\t.*";
+    return this._lineRE = new RegExp(re);
+  },
+
+  _textColors: {
+    WARN:   "#f60",
+    ERROR:  "#f30",
+    FATAL:  "#f00",
+    CONFIG: "#600",
+    DEBUG:  "#060",
+    INFO:   "#006",
+    TRACE:  "#066",
+  },
+
+  _updateColor: function _updateColor(text) {
+    let matches = text.match(this._lineRE);
+    if (matches == null)
+      return;
+
+    let [, source, type] = matches;
+
+    // Select a font color based on the type of message
+    this._color = this._textColors[type];
+
+    // Generate a background color based on the source of the log
+    let bgColor = [0, 0, 0];
+    for (let i = source.length; --i >= 0; ) {
+      let code = source.charCodeAt(i) - 65;
+      bgColor[i % 3] += code;
+      bgColor[(i + code) % 3] += code;
+    }
+    bgColor = bgColor.map(function(v) Math.abs(v % 256));
+    this._bgColor = "rgba(" + bgColor + ", .2)";
+  },
+
   //////////////////////////////////////////////////////////////////////////////
   // Public Methods
 
@@ -64,8 +101,14 @@ let gSyncLog = {
         if (text.length == 0 && more == false)
           break;
 
+        // Update the colors if necessary
+        gSyncLog._updateColor(text);
+
+        // Add a new line of colored text
         let pre = doc.createElement("pre");
-        pre.appendChild(doc.createTextNode(line.value));
+        pre.style.color = gSyncLog._color;
+        pre.style.backgroundColor = gSyncLog._bgColor;
+        pre.appendChild(doc.createTextNode(text));
         doc.body.appendChild(pre);
       } while (more);
 
