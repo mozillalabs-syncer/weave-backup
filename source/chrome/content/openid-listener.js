@@ -23,8 +23,8 @@ var gOpenIDProviderListener = {
       onLinkIconAvailable: function() {}
 }
 const OPENID_SERVICE_URI = "services.mozilla.com/openid/";
-const OPENID_PREF = "extensions.weave.openId.enabled";
-const OPENID_CUSTOM_PREF = "extensions.weave.openId.custom";
+const OPENID_PREF = "openId.enabled";
+const OPENID_CUSTOM_PREF = "openId.custom";
 
 /* When we find an openID field, grey it out and put the user's Weave-based openID URI into
  * it, while changing the submit button to say "Sign In with Weave".  But only do this if
@@ -32,15 +32,9 @@ const OPENID_CUSTOM_PREF = "extensions.weave.openId.custom";
  */
 
 var gOpenIdMunger = {
-  _prefs: null,
-  get _prefs() {
-      return Components.classes["@mozilla.org/preferences-service;1"]
-        .getService(Components.interfaces.nsIPrefBranch);
-  },
-
   init: function() {
     /* Listen for webpage loads */
-    if ( gOpenIdMunger._prefs.getBoolPref( OPENID_PREF ) ) {
+    if (Weave.Svc.Prefs.get(OPENID_PREF)) {
       if (typeof(gBrowser) != "undefined") {
         var appcontent = document.getElementById("appcontent");   // browser
         if(appcontent) {
@@ -58,7 +52,7 @@ var gOpenIdMunger = {
   },
 
   uninit: function() {
-    if ( gOpenIdMunger._prefs.getBoolPref( OPENID_PREF ) ) {
+    if (Weave.Svc.Prefs.get(OPENID_PREF)) {
       if (typeof(gBrowser) != "undefined") {
         var appcontent = document.getElementById("appcontent");   // browser
         if(appcontent) {
@@ -78,7 +72,7 @@ var gOpenIdMunger = {
     let i;
 
     // Can't replace OpenID fields without a weave id
-    let weaveUsername = Weave.ID.get("WeaveID").username;
+    let weaveUsername = Weave.Service.username;
     if (weaveUsername == "")
       return;
 
@@ -101,10 +95,8 @@ var gOpenIdMunger = {
          */
         elem.type = "hidden";
         
-        if (gOpenIdMunger._prefs.prefHasUserValue(OPENID_CUSTOM_PREF))
-          elem.value = gOpenIdMunger._prefs.getCharPref(OPENID_CUSTOM_PREF);
-        else
-          elem.value = OPENID_SERVICE_URI + weaveUsername;
+        let weaveOpenid = OPENID_SERVICE_URI + weaveUsername;
+        elem.value = Weave.Svc.Prefs.get(OPENID_CUSTOM_PREF, weaveOpenid)
 
         let form = elem.form;
         let formChildren = form.getElementsByTagName("input");

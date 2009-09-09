@@ -6,16 +6,12 @@ let gSyncLog = {
   //////////////////////////////////////////////////////////////////////////////
   // Private Methods
 
-  _file: function SyncLog__file(type) {
-    let dirSvc = Cc["@mozilla.org/file/directory_service;1"].
-      getService(Ci.nsIProperties);
-
-    let logFile = dirSvc.get("ProfD", Ci.nsIFile);
+  get _file() {
+    let logFile = Weave.Svc.Directory.get("ProfD", Ci.nsIFile);
     logFile.QueryInterface(Ci.nsILocalFile);
     logFile.append("weave");
     logFile.append("logs");
-    logFile.append(type + "-log.txt");
-
+    logFile.append("verbose-log.txt");
     return logFile;
   },
 
@@ -29,98 +25,104 @@ let gSyncLog = {
     return this._stringBundle = stringBundle;
   },
 
-  _uriLog: function SyncLog__uriLog(type) {
-    if (type) {
-      let file = this._file(type);
-      if (file.exists())
-        return "file://" + file.path;
-    }
-
-    return "chrome://weave/content/default-log.txt";
-  },
-
-  //////////////////////////////////////////////////////////////////////////////
-  // Event Handlers
-
-  init: function SyncLog_init(event) {
-    let frame = this._frame;
-    let handleLoad = function SyncLog__handleLoad(event) {
-      frame.removeEventListener("load", handleLoad, true);
-      gSyncLog.onFrameLoad(event, frame);
-    };
-    frame.addEventListener("load", handleLoad, true);
-    frame.setAttribute("src", this._uriLog("verbose"));
-  },
-
-  onFrameLoad: function SyncLog_onFrameLoad(event, frame) {
-    let text = frame.contentDocument.documentElement.lastChild.textContent;
+  get _lineRE() {
+    delete this._lineRE;
     let re = "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\t([^\\s]+)\\s+([^\\s]+)\t.*";
-    let matches = text.match(new RegExp(re, "g"));
+    return this._lineRE = new RegExp(re);
+  },
 
-    // No need to process the text if there's nothing to color
-    if (!matches)
+  _textColors: {
+    WARN:   "#f60",
+    ERROR:  "#f30",
+    FATAL:  "#f00",
+    CONFIG: "#600",
+    DEBUG:  "#060",
+    INFO:   "#006",
+    TRACE:  "#066",
+  },
+
+  _updateColor: function _updateColor(text) {
+    let matches = text.match(this._lineRE);
+    if (matches == null)
       return;
 
-    // Define some colors for various levels/types of logging
-    let textColors = {
-      WARN:   "#f60",
-      ERROR:  "#f30",
-      FATAL:  "#f00",
+    let [, source, type] = matches;
 
-      CONFIG: "#600",
-      DEBUG:  "#060",
-      INFO:   "#006",
-      TRACE:  "#066",
-    };
+    // Select a font color based on the type of message
+    this._color = this._textColors[type];
 
-    let logPattern = new RegExp(re);
-    // Color one line at a time on a timeout reverse-log-order
-    let colorText = function SyncLog__colorText(doc, num) {
-      // Stop processing if we're out of lines
-      if (matches.length == 0)
-        return;
-
-      let [line, source, type] = matches.pop().match(logPattern);
-
-      // Generate a background color based on the source of the log
-      let bgColor = [0, 0, 0];
-      for (let i = source.length; --i >= 0; ) {
-        let code = source.charCodeAt(i) - 65;
-        bgColor[i % 3] += code;
-        bgColor[(i + code) % 3] += code;
-      }
-      bgColor = bgColor.map(function(v) Math.abs(v % 256));
-
-      let pre = doc.body.appendChild(doc.createElement("pre"));
-      pre.style.color = textColors[type];
-      pre.style.backgroundColor = "rgba(" + bgColor + ", .2)";
-      pre.appendChild(doc.createTextNode(line));
-
-      // Color another line right away if we need to
-      if (--num > 0)
-        colorText(doc, num);
-      // Wait a short bit before starting another batch
-      else
-        setTimeout(colorText, 0, doc, 50);
-    };
-
-    // The second frame load is for switching to html
-    let handleHtmlLoad = function SyncLog__handleHtmlLoad(event) {
-      frame.removeEventListener("load", handleHtmlLoad, true);
-      colorText(event.target, 100);
-    };
-    frame.addEventListener("load", handleHtmlLoad, true);
-
-    let html = "<html><head><style>pre{margin:0}</style><body></body></html>";
-    frame.setAttribute("src", "data:text/html," + html);
+    // Generate a background color based on the source of the log
+    let bgColor = [0, 0, 0];
+    for (let i = source.length; --i >= 0; ) {
+      let code = source.charCodeAt(i) - 65;
+      bgColor[i % 3] += code;
+      bgColor[(i + code) % 3] += code;
+    }
+    bgColor = bgColor.map(function(v) Math.abs(v % 256));
+    this._bgColor = "rgba(" + bgColor + ", .2)";
   },
 
   //////////////////////////////////////////////////////////////////////////////
   // Public Methods
 
-  saveAs: function SyncLog_saveAs() {
-    let file = this._file("verbose");
+  updateLog: function updateLog() {
+    let doc = this._frame.contentDocument;
+    let win = doc.defaultView;
+    let line = {};
+    let log, file;
 
+    // Read in every line from the log and append it to the display
+    (function read() {
+      // Make sure we have a file to read
+      if (file == null || !file.exists()) {
+        // Use the new file if it changed on us
+        if (gSyncLog._file.exists()) {
+          file = gSyncLog._file;
+          log = Cc["@mozilla.org/network/file-input-stream;1"].
+            createInstance(Ci.nsIFileInputStream);
+          log.init(file, 1, 0, 0);
+          log.QueryInterface(Ci.nsILineInputStream);
+        }
+        // No file yet, so try again later
+        else {
+          setTimeout(read, 1000);
+          file = null;
+          return;
+        }
+      }
+
+      // Remember if the user is at the end of the log
+      let autoScroll = win.scrollY == win.scrollMaxY;
+      let more;
+      do {
+        more = log.readLine(line);
+        let text = line.value;
+        // Don't add anything if nothing was read
+        if (text.length == 0 && more == false)
+          break;
+
+        // Update the colors if necessary
+        gSyncLog._updateColor(text);
+
+        // Add a new line of colored text
+        let pre = doc.createElement("pre");
+        pre.style.color = gSyncLog._color;
+        pre.style.backgroundColor = gSyncLog._bgColor;
+        pre.appendChild(doc.createTextNode(text));
+        doc.body.appendChild(pre);
+      } while (more);
+
+      // Automatically scroll to the end if the user was at the end
+      if (autoScroll)
+        win.scrollTo(win.scrollX, win.scrollMaxY);
+
+      // Prepare for an update to the log
+      setTimeout(read, 100);
+    })();
+  },
+
+  saveAs: function SyncLog_saveAs() {
+    let file = this._file;
     if (!file.exists()) {
       alert(this._stringBundle.getString("noLogAvailable.alert"));
       return;
@@ -145,8 +147,8 @@ let gSyncLog = {
 
   clear: function SyncLog_clear() {
     Weave.Service.clearLogs();
-    this._frame.setAttribute("src", this._uriLog());
+    this._frame.contentDocument.body.innerHTML = "";
   }
 }
 
-window.addEventListener("load", function(e) gSyncLog.init(e), false);
+window.addEventListener("load", function(e) gSyncLog.updateLog(), false);

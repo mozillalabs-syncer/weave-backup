@@ -448,16 +448,11 @@ let About = {
     let ret = Weave.Service.login(user, pass, passph);
 
     // Save login settings if successful
-    if (Weave.Service.isLoggedIn) {
-      try {
-        Weave.Service.username = user;
-        Weave.Service.password = pass;
-        Weave.Service.passphrase = passph;
-      } catch (e) { /* storing passwords may fail if master password is declined */ }
-
-    } else {
+    if (Weave.Service.isLoggedIn)
+      Weave.Service.persistLogin();
+    else
       alert("Couldn't sign in: " + Weave.Service.detailedStatus.sync); //FIXME
-    }
+
     return ret;
   },
   forgotPassword: function forgotPassword() {
