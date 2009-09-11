@@ -445,6 +445,10 @@ let About = {
     let pass = $('#signin-password').val();
     let passph = $('#signin-passphrase').val();
 
+    // Disable the sign-in button when trying to sign in
+    let button = $("#signin-next");
+    button.attr("disabled", true);
+
     let ret = Weave.Service.login(user, pass, passph);
 
     // Save login settings if successful
@@ -452,6 +456,9 @@ let About = {
       Weave.Service.persistLogin();
     else
       alert("Couldn't sign in: " + Weave.Service.detailedStatus.sync); //FIXME
+
+    // Restore the clickability on success (new bubble) and failure
+    button.removeAttr("disabled");
 
     return ret;
   },
