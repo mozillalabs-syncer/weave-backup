@@ -51,7 +51,7 @@ function WeaveWindow() {
   let obs = [["weave:service:sync:start", "onSyncStart"],
     ["weave:service:sync:finish", "onSyncFinish"],
     ["weave:service:sync:error", "onSyncError"],
-    ["weave:service:login:start", "onLoginStart"],
+    ["weave:service:verify-login:start", "onLoginStart"],
     ["weave:service:login:finish", "onLoginFinish"],
     ["weave:service:login:error", "onLoginError"],
     ["weave:service:logout:finish", "onLogout"],
@@ -114,15 +114,8 @@ WeaveWindow.prototype = {
     let label;
     if (status == "offline")
       label = this._stringBundle.getString("status.offline");
-    else {
-      if (!Weave.Service.username) {
-        this._log.error("status is " + status + ", but username not set");
-        // don't add a label
-        label = "";
-      }
-      else
-        label = Weave.Service.username;
-    }
+    else 
+      label = Weave.Service.username;
 
     let button = document.getElementById("sync-menu-button");
     button.setAttribute("label", label);
