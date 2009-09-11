@@ -56,9 +56,6 @@ function FennecWeaveGlue() {
      self._log.info("Timeout done, starting Weave service.\n");
      Weave.Service.onStartup();
    }, 3000);
-
-   /* Add remote tabs tab */
-   Browser.addTab("chrome://weave/content/fennec-tabs.html");
 }
 FennecWeaveGlue.prototype = {
   __prefService: null,
@@ -92,6 +89,10 @@ FennecWeaveGlue.prototype = {
       this._pfs.setCharPref("extensions.weave.lastversion",
 			    Weave.WEAVE_VERSION);
     }
+  },
+
+  openRemoteTabs: function openRemoteTabs() {
+    Browser.addTab("chrome://weave/content/fennec-tabs.html", true);
   },
 
   shutdown: function FennecWeaveGlue__shutdown() {

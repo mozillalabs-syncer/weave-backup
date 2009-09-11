@@ -70,8 +70,9 @@ let RemoteTabViewer = {
           if (uTitle.length > 80) uTitle = uTitle.substr(0, 80);
           
           let item = document.createElement("div");
-          item.setAttribute("onClick",
-            "window.open('" + tab.urlHistory[0] + "')");
+          item.addEventListener("click", function() {
+            window.location = tab.urlHistory[0];
+          }, false)
           item.setAttribute("class", "tab");
         
           let imgDiv = document.createElement("div");
