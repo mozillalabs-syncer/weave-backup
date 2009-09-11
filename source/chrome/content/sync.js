@@ -46,8 +46,6 @@ if (typeof Cr == "undefined")
   var Cr = Components.results;
 
 function WeaveWindow() {
-  this._log = Log4Moz.repository.getLogger("Window");
-
   let obs = [["weave:service:sync:start", "onSyncStart"],
     ["weave:service:sync:finish", "onSyncFinish"],
     ["weave:service:sync:error", "onSyncError"],
@@ -124,12 +122,10 @@ WeaveWindow.prototype = {
   },
 
   onLoginStart: function WeaveWin_onLoginStart() {
-    this._log.info("Logging in...");
     this._setStatus("active");
   },
 
   onLoginError: function WeaveWin_onLoginError() {
-    this._log.info("Login Error");
     this._setStatus("offline");
 
     let title = this._stringBundle.getString("error.login.title");
@@ -144,7 +140,6 @@ WeaveWindow.prototype = {
   },
 
   onLoginFinish: function WeaveWin_onLoginFinish() {
-    this._log.info("Login successful");
     this._setStatus("idle");
 
     // Clear out any login failure notifications
