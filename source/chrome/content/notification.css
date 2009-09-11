@@ -1,3 +1,9 @@
+#openRemoteTabs-button {
+  list-style-image: url(chrome://weave/skin/weave-default-64.png);
+}
+#openRemoteTabs-button:hover:active {
+  list-style-image: url(chrome://weave/skin/weave-active-64.png);
+}
 
 #sync-notifications-box {
   -moz-binding: url("chrome://weave/content/notification.xml#notificationbox");
