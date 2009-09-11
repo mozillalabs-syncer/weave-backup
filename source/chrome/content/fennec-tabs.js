@@ -31,74 +31,62 @@ let RemoteTabViewer = {
         holder.removeChild(holder.firstChild);
     }
 
-    // Get a list of all tabs:
-    let allTabs = [];
-    for each (record in this._remoteClients) {
-      let tabs = record.getAllTabs();
-      let cname = record.getClientName();
-      for each (tab in tabs) {
-        if (!tab.title) {
-          tab.title = tab.urlHistory[0];
+    let trim = function(s) s.length > 80 ? s.substr(0, 80) + "\u2026" : s;
+
+    // Generate the list of tabs
+    for (let [guid, client] in Iterator(this._remoteClients)) {
+      // Create the client node, but don't add it in-case we don't show any tabs
+      let appendClient = true;
+      let nameNode = document.createElement("h2");
+      nameNode.innerHTML = client.getClientName();
+
+      client.getAllTabs().forEach(function({title, urlHistory}) {
+        let pageUrl = urlHistory[0];
+
+        // Skip tabs that are already open
+        if (engine.locallyOpenTabMatchesURL(pageUrl))
+          return;
+
+        if (title == "")
+          title = pageUrl;
+
+        let item = document.createElement("div");
+        item.addEventListener("click", function() {
+          window.location = pageUrl;
+        }, false)
+        item.setAttribute("class", "tab");
+        
+        let imgDiv = document.createElement("div");
+        imgDiv.setAttribute("class", "icon");
+        let img = document.createElement("img");
+        img.src = "chrome://weave/skin/tab.png";
+        imgDiv.appendChild(img);
+      
+        let tabDiv = document.createElement("div");
+        tabDiv.setAttribute("class", "info");
+        let titleNode = document.createElement("div");
+        titleNode.setAttribute("class", "title");
+        titleNode.innerHTML = trim(title);
+        let urlNode = document.createElement("div");
+        urlNode.setAttribute("class", "url");
+        urlNode.innerHTML = trim(pageUrl);
+        tabDiv.appendChild(titleNode);
+        tabDiv.appendChild(urlNode);
+      
+        item.appendChild(imgDiv);
+        item.appendChild(tabDiv);
+      
+        // Append the client name if we haven't yet
+        if (appendClient) {
+          appendClient = false;
+          holder.appendChild(nameNode);
         }
-        if (!tab.lastUsed) {
-          tab.lastUsed = 0;
-        }
-        if (cname in allTabs)
-          allTabs[cname].push(tab);
-        else
-          allTabs[cname] = [tab];
-      }
+
+        holder.appendChild(item);
+      });
     }
 
-    // Now actually add them to the list
-    if (allTabs.__count__ > 0) {
-      for (let client in allTabs) {
-        let cname = document.createElement("h2");
-        cname.innerHTML = client;
-        holder.appendChild(cname);
-        
-        for each (let tab in allTabs[client]) {
-          // Skip those that are already open:
-          if ( engine.locallyOpenTabMatchesURL(tab.urlHistory[0]) ) {
-            continue;
-          }
-          
-          // Trim title and url to 80 chars
-          let fTitle = tab.title;
-          let uTitle = tab.urlHistory[0];
-          if (fTitle.length > 80) fTitle = fTitle.substr(0, 80);
-          if (uTitle.length > 80) uTitle = uTitle.substr(0, 80);
-          
-          let item = document.createElement("div");
-          item.addEventListener("click", function() {
-            window.location = tab.urlHistory[0];
-          }, false)
-          item.setAttribute("class", "tab");
-        
-          let imgDiv = document.createElement("div");
-          imgDiv.setAttribute("class", "icon");
-          let img = document.createElement("img");
-          img.src = "chrome://weave/skin/tab.png";
-          imgDiv.appendChild(img);
-        
-          let tabDiv = document.createElement("div");
-          tabDiv.setAttribute("class", "info");
-          let title = document.createElement("div");
-          title.setAttribute("class", "title");
-          title.innerHTML = fTitle;
-          let url = document.createElement("div");
-          url.setAttribute("class", "url");
-          url.innerHTML = uTitle;
-          tabDiv.appendChild(title);
-          tabDiv.appendChild(url);
-        
-          item.appendChild(imgDiv);
-          item.appendChild(tabDiv);
-        
-          holder.appendChild(item);
-        }
-      }
-    } else {
+    if (holder.childNodes.length == 0) {
       let item = document.createElement("h1");
       item.innerHTML = "No remote tabs synced!";
       document.getElementsByTagName('body')[0].appendChild(item);
