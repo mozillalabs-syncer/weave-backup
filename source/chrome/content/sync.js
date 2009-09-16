@@ -131,7 +131,7 @@ WeaveWindow.prototype = {
     let title = this._stringBundle.getString("error.login.title");
  
 
-    let reason = Weave.Utils.getErrorString(Weave.Service.detailedStatus.sync);
+    let reason = Weave.Utils.getErrorString(Weave.Service.status.login);
     let description =
       this._stringBundle.getFormattedString("error.login.description", [reason]);
     let notification = new Weave.Notification(title, description, null,
@@ -188,24 +188,27 @@ WeaveWindow.prototype = {
   _onSyncEnd: function WeaveWin__onSyncEnd(status) {
     this._setStatus("idle");
 
-    let title = this._stringBundle.getString("error.sync.title");
     if (!status) {
-      let description = this._stringBundle.getString("error.sync.description");
-      let tryAgainButton =
-        new Weave.NotificationButton(
-          this._stringBundle.getString("error.sync.tryAgainButton.label"),
-          this._stringBundle.getString("error.sync.tryAgainButton.accesskey"),
-          function() { gWeaveWin.doSync(); return true; }
-        );
+      let title = this._stringBundle.getString("error.sync.title");
+      let error = Weave.Utils.getErrorString(Weave.Service.status.sync);
+      let description = this._stringBundle
+                            .getFormattedString("error.sync.description", [error]);
+
+      let priority = Weave.Notifications.PRIORITY_WARNING;
+      let button = null;
+      if (!Weave.Service.status.enforceBackoff) {
+        priority = Weave.Notifications.PRIORITY_INFO;
+        button =
+          new Weave.NotificationButton(
+            this._stringBundle.getString("error.sync.tryAgainButton.label"),
+            this._stringBundle.getString("error.sync.tryAgainButton.accesskey"),
+            function() { gWeaveWin.doSync(); return true; }
+          );
+      }
+      
       let notification =
-        new Weave.Notification(
-          title,
-          description,
-          null,
-          Weave.Notifications.PRIORITY_WARNING,
-          [tryAgainButton]
-        );
-      Weave.Notifications.replaceTitle(notification);
+        new Weave.Notification(title, description, null, priority, button);
+      Weave.Notifications.replaceTitle(notification); 
     }
     // Clear out sync failures on a successful sync
     else
