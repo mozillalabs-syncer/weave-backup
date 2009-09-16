@@ -187,9 +187,9 @@ WeaveWindow.prototype = {
 
   _onSyncEnd: function WeaveWin__onSyncEnd(status) {
     this._setStatus("idle");
-
+    
+    let title = this._stringBundle.getString("error.sync.title");
     if (!status) {
-      let title = this._stringBundle.getString("error.sync.title");
       let error = Weave.Utils.getErrorString(Weave.Service.status.sync);
       let description = this._stringBundle
                             .getFormattedString("error.sync.description", [error]);
