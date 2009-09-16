@@ -670,11 +670,7 @@ let About = {
       if (Weave.Service.isLoggedIn)
         Weave.Service.persistLogin();
       else
-<<<<<<< local
-        alert("Couldn't sign in: " + Weave.Service.detailedStatus.sync); //FIXME
-=======
         alert("Couldn't sign in: " + Weave.Service.status.sync); //FIXME
->>>>>>> other
 
       About.showBubble("newacct2");
 
@@ -717,11 +713,7 @@ let About = {
       Weave.Service.persistLogin();
       About.showBubble("data");
     } else {
-<<<<<<< local
-      alert("Couldn't sign in: " + Weave.Service.detailedStatus.sync); //FIXME
-=======
       alert("Couldn't sign in: " + Weave.Service.status.sync); //FIXME
->>>>>>> other
     }
   },
 
