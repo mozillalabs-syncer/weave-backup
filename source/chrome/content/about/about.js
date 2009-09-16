@@ -50,54 +50,30 @@ let About = {
     About.refreshClientType();
     About.hideQuota();
     About._localizePage();
+    About._installObservers();
+    About.setStatus("offline");
 
-    if (About.setupComplete) {
-      // setup complete, just check if we are logged in or not
-      if (Weave.Service.isLoggedIn) {
-        // FIXME: service doesn't have a getter to tell us if it's
-        // syncing, so we co-opt the locked getter
-        if (Weave.Service.locked)
-          About.setStatus('sync');
-        else
-          About.setStatus('idle');
-      } else {
-        About.setStatus('offline');
-        About.showBubble('signin');
-      }
-
-      About._installObservers();
-
-    } else {
-      // Arrow is 'offline' throughout setup process
-      About.setStatus('offline');
-
-      About._log.trace("First-run setup mode");
-      // about:weave was closed before setup was completed,
-      // first check if we set a username or not
-      if (About.isNewUser) {
-        About._log.trace("No username set");
-        About.showBubble('welcome');
-      } else {
-        About._log.trace("Username set, attempting sign-in");
-        // we do have a username set, try to login and see
-        Weave.Service.login();
-
-        if (!Weave.Service.isLoggedIn) {
-          About._log.trace("Sign-in attempt failed");
-          About.showBubble('welcome'); // login failed, just start over
-        } else {
-          About._log.trace("Sign-in successful");
-          // if login succeeded with a passphrase, we're good to go
-          // fixme: if no passphrase is set, we should check if keys
-          //        exist and display appropriate UI
-          //        ("set a secret" vs "enter your secret")
-          if (Weave.Service.passphrase)
-            About.showBubble('data');
-          else
-            About.showBubble('newacct2');
-        }
-      }
+    // In the common case, the user is already logged in, so show the status
+    if (Weave.Service.isLoggedIn) {
+      // FIXME: service doesn't have a getter to tell us if it's syncing, so we
+      // co-opt the locked getter
+      if (Weave.Service.locked)
+        About.setStatus("sync");
+      else
+        About.setStatus("idle");
     }
+    // Start from the beginning if there's no user to sign-in
+    else if (!Weave.Service.username)
+      About.showBubble("welcome");
+    // Username is set but no password saved, so do a regular sign-in
+    else if (!Weave.Service.password)
+      About.showBubble("signin");
+    // User didn't finish setting a passphrase, so show the secret description
+    else if (!Weave.Service.passphrase)
+      About.showBubble("newacct2");
+    // Got all the pieces for sign-in, so show the bubble with populated fields
+    else
+      About.showBubble("signin");
   },
 
   _installObservers: function() {
@@ -208,9 +184,6 @@ let About = {
   set setupComplete(val) {
     Weave.Svc.Prefs.set("setupComplete", val);
   },
-  get isNewUser() {
-    return !Weave.Service.username;
-  },
 
   //
   // Weave event handlers
@@ -221,10 +194,24 @@ let About = {
   },
   onLoginFinish: function onLoginFinish() {
     About.setStatus('idle');
+
+    // Save login settings on success
+    Weave.Service.persistLogin();
+
+    // Nothing left to do, so just hide the form
+    if (About.setupComplete)
+      About.hideBubble();
+    // First successful sign-in shows the data configuration
+    else
+      About.showBubble("data");
   },
   onLoginError: function onLoginError() {
     About.setStatus('offline');
-    // fixme?
+
+    // Show the full sign-in form to try again
+    About.showBubble("signin");
+    alert("Couldn't sign in: " + Weave.Utils.getErrorString(
+      Weave.Service.status.login)); //FIXME
   },
   onLogout: function onLogout() {
     About.setStatus('offline');
@@ -469,39 +456,34 @@ let About = {
     // next/sign in button gets disabled until onSigninInput() enables it
     $('#signin .buttons .next').attr('disabled', true);
 
-    if (!About.setupComplete) {
-      About.resetLogin();
-      $('#signin .buttons .prev').show();
-      $('#signin .buttons .next').val("next"); // fixme: l10n
-      return;
-    }
-
     About._log.trace("Pre-filling sign-in form");
 
     let user = Weave.Service.username;
-    $('#signin-username').val(user);
     let pass = Weave.Service.password;
+    let passph = Weave.Service.passphrase;
+
+    // Previously logged in user, so show "sign in"
+    if (user) {
+      $("#signin-username").val(user);
+      $("#signin .buttons .next").val("sign in"); // fixme: l10n
+      $("#signin .buttons .prev").hide();
+    }
+    // No username means we might need to setup data or create account
+    else {
+      $("#signin .buttons .next").val("next"); // fixme: l10n
+      $("#signin .buttons .prev").show();
+      pass = passph = "";
+    }
+
     if (pass)
       $('#signin-password').val(pass)[0].type = 'password';
-    let passph = Weave.Service.passphrase;
     if (passph)
       $('#signin-passphrase').val(passph)[0].type = 'password';
 
-    $('#signin .buttons .prev').hide();
-    $('#signin .buttons .next').val("sign in"); // fixme: l10n
-
     About.onSigninInput(); // enable next button
-
     $('#signin-username').focus();
   },
-  resetLogin: function resetLogin() {
-    Weave.Service.username = '';
-    ['signin-username', 'signin-password', 'signin-passphrase'].forEach(
-      function(item) {
-        $(item).val('');
-        About.resetField(item);
-      });
-  },
+
   _hasInput: function _hasInput(elt) {
     let def = $(elt).data('default');
     return $(elt).val() && $(elt).val() != def;
@@ -514,35 +496,24 @@ let About = {
     else
       $('#signin .buttons .next')[0].disabled = true;
   },
-  signIn: function signIn(noRedirect) {
-    let user = $('#signin-username').val();
-    let pass = $('#signin-password').val();
-    let passph = $('#signin-passphrase').val();
 
-    // Disable the sign-in button, show throbber
-    $("#signin .buttons .next").attr("disabled", true);
-    $("#signin .buttons .throbber").show();
+  doWrappedFor: function doWrappedFor(bubble, func /*, args */) {
+    let buttons = bubble + " .buttons ";
+    let next = $(buttons + ".next");
+    let throbber = $(buttons + ".throbber");
 
-    let ret = Weave.Service.login(user, pass, passph);
+    // While calling the func, disable the next button and show the throbber
+    next.attr("disabled", true);
+    throbber.show();
+    Weave.Service[func].apply(Weave.Service, Array.slice(arguments, 2));
+    next.removeAttr("disabled");
+    throbber.hide();
+  },
 
-    // Save login settings if successful
-    if (Weave.Service.isLoggedIn)
-      Weave.Service.persistLogin();
-    else
-      alert("Couldn't sign in: " + Weave.Utils.getErrorString(Weave.Service.status.login)); //FIXME
-
-    // Re-enable next button, hide throbber
-    $("#signin .buttons .next").removeAttr("disabled");
-    $("#signin .buttons .throbber").hide();
-
-    if (!noRedirect) {
-      if (About.setupComplete)
-        About.hideBubble();
-      else
-        About.showBubble('data');
-    }
-
-    return ret;
+  signIn: function signIn() {
+    // Try logging in; success/fail handled by event listeners
+    About.doWrappedFor("#signin", "login", $("#signin-username").val(),
+      $("#signin-password").val(), $("#signin-passphrase").val());
   },
   forgotPassword: function forgotPassword() {
     alert("Sorry, this functionality is not implemented yet!"); //FIXME
@@ -653,31 +624,21 @@ let About = {
     }
   },
   onNewacctNext: function onNewacctNext() {
-    $("#newacct .buttons .throbber").show();
-    let ret = Weave.Service.createAccount($('#newacct-username').val(),
-                                          $('#newacct-password').val(),
-                                          $('#newacct-email').val(),
-                                          $('#captcha-challenge').val(),
-                                          $('#captcha-response').val());
+    let username = $("#newacct-username").val();
+    let password = $("#newacct-password").val();
+    About.doWrappedFor("#newacct", "createAccount", username, password,
+      $("#newacct-email").val(), $("#captcha-challenge").val(),
+      $("#captcha-response").val());
+
+    // User created successfully, so save the user/pass and move on
     if (ret == null) {
-      Weave.Service.login($('#newacct-username').val(),
-                          $('#newacct-password').val(),
-                          $('#newacct-passphrase').val());
-
-      $("#newacct .buttons .throbber").hide();
-
-      // Save login settings if successful
-      if (Weave.Service.isLoggedIn)
-        Weave.Service.persistLogin();
-      else
-        alert("Couldn't sign in: " + Weave.Service.status.sync); //FIXME
-
+      Weave.Service.username = username;
+      Weave.Service.password = password;
+      Weave.Service.persistLogin();
       About.showBubble("newacct2");
-
     } else {
       this._log.warn("Account creation error: " + ret);
       About.loadCaptcha();
-      $("#newacct .buttons .throbber").hide();
       alert("Could not create account: " + ret);
     }
   },
@@ -703,18 +664,9 @@ let About = {
       $('#newacct2 .buttons .next')[0].disabled = true;
   },
   onNewacct2Next: function() {
-    $("#newacct2 .buttons .throbber").show();
+    // Now that we have a passphrase, try logging in
     Weave.Service.passphrase = $('#newacct2-passphrase').val();
-    Weave.Service.login();
-    $("#newacct2 .buttons .throbber").hide();
-
-    // Save login settings if successful
-    if (Weave.Service.isLoggedIn) {
-      Weave.Service.persistLogin();
-      About.showBubble("data");
-    } else {
-      alert("Couldn't sign in: " + Weave.Service.status.sync); //FIXME
-    }
+    About.doWrappedFor("#newacct2", "login");
   },
 
   //
