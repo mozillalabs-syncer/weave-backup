@@ -529,7 +529,7 @@ let About = {
     if (Weave.Service.isLoggedIn)
       Weave.Service.persistLogin();
     else
-      alert("Couldn't sign in: " + Weave.Service.detailedStatus.sync); //FIXME
+      alert("Couldn't sign in: " + Weave.Utils.getErrorString(Weave.Service.status.login)); //FIXME
 
     // Re-enable next button, hide throbber
     $("#signin .buttons .next").removeAttr("disabled");

@@ -148,7 +148,7 @@ let WeaveStatus = {
     }
 
     this._statusIcon.setAttribute("status", "error");
-    let reasonString = Weave.Utils.getErrorString(Weave.Service.detailedStatus.sync);
+    let reasonString = Weave.Utils.getErrorString(Weave.Service.status.sync);
     this._statusEngine.value = 
       this._stringBundle.getFormattedString("status.error", [reasonString]);
     this._statusText.value = this._stringBundle.getString("status.closing");
