@@ -40,16 +40,43 @@ const Cu = Components.utils;
 
 Cu.import("resource://weave/ext/Observers.js");
 Cu.import("resource://weave/ext/Preferences.js");
+Cu.import("resource://weave/constants.js");
 
 let About = {
   init: function init() {
     About._log = Log4Moz.repository.getLogger("About:Weave");
-    About._log.info("Loading About:Weave");
+    About._log.trace("Loading About:Weave");
 
     About.refreshClientType();
     About.hideQuota();
     About._localizePage();
+    About._installObservers();
+    About.setStatus("offline");
 
+    // In the common case, the user is already logged in, so show the status
+    if (Weave.Service.isLoggedIn) {
+      // FIXME: service doesn't have a getter to tell us if it's syncing, so we
+      // co-opt the locked getter
+      if (Weave.Service.locked)
+        About.setStatus("sync");
+      else
+        About.setStatus("idle");
+    }
+    // Start from the beginning if there's no user to sign-in
+    else if (!Weave.Service.username)
+      About.showBubble("welcome");
+    // Username is set but no password saved, so do a regular sign-in
+    else if (!Weave.Service.password)
+      About.showBubble("signin");
+    // User didn't finish setting a passphrase, so show the secret description
+    else if (!Weave.Service.passphrase)
+      About.showBubble("newacct2");
+    // Got all the pieces for sign-in, so show the bubble with populated fields
+    else
+      About.showBubble("signin");
+  },
+
+  _installObservers: function() {
     [['login:start', About.onLoginStart],
      ['login:finish', About.onLoginFinish],
      ['login:error', About.onLoginError],
@@ -58,23 +85,6 @@ let About = {
      ['sync:finish', About.onSyncFinish],
      ['sync:error', About.onSyncError]]
      .forEach(function(i) Observers.add("weave:service:" + i[0], i[1]));
-
-    // Make the '+' icons underneath each element more visible on mouseover
-    $('#device,#status,#cloud')
-      .hover(function() $(this).find('.plus-toggle').css('opacity', 1),
-             function() $(this).find('.plus-toggle').css('opacity', ''));
-
-    // FIXME: service doesn't have a getter to tell us if it's
-    // syncing, so we co-opt the locked getter
-    if (Weave.Service.isLoggedIn) {
-      if (Weave.Service.locked)
-        About.setStatus('sync');
-      else
-        About.setStatus('idle');
-    } else {
-      About.setStatus('offline');
-      About.showBubble('signin');
-    }
   },
 
   //
@@ -168,8 +178,11 @@ let About = {
   //
   // Getters
   //
-  get isNewUser() {
-    return !Weave.Service.username;
+  get setupComplete() {
+    return Weave.Svc.Prefs.get("setupComplete");
+  },
+  set setupComplete(val) {
+    Weave.Svc.Prefs.set("setupComplete", val);
   },
 
   //
@@ -181,21 +194,28 @@ let About = {
   },
   onLoginFinish: function onLoginFinish() {
     About.setStatus('idle');
-    if (!About._waitingForLogin)
+
+    // Save login settings on success
+    Weave.Service.persistLogin();
+
+    // Nothing left to do, so just hide the form
+    if (About.setupComplete)
       About.hideBubble();
+    // First successful sign-in shows the data configuration
     else
-      About._waitingForLogin = false;
+      About.showBubble("data");
   },
   onLoginError: function onLoginError() {
     About.setStatus('offline');
-    // fixme?
+
+    // Show the full sign-in form to try again
+    About.showBubble("signin");
+    alert("Couldn't sign in: " + Weave.Utils.getErrorString(
+      Weave.Service.status.login)); //FIXME
   },
   onLogout: function onLogout() {
     About.setStatus('offline');
-    if (!About._waitingForLogout)
-      About.showBubble('signin');
-    else
-      About._waitingForLogout = false;
+    About.showBubble('signin');
   },
   onSyncStart: function onSyncStart() {
     About.setStatus('sync');
@@ -211,6 +231,30 @@ let About = {
   //
   // Show/hide helpers for various UI pieces
   //
+
+  // Top menus
+  toggleMenu: function toggleMenu(name) {
+    if ($(About._curMenu)[0].id == name)
+      About.hideMenu();
+    else
+      About.showMenu(name);
+  },
+  hideMenu: function hideMenu() {
+    if (About._curMenu) {
+      $(About._curMenu)
+        .find('.up-arrow').attr('class', 'down-arrow').end()
+        .find('.menu-dropdown').hide().end()
+        .attr('class', '');
+      About._curMenu = null;
+    }
+  },
+  showMenu: function showMenu(name) {
+    About.hideMenu();
+    About._curMenu = $('#' + name)
+      .attr('class', 'top-menu-open')
+      .find('.down-arrow').attr('class', 'up-arrow').end()
+      .find('.menu-dropdown').show().end();
+  },
 
   // Quota meter inside the cloud
   setQuota: function setQuota(percent) {
@@ -230,8 +274,6 @@ let About = {
   // Device type
   set clientType(type) {
     // we only have images for desktop and mobile atm
-    if (Weave.Clients.clientType != "mobile")
-      type = "desktop";
     $('#device > img')
       .attr('src', 'images/' + type + '_device.png');
   },
@@ -255,24 +297,26 @@ let About = {
   },
   toggleMiddleBubble: function toggleMiddleBubble() {
     if (Weave.Service.isLoggedIn)
-      About.toggleBubble('signedin');
+      About.toggleBubble('signedin'); // FIXME
     else
       About.toggleBubble('signin');
   },
   showBubble: function showBubble(name) {
+    About._log.trace("Showing bubble " + name);
     if (About._curBubble)
       About._curBubble.hide();
     About.closeHelp();
 
-    About._curBubble = $("#" + name).show();
-    if (About._curBubble.find('.bubble-arrow').length == 0)
+    About._curBubble = $("#" + name).css('display', 'inline-block');
+    if (About._curBubble.attr('class').match(/-(left|center|right)$/)
+        && About._curBubble.find('.bubble-arrow').length == 0)
       About._curBubble.prepend('<div class="bubble-arrow"></div>');
 
     if (About["onBubble_" + name])
       About["onBubble_" + name]();
   },
   hideBubble: function hideBubble() {
-    $('.bubble-center,.bubble-left,.bubble-right').hide();
+    $('.bubble, .bubble-center,.bubble-left,.bubble-right').hide();
     About._curBubble = null;
   },
 
@@ -281,22 +325,21 @@ let About = {
     case "offline":
       $('#status-arrow img')[0].src = 'images/sync_disconnected_user.png';
       $('#status-1').html(About.str('status-offline'));
-      $('#status-2').html(About.str('status-offline-2'));
+      $('#user-menu .title').html(About.str('user-menu-offline'));
       break;
     case "signing-in":
       $('#status-arrow img')[0].src = 'images/sync_active.png';
       $('#status-1').html(About.str('status-signing-in'));
-      $('#status-2').html(About.str('status-signing-in-2'));
+      $('#user-menu .title').html(About.str('user-menu-signing-in'));
       break;
     case "idle":
       $('#status-arrow img')[0].src = 'images/sync_idle.png';
-      $('#status-1').html(About.str('status-idle', [Weave.Service.username]));
-      $('#status-2').html(About.str('status-idle-2'));
+      $('#status-1').html(About.str('status-idle'));
+      $('#user-menu .title').html(About.str('user-menu-online', [Weave.Service.username]));
       break;
     case "sync":
       $('#status img')[0].src = 'images/sync_active.png';
-      $('#status-1').html(About.str('status-sync', [Weave.Service.username]));
-      $('#status-2').html(About.str('status-sync-2'));
+      $('#status-1').html(About.str('status-sync'));
       break;
     }
   },
@@ -384,7 +427,16 @@ let About = {
   //
 
   //
-  // Signed in page
+  // My Account
+  //
+  onBubble_myacct: function() {
+    $('#myacct-username').html(Weave.Service.username);
+    $('#myacct-password').val(Weave.Service.password)[0].type = "password";
+    $('#myacct-passphrase').val(Weave.Service.passphrase)[0].type = "password";
+  },
+
+  //
+  // Signed in page -- FIXME
   //
   onBubble_signedin: function onBubble_signedin() {
     $('#signedin-title').html(Weave.Service.username);
@@ -401,32 +453,37 @@ let About = {
   // Signin bubble page
   //
   onBubble_signin: function() {
+    // next/sign in button gets disabled until onSigninInput() enables it
+    $('#signin .buttons .next').attr('disabled', true);
+
+    About._log.trace("Pre-filling sign-in form");
+
     let user = Weave.Service.username;
-    let server = Weave.Svc.Prefs.get("serverURL");
-    if (About.isNewUser) {
-      $('#signin-newacct')[0].disabled = "";
-      About.resetLogin();
-    } else {
-      $('#status img')[0].src = 'images/sync_disconnected_user.png';
-      $('#signin-newacct')[0].disabled = "true";
-      $('#signin-username').val(user);
-      let pass = Weave.Service.password;
-      if (pass)
-        $('#signin-password').val(pass)[0].type = 'password';
-      let passph = Weave.Service.passphrase;
-      if (passph)
-        $('#signin-passphrase').val(passph)[0].type = 'password';
-      About.onSigninInput(); // enable next button
+    let pass = Weave.Service.password;
+    let passph = Weave.Service.passphrase;
+
+    // Previously logged in user, so show "sign in"
+    if (user) {
+      $("#signin-username").val(user);
+      $("#signin .buttons .next").val("sign in"); // fixme: l10n
+      $("#signin .buttons .prev").hide();
     }
+    // No username means we might need to setup data or create account
+    else {
+      $("#signin .buttons .next").val("next"); // fixme: l10n
+      $("#signin .buttons .prev").show();
+      pass = passph = "";
+    }
+
+    if (pass)
+      $('#signin-password').val(pass)[0].type = 'password';
+    if (passph)
+      $('#signin-passphrase').val(passph)[0].type = 'password';
+
+    About.onSigninInput(); // enable next button
+    $('#signin-username').focus();
   },
-  resetLogin: function resetLogin() {
-    Weave.Service.username = '';
-    ['signin-username', 'signin-password', 'signin-passphrase'].forEach(
-      function(item) {
-        $(item).val('');
-        About.resetField(item);
-      });
-  },
+
   _hasInput: function _hasInput(elt) {
     let def = $(elt).data('default');
     return $(elt).val() && $(elt).val() != def;
@@ -439,28 +496,24 @@ let About = {
     else
       $('#signin .buttons .next')[0].disabled = true;
   },
-  signIn: function signIn(noRedirect) {
-    About._waitingForLogin = noRedirect;
-    let user = $('#signin-username').val();
-    let pass = $('#signin-password').val();
-    let passph = $('#signin-passphrase').val();
 
-    // Disable the sign-in button when trying to sign in
-    let button = $("#signin-next");
-    button.attr("disabled", true);
+  doWrappedFor: function doWrappedFor(bubble, func /*, args */) {
+    let buttons = bubble + " .buttons ";
+    let next = $(buttons + ".next");
+    let throbber = $(buttons + ".throbber");
 
-    let ret = Weave.Service.login(user, pass, passph);
+    // While calling the func, disable the next button and show the throbber
+    next.attr("disabled", true);
+    throbber.show();
+    Weave.Service[func].apply(Weave.Service, Array.slice(arguments, 2));
+    next.removeAttr("disabled");
+    throbber.hide();
+  },
 
-    // Save login settings if successful
-    if (Weave.Service.isLoggedIn)
-      Weave.Service.persistLogin();
-    else
-      alert("Couldn't sign in: " + Weave.Utils.getErrorString(Weave.Service.status.login)); //FIXME
-
-    // Restore the clickability on success (new bubble) and failure
-    button.removeAttr("disabled");
-
-    return ret;
+  signIn: function signIn() {
+    // Try logging in; success/fail handled by event listeners
+    About.doWrappedFor("#signin", "login", $("#signin-username").val(),
+      $("#signin-password").val(), $("#signin-passphrase").val());
   },
   forgotPassword: function forgotPassword() {
     alert("Sorry, this functionality is not implemented yet!"); //FIXME
@@ -491,14 +544,14 @@ let About = {
       .attr('href', url)
       .attr('class', 'iframe')
       .fancybox();
-    $('#newacct-tos > input').attr('checked', false);
+    $('#newacct-tos-checkbox').attr('checked', false);
 
     $('#captcha-zoom')
       .fancybox({frameWidth: 300, frameHeight: 56})[0]
       .href = '#captcha-image';
     About.loadCaptcha();
 
-//    $('#newacct-username').focus(); - fixme
+    $('#newacct-username').focus();
   },
   resetNewacct: function resetNewacct() {
     Weave.Service.username = '';
@@ -523,7 +576,10 @@ let About = {
     $('#captcha-challenge').val(challenge);
   },
   onNewacctUsernameInput: function onNewacctUsernameInput() {
-    About.setTimer("newacct-username", About._checkUsername, 750);
+    About.setTimer("newacct-username", About._checkUsername, 2000);
+  },
+  onNewacctUsernameBlur: function onNewacctUsernameInput() {
+    About.setTimer("newacct-username", About._checkUsername, 0);
   },
   _checkUsername: function _checkUsername() {
     if (!About._hasInput('#newacct-username'))
@@ -537,29 +593,23 @@ let About = {
     About.onNewacctInput();
   },
   onNewacctPassInput: function onNewacctPassInput() {
-    About.setTimer("newacct-pass", About._checkPass, 750);
+    About.setTimer("newacct-pass", About._checkPass, 2000);
+  },
+  onNewacctPassBlur: function onNewacctPassInput() {
+    About.setTimer("newacct-pass", About._checkPass, 0);
   },
   _checkPass: function _checkPass() {
-    if (!About._hasInput('#newacct-password') ||
-        !About._hasInput('#newacct-passphrase'))
+    if (!About._hasInput('#newacct-password'))
       return;
-    if ($('#newacct-password').val() == $('#newacct-passphrase').val())
-      $('#newacct-password,#newacct-passphrase')
-        .removeClass('ok').addClass('error');
-    else
-      $('#newacct-password,#newacct-passphrase')
-        .removeClass('error').addClass('ok');
     About.onNewacctInput(); // update next button
   },
   onNewacctInput: function onSigninInput() {
     if (About._hasInput('#newacct-username') &&
         About._hasInput('#newacct-password') &&
-        About._hasInput('#newacct-passphrase') &&
         About._hasInput('#newacct-email') &&
-        $('#newacct-username').hasClass('ok') &&
-        $('#newacct-password').hasClass('ok') &&
-        $('#newacct-passphrase').hasClass('ok') &&
-        $('#newacct-tos-checkbox')[0].checked)
+        About._hasInput('#captcha-response') &&
+        $('#newacct-tos-checkbox')[0].checked &&
+        $('#newacct .error').length == 0)
       $('#newacct .buttons .next')[0].disabled = false;
     else
       $('#newacct .buttons .next')[0].disabled = true;
@@ -574,18 +624,18 @@ let About = {
     }
   },
   onNewacctNext: function onNewacctNext() {
-    let ret = Weave.Service.createAccount($('#newacct-username').val(),
-                                          $('#newacct-password').val(),
-                                          $('#newacct-email').val(),
-                                          $('#captcha-challenge').val(),
-                                          $('#captcha-response').val());
-    if (ret == null) {
-      $('#signin-username').val($('#newacct-username').val());
-      $('#signin-password').val($('#newacct-password').val())[0].type = "password";
-      $('#signin-passphrase').val($('#newacct-passphrase').val())[0].type = "password";
-      About.signIn(true);
-      About.showBubble("willsync");
+    let username = $("#newacct-username").val();
+    let password = $("#newacct-password").val();
+    About.doWrappedFor("#newacct", "createAccount", username, password,
+      $("#newacct-email").val(), $("#captcha-challenge").val(),
+      $("#captcha-response").val());
 
+    // User created successfully, so save the user/pass and move on
+    if (ret == null) {
+      Weave.Service.username = username;
+      Weave.Service.password = password;
+      Weave.Service.persistLogin();
+      About.showBubble("newacct2");
     } else {
       this._log.warn("Account creation error: " + ret);
       About.loadCaptcha();
@@ -594,8 +644,105 @@ let About = {
   },
 
   //
+  // New account part 2: passphrase
+  //
+  onBubble_newacct2: function() {
+    $('#newacct2 > .buttons > .next')[0].disabled = true;
+    $('#newacct2 p')
+      .css('width', $('#newacct2 > ul').css('width'));
+  },
+  onNewacct2Input: function() {
+    About.setTimer("newacct2", About._checkPassph, 100);
+  },
+  onNewacct2Blur: function() {
+    About.setTimer("newacct2", About._checkPassph, 0);
+  },
+  _checkPassph: function _checkPass() {
+    if (About._hasInput('#newacct2-passphrase'))
+      $('#newacct2 .buttons .next')[0].disabled = false;
+    else
+      $('#newacct2 .buttons .next')[0].disabled = true;
+  },
+  onNewacct2Next: function() {
+    // Now that we have a passphrase, try logging in
+    Weave.Service.passphrase = $('#newacct2-passphrase').val();
+    About.doWrappedFor("#newacct2", "login");
+  },
+
+  //
+  // Data types setup
+  //
+  _dataOrder: ["bookmarks", "history", "tabs", "passwords", "prefs"],
+
+  onBubble_data: function() {
+    function _addRow(count) {
+      if (!(count % UI_DATA_TYPES_PER_ROW)) {
+        $('#data .data-types')
+          .append('<tr></tr>');
+      }
+      return $('#data .data-types > tbody > tr:last-child');
+    }
+
+    $('#data .data-types')
+      .empty();
+
+    let count = 0;
+    let row = _addRow();
+    let engines = Weave.Engines.getAll();
+
+    for each (let name in About._dataOrder) {
+      for each (let engine in engines) {
+        if (engine.name == name) {
+          row = _addRow(count++);
+          row.append(About._makeDataCell(engine));
+        }
+      }
+    }
+    for each (let engine in engines) {
+      if (About._dataOrder.indexOf(engine.name) >= 0)
+        continue;
+      row = _addRow(count++);
+      row.append(About._makeDataCell(engine));
+    }
+  },
+  _makeDataCell: function(engine) {
+    return '<td><table><tr>'
+      + '<td><h3>' + engine.displayName + '</h3></td>'
+      + '<td>' + About._makeToggle(engine.name, engine.enabled) + '</td>'
+      + '</tr></table>'
+      + '<p>' + engine.description + '</p>'
+      + '</td>';
+  },
+ // fixme: l10n
+  _makeToggle: function(name, on) {
+    let ret = '<label class="toggle">';
+    ret += '<input type="checkbox" onclick="About.toggleData(\'' + name + '\');" ';
+    ret += on? 'checked="checked"/>' : '/>';
+    ret += '<span class="toggle-left">on</span>';
+    ret += '<span class="toggle-right">off</span>';
+    ret += '</label>';
+    return ret;
+  },
+  toggleData: function(name) {
+    About._log.debug("Toggling engine: " + name);
+    let engine = Weave.Engines.get(name);
+    engine.enabled = !engine.enabled;
+  },
+
+  //
+  // All done!
+  //
+  onBubble_finished: function() {
+    About.setupComplete = true;
+    About._installObservers();
+    About.setStatus('idle');
+    Weave.Service.syncOnIdle();
+  },
+
+  //
   // Temporary bubble after sign-up (timed)
   //
+  // fixme: unused
   onBubble_willsync: function onBubble_willsync() {
     About._willsyncCount = 5;
     About.setTimer("willsync", About._willsyncTick, 0);

@@ -3,23 +3,23 @@
  */
 
 @font-face{
-font-family: 'DroidSans'; 
-src: url('../fonts/DroidSans.ttf') format('truetype');
-}
-
-@font-face{
-font-family: 'Museo'; 
-src: url('../fonts/Museo500-Regular.otf') format('opentype');
+    font-family: 'DroidSans'; 
+    src: url('../fonts/DroidSans.ttf') format('truetype');
 }
 
 /*
  * Text elements
  */
 
-h1 {font-size: 18px;}
-h3 {font-size: 11px;}
+* {
+    margin: 0;
+    padding: 0;
+}
 
-p, ul, ul li, label {font-size: 11px;}
+h1 {font-size: 18px;}
+h3 {font-size: 12px;}
+
+p, ul, ul li, label {font-size: 12px;}
 
 a:link, a:hover, a:active, a:focus, a:visited {color: #9f423b; text-decoration: none;}
 a:hover {color: #9f423b; text-decoration: none;}
@@ -31,7 +31,7 @@ a:hover {color: #9f423b; text-decoration: none;}
 html {
     height: 80% !important;
     padding-bottom: 0px; 
-    padding-top: 20px;
+    padding-top: 15px;
     padding-left: 0px;
     padding-right: 0px;
 }
@@ -47,18 +47,10 @@ body {
     margin: 0 auto;
 }
 
-ul {
-    padding-left: 0;
-}
-ul li {
-    display: block;
-    text-align: left;
-}
-
 #header {
-    z-index: 1;
     position: relative;
     padding-left: 20px;
+    padding-right: 10px;
     height: 100px;
 }
 .welcome {
@@ -69,15 +61,83 @@ ul li {
     font-size: 10px;
     color: rgba(0, 0, 0, 0.4);
 }
-.logo {float: left;}
+.logo {
+    bottom: 0;
+    left: 20px;
+    opacity: .7;
+    position: absolute;
+}
+
+#top-menu {
+    display: inline;
+}
+#top-menu * {
+    -moz-user-select: none;
+}
+#top-menu > li {
+    position: relative;
+    display: inline;
+    float: right;
+    margin: 0px 3px;
+    padding: 4px 12px 2px;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 1);
+    -moz-border-radius: 0.5em;
+    -moz-box-shadow: 
+        rgba(0, 0, 0, 0.3) 0px 4px 4px;
+    background-color: rgba(0, 0, 0, 0.6);
+    cursor: pointer;
+    z-index: 2;
+}
+#top-menu > li.top-menu-open {
+    padding-bottom: 4px;
+    border-bottom: 1px solid gray;
+    -moz-border-radius: 0.5em 0.5em 0 0;
+    -moz-box-shadow: none;
+}
+.down-arrow, .up-arrow {
+    margin-left: 5px;
+    font-size: 1.5em;
+    vertical-align: -2px;
+    -moz-transform: rotate(-90deg);
+}
+.up-arrow {
+    vertical-align: -2px;
+    -moz-transform: rotate(90deg);
+}
+.menu-dropdown {
+    display: none;
+    position: absolute;
+    z-index: 1;
+    right: 0px;
+    margin: 5px auto 2px;
+    padding: 4px 6px;
+    min-width: 110%;
+    color: rgba(255, 255, 255, 1);
+    background-color: rgba(0, 0, 0, 0.6);
+    -moz-border-radius: 0.5em 0 0.5em 0.5em;
+    -moz-box-shadow: 
+        rgba(0, 0, 0, 0.3) 0px 4px 4px;
+}
+.menu-dropdown li {
+    display: block;
+    padding-left: 6px;
+    padding-right: 6px;
+    font-size: 12px;
+    text-align: right;
+    -moz-border-radius: 0.3em;
+    cursor: pointer;
+}
+.menu-dropdown li:hover {
+    background-color: gray;
+}
 
 #container {
-    z-index: 1;
+    background: transparent url(../images/bg_clouds.png) no-repeat center 100px;
     position: relative;
-    top: -60px;
+    top: -125px;
     margin: 0px auto;
     text-align: center;
-    background: transparent url('../images/bg_clouds.png') no-repeat center center;
     height: 300px;
 }
 
@@ -99,7 +159,7 @@ ul li {
 
 #elements {
     width: 850px;
-    margin: 0px auto;
+    margin: 20px auto 0px;
 }
 
 #device, #status, #cloud {
@@ -113,11 +173,11 @@ ul li {
 }
 
 #status {
+    padding-bottom: 50px;
     width: 180px;
     vertical-align: bottom;
-    font-family: 'Museo';
+    font-family: 'DroidSans';
     font-size: 12px;
-    padding: 0px 12px 40px;
     color: black;
 }
 
@@ -129,7 +189,7 @@ ul li {
     text-align: center;
 }
 
-.plus-toggle {
+.plus-toggle { /* fixme: unused now */
     position: absolute;
     bottom: 34px;
     width: 300px;
@@ -153,7 +213,7 @@ ul li {
     height: 20px;
     margin: 0px auto;
     color: rgba(0, 0, 0, 0.8);
-    font-family: 'Museo';
+    font-family: 'DroidSans';
     font-size: 14px;
     -moz-border-radius: 0.5em;
     -moz-box-shadow: 
@@ -169,18 +229,17 @@ ul li {
  */
 
 #bubble {
-    z-index: 2;
+    display: inline-block;
+    margin: -20px auto 0;
     width: 850px;
-    margin: 0px auto;
+    text-align: center;
 }
 
-.bubble-center, .bubble-left, .bubble-right {
+.bubble {
     display: none;
     position: relative;
-    top: 2em;
-    width: 200px;
-    margin: 0px auto;
-    font-family: 'Museo';
+    font-family: 'DroidSans';
+    text-align: left;
     font-size: 16px;
     padding: 8px 12px 12px;
     color: rgba(255, 255, 255, 1);
@@ -200,6 +259,7 @@ ul li {
     right: -265px;
 }
 
+/* arrow on top of the bubble so it looks like a speech bubble */
 .bubble-arrow {
     position: absolute;
     top: -13px;
@@ -208,10 +268,7 @@ ul li {
     background: transparent url('../images/box_top_arrow.png') no-repeat center center;    
 }
 
-.bubblePage {
-    display: none;
-}
-
+/* help tab sticks out on the side of the bubble */
 .bubble-help {
     display:none;
     position: absolute;
@@ -232,6 +289,8 @@ ul li {
     width: 30px;
     height: 31px;
     color: rgba(255, 255, 255, 1);
+    cursor: pointer;
+    -moz-user-select: none;
     -moz-border-radius: 0em 0.5em 0.5em 0em;
     -moz-box-shadow: 
         inset rgba(101, 196, 251, 0.3) 0 16px 8px,
@@ -259,26 +318,87 @@ ul li {
     display: none;
 }
 
+/* advanced tab, sticks out below the bubble */
+.advanced-tab {
+    position: absolute;
+    top: 100%;
+    left: 10%;
+    width: 80%;
+    padding-top: 0.3em;
+    padding-bottom: 0.3em;
+    text-align: center;
+    font-size: 12px;
+    background-color: rgba(0, 0, 0, 0.8);
+    -moz-border-radius: 0 0 0.5em 0.5em;
+    -moz-box-shadow: 
+        inset rgba(79, 99, 109, 0.6) 0px 0px 6px,
+        rgba(0, 0, 0, 0.3) 0px 0px 6px;
+}
+.advanced-tab-title {
+    cursor: pointer;
+    -moz-user-select: none;
+}
+.advanced-tab-content {
+    display: none;
+    margin: 4px 4px;
+}
+.advanced-tab-content-visible {
+    display: block;
+}
+.advanced-tab-content-visible ~ .advanced-tab-title > .tab-arrow {
+    vertical-align: -2px;
+    -moz-transform: rotate(90deg);
+}
+.advanced-tab-title > .tab-arrow {
+    margin-left: 5px;
+    font-size: 1.5em;
+    vertical-align: -2px;
+    -moz-transform: rotate(-90deg);
+}
+
 /*
  * Bubble elements
  */
 
 /* prev/next buttons */
-.prev {float: left;}
-.next {float: right;}
+.buttons {
+    clear: both;
+    text-align: center;
+}
+.buttons .prev {float: left;}
+.buttons .next {float: right;}
 
-.center {margin: 0px auto;}
+/* throbber goes inside the buttons, in the center */
+.buttons .throbber {
+    display: none;
+    margin-top: 3px;
+}
+
+/* bubble titles */
+.bubble h1 {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+/* divider lines inside bubbles */
+.bubble hr {
+    height: 1px;
+    margin: 4px 0;
+    padding: 0;
+    border: 0;
+    background-color: #4d4d4d;
+}
 
 /* text boxes */
 input[type=text], input[type=password] {
     padding: 2px 12px;
-    width: 160px;
+    width: 17em;
     text-align: left;
     margin: 6px auto;
-    border: 0px;
+    border: 0;
     color: rgba(255, 255, 255, 0.3);
     font-family: 'DroidSans';
-    font-size: 11px;
+    font-size: 12px;
     -moz-border-radius: 0.5em;
     -moz-box-shadow: 
         inset rgba(0, 0, 0, 0.6) 0px 0px 6px,
@@ -287,19 +407,13 @@ input[type=text], input[type=password] {
     background-color: rgba(0, 0, 0, 0.1);
 }
 
-/* buttons wrapper to keep buttons aligned at the bottom */
-.buttons {
-    width: 190px;
-    display: inline-block;
-}
-
 /* form buttons */
 input[type=button], input[type=button][disabled] {
     padding: 2px 10px;
     margin: 8px 2px;
     border: 0px;
     color: rgba(255, 255, 255, 1);
-    font-family: 'Museo';
+    font-family: 'DroidSans';
     font-size: 14px;
     -moz-border-radius: 0.5em;
     -moz-box-shadow: 
@@ -318,49 +432,233 @@ input[type=button][disabled] {
         rgba(0, 0, 0, 0.2) 0px 0px 6px;
 }
 
+/* toggles (checkboxes) */
+.toggle input {
+    display: none;
+}
+.toggle-left, .toggle-right {
+    font-family: 'DroidSans';
+    text-transform: uppercase;
+    padding: 0.4em 0.4em;
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0);
+    background-color: #ccc;
+    -moz-user-select: none;
+    -moz-border-radius: 0 0.4em 0.4em 0;
+    -moz-box-shadow: 
+        inset rgba(0, 0, 0, 0.6) 0 1px 1px,
+        inset rgba(255, 255, 255, 1) 0 3px 1px,
+        inset rgba(255, 255, 255, 0.2) 0 16px 0px,
+        inset rgba(0, 0, 0, 0.6) 0 -1px 1px,
+        inset rgba(0, 0, 0, 0.2) 0 -2px 1px, 
+        rgba(255, 255, 255, 0.1) 0 1px;
+}
+.toggle input:checked ~ .toggle-left {
+    color: #fff;
+    background-color: #396ccb;
+    text-shadow: rgba(129, 211, 255, 1) 0 0 3px;
+    -moz-border-radius: 0.4em 0 0 0.4em;
+    -moz-box-shadow: 
+        inset rgba(0, 0, 0, 1) 0 2px 8px, 
+        inset rgba(0, 0, 0, 1) 0 1px 1px,
+        inset rgba(101, 196, 251, 0.3) 0 -16px 8px,
+        rgba(255, 255, 255, 0.1) 0 1px;
+}
+.toggle input:not(:checked) ~ .toggle-left {
+    -moz-border-radius: 0.4em 0 0 0.4em;
+}
+.toggle input:not(:checked) ~ .toggle-right {
+    color: #787878;
+    -moz-box-shadow: 
+        inset rgba(0, 0, 0, 1) 0 2px 8px, 
+        inset rgba(0, 0, 0, 1) 0 1px 1px,
+        inset rgba(255, 255, 255, 0.5) 0 -16px 8px,
+        rgba(255, 255, 255, 0.1) 0 1px;
+}
+
 /*
- * ok/error colors used in various forms
+ * ok/error styles for form fields
  */
+
+.field-status {
+    position: absolute;
+    top: 4px;
+    left: 100%;
+    margin: 0 0 0 2em;
+}
+.field-status-arrow {
+    position: absolute;
+    top: 0.5em;
+    z-index: 0;
+    margin: 0;
+    padding: 0;
+    width: 1em;
+    height: 1em;
+    background-color: darkgreen;
+    -moz-transform: rotate(-45deg) scale(1.1);
+}
+.field-status-content {
+    position: absolute;
+    left: 0.5em;
+    margin: 1px 0;
+    padding: 2px 4px;
+    background-color: darkgreen;
+    -moz-border-radius: 0.3em 0.5em 0.5em 0.3em;
+}
 
 .ok {
     background-color: darkgreen !important;
 }
 .error {
+    padding: 4px;
     background-color: darkred !important;
+    -moz-border-radius: 0.4em;
 }
 
 /*
- * CAPTCHA in new account bubble
+ * ULs inside bubbles are used for rows of forms
+ */
+.bubble ul li {
+    display: block;
+    position: relative;
+    text-align: right;
+}
+ul li * {
+    margin: 4px 2px;
+}
+.bubble > label {
+    display: block;
+    margin: 4px 2px;
+    padding: 4px 2px;
+}
+
+/*
+ * Welcome dialog
+ */
+
+#welcome {
+    text-align: center;
+}
+
+/*
+ * Sign in dialog (first run & after sign out)
+ */
+#signin .buttons .next {
+    disabled: true;
+}
+
+/*
+ * my account dialog
+ */
+
+#myacct-fields li {
+    display: block;
+}
+
+#myacct-fields li .label {
+    display: inline-block;
+    width: 7em;
+    padding-right: 4px;
+    text-align: right;
+}
+
+#myacct-fields li .value {
+    display: inline-block;
+    width: 17em; /* text fields are 17em wide */
+    margin: 2px 2px;
+    padding: 2px;
+    text-align: left;
+}
+#myacct-passphrase-cancel {
+    display: none;
+}
+
+/*
+ * new account bubble
  */
 
 #newacct-captcha {
-    width: 200px;
-    padding-top: 5px;
+    text-align: center;
+    vertical-align: middle;
 }
 #captcha-image {
-    float: right;
-    margin: 0px;
-    width: 170px;
-    height: 56px;
+    display: inline-block;
+    width: 200px;
 }
 #captcha-image img {
-    width: 170px;
-    height: 56px;
+    width: 200px;
 }
 #captcha-image img.throbber {
     height: 32px;
     width: 32px;
-    padding-top: 12px;
+    margin: 13px 0 12px;
 }
 #captcha-controls {
-    float: right;
+    display: inline-block;
     width: 16px;
-    height: 50px;
-    padding-right: 5px;
 }
-.captcha-control {
-    padding: 0;
-    margin: 0;
+#captcha-response {
+    margin-top: 0;
+}
+
+#newacct .toggle .toggle-left,
+#newacct .toggle .toggle-right {
+    float: right;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    margin-bottom: 8px;
+}
+
+/*
+ * new account: passphrase
+ */
+
+#newacct2 > p {
+    width: 1em; /* set in js */ 
+    margin-bottom: 1em;
+}
+
+/*
+ * data selection
+ */
+
+table.data-types {
+    min-width: 30em;
+    max-width: 40em;
+    margin-top: 1em;
+    border-spacing: 0px;
+}
+table.data-types table {
+    width: 100%;
+    border-spacing: 0px;
+    margin-bottom: 0.5em;
+}
+table.data-types > tbody > tr > td {
+    padding: 0.8em;
+    border-right: 1px solid #4d4d4d;
+    border-bottom: 1px solid #4d4d4d;
+    font-size: 12px;
+    text-align: left;
+    vertical-align: top;
+}
+table.data-types > tbody > tr:last-child > td {
+    border-bottom: none;
+}
+table.data-types > tbody > tr > td:last-child {
+    border-right: none;
+}
+table.data-types > tbody > tr > td .toggle {
+    float: right;
+}
+
+/*
+ * congrats bubble
+ */
+#finished {
+    max-width: 20em;
+}
+#finished p {
+    margin-bottom: 1em;
 }
 
 /*
