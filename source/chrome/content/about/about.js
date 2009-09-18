@@ -54,6 +54,7 @@ let About = {
     About.hideQuota();
     About._localizePage();
     About._installObservers();
+    About._installEnterHandlers();
     About.setStatus("offline");
 
     // In the common case, the user is already logged in, so show the status
@@ -88,6 +89,17 @@ let About = {
      ['sync:finish', About.onSyncFinish],
      ['sync:error', About.onSyncError]]
      .forEach(function(i) Observers.add("weave:service:" + i[0], i[1]));
+  },
+
+  _installEnterHandlers: function _installEnterHandlers() {
+    $("input[type=text], input[type=password]").keydown(function(event) {
+      // Only listen for enter presses
+      if (event.keyCode != 13)
+        return;
+
+      // Trigger a click for an enabled "next" button
+      $(this).closest(".bubble").find(".buttons .next:not(:disabled)").click();
+    });
   },
 
   //
