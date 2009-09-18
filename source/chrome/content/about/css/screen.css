@@ -80,7 +80,7 @@ body {
         rgba(0, 0, 0, 0.3) 0px 4px 4px;
     background-color: rgba(0, 0, 0, 0.6);
     cursor: pointer;
-    z-index: 2;
+    z-index: 1;
 }
 #top-menu > li.top-menu-open {
     padding-bottom: 4px;

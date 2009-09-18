@@ -53,31 +53,32 @@ let About = {
     About.refreshClientType();
     About.hideQuota();
     About._localizePage();
-    About._installObservers();
     About._installEnterHandlers();
     About.setStatus("offline");
 
-    // In the common case, the user is already logged in, so show the status
-    if (Weave.Service.isLoggedIn) {
-      // FIXME: service doesn't have a getter to tell us if it's syncing, so we
-      // co-opt the locked getter
-      if (Weave.Service.locked)
-        About.setStatus("sync");
+    if (About.setupComplete) {
+      About._installObservers();
+      if (Weave.Service.isLoggedIn) {
+        // FIXME: service doesn't have a getter to tell us if it's syncing, so we
+        // co-opt the locked getter
+        if (Weave.Service.locked)
+          About.setStatus("sync");
+        else
+          About.setStatus("idle");
+      } else {
+        About.showBubble("signin");
+      }
+    } else {
+      // try to continue where the user left off last time
+      if (!Weave.Service.username)
+        About.showBubble("welcome");
+      else if (!Weave.Service.password)
+        About.showBubble("signin");
+      else if (!Weave.Service.passphrase)
+        About.showBubble("newacct2");
       else
-        About.setStatus("idle");
+        About.showBubble("data");
     }
-    // Start from the beginning if there's no user to sign-in
-    else if (!Weave.Service.username)
-      About.showBubble("welcome");
-    // Username is set but no password saved, so do a regular sign-in
-    else if (!Weave.Service.password)
-      About.showBubble("signin");
-    // User didn't finish setting a passphrase, so show the secret description
-    else if (!Weave.Service.passphrase)
-      About.showBubble("newacct2");
-    // Got all the pieces for sign-in, so show the bubble with populated fields
-    else
-      About.showBubble("signin");
   },
 
   _installObservers: function() {
@@ -214,17 +215,14 @@ let About = {
     Weave.Service.persistLogin();
 
     // Nothing left to do, so just hide the form
-    if (About.setupComplete)
-      About.hideBubble();
-    // First successful sign-in shows the data configuration
-    else
-      About.showBubble("data");
+    About.hideBubble();
   },
   onLoginError: function onLoginError() {
     About.setStatus('offline');
 
     // Show the full sign-in form to try again
     About.showBubble("signin");
+
     alert("Couldn't sign in: " + Weave.Utils.getErrorString(
       Weave.Service.status.login)); //FIXME
   },
@@ -473,27 +471,26 @@ let About = {
 
     About._log.trace("Pre-filling sign-in form");
 
-    let user = Weave.Service.username;
-    let pass = Weave.Service.password;
-    let passph = Weave.Service.passphrase;
+    let user = Weave.Service.username || "";
+    let pass = Weave.Service.password || "";
+    let passph = Weave.Service.passphrase || "";
 
     // Previously logged in user, so show "sign in"
-    if (user) {
-      $("#signin-username").val(user);
+    if (About.setupComplete) {
+      $("#signin-username").val(Weave.Service.username);
       $("#signin .buttons .next").val("sign in"); // fixme: l10n
       $("#signin .buttons .prev").hide();
     }
-    // No username means we might need to setup data or create account
+    // We need to setup data or create account
     else {
       $("#signin .buttons .next").val("next"); // fixme: l10n
       $("#signin .buttons .prev").show();
-      pass = passph = "";
+      user = pass = passph = "";
     }
 
-    if (pass)
-      $('#signin-password').val(pass)[0].type = 'password';
-    if (passph)
-      $('#signin-passphrase').val(passph)[0].type = 'password';
+    $("#signin-username").val(user);
+    $('#signin-password').val(pass)[0].type = 'password';
+    $('#signin-passphrase').val(passph)[0].type = 'password';
 
     About.onSigninInput(); // enable next button
     $('#signin-username').focus();
@@ -685,7 +682,10 @@ let About = {
   onNewacct2Next: function() {
     // Now that we have a passphrase, try logging in
     Weave.Service.passphrase = $('#newacct2-passphrase').val();
-    About.doWrappedFor("#newacct2", "login");
+    let failure = About.doWrappedFor("#newacct2", "login");
+    if (failure == null) {
+      About.showBubble("data");
+    }
   },
 
   //
@@ -834,7 +834,7 @@ let About = {
     let title = About.str("erase-title");
     let mesg = About.str("erase-warning");
     if (Weave.Svc.Prompt.confirm(null, title, mesg))
-      Weave.Service.wipeServer()
+      Weave.Service.wipeServer();
   }
 };
 
