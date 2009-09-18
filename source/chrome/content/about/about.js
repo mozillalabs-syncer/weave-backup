@@ -505,9 +505,10 @@ let About = {
     // While calling the func, disable the next button and show the throbber
     next.attr("disabled", true);
     throbber.show();
-    Weave.Service[func].apply(Weave.Service, Array.slice(arguments, 2));
+    let ret = Weave.Service[func].apply(Weave.Service, Array.slice(arguments, 2));
     next.removeAttr("disabled");
     throbber.hide();
+    return ret;
   },
 
   signIn: function signIn() {
@@ -624,22 +625,22 @@ let About = {
     }
   },
   onNewacctNext: function onNewacctNext() {
-    let username = $("#newacct-username").val();
-    let password = $("#newacct-password").val();
-    About.doWrappedFor("#newacct", "createAccount", username, password,
+    let user = $("#newacct-username").val();
+    let pass = $("#newacct-password").val();
+    let failure = About.doWrappedFor("#newacct", "createAccount", user, pass,
       $("#newacct-email").val(), $("#captcha-challenge").val(),
       $("#captcha-response").val());
 
     // User created successfully, so save the user/pass and move on
-    if (ret == null) {
-      Weave.Service.username = username;
-      Weave.Service.password = password;
+    if (failure == null) {
+      Weave.Service.username = user;
+      Weave.Service.password = pass;
       Weave.Service.persistLogin();
       About.showBubble("newacct2");
     } else {
-      this._log.warn("Account creation error: " + ret);
+      this._log.warn("Account creation error: " + failure);
       About.loadCaptcha();
-      alert("Could not create account: " + ret);
+      alert("Could not create account: " + failure);
     }
   },
 
