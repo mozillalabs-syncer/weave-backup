@@ -572,10 +572,13 @@ let About = {
       .attr('src', Weave.Service.miscURL + "1/captcha_html");
   },
   onCaptchaLoaded: function onCaptchaLoaded() {
-    let img = $('#captcha-iframe')[0]
-      .contentDocument.getElementById('recaptcha_image').firstChild;
-    let challenge = $('#captcha-iframe')[0]
-      .contentDocument.getElementById('recaptcha_challenge_field').value;
+    // Don't do anything on the default empty iframe page load
+    let frameDoc = $("#captcha-iframe")[0].contentDocument;
+    if (frameDoc.location.href == "about:blank")
+      return;
+
+    let img = frameDoc.getElementById("recaptcha_image").firstChild;
+    let challenge = frameDoc.getElementById("recaptcha_challenge_field").value;
     $('#captcha-image').empty().append(img);
     $('#captcha-challenge').val(challenge);
   },
