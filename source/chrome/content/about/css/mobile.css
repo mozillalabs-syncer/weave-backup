@@ -1,2 +1,11 @@
 @media all and (max-width: 800px) {
+    #container {
+        top: -125px;
+    }
+    .logo {
+        display: none;
+    }
+    #bubble {
+        margin: -20px auto 0;
+    }
 }

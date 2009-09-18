@@ -477,7 +477,8 @@ let About = {
 
     // Previously logged in user, so show "sign in"
     if (About.setupComplete) {
-      $("#signin-username").val(Weave.Service.username);
+      if (!user)
+        pass = passph = "";
       $("#signin .buttons .next").val("sign in"); // fixme: l10n
       $("#signin .buttons .prev").hide();
     }

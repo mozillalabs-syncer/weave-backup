@@ -46,20 +46,40 @@ body {
     padding-right: 10px;
     height: 100px;
 }
+
+#container {
+    position: relative;
+    top: -60px;
+    margin: 0px auto;
+    text-align: center;
+    background: transparent url(../images/bg_clouds.png) no-repeat center 100px;
+}
+
+#footer {
+    position: absolute;
+    bottom: 0px;
+    padding: 8px 24px 24px 24px;
+    font-size: 9px;
+
+}
+
+/* Header logo and text */
+
+.logo {
+    position: absolute;
+    left: 20px;
+}
+
 .welcome {
-    float: left;
+    position: absolute;
+    left: 220px;
     width: 400px;
-    margin-left: 20px;
-    font-size: 10px;
     color: rgba(0, 0, 0, 0.4);
 }
-.logo {
-    bottom: 0;
-    display: none;
-    left: 20px;
-    opacity: .7;
-    position: absolute;
-}
+
+/*
+ * Top-right menus
+ */
 
 #top-menu {
     display: inline;
@@ -125,26 +145,6 @@ body {
     background-color: gray;
 }
 
-#container {
-    background: transparent url(../images/bg_clouds.png) no-repeat center 100px;
-    position: relative;
-    top: -125px;
-    margin: 0px auto;
-    text-align: center;
-}
-
-#footer {
-    position: absolute;
-    bottom: 0px;
-    padding: 8px 24px 24px 24px;
-    font-size: 9px;
-
-}
-.mozLogo {
-    margin-bottom: -10px;
-    margin-right: 6px;
-}
-
 /*
  * Device, status, cloud
  */
@@ -165,8 +165,8 @@ body {
 }
 
 #status {
-    padding-bottom: 50px;
     width: 180px;
+    padding-bottom: 50px;
     vertical-align: bottom;
     font-size: 12px;
     color: black;
@@ -220,7 +220,7 @@ body {
 
 #bubble {
     display: inline-block;
-    margin: -20px auto 0;
+    margin: 0px auto;
     width: 850px;
     text-align: center;
 }
