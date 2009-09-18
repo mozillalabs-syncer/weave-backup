@@ -1,3 +1,6 @@
+// Make sure this is the only instance of the page
+Weave.Utils.ensureOneOpen(window);
+
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 
