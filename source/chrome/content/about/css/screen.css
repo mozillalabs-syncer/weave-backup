@@ -1,13 +1,4 @@
 /*
- * Fonts
- */
-
-@font-face{
-    font-family: 'DroidSans'; 
-    src: url('../fonts/DroidSans.ttf') format('truetype');
-}
-
-/*
  * Text elements
  */
 
@@ -38,7 +29,6 @@ html {
 
 body { 
     font-family: 'Lucida Grande', 'Lucida Sans Unicode', Lucida, Arial, Helvetica, sans-serif;
-    font-family: 'DroidSans';
     background: #fff url('../images/background.png') repeat-x top center;
     padding: 0px; 
     color:#787878;
@@ -57,7 +47,6 @@ body {
     float: left;
     width: 400px;
     margin-left: 20px;
-    font-family: 'DroidSans';
     font-size: 10px;
     color: rgba(0, 0, 0, 0.4);
 }
@@ -176,7 +165,6 @@ body {
     padding-bottom: 50px;
     width: 180px;
     vertical-align: bottom;
-    font-family: 'DroidSans';
     font-size: 12px;
     color: black;
 }
@@ -213,7 +201,6 @@ body {
     height: 20px;
     margin: 0px auto;
     color: rgba(0, 0, 0, 0.8);
-    font-family: 'DroidSans';
     font-size: 14px;
     -moz-border-radius: 0.5em;
     -moz-box-shadow: 
@@ -238,7 +225,6 @@ body {
 .bubble {
     display: none;
     position: relative;
-    font-family: 'DroidSans';
     text-align: left;
     font-size: 16px;
     padding: 8px 12px 12px;
@@ -397,7 +383,6 @@ input[type=text], input[type=password] {
     text-align: left;
     margin: 6px auto;
     border: 0;
-    font-family: 'DroidSans';
     font-size: 12px;
     -moz-border-radius: 0.5em;
     -moz-box-shadow: 
@@ -413,7 +398,6 @@ input[type=button], input[type=button][disabled] {
     margin: 8px 2px;
     border: 0px;
     color: rgba(255, 255, 255, 1);
-    font-family: 'DroidSans';
     font-size: 14px;
     -moz-border-radius: 0.5em;
     -moz-box-shadow: 
@@ -437,7 +421,6 @@ input[type=button][disabled] {
     display: none;
 }
 .toggle-left, .toggle-right {
-    font-family: 'DroidSans';
     text-transform: uppercase;
     padding: 0.4em 0.4em;
     font-size: 10px;
