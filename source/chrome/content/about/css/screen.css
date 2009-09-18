@@ -391,12 +391,12 @@ body {
 
 /* text boxes */
 input[type=text], input[type=password] {
-    padding: 2px 12px;
+    color: white;
+    padding: 2px 6px;
     width: 17em;
     text-align: left;
     margin: 6px auto;
     border: 0;
-    color: rgba(255, 255, 255, 0.3);
     font-family: 'DroidSans';
     font-size: 12px;
     -moz-border-radius: 0.5em;
