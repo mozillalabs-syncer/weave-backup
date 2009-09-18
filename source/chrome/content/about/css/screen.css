@@ -8,7 +8,10 @@
 }
 
 h1 {font-size: 18px;}
-h3 {font-size: 12px;}
+h3 {
+  font-size: 12px;
+  font-weight: normal;
+}
 
 p, ul, ul li, label {font-size: 12px;}
 
