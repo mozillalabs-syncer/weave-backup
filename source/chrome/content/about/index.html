@@ -24,18 +24,18 @@
       <ul id="top-menu">
         <li id="tools-menu" onclick="About.toggleMenu('tools-menu');">
           <span id="tools-menu-title" class="title">Tools</span>
-          <span class="down-arrow">&laquo;</span>
+          <span class="menu-arrow">&laquo;</span>
           <ul class="menu-dropdown">
 <!--  fixme: wraps?          <li id="server-settings-item">Server settings</li> -->
             <li id="activity-log-item"
                 onclick="Weave.Utils.openLog();">Activity Log</li>
           </ul>
         </li>
-        <li id="user-menu" onclick="About.toggleMenu('user-menu');">
-          <span class="title">Signed in as Foo</span>
-          <span class="down-arrow">&laquo;</span>
+        <li id="user-menu" class="top-menu-disabled" onclick="About.toggleMenu('user-menu');">
+          <span class="title">Signed out</span>
+          <span class="menu-arrow">&laquo;</span>
           <ul class="menu-dropdown">
-            <li id="sign-out-item" onclick="Weave.Service.logout();">Sign out</li>
+            <li id="sign-out-item" onclick="About.menuSignOut();">Sign out</li>
 <!--
             <li id="myacct-item"
                 onclick="About.showBubble('myacct');">My Account</li>

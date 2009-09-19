@@ -108,16 +108,25 @@ body {
     -moz-border-radius: 0.5em 0.5em 0 0;
     -moz-box-shadow: none;
 }
-.down-arrow, .up-arrow {
+#top-menu > li.top-menu-disabled {
+    padding-bottom: 3px;
+    cursor: default;
+}
+
+.menu-arrow {
     margin-left: 5px;
     font-size: 1.5em;
     vertical-align: -2px;
     -moz-transform: rotate(-90deg);
 }
-.up-arrow {
+#top-menu > .top-menu-open > .menu-arrow {
     vertical-align: -2px;
     -moz-transform: rotate(90deg);
 }
+#top-menu > .top-menu-disabled > .menu-arrow {
+    display: none;
+}
+
 .menu-dropdown {
     display: none;
     position: absolute;
