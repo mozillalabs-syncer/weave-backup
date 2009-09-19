@@ -29,17 +29,16 @@
 <!--  fixme: wraps?          <li id="server-settings-item">Server settings</li> -->
             <li id="activity-log-item"
                 onclick="Weave.Utils.openLog();">Activity Log</li>
+            <li id="start-over-item" onclick="About.menuStartOver();">Start Over</li>
           </ul>
         </li>
         <li id="user-menu" class="top-menu-disabled" onclick="About.toggleMenu('user-menu');">
           <span class="title">Signed out</span>
           <span class="menu-arrow">&laquo;</span>
           <ul class="menu-dropdown">
-            <li id="sign-out-item" onclick="About.menuSignOut();">Sign out</li>
-<!--
+            <li id="sign-out-item" onclick="Weave.Service.logout();">Sign out</li>
             <li id="myacct-item"
                 onclick="About.showBubble('myacct');">My Account</li>
--->
           </ul>
         </li>
       </ul>

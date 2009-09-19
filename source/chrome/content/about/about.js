@@ -247,8 +247,6 @@ let About = {
 
   // Top menus
   toggleMenu: function toggleMenu(name) {
-    if ($('#' + name).hasClass('top-menu-disabled'))
-      return;
     if ($(About._curMenu)[0].id == name)
       About.hideMenu();
     else
@@ -258,14 +256,16 @@ let About = {
     if (About._curMenu) {
       $(About._curMenu)
         .find('.menu-dropdown').hide().end()
-        .attr('class', '');
+        .toggleClass('top-menu-open');
       About._curMenu = null;
     }
   },
   showMenu: function showMenu(name) {
+    if ($('#' + name).hasClass('top-menu-disabled'))
+      return;
     About.hideMenu();
     About._curMenu = $('#' + name)
-      .attr('class', 'top-menu-open')
+      .toggleClass('top-menu-open')
       .find('.menu-dropdown').show().end();
   },
 
@@ -339,13 +339,13 @@ let About = {
       $('#status-arrow img')[0].src = 'images/sync_disconnected_user.png';
       $('#status-1').html(About.str('status-offline'));
       $('#user-menu .title').html(About.str('user-menu-offline'));
-      $('#user-menu').attr('class', 'top-menu-disabled');
+      $('#user-menu').addClass('top-menu-disabled');
       break;
     case "signing-in":
       $('#status-arrow img')[0].src = 'images/sync_active.png';
       $('#status-1').html(About.str('status-signing-in'));
       $('#user-menu .title').html(About.str('user-menu-signing-in'));
-      $('#user-menu').attr('class', 'top-menu-disabled');
+      $('#user-menu').addClass('top-menu-disabled');
       break;
     case "idle":
       $('#status-arrow img')[0].src = 'images/sync_idle.png';
@@ -441,10 +441,6 @@ let About = {
   //
   // Menu callbacks
   //
-  menuSignOut: function() {
-    About.hideMenu();
-    Weave.Service.logout();
-  },
 
   //
   // Bubble dialogs
