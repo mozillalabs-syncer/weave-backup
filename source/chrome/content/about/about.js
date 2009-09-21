@@ -79,7 +79,6 @@ let About = {
       else
         About.showBubble("data");
     }
-    About.showBubble('myacct');
   },
 
   _installObservers: function() {
