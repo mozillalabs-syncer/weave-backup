@@ -256,16 +256,16 @@ let About = {
     if (About._curMenu) {
       $(About._curMenu)
         .find('.menu-dropdown').hide().end()
-        .toggleClass('top-menu-open');
+        .toggleClass('open');
       About._curMenu = null;
     }
   },
   showMenu: function showMenu(name) {
-    if ($('#' + name).hasClass('top-menu-disabled'))
+    if ($('#' + name).hasClass('disabled'))
       return;
     About.hideMenu();
     About._curMenu = $('#' + name)
-      .toggleClass('top-menu-open')
+      .toggleClass('open')
       .find('.menu-dropdown').show().end();
   },
 
@@ -327,6 +327,8 @@ let About = {
 
     if (About["onBubble_" + name])
       About["onBubble_" + name]();
+
+    return false; // so it can be used from link onclick handlers
   },
   hideBubble: function hideBubble() {
     $('.bubble, .bubble-center,.bubble-left,.bubble-right').hide();
@@ -339,13 +341,13 @@ let About = {
       $('#status-arrow img')[0].src = 'images/sync_disconnected_user.png';
       $('#status-1').html(About.str('status-offline'));
       $('#user-menu .title').html(About.str('user-menu-offline'));
-      $('#user-menu').addClass('top-menu-disabled');
+      $('#user-menu').addClass('disabled');
       break;
     case "signing-in":
       $('#status-arrow img')[0].src = 'images/sync_active.png';
       $('#status-1').html(About.str('status-signing-in'));
       $('#user-menu .title').html(About.str('user-menu-signing-in'));
-      $('#user-menu').addClass('top-menu-disabled');
+      $('#user-menu').addClass('disabled');
       break;
     case "idle":
       $('#status-arrow img')[0].src = 'images/sync_idle.png';
@@ -438,9 +440,23 @@ let About = {
       .appendTo(About._curBubble);
   },
 
-  //
-  // Menu callbacks
-  //
+  _hasInput: function _hasInput(elt) {
+    let def = $(elt).data('default');
+    return $(elt).val() && $(elt).val() != def;
+  },
+  doWrappedFor: function doWrappedFor(bubble, func /*, args */) {
+    let buttons = bubble + " .buttons ";
+    let next = $(buttons + ".next");
+    let throbber = $(buttons + ".throbber");
+
+    // While calling the func, disable the next button and show the throbber
+    next.attr("disabled", true);
+    throbber.show();
+    let ret = Weave.Service[func].apply(Weave.Service, Array.slice(arguments, 2));
+    next.removeAttr("disabled");
+    throbber.hide();
+    return ret;
+  },
 
   //
   // Bubble dialogs
@@ -456,17 +472,12 @@ let About = {
   },
 
   //
-  // Signed in page -- FIXME
+  // Forgot passphrase
   //
-  onBubble_signedin: function onBubble_signedin() {
-    $('#signedin-title').html(Weave.Service.username);
-  },
-  onUsernameClick: function onUsernameClick() {
-    if (About.curBubble == 'signedin')
-      About.hideBubble();
-    else
-      About.showBubble('signedin');
-    return false;
+  forgotPassphraseOk: function() {
+    About._newPassphrase = $('#forgot-pp-box').val();
+    $('#forgot-pp-box').val('');
+    About.showBubble('signin');
   },
 
   //
@@ -475,6 +486,9 @@ let About = {
   onBubble_signin: function() {
     // next/sign in button gets disabled until onSigninInput() enables it
     $('#signin .buttons .next').attr('disabled', true);
+
+    if (About._ppChange)
+      return; // passphrase changes trigger this form multiple times
 
     About._log.trace("Pre-filling sign-in form");
 
@@ -496,17 +510,23 @@ let About = {
       user = pass = passph = "";
     }
 
+    if (About._newPassphrase) {
+      passph = About._newPassphrase;
+      delete About._newPassphrase;
+      About._ppChange = true;
+      $('#signin-passphrase, #signin-forgot-links > :last').hide();
+      $('#signin-new-passphrase').css('display', 'inline-block');
+    } else {
+      $('#signin-passphrase, #signin-forgot-links > :last').show();
+      $('#signin-new-passphrase').hide();
+    }
+
     $("#signin-username").val(user);
     $('#signin-password').val(pass)[0].type = 'password';
     $('#signin-passphrase').val(passph)[0].type = 'password';
 
     About.onSigninInput(); // enable next button
     $('#signin-username').focus();
-  },
-
-  _hasInput: function _hasInput(elt) {
-    let def = $(elt).data('default');
-    return $(elt).val() && $(elt).val() != def;
   },
   onSigninInput: function onSigninInput() {
     if (About._hasInput('#signin-username') &&
@@ -516,31 +536,21 @@ let About = {
     else
       $('#signin .buttons .next')[0].disabled = true;
   },
-
-  doWrappedFor: function doWrappedFor(bubble, func /*, args */) {
-    let buttons = bubble + " .buttons ";
-    let next = $(buttons + ".next");
-    let throbber = $(buttons + ".throbber");
-
-    // While calling the func, disable the next button and show the throbber
-    next.attr("disabled", true);
-    throbber.show();
-    let ret = Weave.Service[func].apply(Weave.Service, Array.slice(arguments, 2));
-    next.removeAttr("disabled");
-    throbber.hide();
-    return ret;
-  },
-
   signIn: function signIn() {
-    // Try logging in; success/fail handled by event listeners
-    About.doWrappedFor("#signin", "login", $("#signin-username").val(),
-      $("#signin-password").val(), $("#signin-passphrase").val());
-  },
-  forgotPassword: function forgotPassword() {
-    alert("Sorry, this functionality is not implemented yet!"); //FIXME
-  },
-  forgotPassphrase: function forgotPassphrase() {
-    alert("Sorry, this functionality is not implemented yet!"); //FIXME
+    if (About._ppChange) {
+      delete About._ppChange;
+      Weave.Service.username = $("#signin-username").val();
+      Weave.Service.password = $("#signin-password").val();
+      Weave.Service.passphrase = $("#signin-passphrase").val();
+      Weave.Service.resetPassphrase($("#signin-passphrase").val());
+    } else {
+      // Try logging in; success/fail handled by event listeners
+      let ok = About.doWrappedFor("#signin", "login", $("#signin-username").val(),
+                                  $("#signin-password").val(),
+                                  $("#signin-passphrase").val());
+      if (!ok) {
+      }
+    }
   },
   changePassword: function changePassword() {
     Weave.Utils.openGenericDialog('ChangePassword');

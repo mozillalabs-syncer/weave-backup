@@ -13,10 +13,10 @@ h3 {
   font-weight: normal;
 }
 
-p, ul, ul li, label {font-size: 12px;}
+a, p, ul, ul li, label {font-size: 12px;}
 
-a:link, a:hover, a:active, a:focus, a:visited {color: #9f423b; text-decoration: none;}
-a:hover {color: #9f423b; text-decoration: none;}
+a:link, a:hover, a:active, a:focus, a:visited {color: #73C4FA; text-decoration: none;}
+a:hover {color: #0C6CAB; text-decoration: none;}
 
 /*
  * Document structure
@@ -102,13 +102,13 @@ body {
     cursor: pointer;
     z-index: 1;
 }
-#top-menu > li.top-menu-open {
+#top-menu > .open {
     padding-bottom: 4px;
     border-bottom: 1px solid gray;
     -moz-border-radius: 0.5em 0.5em 0 0;
     -moz-box-shadow: none;
 }
-#top-menu > li.top-menu-disabled {
+#top-menu > .disabled {
     padding-bottom: 3px;
     cursor: default;
 }
@@ -119,11 +119,11 @@ body {
     vertical-align: -2px;
     -moz-transform: rotate(-90deg);
 }
-#top-menu > .top-menu-open > .menu-arrow {
+#top-menu > .open > .menu-arrow {
     vertical-align: -2px;
     -moz-transform: rotate(90deg);
 }
-#top-menu > .top-menu-disabled > .menu-arrow {
+#top-menu > .disabled > .menu-arrow {
     display: none;
 }
 
@@ -387,6 +387,14 @@ body {
     background-color: #4d4d4d;
 }
 
+/* rows are for label+field pairs */
+.bubble .row {
+    text-align: right;
+}
+.bubble .row-center {
+    text-align: center;
+}
+
 /* text boxes */
 input[type=text], input[type=password] {
     color: white;
@@ -538,8 +546,15 @@ ul li * {
 /*
  * Sign in dialog (first run & after sign out)
  */
-#signin .buttons .next {
-    disabled: true;
+#signin-forgot-links {
+    text-align: right;
+}
+#signin-new-passphrase {
+    display: none;
+    padding: 2px 6px;
+    margin: 6px auto;
+    width: 17em; /* input box width */
+    text-align: center;
 }
 
 /*
@@ -566,6 +581,27 @@ ul li * {
 }
 #myacct-passphrase-cancel {
     display: none;
+}
+
+/*
+ * Forgot password dialog
+ */
+#forgot-pw p {
+    max-width: 22em;
+}
+#forgot-pw .row {
+    margin: 1em 0;
+}
+
+/*
+ * Forgot passphrase dialog
+ */
+#forgot-pp p {
+    max-width: 28em;
+    margin: 1em 0;
+}
+#forgot-pp .row {
+    margin: 1em 0;
 }
 
 /*

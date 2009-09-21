@@ -32,7 +32,7 @@
             <li id="start-over-item" onclick="About.menuStartOver();">Start Over</li>
           </ul>
         </li>
-        <li id="user-menu" class="top-menu-disabled" onclick="About.toggleMenu('user-menu');">
+        <li id="user-menu" class="disabled" onclick="About.toggleMenu('user-menu');">
           <span class="title">Signed out</span>
           <span class="menu-arrow">&laquo;</span>
           <ul class="menu-dropdown">
@@ -48,23 +48,17 @@
       <div id="elements">
         <div id="device"> <!-- onclick="About.toggleBubble('clientinfo');"> -->
           <img alt="device" src="images/desktop_device.png" />
-<!--          <div class="plus-toggle"><img alt="plus" src="images/plus.png"/></div> -->
         </div>
         <div id="status"> <!-- onclick="About.toggleMiddleBubble();"> -->
           <div id="status-arrow"><img alt="status-arrow" src="images/sync_disconnected.png"/></div>
 <!--          <div id="status-1">(idle)</div> -->
-<!--          <div class="plus-toggle"><img alt="plus" src="images/plus.png"/></div> -->
         </div>
         <div id="cloud"> <!-- onclick="About.toggleBubble('cloudinfo');"> -->
           <div id="quota-bar" class="progress-bar">70%</div>
-<!--          <div class="plus-toggle"><img alt="plus" src="images/plus.png"/></div> -->
         </div>
       </div>
 
       <div id="bubble">
-        <!-- Bubbles not styled to look like a speech bubble (not tied
-             to the device/link/cloud) -->
-
         <div id="welcome" class="bubble">
           <h1 id="welcome-title">Welcome To Sync</h1>
           <p id="welcome-1">Do you already have a Weave account?</p>
@@ -82,31 +76,26 @@
               <label id="signin-username-label" for="signin-username">Username</label>
               <input id="signin-username" type="text" oninput="About.onSigninInput();" />
             </li>
-<!--
-            <li class="error">
-              oops, there was an error<span class="up-arrow">&laquo;</span>
-            </li>
--->
             <li>
               <label id="signin-password-label" for="signin-password">Password</label>
               <input id="signin-password" type="password" oninput="About.onSigninInput();" />
-<!--
-              <div class="field-status">
+<!--          <div class="field-status">
                 <div class="field-status-arrow"></div>
                 <div class="field-status-content">verified</div>
-              </div>
--->
+              </div> -->
             </li>
             <li>
               <label id="signin-passphrase-label" for="signin-passphrase">Secret phrase</label>
               <input id="signin-passphrase" type="password" oninput="About.onSigninInput();" />
+              <span id="signin-new-passphrase">(new secret)</span>
             </li>
           </ul>
-<!--
-          <div class="error">
-            massive general error here
+
+          <div id="signin-forgot-links">
+            <a href="#" onclick="return About.showBubble('forgot-pw');">I forgot my password</a><br/>
+            <a href="#" onclick="return About.showBubble('forgot-pp');">I forgot my secret phrase</a>
           </div>
--->
+
           <div class="buttons">
             <hr/>
             <input type="button" class="prev" value="prev"
@@ -115,6 +104,39 @@
             <input type="button" class="next" value="next" disabled="disabled"
                    onclick="About.signIn();" />
           </div>
+
+<!--      <div class="help-tab">
+            <img alt="help" src="images/help.png" onclick="About.toggleHelp();"/>
+          </div>
+          <div class="bubble-help">
+            <div id="help-forgot-password" class="help-item">
+              <h3 class="help-item-title">I forgot my password</h3>
+              <div class="help-item-content">
+                <p id="forgot-password-1">Type in your username and we'll
+                send you an email so you can reset it:</p>
+                <input id="forgot-password-box" type="text" />
+                <input id="forgot-password-ok" type="button" class="next" value="ok"
+                       onclick="About.forgotPassword();" />
+              </div>
+            </div>
+            <div id="help-forgot-passphrase" class="help-item">
+              <h3 class="help-item-title">I forgot my passphrase</h3>
+              <div class="help-item-content">
+                <p id="forgot-passphrase-1">You can pick a new passphrase,
+                but all your server data will need to be deleted (it cannot be
+                recovered).</p>
+                <p id="forgot-passphrase-2">To go ahead, click the button below:</p>
+                <input id="forgot-passphrase-ok" type="button" class="next"
+                       value="reset passphrase" onclick="About.forgotPassphrase();" />
+              </div>
+            </div>
+            <div id="help-helpme" class="help-item">
+              <h3 class="help-item-title">I'm stuck! What do I do?</h3>
+              <div class="help-item-content">
+                <p id="help-helpme-1">If you're stuck, you might want to try the FAQ or the Weave discussion group.</p>
+              </div>
+            </div>
+          </div> -->
         </div>
 
         <div id="newacct" class="bubble">
@@ -311,56 +333,55 @@
           </div>
         </div>
 
-        <!-- Bubbles in the center, under the arrow/status -->
+        <div id="forgot-pw" class="bubble">
+          <h1 id="forgot-pw-title">Forgotten Password</h1>
 <!--
-        <div id="signin" class="bubble bubble-center">
-          <h1 id="signin-title">Sign Into Weave</h1>
-
-          <input id="signin-username" type="text" oninput="About.onSigninInput();" />
-          <input id="signin-password" type="password" oninput="About.onSigninInput();" />
-          <input id="signin-passphrase" type="password" oninput="About.onSigninInput();" />
+          <p id="forgot-pw-1">Type in your username and we'll send you
+          an email so you can reset your password:</p>
+          <div class="row">
+            <label>Username <input id="forgot-pw-box" type="text" /></label>
+          </div>
+-->
+          <p>We're still working out the process to reset your
+          password.  For now, please visit <a
+          href="https://services.mozilla.com/pw/forgot.php">this
+          page</a>.</p>
 
           <div class="buttons">
-            <input id="signin-newacct" type="button" class="prev"
-                   onclick="About.showBubble('newacct');" />
-            <input id="signin-next" type="button" class="next" disabled="disabled"
-                   onclick="About.signIn();" />
-          </div>
-
-          <div class="help-tab">
-            <img alt="help" src="images/help.png" onclick="About.toggleHelp();"/>
-          </div>
-          <div class="bubble-help">
-            <div id="help-forgot-password" class="help-item">
-              <h3 class="help-item-title">I forgot my password</h3>
-              <div class="help-item-content">
-                <p id="forgot-password-1">Type in your username and we'll
-                send you an email so you can reset it:</p>
-                <input id="forgot-password-box" type="text" />
-                <input id="forgot-password-ok" type="button" class="next" value="ok"
-                       onclick="About.forgotPassword();" />
-              </div>
-            </div>
-            <div id="help-forgot-passphrase" class="help-item">
-              <h3 class="help-item-title">I forgot my passphrase</h3>
-              <div class="help-item-content">
-                <p id="forgot-passphrase-1">You can pick a new passphrase,
-                but all your server data will need to be deleted (it cannot be
-                recovered).</p>
-                <p id="forgot-passphrase-2">To go ahead, click the button below:</p>
-                <input id="forgot-passphrase-ok" type="button" class="next"
-                       value="reset passphrase" onclick="About.forgotPassphrase();" />
-              </div>
-            </div>
-            <div id="help-helpme" class="help-item">
-              <h3 class="help-item-title">I'm stuck! What do I do?</h3>
-              <div class="help-item-content">
-                <p id="help-helpme-1">If you're stuck, you might want to try the FAQ or the Weave discussion group.</p>
-              </div>
-            </div>
+            <hr/>
+            <input id="forgot-pw-ok" type="button" class="next" value="ok"
+                   onclick="About.showBubble('signin');" />
           </div>
         </div>
--->
+
+        <div id="forgot-pp" class="bubble">
+          <h1 id="forgot-pp-title">Forgotten Secret Phrase</h1>
+
+          <p id="forgot-pp-1">If you can't remember your secret
+          phrase, you can pick a new one.</p>
+
+          <p id="forgot-pp-2">All your data on the server must be
+          deleted and re-uploaded, because it cannot be
+          recovered.</p>
+
+          <p id="forgot-pp-3">Tip: If you have Weave on another
+          machine, you can view the secret by opening the password
+          manager in the Firefox options.</p>
+
+          <div class="row-center">
+            <label>New secret phrase
+            <input id="forgot-pp-box" type="password" /></label>
+          </div>
+
+          <div class="buttons">
+            <hr/>
+            <input id="forgot-pw-ok" type="button" class="next" value="ok"
+                   onclick="About.forgotPassphraseOk();" />
+          </div>
+        </div>
+
+        <!-- Bubbles in the center, under the arrow/status -->
+
         <div id="willsync" class="bubble bubble-center">
           <h1 id="willsync-title">Account Created!</h1>
           <p id="willsync-1">Syncing your data in %S seconds...</p>
