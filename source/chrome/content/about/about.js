@@ -79,6 +79,7 @@ let About = {
       else
         About.showBubble("data");
     }
+    About.showBubble('myacct');
   },
 
   _installObservers: function() {
@@ -466,9 +467,42 @@ let About = {
   // My Account
   //
   onBubble_myacct: function() {
+    $('#myacct-set-pw, #myacct-set-pp').hide();
     $('#myacct-username').html(Weave.Service.username);
-    $('#myacct-password').val(Weave.Service.password)[0].type = "password";
-    $('#myacct-passphrase').val(Weave.Service.passphrase)[0].type = "password";
+    $('#myacct-password')
+      .width('')
+      .val(Weave.Service.password)[0].type = "password";
+    $('#myacct-passphrase')
+      .width('')
+      .val(Weave.Service.passphrase)[0].type = "password";
+  },
+  _myacctAddButton: function(field, button) {
+    if ($(button).css('display') != 'none')
+      return;
+    // * 1 forces it to be a number
+    let px = function(id, prop) $(id).css(prop).replace('px', '') * 1;
+    $(button).show();
+    $(field).width($(field).width()
+                   - (px(field, 'margin-left') + px(field, 'margin-right')
+                      + $(button).outerWidth(true)) + 'px');
+  },
+  onMyacctPasswordFocus: function() {
+    About._myacctAddButton('#myacct-password', '#myacct-set-pw');
+  },
+  onMyacctPassphraseFocus: function() {
+    About._myacctAddButton('#myacct-passphrase', '#myacct-set-pp');
+  },
+  setPassword: function() {
+    $('#myacct .buttons .throbber').show();
+    Weave.Service.changePassword($('#myacct-password'));
+    $('#myacct-set-pw, #myacct .buttons .throbber').hide();
+    $('#myacct-password').width('');
+  },
+  setPassphrase: function() {
+    $('#myacct .buttons .throbber').show();
+    Weave.Service.changePassphrase($('#myacct-passphrase'));
+    $('#myacct-set-pp, #myacct .buttons .throbber').hide();
+    $('#myacct-passphrase').width('');
   },
 
   //
@@ -551,12 +585,6 @@ let About = {
       if (!ok) {
       }
     }
-  },
-  changePassword: function changePassword() {
-    Weave.Utils.openGenericDialog('ChangePassword');
-  },
-  changePassphrase: function changePassphrase() {
-    Weave.Utils.openGenericDialog('ChangePassphrase');
   },
 
   //

@@ -28,6 +28,7 @@ html {
     padding-top: 15px;
     padding-left: 0px;
     padding-right: 0px;
+    overflow-x: hidden;
 }
 
 body { 
@@ -561,26 +562,23 @@ ul li * {
  * my account dialog
  */
 
-#myacct-fields li {
-    display: block;
+#myacct p {
+    width: 24em;
+    margin: 1em;
 }
-
-#myacct-fields li .label {
-    display: inline-block;
-    width: 7em;
-    padding-right: 4px;
-    text-align: right;
+#myacct .buttons {
+    padding-top: 1em;
 }
-
-#myacct-fields li .value {
+#myacct .value {
     display: inline-block;
     width: 17em; /* text fields are 17em wide */
     margin: 2px 2px;
     padding: 2px;
     text-align: left;
 }
-#myacct-passphrase-cancel {
+#myacct-set-pw, #myacct-set-pp {
     display: none;
+    margin: 0;
 }
 
 /*

@@ -304,32 +304,35 @@
 
         <div id="myacct" class="bubble">
           <h1 id="myacct-title">My Account</h1>
-          <ul id="myacct-fields">
-            <li>
-              <span id="myacct-username-label" class="label">Username</span>
-              <span id="myacct-username" class="value">...</span>
-            </li>
+          <p id="myacct-1">You can change your password or secret
+          phrase by typing in new ones below:</p>
+          <div class="row">
+            <label>Username <span id="myacct-username" class="value">...</span></label>
+          </div>
 <!-- fixme: don't have this info client-side
            <li>
               <span id="myacct-email-label" class="label">Email</span>
               <span id="myacct-email" class="value">...</span>
             </li> -->
-            <li>
-              <label id="myacct-password-label"
-                     for="myacct-password" class="label">Password</label>
-              <input id="myacct-password" type="password" class="value" />
-            </li>
-            <li>
-              <label id="myacct-passphrase-label"
-                     for="myacct-passphrase" class="label">Secret phrase</label>
-              <input id="myacct-passphrase" type="password" class="value" />
-            </li>
-          </ul>
+          <div class="row">
+            <label id="myacct-password-label">Password
+            <input id="myacct-password" type="password" class="value"
+                   onfocus="About.onMyacctPasswordFocus();"/></label>
+              <input id="myacct-set-pw" type="button" value="set"
+                     onclick="About.setPassword();"/>
+          </div>
+          <div class="row">
+            <label id="myacct-passphrase-label">Secret phrase
+              <input id="myacct-passphrase" type="password" class="value"
+                     onfocus="About.onMyacctPassphraseFocus();"/></label>
+              <input id="myacct-set-pp" type="button" value="set"
+                     onclick="About.setPassphrase();"/>
+          </div>
+
           <div class="buttons">
+            <img alt="working..." src="images/throbber.gif" class="throbber"/>
             <input id="myacct-close" type="button" class="next" value="close"
                    onclick="About.hideBubble();" />
-            <input id="myacct-passphrase-cancel" type="button" value="cancel"
-                   onclick="" />
           </div>
         </div>
 
