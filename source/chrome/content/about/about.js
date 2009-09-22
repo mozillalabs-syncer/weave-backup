@@ -818,10 +818,14 @@ let About = {
   onSyncdirNext: function() {
     $('#syncdir .buttons .throbber').show();
 
+    let engines = Weave.Engines.getEnabled().map(function(i) i.name);
+
     if ($('#syncdir input:radio')[1].checked)
-      Weave.Service.wipeClient();
-    else if ($('#syncdir input:radio')[2].checked)
-      Weave.Service.wipeRemote();
+      Weave.Service.wipeClient(engines);
+    else if ($('#syncdir input:radio')[2].checked) {
+      Weave.Service.wipeServer(); // workaround until wipeRemote does this
+      Weave.Service.wipeRemote(engines);
+    }
     // else we proceed as normal (merge)
 
     $('#syncdir .buttons .throbber').hide();
