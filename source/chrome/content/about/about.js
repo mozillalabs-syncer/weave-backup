@@ -623,7 +623,7 @@ let About = {
   },
   loadCaptcha: function loadCaptcha() {
     $('#captcha-iframe')
-      .attr('src', Weave.Service.miscURL + "1/captcha_html");
+      .attr("src", Weave.Service.miscAPI + "captcha_html");
   },
   onCaptchaLoaded: function onCaptchaLoaded() {
     // Don't do anything on the default empty iframe page load

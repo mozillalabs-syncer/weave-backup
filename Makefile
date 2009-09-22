@@ -45,12 +45,12 @@ compatible_version := 0.6pre3
 
 ifeq ($(release_build),)
   xpi_type := dev
-  server_url := https://weave-dev.services.mozilla.com/user/
-  server_url := https://auth.services.mozilla.com/user/
+  server_url := https://weave-dev.services.mozilla.com/
+  server_url := https://auth.services.mozilla.com/
   update_url := https://people.mozilla.com/~cbeard/weave/dist/update-dev.rdf
 else
   xpi_type := rel
-  server_url := https://auth.services.mozilla.com/user/
+  server_url := https://auth.services.mozilla.com/
   update_url :=
 endif
 
