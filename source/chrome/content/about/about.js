@@ -534,6 +534,9 @@ let About = {
 
     About._log.trace("Pre-filling sign-in form");
 
+    $("#auto-checkbox").attr("checked", Weave.Svc.Prefs.get("autoconnect"));
+    $("#server-url").val(Weave.Service.serverURL);
+
     let user = Weave.Service.username || "";
     let pass = Weave.Service.password || "";
     let passph = Weave.Service.passphrase || "";
@@ -579,6 +582,9 @@ let About = {
       $('#signin .buttons .next')[0].disabled = true;
   },
   signIn: function signIn() {
+    Weave.Svc.Prefs.set("autoconnect", $("#auto-checkbox").attr("checked"));
+    Weave.Service.serverURL = $("#server-url").val();
+
     let ok;
     if (About._ppChange) {
       delete About._ppChange;

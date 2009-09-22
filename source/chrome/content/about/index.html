@@ -104,6 +104,27 @@
             <input type="button" class="next" value="next" disabled="disabled"
                    onclick="About.signIn();" />
           </div>
+          <div class="advanced-tab">
+            <div class="advanced-tab-content">
+              <ul>
+                <li>
+                  <label>
+                    <input id="auto-checkbox" type="checkbox" />
+                    <span id="auto-label">Keep me signed into Weave</span>
+                  </label>
+                </li>
+                <li>
+                  <label id="server-url-label" for="server-url">Server URL</label>
+                  <input id="server-url" type="text" class="no-field-helper"
+                         oninput="About.onSigninInput();" />
+                </li>
+              </ul>
+            </div>
+            <div class="advanced-tab-title"
+                 onclick="$('#signin .advanced-tab-content').toggleClass('advanced-tab-content-visible');">
+              Custom settings<span class="tab-arrow">&laquo;</span>
+            </div>
+          </div>
 
 <!--      <div class="help-tab">
             <img alt="help" src="images/help.png" onclick="About.toggleHelp();"/>

@@ -354,6 +354,9 @@ body {
     vertical-align: -2px;
     -moz-transform: rotate(-90deg);
 }
+.advanced-tab-content input[type=text] {
+  width: 14em;
+}
 
 /*
  * Bubble elements
