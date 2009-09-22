@@ -109,27 +109,6 @@
             <img alt="help" src="images/help.png" onclick="About.toggleHelp();"/>
           </div>
           <div class="bubble-help">
-            <div id="help-forgot-password" class="help-item">
-              <h3 class="help-item-title">I forgot my password</h3>
-              <div class="help-item-content">
-                <p id="forgot-password-1">Type in your username and we'll
-                send you an email so you can reset it:</p>
-                <input id="forgot-password-box" type="text" />
-                <input id="forgot-password-ok" type="button" class="next" value="ok"
-                       onclick="About.forgotPassword();" />
-              </div>
-            </div>
-            <div id="help-forgot-passphrase" class="help-item">
-              <h3 class="help-item-title">I forgot my passphrase</h3>
-              <div class="help-item-content">
-                <p id="forgot-passphrase-1">You can pick a new passphrase,
-                but all your server data will need to be deleted (it cannot be
-                recovered).</p>
-                <p id="forgot-passphrase-2">To go ahead, click the button below:</p>
-                <input id="forgot-passphrase-ok" type="button" class="next"
-                       value="reset passphrase" onclick="About.forgotPassphrase();" />
-              </div>
-            </div>
             <div id="help-helpme" class="help-item">
               <h3 class="help-item-title">I'm stuck! What do I do?</h3>
               <div class="help-item-content">
@@ -137,6 +116,42 @@
               </div>
             </div>
           </div> -->
+        </div>
+
+        <div id="syncdir" class="bubble">
+          <h1 id="syncdir-title">Sync Direction</h1>
+
+          <div class="row-left">
+            <input id="syncdir-merge" type="radio"
+                   name="syncdir" value="merge" checked="checked"/>
+            <label id="syncdir-merge-label" for="syncdir-merge">Merge
+            this computer's data with the cloud
+            <span class="recommended">(Recommended)</span></label>
+          </div>
+          
+          <div class="row-left">
+            <input id="syncdir-wipe-local" type="radio"
+                   name="syncdir" value="wipe-local"/>
+            <label id="syncdir-wipe-local-label" for="syncdir-wipe-local">Replace
+            this computer's data with data from the cloud</label>
+          </div>
+
+          <div class="row-left">
+            <input id="syncdir-wipe-remote" type="radio"
+                   name="syncdir" value="wipe-remote"/>
+            <label id="syncdir-wipe-remote-label" for="syncdir-wipe-remote">
+              Replace data on the cloud with this computer's data
+            </label>
+          </div>
+
+          <div class="buttons">
+            <hr/>
+            <input type="button" class="prev" value="prev"
+                   onclick="About.showBubble('data');" />
+            <img alt="loading captcha..." src="images/throbber.gif" class="throbber"/>
+            <input type="button" class="next" value="next"
+                   onclick="About.onSyncdirNext();"/>
+          </div>
         </div>
 
         <div id="newacct" class="bubble">
@@ -338,21 +353,31 @@
 
         <div id="forgot-pw" class="bubble">
           <h1 id="forgot-pw-title">Forgotten Password</h1>
-<!--
+
           <p id="forgot-pw-1">Type in your username and we'll send you
           an email so you can reset your password:</p>
           <div class="row">
             <label>Username <input id="forgot-pw-box" type="text" /></label>
           </div>
--->
-          <p>We're still working out the process to reset your
-          password.  For now, please visit <a
-          href="https://services.mozilla.com/pw/forgot.php">this
-          page</a>.</p>
 
           <div class="buttons">
             <hr/>
+            <img alt="working..." src="images/throbber.gif" class="throbber"/>
             <input id="forgot-pw-ok" type="button" class="next" value="ok"
+                   onclick="About.forgotPasswordOk();" />
+          </div>
+        </div>
+
+        <div id="forgot-pw2" class="bubble">
+          <h1 id="forgot-pw2-title">Check Your Email!</h1>
+
+          <p id="forgot-pw2-1">We've sent you an email to your address
+          on file.  Please check it and follow the instructions to
+          reset your password.</p>
+
+          <div class="buttons">
+            <hr/>
+            <input id="forgot-pw2-ok" type="button" class="next" value="ok"
                    onclick="About.showBubble('signin');" />
           </div>
         </div>

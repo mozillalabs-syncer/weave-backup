@@ -219,12 +219,6 @@ let About = {
   },
   onLoginError: function onLoginError() {
     About.setStatus('offline');
-
-    // Show the full sign-in form to try again
-    About.showBubble("signin");
-
-    alert("Couldn't sign in: " + Weave.Utils.getErrorString(
-      Weave.Service.status.login)); //FIXME
   },
   onLogout: function onLogout() {
     About.setStatus('offline');
@@ -507,6 +501,21 @@ let About = {
   //
   // Forgot passphrase
   //
+  forgotPasswordOk: function() {
+    $('#forgot-pw .buttons .throbber').show();
+    let ok = Weave.Service.requestPasswordReset($('#forgot-pw-box').val());
+    $('#forgot-pw .buttons .throbber').hide();
+    if (ok)
+      About.showBubble('forgot-pw2');
+    else {
+      alert("Couldn't send email, perhaps that account doesn't exist!");
+      About.showBubble('signin'); // fixme
+    }
+  },
+
+  //
+  // Forgot passphrase
+  //
   forgotPassphraseOk: function() {
     About._newPassphrase = $('#forgot-pp-box').val();
     $('#forgot-pp-box').val('');
@@ -570,19 +579,29 @@ let About = {
       $('#signin .buttons .next')[0].disabled = true;
   },
   signIn: function signIn() {
+    let ok;
     if (About._ppChange) {
       delete About._ppChange;
       Weave.Service.username = $("#signin-username").val();
       Weave.Service.password = $("#signin-password").val();
       Weave.Service.passphrase = $("#signin-passphrase").val();
-      Weave.Service.resetPassphrase($("#signin-passphrase").val());
+      // this does a login and a sync
+      ok = Weave.Service.resetPassphrase($("#signin-passphrase").val());
     } else {
-      // Try logging in; success/fail handled by event listeners
-      let ok = About.doWrappedFor("#signin", "login", $("#signin-username").val(),
-                                  $("#signin-password").val(),
-                                  $("#signin-passphrase").val());
-      if (!ok) {
-      }
+      ok = About.doWrappedFor("#signin", "login", $("#signin-username").val(),
+                              $("#signin-password").val(),
+                              $("#signin-passphrase").val());
+    }
+
+    // note: observer handles if (ok && About.setupComplete)
+    if (ok && !About.setupComplete) {
+      $('#data .buttons .next')[0]
+        .onclick = function() About.showBubble('syncdir');
+      About.showBubble("data");
+
+    } else if (!ok) {
+      alert("Couldn't sign in: " + Weave.Utils.getErrorString(
+              Weave.Service.status.login)); //FIXME
     }
   },
 
@@ -791,6 +810,23 @@ let About = {
     About._log.debug("Toggling engine: " + name);
     let engine = Weave.Engines.get(name);
     engine.enabled = !engine.enabled;
+  },
+
+  //
+  // Sync direction (merge / clobber)
+  //
+  onSyncdirNext: function() {
+    $('#syncdir .buttons .throbber').show();
+
+    if ($('#syncdir input:radio')[1].checked)
+      Weave.Service.wipeClient();
+    else if ($('#syncdir input:radio')[2].checked)
+      Weave.Service.wipeRemote();
+    // else we proceed as normal (merge)
+
+    $('#syncdir .buttons .throbber').hide();
+
+    About.showBubble('finished');
   },
 
   //
