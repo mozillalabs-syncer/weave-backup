@@ -752,10 +752,8 @@ let About = {
   onNewacct2Next: function() {
     // Now that we have a passphrase, try logging in
     Weave.Service.passphrase = $('#newacct2-passphrase').val();
-    let failure = About.doWrappedFor("#newacct2", "login");
-    if (failure == null) {
+    if (About.doWrappedFor("#newacct2", "login"))
       About.showBubble("data");
-    }
   },
 
   //
