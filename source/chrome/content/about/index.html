@@ -396,10 +396,10 @@
           again (so make sure you know your login information!).</p>
 
           <div class="buttons">
-            <input id="startover-ok" type="button" value="start over"
+            <input id="startover-ok" type="button" value="cancel" class="prev"
+                   onclick="location.reload();" />
+            <input id="startover-ok" type="button" value="start over" class="next"
                    onclick="About.startoverOk();" />
-            <input id="startover-ok" type="button" value="cancel"
-                   onclick="About.hideBubble();" />
           </div>
         </div>
 
