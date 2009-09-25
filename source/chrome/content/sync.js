@@ -54,8 +54,7 @@ function WeaveWindow() {
     ["weave:service:login:error", "onLoginError"],
     ["weave:service:logout:finish", "onLogout"],
     ["weave:notification:added", "onNotificationAdded"],
-    ["weave:notification:removed", "onNotificationRemoved"],
-    ["network:offline-status-changed", "onNetworkStatusChanged"]];
+    ["weave:notification:removed", "onNotificationRemoved"]];
 
   // Add the observers now and remove them on unload
   let weaveWin = this;
@@ -63,9 +62,6 @@ function WeaveWindow() {
     Observers[add ? "add" : "remove"](topic, weaveWin[func], weaveWin));
   addRem(true);
   window.addEventListener("unload", function() addRem(false), false);
-
-  if (Weave.Svc.Prefs.get("ui.syncnow"))
-    document.getElementById("sync-syncnowitem").setAttribute("hidden", false);
 
   if (Weave.Svc.Prefs.get("lastversion") == "firstrun") {
     setTimeout(this.openAboutWeave, 500);
@@ -145,44 +141,14 @@ WeaveWindow.prototype = {
     // Clear out any login failure notifications
     let title = this._stringBundle.getString("error.login.title");
     Weave.Notifications.removeAll(title);
-
-    let loginitem = document.getElementById("sync-loginitem");
-    let logoutitem = document.getElementById("sync-logoutitem");
-    if(loginitem && logoutitem) {
-      loginitem.setAttribute("hidden", "true");
-      logoutitem.setAttribute("hidden", "false");
-    }
-
-    let syncnowitem = document.getElementById("sync-syncnowitem");
-    if (syncnowitem)
-      syncnowitem.setAttribute("disabled", "false");
   },
 
   onLogout: function WeaveWin_onLogout() {
     this._setStatus("offline");
-
-    let loginitem = document.getElementById("sync-loginitem");
-    let logoutitem = document.getElementById("sync-logoutitem");
-    if(loginitem && logoutitem) {
-      loginitem.setAttribute("hidden", "false");
-      logoutitem.setAttribute("hidden", "true");
-    }
-
-    let syncnowitem = document.getElementById("sync-syncnowitem");
-    if (syncnowitem)
-      syncnowitem.setAttribute("disabled", "true");
   },
 
   onSyncStart: function WeaveWin_onSyncStart() {
     this._setStatus("active");
-
-    let syncitem = document.getElementById("sync-syncnowitem");
-    if(syncitem)
-      syncitem.setAttribute("disabled", "true");
-
-    let logoutitem = document.getElementById("sync-logoutitem");
-    if(logoutitem)
-      logoutitem.setAttribute("disabled", "true");
   },
 
   _onSyncEnd: function WeaveWin__onSyncEnd(status) {
@@ -213,14 +179,6 @@ WeaveWindow.prototype = {
     // Clear out sync failures on a successful sync
     else
       Weave.Notifications.removeAll(title);
-
-    let syncitem = document.getElementById("sync-syncnowitem");
-    if (syncitem)
-      syncitem.setAttribute("disabled", "false");
-
-    let logoutitem = document.getElementById("sync-logoutitem");
-    if(logoutitem)
-      logoutitem.setAttribute("disabled", "false");
 
     this._updateLastSyncItem();
   },
@@ -253,6 +211,26 @@ WeaveWindow.prototype = {
 
   doPopup: function WeaveWin_doPopup(event) {
     this._updateLastSyncItem();
+
+    let loginItem = document.getElementById("sync-loginitem");
+    let logoutItem = document.getElementById("sync-logoutitem");
+    let syncItem = document.getElementById("sync-syncnowitem");
+
+    // Don't allow "login" to be selected in some cases
+    let offline = Weave.Svc.IO.offline;
+    let delayed = Weave.Service.status.service == Weave.STATUS_DELAYED;
+    let locked = Weave.Service.locked;
+    let notReady = offline || delayed || locked;
+    loginItem.setAttribute("disabled", notReady);
+
+    // Don't allow "sync now" to be selected in some cases
+    let loggedIn = Weave.Service.isLoggedIn;
+    let disableSync = notReady || !loggedIn;
+    syncItem.setAttribute("disabled", disableSync);
+
+    // Only show one of login/logout
+    loginItem.setAttribute("hidden", loggedIn);
+    logoutItem.setAttribute("hidden", !loggedIn);
   },
 
   onNotificationAdded: function WeaveWin_onNotificationAdded() {
@@ -262,13 +240,6 @@ WeaveWindow.prototype = {
   onNotificationRemoved: function WeaveWin_onNotificationRemoved() {
     if (Weave.Notifications.notifications.length == 0)
       document.getElementById("sync-notifications-button").hidden = true;
-  },
-
-  onNetworkStatusChanged: function WeaveWin_onNetworkStatusChanged() {
-    var offline = Weave.Svc.IO.offline;
-    document.getElementById("sync-loginitem").setAttribute("disabled", offline);
-    var disableSync = offline || !Weave.Service.isLoggedIn;
-    document.getElementById("sync-syncnowitem").setAttribute("disabled", disableSync);
   },
 
   _updateLastSyncItem: function WeaveWin__updateLastSyncItem() {

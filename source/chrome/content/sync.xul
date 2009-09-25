@@ -36,29 +36,19 @@
                    onpopupshowing="if (event.target == this) gWeaveWin.doPopup(event);"
                    onpopuphiding="gWeaveWin.onMenuPopupHiding()">
             <menuitem id="sync-loginitem"
-                      hidden="false" disabled="false"
-                      checked="false" autocheck="false"
                       label="&logInItem.label;"
                       oncommand="gWeaveWin.openAboutWeave();"/>
             <menuitem id="sync-logoutitem"
-                      hidden="true" disabled="false"
-                      checked="false" autocheck="false"
                       label="&logOutItem.label;"
                       oncommand="gWeaveWin.doLogout();"/>
             <menuitem id="sync-syncnowitem"
-                      hidden="true" disabled="true"
-                      checked="false" autocheck="false"
                       label="&syncNowItem.label;"
                       oncommand="gWeaveWin.doSync(event);"/>
             <menuseparator/>
             <menuitem id="sync-openprefsitem"
-                      disabled="false"
-                      checked="false" autocheck="false"
                       label="&openPrefsItem.label;"
                       oncommand="gWeaveWin.openAboutWeave();"/>
             <menuitem id="sync-openlogitem"
-                      disabled="false"
-                      checked="false" autocheck="false"
                       label="&openLogItem.label;"
                       oncommand="gWeaveWin.doOpenActivityLog(event);"/>
             <menuseparator/>
