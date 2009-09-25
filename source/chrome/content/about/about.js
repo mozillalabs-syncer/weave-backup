@@ -69,6 +69,9 @@ let About = {
         About.showBubble("signin");
       }
     } else {
+      // make sure service is actually offline
+      Weave.Service.logout();
+
       // try to continue where the user left off last time
       if (!Weave.Service.username)
         About.showBubble("welcome");
@@ -111,6 +114,13 @@ let About = {
   str: function str(id, extra, defaultStr) {
     try {
       return Weave.Str.about.get(id, extra);
+    } catch (e) {
+      return defaultStr;
+    }
+  },
+  err: function str(id, extra, defaultStr) {
+    try {
+      return Weave.Str.errors.get(id, extra);
     } catch (e) {
       return defaultStr;
     }
@@ -523,6 +533,16 @@ let About = {
   },
 
   //
+  // Start over dialog
+  //
+  startoverOk: function() {
+    Weave.Service.logout();
+    Weave.Svc.Prefs.reset('setupComplete');
+    Weave.Svc.Prefs.reset('username');
+    About.showBubble('startover2');
+  },
+
+  //
   // Signin bubble page
   //
   onBubble_signin: function() {
@@ -584,6 +604,7 @@ let About = {
   signIn: function signIn() {
     Weave.Svc.Prefs.set("autoconnect", $("#auto-checkbox").attr("checked"));
     Weave.Service.serverURL = $("#server-url").val();
+    $('#signin .error').remove();
 
     let ok;
     if (About._ppChange) {
@@ -606,8 +627,22 @@ let About = {
       About.showBubble("data");
 
     } else if (!ok) {
-      alert("Couldn't sign in: " + Weave.Utils.getErrorString(
-              Weave.Service.status.login)); //FIXME
+      let err = Weave.Service.status.login;
+      let after = function(elt) {
+        $(elt).after('<div class="error">' + About.err(err) + '</div>');
+      };
+      switch (err) {
+      case LOGIN_FAILED_NO_USERNAME:
+        after($('#signin-username').parent()); break;
+      case LOGIN_FAILED_NO_PASSWORD:
+        after($('#signin-password').parent()); break;
+      case LOGIN_FAILED_NETWORK_ERROR:
+        after('#signin > .buttons > hr'); break;
+      case LOGIN_FAILED_INVALID_PASSPHRASE:
+        after($('#signin-passphrase').parent()); break;
+      case LOGIN_FAILED_LOGIN_REJECTED:
+        after($('#signin-password').parent()); break;
+      }
     }
   },
 
@@ -670,11 +705,13 @@ let About = {
   _checkUsername: function _checkUsername() {
     if (!About._hasInput('#newacct-username'))
       return;
-    if (Weave.Service.checkUsername($('#newacct-username').val()) == "available")
-      $('#newacct-username').removeClass('error').addClass('ok');
-    else
-      $('#newacct-username').removeClass('ok').addClass('error');
-
+    if (Weave.Service.checkUsername($('#newacct-username').val()) == "available") {
+      $('#newacct-username-available').show();
+      $('#newacct-username-unavailable').hide();
+    } else {
+      $('#newacct-username-available').hide();
+      $('#newacct-username-unavailable').show().css('display', 'block');
+    }
     // update next button now that we've determined if the username is taken
     About.onNewacctInput();
   },
@@ -695,7 +732,7 @@ let About = {
         About._hasInput('#newacct-email') &&
         About._hasInput('#captcha-response') &&
         $('#newacct-tos-checkbox')[0].checked &&
-        $('#newacct .error').length == 0)
+        $('#newacct .error:visible').length == 0)
       $('#newacct .buttons .next')[0].disabled = false;
     else
       $('#newacct .buttons .next')[0].disabled = true;
@@ -752,8 +789,13 @@ let About = {
   onNewacct2Next: function() {
     // Now that we have a passphrase, try logging in
     Weave.Service.passphrase = $('#newacct2-passphrase').val();
-    if (About.doWrappedFor("#newacct2", "login"))
+    let ok = About.doWrappedFor("#newacct2", "login");
+    if (ok) {
       About.showBubble("data");
+    } else {
+      // fixme
+      alert("oops, something went wrong!");
+    }
   },
 
   //

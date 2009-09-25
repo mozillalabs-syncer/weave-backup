@@ -490,13 +490,14 @@ input[type=button][disabled] {
  * ok/error styles for form fields
  */
 
-.field-status {
+.ok {
+    display: none;
     position: absolute;
     top: 4px;
     left: 100%;
-    margin: 0 0 0 2em;
+    margin: 0 0 0 -3em;
 }
-.field-status-arrow {
+.ok .arrow {
     position: absolute;
     top: 0.5em;
     z-index: 0;
@@ -507,7 +508,7 @@ input[type=button][disabled] {
     background-color: darkgreen;
     -moz-transform: rotate(-45deg) scale(1.1);
 }
-.field-status-content {
+.ok .content {
     position: absolute;
     left: 0.5em;
     margin: 1px 0;
@@ -516,13 +517,18 @@ input[type=button][disabled] {
     -moz-border-radius: 0.3em 0.5em 0.5em 0.3em;
 }
 
-.ok {
-    background-color: darkgreen !important;
-}
-.error {
+.error, .bubble ul li.error {
     padding: 4px;
     background-color: darkred !important;
+    text-align: center;
     -moz-border-radius: 0.4em;
+}
+.error .arrow {
+    -moz-transform: rotate(90deg);
+}
+
+#newacct-username-unavailable {
+    display: none;
 }
 
 /*
@@ -605,6 +611,19 @@ ul li * {
 #myacct-set-pw, #myacct-set-pp {
     display: none;
     margin: 0;
+}
+
+/*
+ * Start over
+ */
+#startover p {
+    max-width: 28em;
+    margin: 1em 0;
+}
+
+#startover2 p {
+    max-width: 28em;
+    margin: 1em 0;
 }
 
 /*

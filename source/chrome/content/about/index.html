@@ -29,7 +29,7 @@
 <!--  fixme: wraps?          <li id="server-settings-item">Server settings</li> -->
             <li id="activity-log-item"
                 onclick="Weave.Utils.openLog();">Activity Log</li>
-            <li id="start-over-item" onclick="About.menuStartOver();">Start Over</li>
+            <li id="start-over-item" onclick="About.showBubble('startover');">Start Over</li>
           </ul>
         </li>
         <li id="user-menu" class="disabled" onclick="About.toggleMenu('user-menu');">
@@ -79,10 +79,6 @@
             <li>
               <label id="signin-password-label" for="signin-password">Password</label>
               <input id="signin-password" type="password" oninput="About.onSigninInput();" />
-<!--          <div class="field-status">
-                <div class="field-status-arrow"></div>
-                <div class="field-status-content">verified</div>
-              </div> -->
             </li>
             <li>
               <label id="signin-passphrase-label" for="signin-passphrase">Secret phrase</label>
@@ -106,19 +102,26 @@
           </div>
           <div class="advanced-tab">
             <div class="advanced-tab-content">
-              <ul>
-                <li>
-                  <label>
-                    <input id="auto-checkbox" type="checkbox" />
-                    <span id="auto-label">Keep me signed into Weave</span>
-                  </label>
-                </li>
-                <li>
-                  <label id="server-url-label" for="server-url">Server URL</label>
-                  <input id="server-url" type="text" class="no-field-helper"
-                         oninput="About.onSigninInput();" />
-                </li>
-              </ul>
+              <div class="row-left">
+                <label>
+                  <input id="auto-checkbox" type="checkbox" />
+                  <span id="auto-label">Keep me signed into Weave</span>
+                </label>
+              </div>
+              <div class="row-left">
+                <label>
+                  <input id="" type="radio" />
+                  <span id="">Use Mozilla's servers</span>
+                </label>
+              </div>
+              <div class="row-left">
+                <label>
+                  <input id="" type="radio" />
+                  <span id="">Use custom servers</span>
+                </label>
+                <input id="server-url" type="text" class="no-field-helper"
+                       oninput="About.onSigninInput();" />
+              </div>
             </div>
             <div class="advanced-tab-title"
                  onclick="$('#signin .advanced-tab-content').toggleClass('advanced-tab-content-visible');">
@@ -184,6 +187,13 @@
               <input id="newacct-username" type="text"
                      oninput="About.onNewacctUsernameInput();"
                      onblur="About.onNewacctUsernameBlur();"/>
+              <div id="newacct-username-available" class="ok">
+                <div class="arrow"></div>
+                <div class="content">available</div>
+              </div>
+            </li>
+            <li id="newacct-username-unavailable" class="error">
+              Username unavailable, try a different one
             </li>
             <li>
               <label id="newacct-password-label" for="newacct-password">Password</label>
@@ -235,6 +245,7 @@
             <input type="button" class="next" disabled="disabled"
                    onclick="About.onNewacctNext();" />
           </div>
+<!--
           <div class="help-tab">
             <img alt="help" src="images/help.png" onclick="About.toggleHelp();"/>
           </div>
@@ -268,6 +279,7 @@
               Server settings<span class="tab-arrow">&laquo;</span>
             </div>
           </div>
+-->
         </div>
 
         <div id="newacct2" class="bubble">
@@ -369,6 +381,35 @@
             <img alt="working..." src="images/throbber.gif" class="throbber"/>
             <input id="myacct-close" type="button" class="next" value="close"
                    onclick="About.hideBubble();" />
+          </div>
+        </div>
+
+        <div id="startover" class="bubble">
+          <h1 id="startover-title">Start Over</h1>
+
+          <p id="startover-1">Is something not correctly synchronized?
+          You can tell Weave to re-sync all your data from
+          scratch.</p>
+
+          <p id="startover-2">You will run through the setup process
+          again (so make sure you know your login information!).</p>
+
+          <div class="buttons">
+            <input id="startover-ok" type="button" value="start over"
+                   onclick="About.startoverOk();" />
+            <input id="startover-ok" type="button" value="cancel"
+                   onclick="About.hideBubble();" />
+          </div>
+        </div>
+
+        <div id="startover2" class="bubble">
+          <h1 id="startover2-title">Reset Complete</h1>
+          <p id="startover2-1">Weave on this computer has been reset.
+          Click the ok button to reload this page and start the Weave
+          setup process.</p>
+          <div class="buttons">
+            <input id="startover2-ok" type="button" value="ok"
+                   onclick="location.reload();" />
           </div>
         </div>
 
