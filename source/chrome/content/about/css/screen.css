@@ -355,7 +355,10 @@ body {
     -moz-transform: rotate(-90deg);
 }
 .advanced-tab-content input[type=text] {
-  width: 14em;
+  width: 20em;
+}
+.advanced-tab-content input[type=radio] {
+  margin-left: 1em;
 }
 
 /*

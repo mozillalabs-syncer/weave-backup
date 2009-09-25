@@ -109,18 +109,19 @@
                 </label>
               </div>
               <div class="row-left">
+                <span id="">Encrypt my data and save it with:</span>
+                <div class="row-left">
                 <label>
-                  <input id="" type="radio" />
-                  <span id="">Use Mozilla's servers</span>
+                  <input name="server-which" id="server-mozilla" type="radio" />
+                  <span id="">Mozilla</span>
                 </label>
-              </div>
-              <div class="row-left">
                 <label>
-                  <input id="" type="radio" />
-                  <span id="">Use custom servers</span>
+                  <input name="server-which" id="server-custom" type="radio" />
+                  <span id="">A custom Weave server</span>
                 </label>
                 <input id="server-url" type="text" class="no-field-helper"
                        oninput="About.onSigninInput();" />
+                </div>
               </div>
             </div>
             <div class="advanced-tab-title"
