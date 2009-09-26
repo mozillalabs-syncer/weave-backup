@@ -340,6 +340,7 @@ body {
 .advanced-tab-content {
     display: none;
     margin: 4px 4px;
+    padding: 4px;
 }
 .advanced-tab-content-visible {
     display: block;
@@ -355,10 +356,10 @@ body {
     -moz-transform: rotate(-90deg);
 }
 .advanced-tab-content input[type=text] {
-  width: 20em;
+  width: 95%;
 }
 .advanced-tab-content input[type=radio] {
-  margin-left: 1em;
+  margin-left: .5em;
 }
 
 /*
