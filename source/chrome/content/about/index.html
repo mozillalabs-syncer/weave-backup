@@ -226,7 +226,7 @@
               <img alt="audio captcha" src="images/audio.png" class="captcha-control"
                    onclick="About.toggleCaptchaAudio();"/>
             </div>
-            <div><input id="captcha-response" type="text" /></div>
+            <div><input id="captcha-response" type="text" oninput="About.onNewacctInput();"/></div>
           </div>
 
           <hr/>

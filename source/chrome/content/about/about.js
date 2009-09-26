@@ -751,7 +751,7 @@ let About = {
         About._hasInput('#newacct-email') &&
         About._hasInput('#captcha-response') &&
         $('#newacct-tos-checkbox')[0].checked &&
-        $('#newacct .error:visible').length == 0)
+        $('#newacct-username-unavailable:visible').length == 0)
       $('#newacct .buttons .next')[0].disabled = false;
     else
       $('#newacct .buttons .next')[0].disabled = true;
@@ -766,6 +766,9 @@ let About = {
     }
   },
   onNewacctNext: function onNewacctNext() {
+    // XXX can't remove() because of the hardcoded username unavailable
+    $("#newacct .error").hide();
+
     let user = $("#newacct-username").val();
     let pass = $("#newacct-password").val();
     let failure = About.doWrappedFor("#newacct", "createAccount", user, pass,
@@ -778,10 +781,35 @@ let About = {
       Weave.Service.password = pass;
       Weave.Service.persistLogin();
       About.showBubble("newacct2");
-    } else {
-      this._log.warn("Account creation error: " + failure);
+    }
+    else {
+      // Reload the captcha and empty the user input
       About.loadCaptcha();
-      alert("Could not create account: " + failure);
+      $("#captcha-response").val("");
+
+      let after = function(elt) {
+        $(elt).after('<div class="error">' + About.err(failure) + "</div>");
+      };
+
+      // Figure out how to display the error
+      switch (failure) {
+        case "invalid-captcha":
+          after($("#captcha-response").parent());
+          break;
+        case "weak-password":
+          after($("#newacct-password").parent());
+          break;
+        case "invalid-username":
+        case "cannot-overwrite-resource":
+          // XXX bug 512808 available was shown when it wasn't available..
+          $("#newacct-username-available").hide();
+          $("#newacct-username-unavailable").show().css("display", "block");
+          break;
+        default:
+          this._log.debug("Account creation error: " + failure);
+          alert("Could not create account: " + failure);
+          break;
+      }
     }
   },
 
