@@ -1,11 +1,29 @@
 @media all and (max-width: 800px) {
-    #container {
-        top: -125px;
-    }
-    .logo {
-        display: none;
-    }
-    #bubble {
-        margin: -20px auto 0;
-    }
+
+#container {
+    top: -175px;
+}
+
+.logo {
+    display: none;
+}
+
+#bubble {
+    margin: -60px auto 0;
+}
+
+input, #top-menu li {
+    font-size: 1.2em !important;
+    height: 7mm;
+}
+
+.menu-dropdown {
+    margin-top: 11px;
+}
+
+#status {
+    padding-bottom: 75px;
+}
+
+
 }
