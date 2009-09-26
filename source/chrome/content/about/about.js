@@ -838,6 +838,7 @@ let About = {
     Weave.Service.passphrase = $('#newacct2-passphrase').val();
     let ok = About.doWrappedFor("#newacct2", "login");
     if (ok) {
+      Weave.Service.persistLogin();
       About.showBubble("data");
     } else {
       // fixme
