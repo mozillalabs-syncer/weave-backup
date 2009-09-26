@@ -28,7 +28,7 @@
           <ul class="menu-dropdown">
 <!--  fixme: wraps?          <li id="server-settings-item">Server settings</li> -->
             <li id="activity-log-item"
-                onclick="Weave.Utils.openLog();">Activity Log</li>
+                onclick="Weave.Utils.openLog();">Debug Log</li>
             <li id="start-over-item" onclick="About.showBubble('startover');">Start Over</li>
           </ul>
         </li>
@@ -39,6 +39,8 @@
             <li id="sign-out-item" onclick="Weave.Service.logout();">Sign out</li>
             <li id="myacct-item"
                 onclick="About.showBubble('myacct');">My Account</li>
+            <li id="sync-now-item"
+                onclick="Weave.Service.sync();">Sync Now</li>
           </ul>
         </li>
       </ul>
