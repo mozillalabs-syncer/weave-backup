@@ -497,13 +497,13 @@ let About = {
   },
   setPassword: function() {
     $('#myacct .buttons .throbber').show();
-    Weave.Service.changePassword($('#myacct-password'));
+    Weave.Service.changePassword($("#myacct-password").val());
     $('#myacct-set-pw, #myacct .buttons .throbber').hide();
     $('#myacct-password').width('');
   },
   setPassphrase: function() {
     $('#myacct .buttons .throbber').show();
-    Weave.Service.changePassphrase($('#myacct-passphrase'));
+    Weave.Service.changePassphrase($("#myacct-passphrase").val());
     $('#myacct-set-pp, #myacct .buttons .throbber').hide();
     $('#myacct-passphrase').width('');
   },
