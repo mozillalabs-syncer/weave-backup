@@ -85,14 +85,28 @@ let About = {
   },
 
   _installObservers: function() {
-    [['login:start', About.onLoginStart],
+    let prefix = "weave:service:";
+    let topics = [
+     ['login:start', About.onLoginStart],
      ['login:finish', About.onLoginFinish],
      ['login:error', About.onLoginError],
      ['logout:finish', About.onLogout],
      ['sync:start', About.onSyncStart],
      ['sync:finish', About.onSyncFinish],
-     ['sync:error', About.onSyncError]]
-     .forEach(function(i) Observers.add("weave:service:" + i[0], i[1]));
+     ['sync:error', About.onSyncError],
+    ];
+    
+    topics.forEach(function([topic, callback]) {
+      Observers.add(prefix + topic, callback);
+    });
+
+    // Uninstall the observers when the page is going away
+    addEventListener("unload", function uninstall() {
+      removeEventListener("unload", uninstall, false);
+      topics.forEach(function([topic, callback]) {
+        Observers.remove(prefix + topic, callback);
+      });
+    }, false);
   },
 
   _installEnterHandlers: function _installEnterHandlers() {
