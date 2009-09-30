@@ -570,8 +570,7 @@ let About = {
   //
   startoverOk: function() {
     Weave.Service.logout();
-    Weave.Svc.Prefs.reset('setupComplete');
-    Weave.Svc.Prefs.reset('username');
+    Weave.Svc.Prefs.resetBranch("");
     About.showBubble('startover2');
   },
 
