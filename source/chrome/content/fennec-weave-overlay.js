@@ -37,10 +37,6 @@
 const EXPORTED_SYMBOLS = ['gFennecWeaveGlue'];
 
 function FennecWeaveGlue() {
-  Cu.import("resource://weave/util.js");
-
-  this._log = Log4Moz.repository.getLogger("Chrome.Window");
-
   /* Generating keypairs is an expensive operation, and we should never
    have to do it on Fennec because we don't support creating a Weave
    account from Fennec (yet). */
@@ -49,13 +45,7 @@ function FennecWeaveGlue() {
   this._setPreferenceDefaults();
   this._checkFirstRun();
 
-  /* startup Weave service after a delay, so that it will happen after the
-   * UI is loaded. */
-   let self = this;
-   setTimeout(function() {
-     self._log.info("Timeout done, starting Weave service.\n");
-     Weave.Service.onStartup();
-   }, 3000);
+  Weave.Service.onStartup();
 }
 FennecWeaveGlue.prototype = {
   __prefService: null,
