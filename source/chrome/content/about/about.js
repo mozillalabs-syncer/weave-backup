@@ -346,22 +346,26 @@ let About = {
       $('#status-1').html(About.str('status-offline'));
       $('#user-menu .title').html(About.str('user-menu-offline'));
       $('#user-menu').addClass('disabled');
+      $("#status-partial").hide();
       break;
     case "signing-in":
       $('#status-arrow img')[0].src = 'images/sync_active.png';
       $('#status-1').html(About.str('status-signing-in'));
       $('#user-menu .title').html(About.str('user-menu-signing-in'));
       $('#user-menu').addClass('disabled');
+      $("#status-partial").hide();
       break;
     case "idle":
       $('#status-arrow img')[0].src = 'images/sync_idle.png';
       $('#status-1').html(About.str('status-idle'));
       $('#user-menu .title').html(About.str('user-menu-online', [Weave.Service.username]));
       $('#user-menu').attr('class', '');
+      $("#status-partial")[Weave.Service.status.partial ? "show" : "hide"]();
       break;
     case "sync":
       $('#status img')[0].src = 'images/sync_active.png';
       $('#status-1').html(About.str('status-sync'));
+      $("#status-partial").hide();
       break;
     }
   },

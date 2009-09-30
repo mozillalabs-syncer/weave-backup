@@ -177,6 +177,7 @@ body {
 #status {
     width: 180px;
     padding-bottom: 50px;
+    position: relative;
     vertical-align: bottom;
     font-size: 12px;
     color: black;
@@ -202,6 +203,14 @@ body {
 #status .plus-toggle {
     bottom: 64px;
     width: 180px;
+}
+
+#status-partial {
+    bottom: 10px;
+    display: none;
+    margin-left: -5em;
+    position: absolute;
+    width: 25em;
 }
 
 #quota-bar {
