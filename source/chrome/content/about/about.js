@@ -543,6 +543,15 @@ let About = {
   },
 
   //
+  // Initial welcome bubble page
+  //
+
+  onBubble_welcome: function() {
+    let noBubble = Weave.Svc.AppInfo.ID == FENNEC_ID ? "mobile" : "newacct";
+    $("#welcome-no").click(function() About.showBubble(noBubble));
+  },
+
+  //
   // Signin bubble page
   //
   onBubble_signin: function() {

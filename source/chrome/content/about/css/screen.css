@@ -561,6 +561,19 @@ ul li * {
 }
 
 /*
+ * Mobile dialog
+ */
+
+#mobile {
+    max-width: 25em;
+    text-align: center;
+}
+
+#mobile > p {
+    margin: .5em 0;
+}
+
+/*
  * Sign in dialog (first run & after sign out)
  */
 #signin-forgot-links {

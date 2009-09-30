@@ -66,8 +66,7 @@
           <p id="welcome-1">Do you already have a Weave account?</p>
           <input id="welcome-yes" type="button" value="yes"
                  onclick="About.showBubble('signin');" />
-          <input id="welcome-no" type="button" value="no"
-                 onclick="About.showBubble('newacct');" />
+          <input id="welcome-no" type="button" value="no" />
         </div>
 
         <div id="signin" class="bubble">
@@ -143,6 +142,17 @@
               </div>
             </div>
           </div> -->
+        </div>
+
+        <div id="mobile" class="bubble">
+          <h1 id="mobile-title">Mobile Setup</h1>
+          <p id="mobile-1">Use Firefox to create a Weave account and synchronize
+          your data.</p>
+          <p id="mobile-2">After doing so, return here to sign in with your
+          Weave account and get access to your Firefox history, bookmarks, etc.
+          from this device.</p>
+          <input id="mobile-next" type="button" value="sign in"
+                 onclick="About.showBubble('signin');" />
         </div>
 
         <div id="syncdir" class="bubble">
