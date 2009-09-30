@@ -12,7 +12,7 @@
     margin: -60px auto 0;
 }
 
-input[type=button] {
+input[type=button], input[type=button][disabled] {
     font-size: 2em;
 }
 
@@ -27,6 +27,11 @@ input[type=text], input[type=password] {
 
 .bubble label {
     font-size: 1.5em;
+}
+
+.bubble p, .bubble a {
+    font-size: 1.2em;
+    line-height: 1.2em;
 }
 
 #top-menu li {
