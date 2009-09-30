@@ -466,6 +466,35 @@ let About = {
   // Bubble dialogs
   //
 
+  /**
+   * Figure out what to show for the server url advanced options
+   */
+  prepCustom: function(prefix) {
+    let mozilla = $("#" + prefix + "server-mozilla");
+    let custom = $("#" + prefix + "server-custom");
+    let server = $("#" + prefix + "server-url")
+
+    server.val(Weave.Service.serverURL);
+    if (Weave.Svc.Prefs.isSet("serverURL")) {
+      custom.attr("checked", true);
+      server.show();
+    }
+    else {
+      mozilla.attr("checked", true);
+      server.hide();
+    }
+
+    custom.change(function() server.show());
+    mozilla.change(function() server.hide());
+  },
+
+  handleCustom: function(prefix) {
+    if ($("#" + prefix + "server-custom").attr("checked"))
+      Weave.Service.serverURL = $("#" + prefix + "server-url").val();
+    else
+      Weave.Service.serverURL = DEFAULT_SERVER;
+  },
+
   //
   // My Account
   //
@@ -564,20 +593,7 @@ let About = {
     About._log.trace("Pre-filling sign-in form");
 
     $("#auto-checkbox").attr("checked", Weave.Svc.Prefs.get("autoconnect"));
-
-    // Figure out what to show for the server configuration
-    let server = $("#server-url").val(Weave.Service.serverURL);
-    if (Weave.Svc.Prefs.isSet("serverURL")) {
-      $("#server-custom").attr("checked", true);
-      server.show();
-    }
-    else {
-      $("#server-mozilla").attr("checked", true);
-      server.hide();
-    }
-
-    $("#server-custom").change(function() server.show());
-    $("#server-mozilla").change(function() server.hide());
+    About.prepCustom("");
 
     let user = Weave.Service.username || "";
     let pass = Weave.Service.password || "";
@@ -627,11 +643,7 @@ let About = {
     Weave.Svc.Prefs.set("autoconnect", $("#auto-checkbox").attr("checked"));
 
     // Figure out which server to use
-    if ($("#server-custom").attr("checked"))
-      Weave.Service.serverURL = $("#server-url").val();
-    else
-      Weave.Service.serverURL = DEFAULT_SERVER;
-
+    About.handleCustom("");
     $('#signin .error').remove();
 
     let ok;
@@ -679,6 +691,7 @@ let About = {
   //
   onBubble_newacct: function onBubble_newacct() {
     About.resetNewacct();
+    About.prepCustom("c-");
 
     let url = Weave.Svc.Prefs.get('termsURL')
       .replace('%LOCALE%', Preferences.get('general.useragent.locale'));
@@ -731,6 +744,7 @@ let About = {
     About.setTimer("newacct-username", About._checkUsername, 0);
   },
   _checkUsername: function _checkUsername() {
+    About.handleCustom("c-");
     if (!About._hasInput('#newacct-username'))
       return;
     if (Weave.Service.checkUsername($('#newacct-username').val()) == "available") {
