@@ -67,8 +67,7 @@
                         class="statusbarpanel-iconic"
                         insertbefore="security-button"
                         hidden="true"
-                        popup="sync-notifications-panel"
-                        image="chrome://global/skin/icons/warning-16.png"/>
+                        popup="sync-notifications-panel"/>
         <panel id="sync-notifications-panel" position="before_end">
             <notificationbox id="sync-notifications-box"/>
         </panel>

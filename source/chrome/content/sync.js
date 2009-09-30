@@ -49,6 +49,7 @@ function WeaveWindow() {
   let obs = [["weave:service:sync:start", "onSyncStart"],
     ["weave:service:sync:finish", "onSyncFinish"],
     ["weave:service:sync:error", "onSyncError"],
+    ["weave:service:sync:delayed", "onSyncDelay"],
     ["weave:service:verify-login:start", "onLoginStart"],
     ["weave:service:login:finish", "onLoginFinish"],
     ["weave:service:login:error", "onLoginError"],
@@ -125,13 +126,12 @@ WeaveWindow.prototype = {
     this._setStatus("offline");
 
     let title = this._stringBundle.getString("error.login.title");
- 
-
     let reason = Weave.Utils.getErrorString(Weave.Service.status.login);
     let description =
       this._stringBundle.getFormattedString("error.login.description", [reason]);
-    let notification = new Weave.Notification(title, description, null,
-					      Weave.Notifications.PRIORITY_WARNING);
+
+    let notification = new Weave.Notification(title, description, null, 
+                                              Weave.Notifications.PRIORITY_WARNING);
     Weave.Notifications.replaceTitle(notification);
   },
 
@@ -180,6 +180,12 @@ WeaveWindow.prototype = {
     else
       Weave.Notifications.removeAll(title);
 
+    if (this._wasDelayed && Weave.Service.status.sync != Weave.NO_SYNC_NODE_FOUND) {
+      title = this._stringBundle.getString("error.sync.no_node_found.title");
+      Weave.Notifications.removeAll(title);
+      this._wasDelayed = false;
+    }
+
     this._updateLastSyncItem();
   },
 
@@ -189,6 +195,15 @@ WeaveWindow.prototype = {
 
   onSyncError: function WeaveWin_onSyncError(subject, data) {
     this._onSyncEnd(false);
+  },
+
+  onSyncDelay: function WeaveWin_onSyncDelay(subject, data) {
+    // basically, we want to just inform users that stuff is going to take a while
+    let title = this._stringBundle.getString("error.sync.no_node_found.title");
+    let description = this._stringBundle.getString("error.sync.no_node_found");
+    let notification = new Weave.Notification(title, description, null, Weave.Notifications.PRIORITY_INFO);
+    Weave.Notifications.replaceTitle(notification);
+    this._wasDelayed = true;
   },
 
   shutDown: function WeaveWin_shutDown(event) {},
@@ -225,7 +240,8 @@ WeaveWindow.prototype = {
 
     // Don't allow "sync now" to be selected in some cases
     let loggedIn = Weave.Service.isLoggedIn;
-    let disableSync = notReady || !loggedIn;
+    let noNode = Weave.Service.status.sync == Weave.NO_SYNC_NODE_FOUND;
+    let disableSync = notReady || !loggedIn || noNode;
     syncItem.setAttribute("disabled", disableSync);
 
     // Only show one of login/logout
@@ -235,6 +251,15 @@ WeaveWindow.prototype = {
 
   onNotificationAdded: function WeaveWin_onNotificationAdded() {
     document.getElementById("sync-notifications-button").hidden = false;
+    let notifications = Weave.Notifications.notifications;
+    let priority = 0;
+    for (let i = 0;i < notifications.length;i++)
+      priority = Math.max(notifications[i].priority, priority);
+      
+    let image = priority >= Weave.Notifications.PRIORITY_WARNING ? 
+                "chrome://global/skin/icons/warning-16.png" : 
+                "chrome://global/skin/icons/information-16.png";
+    document.getElementById("sync-notifications-button").image = image;
   },
 
   onNotificationRemoved: function WeaveWin_onNotificationRemoved() {
