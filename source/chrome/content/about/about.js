@@ -374,7 +374,7 @@ let About = {
       $('#status-1').html(About.str('status-idle'));
       $('#user-menu .title').html(About.str('user-menu-online', [Weave.Service.username]));
       $('#user-menu').attr('class', '');
-      $("#status-partial")[Weave.Service.status.partial ? "show" : "hide"]();
+      $("#status-partial")[Weave.Status.partial ? "show" : "hide"]();
       break;
     case "sync":
       $('#status img')[0].src = 'images/sync_active.png';
@@ -684,7 +684,7 @@ let About = {
       About.showBubble("data");
 
     } else if (!ok) {
-      let err = Weave.Service.status.login;
+      let err = Weave.Status.login;
       let after = function(elt) {
         $(elt).after('<div class="error">' + About.err(err) + '</div>');
       };

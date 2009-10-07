@@ -126,7 +126,7 @@ WeaveWindow.prototype = {
     this._setStatus("offline");
 
     let title = this._stringBundle.getString("error.login.title");
-    let reason = Weave.Utils.getErrorString(Weave.Service.status.login);
+    let reason = Weave.Utils.getErrorString(Weave.Status.login);
     let description =
       this._stringBundle.getFormattedString("error.login.description", [reason]);
 
@@ -156,13 +156,13 @@ WeaveWindow.prototype = {
     
     let title = this._stringBundle.getString("error.sync.title");
     if (!status) {
-      let error = Weave.Utils.getErrorString(Weave.Service.status.sync);
+      let error = Weave.Utils.getErrorString(Weave.Status.sync);
       let description = this._stringBundle
                             .getFormattedString("error.sync.description", [error]);
 
       let priority = Weave.Notifications.PRIORITY_WARNING;
       let button = null;
-      if (!Weave.Service.status.enforceBackoff) {
+      if (!Weave.Status.enforceBackoff) {
         priority = Weave.Notifications.PRIORITY_INFO;
         button =
           new Weave.NotificationButton(
@@ -180,7 +180,7 @@ WeaveWindow.prototype = {
     else
       Weave.Notifications.removeAll(title);
 
-    if (this._wasDelayed && Weave.Service.status.sync != Weave.NO_SYNC_NODE_FOUND) {
+    if (this._wasDelayed && Weave.Status.sync != Weave.NO_SYNC_NODE_FOUND) {
       title = this._stringBundle.getString("error.sync.no_node_found.title");
       Weave.Notifications.removeAll(title);
       this._wasDelayed = false;
@@ -233,14 +233,14 @@ WeaveWindow.prototype = {
 
     // Don't allow "login" to be selected in some cases
     let offline = Weave.Svc.IO.offline;
-    let delayed = Weave.Service.status.service == Weave.STATUS_DELAYED;
+    let delayed = Weave.Status.service == Weave.STATUS_DELAYED;
     let locked = Weave.Service.locked;
     let notReady = offline || delayed || locked;
     loginItem.setAttribute("disabled", notReady);
 
     // Don't allow "sync now" to be selected in some cases
     let loggedIn = Weave.Service.isLoggedIn;
-    let noNode = Weave.Service.status.sync == Weave.NO_SYNC_NODE_FOUND;
+    let noNode = Weave.Status.sync == Weave.NO_SYNC_NODE_FOUND;
     let disableSync = notReady || !loggedIn || noNode;
     syncItem.setAttribute("disabled", disableSync);
 
