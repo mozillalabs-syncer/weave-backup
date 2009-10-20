@@ -16,10 +16,6 @@
   -moz-binding: url("chrome://weave/content/notification.xml#notification");
 }
 
-#sync-notifications-box notification[class="TabsNotification"] {
-  -moz-binding: url("chrome://weave/content/notification.xml#TabsNotification");
-}
-
 #sync-notifications-box .messageImage {
   width: 24px;
   height: 24px;
