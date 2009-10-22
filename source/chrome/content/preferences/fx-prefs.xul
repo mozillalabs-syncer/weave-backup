@@ -1,0 +1,186 @@
+<?xml version="1.0"?>
+
+<?xml-stylesheet href="chrome://global/skin/global.css"?>
+<?xml-stylesheet href="chrome://mozapps/content/preferences/preferences.css"?>
+<?xml-stylesheet href="chrome://browser/skin/preferences/preferences.css"?>
+<?xml-stylesheet href="chrome://weave/skin/fx-prefs.css"?>
+
+<!DOCTYPE window SYSTEM "chrome://weave/locale/fx-prefs.dtd">
+
+<overlay id="weaveFxPrefsOverlay"
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+         xmlns:html="http://www.w3.org/1999/xhtml">
+
+  <script type="application/x-javascript"
+          src="chrome://weave/content/load-weave.js"/>
+  <script type="application/javascript" 
+          src="chrome://weave/content/preferences/fx-prefs.js"/>
+
+  <prefwindow id="BrowserPreferences">
+    <stringbundle id="weavePrefStrings"
+                  src="chrome://weave/locale/fx-prefs.properties"/>
+
+    <prefpane id="paneWeaveServices" 
+              label="&weavePrefPane.label;" 
+              image="chrome://weave/skin/sync-32x32.png" 
+              onpaneload="gWeavePane.initWeavePrefs()">
+      <preferences>
+        <preference id="engine.bookmarks" name="extensions.weave.engine.bookmarks" type="bool"/>
+        <preference id="engine.history"   name="extensions.weave.engine.history"   type="bool"/>
+        <preference id="engine.tabs"      name="extensions.weave.engine.tabs"      type="bool"/>
+        <preference id="engine.prefs"     name="extensions.weave.engine.prefs"     type="bool"/>
+        <preference id="engine.passwords" name="extensions.weave.engine.passwords" type="bool"/>
+      </preferences>
+      <deck id="weavePrefsDeck">
+        <vbox id="noAccount" align="center">
+          <groupbox>
+            <caption>
+              <menulist id="serverType" oncommand="gWeavePane.onServerChange()">
+                <menupopup>
+                  <menuitem label="&serverType.main.label;" value="main"/>
+                  <menuitem label="&serverType.custom.label;" value="custom"/>
+                </menupopup>
+              </menulist>
+            </caption>
+            <grid>
+              <columns>
+                <column/>
+                <column/>
+              </columns>
+              <rows>
+                <row id="usernameRow" align="center">
+                  <label value="&signIn.username.label;" control="weaveUsername"/>
+                  <textbox id="weaveUsername"/>
+                </row>
+                <row id="usernameFeedbackRow" hidden="true">
+                  <spacer/>
+                  <label value=""/>
+                </row>
+                <row id="passwordRow" align="center">
+                  <label value="&signIn.password.label;" control="weavePassword"/>
+                  <textbox id="weavePassword" type="password"/>
+                </row>
+                <row id="passwordFeedbackRow" hidden="true">
+                  <spacer/>
+                  <label value=""/>
+                </row>
+                <row id="serverRow" hidden="true" align="center">
+                  <label value="&signIn.serverURL.label;" control="weaveServerURL"/>
+                  <textbox id="weaveServerURL"/>
+                </row>
+                <row>
+                  <spacer/>
+                  <button id="signInButton" label="&signIn.button.label;"
+                          oncommand="gWeavePane.startSignIn()"/>
+                </row>
+              </rows>
+            </grid>
+          </groupbox>
+          <spacer flex="1"/>
+          <button label="&createAccountButton.label;"
+                  accesskey="&createAccountButton.accesskey;"
+                  align="center" 
+                  oncommand="gWeavePane.startAccountSetup();"/>
+          <spacer flex="3"/>
+        </vbox>
+        <vbox id="passphraseEntry">
+          <groupbox>
+            <caption label="&passphraseGroupbox.label;"/>
+            <description>&passphraseDesc.label;</description>
+            <spacer/>
+            <textbox type="password" id="weavePassphrase"/>
+            <hbox align="right">
+              <button label="&goBack.label;" 
+                      oncommand="gWeavePane.goBack()"/>
+              <button label="&continue.label;" 
+                      oncommand="gWeavePane.doSignIn();"/>
+            </hbox>
+          </groupbox>
+        </vbox>
+        <vbox id="hasAccount">
+          <groupbox>
+            <caption label="&accountGroupboxCaption.label;"/>
+            <grid>
+              <rows>
+                <row align="center">
+                  <label value="&connectedAs.label;" control="weaveUser"/>
+                  <textbox id="currentUser" readonly="true">
+                    <image src="chrome://mozapps/skin/profile/profileicon.png"/>
+                  </textbox>
+                  <button id="connectButton" oncommand="gWeavePane.handleConnectCommand()"
+                          disabled="true"/>
+                </row>
+                <row id="manageAccountControls" collapsed="true">
+                  <spacer/>
+                    <vbox class="indent">
+                      <html:a class="inline-link" href="#"
+                              onclick="gWeavePane.changePassword(); return false;"
+                              >
+                        &changePassword.label;
+                      </html:a><html:br />
+                      <html:a class="inline-link" href="#"
+                              onclick="gWeavePane.recoverPassword(); return false;"
+                              >
+                        &recoverPassword.label;
+                      </html:a><html:br />
+                      <html:a class="inline-link" href="#"
+                              onclick="gWeavePane.changePassphrase(); return false;"
+                              >
+                        &changePassphrase.label;
+                      </html:a><html:br />
+                      <html:a class="inline-link" href="#"
+                              onclick="gWeavePane.startOver(); return false;"
+                              >
+                        &startOver.label;
+                      </html:a>
+                    </vbox>
+                  <spacer/>
+                </row>
+                <row>
+                  <spacer/>
+                  <button id="manageAccountExpander"
+                          class="expander-down"
+                          label="&manageAccount.label;"
+                          align="left"
+                          onclick="gWeavePane.handleExpanderClick(event)"/>
+                  <spacer/>
+                </row>
+              </rows>
+            </grid>
+          </groupbox>
+          <groupbox>
+            <caption label="&syncPrefsCaption.label;"/>
+            <hbox align="center">
+              <label value="&syncModeSwitchDesc.label;" control="weaveSyncMode"/>
+              <menulist id="weaveSyncMode" oncommand="gWeavePane.updateSyncPrefs()">
+                <menupopup>
+                  <menuitem label="&syncEverything.label;" value="syncEverything"/>
+                  <menuitem label="&customSync.label;"     value="customSync"/>
+                </menupopup>
+              </menulist>
+            </hbox>
+            <separator/>
+            <deck id="syncModeOptions" class="indent">
+              <description id="syncEverythingDesc">
+                &syncEverythingDescription.label;
+              </description>
+              <vbox>
+                <checkbox label="&syncItem.bookmarks.label;"
+                          preference="engine.bookmarks"/>
+                <checkbox label="&syncItem.passwords.label;"
+                          preference="engine.passwords"/>
+                <checkbox label="&syncItem.prefs.label;"
+                          preference="engine.prefs"/>
+                <checkbox label="&syncItem.history.label;"
+                          preference="engine.history"/>
+                <checkbox label="&syncItem.tabs.label;"
+                          preference="engine.tabs"/>
+              </vbox>
+            </deck>
+            <separator/>
+          </groupbox>
+        </vbox>
+      </deck>
+    </prefpane>
+  </prefwindow>
+</overlay>

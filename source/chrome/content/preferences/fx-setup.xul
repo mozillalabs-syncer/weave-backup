@@ -1,0 +1,120 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://weave/skin/fx-prefs.css"?>
+
+<!DOCTYPE window SYSTEM "chrome://weave/locale/fx-prefs.dtd">
+
+<wizard id="accountSetup" title="&accountSetupTitle.label;"
+        windowtype="Weave:AccountSetup"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        onwizardnext="gWeaveSetup.onWizardAdvance()"
+        onwizardfinish="gWeaveSetup.onWizardFinish()"
+        onload="gWeaveSetup.init()">
+
+  <script type="application/x-javascript"
+          src="chrome://weave/content/load-weave.js"/>
+  <script type="application/javascript" 
+          src="chrome://weave/content/preferences/fx-setup.js"/>
+  <stringbundle id="weavePrefStrings" src="chrome://weave/locale/fx-prefs.properties"/>
+
+  <wizardpage label="&setup.page1Title.label;">
+    <grid>
+      <columns>
+        <column/>
+        <column/>
+      </columns>
+      <rows>
+        <row>
+          <label control="serverType" value="Connect To:"/>
+          <menulist id="serverType" oncommand="gWeaveSetup.onServerChange()">
+            <menupopup>
+              <menuitem label="&serverType.main.label;" value="main"/>
+              <menuitem label="&serverType.custom.label;" value="custom"/>
+            </menupopup>
+          </menulist>
+        </row>
+        <row id="usernameRow" align="center">
+          <label value="&signIn.username.label;" control="weaveUsername"/>
+          <textbox id="weaveUsername" onchange="gWeaveSetup.onUsernameChange()"/>
+        </row>
+        <row id="usernameFeedbackRow" hidden="true">
+          <spacer/>
+          <label value=""/>
+        </row>
+        <row id="passwordRow" align="center">
+          <label value="&signIn.password.label;" control="weavePassword"/>
+          <textbox id="weavePassword" type="password" onchange="gWeaveSetup.onPasswordChange()"/>
+        </row>
+        <row id="confirmRow" align="center">
+          <label value="&setup.confirmPassword.label;" control="weavePasswordConfirm"/>
+          <textbox id="weavePasswordConfirm" type="password" onchange="gWeaveSetup.onPasswordChange()"/>
+        </row>
+        <row id="passwordFeedbackRow" hidden="true">
+          <spacer/>
+          <label value=""/>
+        </row>
+        <row id="emailRow" align="center">
+          <label value="&setup.emailAddress.label;" control="weaveEmail"/>
+          <textbox id="weaveEmail" onchange="gWeaveSetup.onEmailChange()"/>
+        </row>
+        <row id="serverRow" hidden="true" align="center">
+          <label value="&signIn.serverURL.label;" control="weaveServerURL"/>
+          <textbox id="weaveServerURL" onchange="gWeaveSetup.onServerChange()"/>
+        </row>
+        <row id="serverFeedbackRow" hidden="true">
+          <spacer/>
+          <label value=""/>
+        </row>
+      </rows>
+    </grid>
+  </wizardpage>
+  
+  <wizardpage label="&setup.page2Title.label;">
+    <browser height="150" width="322" id="captcha" type="content" disablehistory="true"/>
+  </wizardpage>
+
+  <wizardpage label="&setup.page3Title.label;">
+    <description>
+      &passphraseDesc.label;
+    </description>
+    <spacer/>
+    <textbox type="password" id="weavePassphrase"/>
+  </wizardpage>
+
+  <wizardpage label="&setup.page4Title.label;">
+    <hbox align="center">
+      <label value="&syncModeSwitchDesc.label;" control="weaveSyncMode"/>
+      <menulist id="weaveSyncMode" oncommand="gWeaveSetup.updateSyncPrefs()">
+        <menupopup>
+          <menuitem label="&syncEverything.label;" value="syncEverything"/>
+          <menuitem label="&customSync.label;"     value="customSync"/>
+        </menupopup>
+      </menulist>
+    </hbox>
+    <separator/>
+    <deck id="syncModeOptions" class="indent">
+      <description id="syncEverythingDesc">
+        &syncEverythingDescription.label;
+      </description>
+      <vbox>
+        <checkbox label="&syncItem.bookmarks.label;"
+                  id="engine.bookmarks"
+                  checked="true"/>
+        <checkbox label="&syncItem.passwords.label;"
+                  id="engine.passwords"
+                  checked="true"/>
+        <checkbox label="&syncItem.prefs.label;"
+                  id="engine.prefs"
+                  checked="true"/>
+        <checkbox label="&syncItem.history.label;"
+                  id="engine.history"
+                  checked="true"/>
+        <checkbox label="&syncItem.tabs.label;"
+                  id="engine.tabs"
+                  checked="true"/>
+      </vbox>
+    </deck>
+
+  </wizardpage>
+
+</wizard>
