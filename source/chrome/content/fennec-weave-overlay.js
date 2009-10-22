@@ -34,65 +34,40 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-const EXPORTED_SYMBOLS = ['gFennecWeaveGlue'];
+let WeaveGlue = {
+  init: function init() {
+    this._handlePrefs();
 
-function FennecWeaveGlue() {
-  /* Generating keypairs is an expensive operation, and we should never
-   have to do it on Fennec because we don't support creating a Weave
-   account from Fennec (yet). */
-  Weave.Service.keyGenEnabled = false;
-
-  this._setPreferenceDefaults();
-  this._checkFirstRun();
-
-  Weave.Service.onStartup();
-}
-FennecWeaveGlue.prototype = {
-  __prefService: null,
-  get _pfs() {
-    if (!this.__prefService) {
-      this.__prefService = Cc["@mozilla.org/preferences-service;1"]
-      .getService(Ci.nsIPrefBranch);
-    }
-    return this.__prefService;
-  },
-
-  _setPreferenceDefaults: function FennecWeaveGlue__setPrefDefaults() {
-    // Some prefs need different defaults in Fennec than they have in
-    // Firefox.  Set them here and they'll only apply to Fennec.
-    if (!this._pfs.prefHasUserValue("extensions.weave.client.type")) {
-      this._pfs.setCharPref("extensions.weave.client.type", "mobile");
-    }
-  },
-
-  _checkFirstRun: function FennecWeaveGlue__checkFirstRun() {
-    let url;
-    let lastVersion = this._pfs.getCharPref("extensions.weave.lastversion");
-    if (lastVersion != Weave.WEAVE_VERSION) {
-      if (lastVersion == "firstrun")
-	url = "about:weave";
-      else
-	url = "http://services.mozilla.com/updated/?version=" +
-	Weave.WEAVE_VERSION;
-
-      setTimeout(function() { Browser.addTab(url, true); }, 500);
-      this._pfs.setCharPref("extensions.weave.lastversion",
-			    Weave.WEAVE_VERSION);
-    }
+    // Generating keypairs is expensive on mobile, so disable it
+    Weave.Service.keyGenEnabled = false;
+    Weave.Service.onStartup();
   },
 
   openRemoteTabs: function openRemoteTabs() {
-    Browser.addTab("chrome://weave/content/fennec-tabs.html", true);
+    this._openTab("chrome://weave/content/fennec-tabs.html");
   },
 
-  shutdown: function FennecWeaveGlue__shutdown() {
+  _openTab: function _openTab(url) {
+    Browser.addTab(url, true);
+  },
+
+  _handlePrefs: function _handlePrefs() {
+    // Some prefs have different defaults on mobile than desktop, so set them
+    if (!Weave.Svc.Prefs.isSet("client.type"))
+      Weave.Svc.Prefs.set("client.type", "mobile");
+
+    // Open a tab if we're running for the first time or upgrading versions
+    let version = Weave.WEAVE_VERSION;
+    let lastVersion = Weave.Svc.Prefs.get("lastversion");
+    if (lastVersion != version) {
+      let url = "about:weave";
+      if (lastVersion != "firstrun")
+        url = "https://services.mozilla.com/updated/?version=" + version;
+
+      setTimeout(this._openTab, 500, url);
+      Weave.Svc.Prefs.set("lastversion", version);
+    }
   }
 };
 
-let gFennecWeaveGlue;
-window.addEventListener("load", function(e) {
-			  gFennecWeaveGlue = new FennecWeaveGlue();
-			}, false );
-window.addEventListener("unload", function(e) {
-			  gFennecWeaveGlue.shutdown(e);
-			}, false );
+window.addEventListener("load", function() WeaveGlue.init(), false);

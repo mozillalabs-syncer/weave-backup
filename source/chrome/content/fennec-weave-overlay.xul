@@ -12,7 +12,7 @@
           src="chrome://weave/content/fennec-weave-overlay.js"/>
 
   <commandset id="mainCommandSet">
-    <command id="cmd_openRemoteTabs" oncommand="gFennecWeaveGlue.openRemoteTabs();"/>
+    <command id="cmd_openRemoteTabs" oncommand="WeaveGlue.openRemoteTabs();"/>
   </commandset>
 
   <hbox id="tabs-controls">
