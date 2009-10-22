@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd" [
+<!ENTITY % firstrunDTD SYSTEM "chrome://weave/locale/fennec-firstrun.dtd" >
+%firstrunDTD;
+]>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>&firstrun.title;</title>
+  <link rel="icon" type="image/png" href="chrome://weave/skin/tab.png" />
+  <script type="application/javascript;version=1.8"><![CDATA[
+  let Ci = Components.interfaces;
+  let chromeWin = window.QueryInterface(Ci.nsIInterfaceRequestor).
+    getInterface(Ci.nsIWebNavigation).QueryInterface(Ci.nsIDocShellTreeItem).
+    rootTreeItem.QueryInterface(Ci.nsIInterfaceRequestor).
+    getInterface(Ci.nsIDOMWindow).QueryInterface(Ci.nsIDOMChromeWindow);
+  let doc = chromeWin.document;
+  let ev = chromeWin.ExtensionsView;
+  
+  function showConnect() {
+    doc.getElementById("tool-panel-open").click();
+    setTimeout(function() {
+      doc.getElementById("tool-addons").click();
+      setTimeout(function() {
+        ev.showOptions("{340c2bbc-ce74-4362-90b5-7c26312808ef}");
+      }, 300);
+    }, 300);
+  }
+  ]]></script>
+</head>
+<body>
+  <p>&intro.description;</p>
+  <ol>
+    <li>&step1.description;</li>
+    <li>&step2.description;</li>
+    <li>&step3.description;</li>
+  </ol>
+  <input type="button" onclick="showConnect();" value="&connect.label;"/>
+</body>
+</html>

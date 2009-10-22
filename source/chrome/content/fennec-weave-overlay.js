@@ -102,8 +102,11 @@ let WeaveGlue = {
     let version = Weave.WEAVE_VERSION;
     let lastVersion = Weave.Svc.Prefs.get("lastversion");
     if (lastVersion != version) {
-      let url = "about:weave";
-      if (lastVersion != "firstrun")
+      // Show the firstrun page and sync immediately on connect
+      let url = "chrome://weave/content/fennec-firstrun.xhtml";
+      if (lastVersion == "firstrun")
+        Weave.Service.nextSync = Date.now();
+      else
         url = "https://services.mozilla.com/updated/?version=" + version;
 
       setTimeout(this._openTab, 500, url);
