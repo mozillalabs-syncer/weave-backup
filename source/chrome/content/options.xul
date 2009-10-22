@@ -17,4 +17,26 @@
     <button id="weave-syncButton" label="&syncNow.label;" oncommand="WeaveGlue.sync();" />
   </setting>
 
+  <script type="application/javascript"><![CDATA[
+  Components.utils.import("resource://weave/service.js");
+
+  // Anything but Fennec will try to display prefs, so show that instead of this
+  let file, func;
+  switch (Weave.Svc.AppInfo.ID) {
+    case Weave.FIREFOX_ID:
+      file = "chrome://browser/content/utilityOverlay.js";
+      func = "openPreferences";
+      break;
+  }
+
+  if (file != null && func != null) {
+    let util = {};
+    Weave.Svc.Script.loadSubScript(file, util);
+    util[func]("paneWeaveServices");
+  }
+
+  // Always prevent this "dialog" from showing
+  window.close();
+  ]]></script>
+
 </box>
