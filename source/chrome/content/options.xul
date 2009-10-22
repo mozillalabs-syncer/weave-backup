@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE options SYSTEM "chrome://weave/locale/sync.dtd">
+
+<box xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <setting id="weave-user" type="string" title="&username.label;" />
+  <setting id="weave-pass" type="string" inputtype="password" title="&password.label;" />
+  <setting id="weave-secret" type="string" inputtype="password" title="&secretPhrase.label;" />
+
+  <setting id="weave-connect" type="control" title="&disconnected.label;">
+    <button label="&connect.label;" oncommand="WeaveGlue.connect();" />
+  </setting>
+  <setting id="weave-disconnect" type="control">
+    <button label="&disconnect.label;" oncommand="WeaveGlue.disconnect();" />
+  </setting>
+  <setting id="weave-sync" type="control">
+    <button id="weave-syncButton" label="&syncNow.label;" oncommand="WeaveGlue.sync();" />
+  </setting>
+
+</box>

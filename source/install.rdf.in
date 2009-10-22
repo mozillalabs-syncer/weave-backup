@@ -56,5 +56,6 @@
     <em:homepageURL>http://labs.mozilla.com/projects/weave/</em:homepageURL>
     @update_url_tag@
     <em:iconURL>chrome://weave/skin/sync-32x32.png</em:iconURL>
+    <em:optionsURL>chrome://weave/content/options.xul</em:optionsURL>
   </Description>      
 </RDF>

@@ -36,6 +36,7 @@
 
 let WeaveGlue = {
   init: function init() {
+    this._addListeners();
     this._handlePrefs();
 
     // Generating keypairs is expensive on mobile, so disable it
@@ -45,6 +46,47 @@ let WeaveGlue = {
 
   openRemoteTabs: function openRemoteTabs() {
     this._openTab("chrome://weave/content/fennec-tabs.html");
+  },
+
+  connect: function connect() {
+    Weave.Service.login(this._settings.user.value, this._settings.pass.value,
+      this._settings.secret.value);
+  },
+
+  disconnect: function disconnect() {
+    Weave.Service.logout();
+  },
+
+  sync: function sync() {
+    Weave.Service.sync();
+  },
+
+  _addListeners: function _addListeners() {
+    let topics = ["weave:service:sync:start", "weave:service:sync:finish",
+      "weave:service:sync:error", "weave:service:login:finish",
+      "weave:service:login:error", "weave:service:logout:finish"];
+
+    // For each topic, add or remove _updateOptions as the observer
+    let addRem = function(add) topics.forEach(function(topic) Observers[add ?
+      "add" : "remove"](topic, WeaveGlue._updateOptions, WeaveGlue));
+
+    // Add the listeners now, and remove them on unload
+    addRem(true);
+    addEventListener("unload", function() addRem(false), false);
+
+    // XXX Bug 523729: "Listen" for Weave options to be loaded
+    let origGet = ExtensionsView.getAddonsFromLocal;
+    ExtensionsView.getAddonsFromLocal = Weave.Utils.bind2(this, function() {
+      ExtensionsView.getAddonsFromLocal = origGet;
+      ExtensionsView.getAddonsFromLocal();
+      let item = ExtensionsView.getElementForAddon("{340c2bbc-ce74-4362-90b5-7c26312808ef}");
+      let origToggle = item.toggleOptions;
+      item.toggleOptions = Weave.Utils.bind2(this, function() {
+        item.toggleOptions = origToggle;
+        item.toggleOptions();
+        this._updateOptions();
+      });
+    });
   },
 
   _openTab: function _openTab(url) {
@@ -67,6 +109,72 @@ let WeaveGlue = {
       setTimeout(this._openTab, 500, url);
       Weave.Svc.Prefs.set("lastversion", version);
     }
+  },
+
+  get _settings() {
+    // Do a quick test to see if the options exist yet
+    let syncButton = document.getElementById("weave-syncButton");
+    if (syncButton == null)
+      return;
+
+    // Get all the setting nodes from the add-ons display
+    let settings = {};
+    let ids = ["user", "pass", "secret", "connect", "disconnect", "sync"];
+    ids.forEach(function(id) {
+      settings[id] = document.getElementById("weave-" + id);
+
+      // XXX Bug 523538: Prevent <setting>s from setting "" pref
+      settings[id].pref = {};
+    });
+
+    // Replace the getter with the collection of settings
+    delete this._settings;
+    return this._settings = settings;
+  },
+
+  _updateOptions: function _updateOptions() {
+    // Can't do anything before settings are loaded
+    if (this._settings == null)
+      return;
+
+    // Make sure the options are in the right state
+    let loggedIn = Weave.Service.isLoggedIn;
+    this._settings.user.collapsed = loggedIn;
+    this._settings.pass.collapsed = loggedIn;
+    this._settings.secret.collapsed = loggedIn;
+    this._settings.connect.collapsed = loggedIn;
+    this._settings.disconnect.collapsed = !loggedIn;
+    this._settings.sync.collapsed = !loggedIn;
+
+    // Check the lock on a timeout because it's set just after notifying
+    setTimeout(Weave.Utils.bind2(this, function() {
+      this._settings.sync.firstChild.disabled = Weave.Service.locked;
+    }), 0);
+
+    // Move the disconnect and sync settings out to make connect the last item
+    let parent = this._settings.connect.parentNode;
+    if (!loggedIn)
+      parent = parent.parentNode;
+    parent.appendChild(this._settings.disconnect);
+    parent.appendChild(this._settings.sync);
+
+    // Dynamically generate some strings
+    let syncStr = Weave.Str.sync;
+    let connectedStr = syncStr.get("connected.label", [Weave.Service.username]);
+    this._settings.disconnect.setAttribute("title", connectedStr);
+
+    // Show the day-of-week and time (HH:MM) of last sync
+    let lastSync = Weave.Svc.Prefs.get("lastSync");
+    if (lastSync != null) {
+      let syncDate = new Date(lastSync).toLocaleFormat("%a %R");
+      let dateStr = syncStr.get("lastSync.label", [syncDate]);
+      this._settings.sync.setAttribute("title", dateStr);
+    }
+
+    // Load the values for the string inputs
+    this._settings.user.value = Weave.Service.username || "";
+    this._settings.pass.value = Weave.Service.password || "";
+    this._settings.secret.value = Weave.Service.passphrase || "";
   }
 };
 
