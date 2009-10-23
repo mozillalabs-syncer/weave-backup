@@ -16,7 +16,7 @@
   </commandset>
 
   <hbox id="tabs-controls">
-    <toolbarbutton id="openRemoteTabs-button" command="cmd_openRemoteTabs"/>
+    <toolbarbutton id="openRemoteTabs-button" class="button-image" command="cmd_openRemoteTabs"/>
   </hbox>
 
 </overlay>
