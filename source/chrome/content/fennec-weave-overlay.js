@@ -173,6 +173,13 @@ let WeaveGlue = {
       this._settings.sync.setAttribute("title", dateStr);
     }
 
+    // Show what went wrong with login if necessary
+    let login = Weave.Status.login;
+    if (login == Weave.LOGIN_SUCCEEDED)
+      this._settings.connect.removeAttribute("desc");
+    else
+      this._settings.connect.setAttribute("desc", Weave.Str.errors.get(login));
+
     // Load the values for the string inputs
     this._settings.user.value = Weave.Service.username || "";
     this._settings.pass.value = Weave.Service.password || "";
