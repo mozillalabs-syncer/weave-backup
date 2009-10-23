@@ -7,7 +7,7 @@
 <wizard id="accountSetup" title="&accountSetupTitle.label;"
         windowtype="Weave:AccountSetup"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-        onwizardnext="gWeaveSetup.onWizardAdvance()"
+        onwizardnext="return gWeaveSetup.onWizardAdvance();"
         onwizardfinish="gWeaveSetup.onWizardFinish()"
         onload="gWeaveSetup.init()">
 
@@ -73,7 +73,7 @@
     <browser height="150" width="322" id="captcha" type="content" disablehistory="true"/>
   </wizardpage>
 
-  <wizardpage label="&setup.page3Title.label;">
+  <wizardpage label="&setup.page3Title.label;" onpageshow="gWeaveSetup.wizard.canRewind = false;">
     <description>
       &passphraseDesc.label;
     </description>

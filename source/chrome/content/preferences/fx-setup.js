@@ -44,8 +44,7 @@ var gWeaveSetup = {
   
   // fun with validation!
   checkFields: function () {
-    this.wizard.canAdvance = true;
-//    this.wizard.canAdvance = this.readyToAdvance();
+    this.wizard.canAdvance = this.readyToAdvance();
   },
   
   readyToAdvance: function () {
@@ -111,7 +110,6 @@ var gWeaveSetup = {
       case 0:
         // time to load the captcha
         this.captchaBrowser.loadURI(Weave.Service.miscAPI + "captcha_html");
-        
         break;
       case 1:
         this.startThrobber(true);
@@ -124,13 +122,15 @@ var gWeaveSetup = {
         let error = Weave.Service.createAccount(username, password, email,
                                                 this._captchaChallenge, response);
         this.startThrobber(false);
-        if (error != null)
-          return false;
-
-        Weave.Service.username = username;
-        Weave.Service.password = password;
-        Weave.Service.persistLogin();
-        break;
+        
+        if (error == null) {
+          Weave.Service.username = username;
+          Weave.Service.password = password;
+          Weave.Service.persistLogin();
+          return true;
+        }
+        Weave.Svc.Prompt.alert(window, "Error Creating Account", error);
+        return false;
       case 2:
         Weave.Service.passphrase = document.getElementById("weavePassphrase").value;
         Weave.Service.persistLogin();
