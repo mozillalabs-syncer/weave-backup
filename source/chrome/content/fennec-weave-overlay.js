@@ -41,7 +41,6 @@ let WeaveGlue = {
 
     // Generating keypairs is expensive on mobile, so disable it
     Weave.Service.keyGenEnabled = false;
-    Weave.Service.onStartup();
   },
 
   openRemoteTabs: function openRemoteTabs() {
