@@ -64,6 +64,10 @@
                   <spacer/>
                   <label value=""/>
                 </row>
+                <row id="userpassFeedbackRow" hidden="true">
+                  <spacer/>
+                  <label value=""/>
+                </row>
                 <row id="serverRow" hidden="true" align="center">
                   <label value="&signIn.serverURL.label;" control="weaveServerURL"/>
                   <textbox id="weaveServerURL"/>
@@ -89,6 +93,10 @@
             <description>&passphraseDesc.label;</description>
             <spacer/>
             <textbox type="password" id="weavePassphrase"/>
+            <hbox align="center" id ="passphraseFeedbackBox">
+              <spacer/>
+              <label value=""/>
+            </hbox>
             <hbox align="right">
               <button label="&goBack.label;" 
                       oncommand="gWeavePane.goBack()"/>
@@ -109,6 +117,10 @@
                   </textbox>
                   <button id="connectButton" oncommand="gWeavePane.handleConnectCommand()"
                           disabled="true"/>
+                </row>
+                <row id="loginFeedbackRow" hidden="true">
+                  <spacer/>
+                  <label value=""/>
                 </row>
                 <row id="manageAccountControls" collapsed="true">
                   <spacer/>

@@ -6,16 +6,35 @@ let gWeavePane = {
   },
 
   onLoginError: function () {
-    switch(Weave.Status.login) {
-      case LOGIN_FAILED_NETWORK_ERROR:
-        
-        break; 
+    let errorString = Weave.Utils.getErrorString(Weave.Status.login);
+    let feedback = null;
+
+    switch (document.getElementById("weavePrefsDeck").selectedIndex) {
+      case 0:
+        break;
+      case "1":
+        switch (Weave.Status.login) {
+          case Weave.LOGIN_FAILED_LOGIN_REJECTED:
+            feedback = document.getElementById("userpassFeedbackRow");
+            document.getElementById("weavePrefsDeck").selectedIndex = 0;
+            break;
+          default:
+            feedback = document.getElementById("passphraseFeedbackBox");
+            break;
+        }
+        break;
+      case 2:
+        feedback = document.getElementById("loginFeedbackRow");
+        break;
     }
-    
+    this._setFeedbackMessage(feedback, false, errorString);
   },
 
   onLoginFinish: function () {
     Weave.Service.persistLogin();
+    this._setFeedbackMessage(document.getElementById("loginFeedbackRow"), true);
+    this._setFeedbackMessage(document.getElementById("passphraseFeedbackBox"), true);
+    this._setFeedbackMessage(document.getElementById("userpassFeedbackRow"), true);
     document.getElementById("weaveUsername").reset();
     document.getElementById("weavePassword").reset();
     document.getElementById("weavePassphrase").reset();
@@ -77,6 +96,16 @@ let gWeavePane = {
     this.updateWeavePrefs();
     document.getElementById("manageAccountExpander").className = "expander-down";
     document.getElementById("manageAccountControls").collapsed = true;
+  },
+
+  recoverPassword: function () {
+    let ok = Weave.Service.requestPasswordReset(Weave.Service.username);
+    if (ok) { // xxxmpc: FIXME
+      Weave.Svc.Prompt.alert(window, "Recover Password Success!", "We've sent you an email to your address on file.  Please check it and follow the instructions to reset your password.")
+    }
+    else {
+      alert("Account name not on record, maybe it was deleted? EWTF_NO_ACCOUNT")
+    }
   },
 
   changePassword: function () {
@@ -161,5 +190,18 @@ let gWeavePane = {
       window.openDialog("chrome://weave/content/preferences/fx-setup.xul",
                         "migration", "centerscreen,chrome,resizable=no");
     }
+  },
+  
+  // sets class and string on a feedback element
+  // if no property string is passed in, we clear label/style
+  _setFeedbackMessage: function (element, success, string) {
+    element.hidden = success;
+    let label = element.firstChild.nextSibling;
+    let classname = "";
+    if (string) {
+      classname = success ? "success" : "error";
+    }
+    label.value = string;
+    label.className = classname;
   }
 }

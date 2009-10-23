@@ -191,7 +191,7 @@ var gWeaveSetup = {
     let label = element.firstChild.nextSibling;
     label.className = success ? "success" : "error";
     let str = "", classname = "";
-    if (string ) {
+    if (string) {
       str = this.bundle.getString(string);
       classname = success ? "success" : "error";
     }
