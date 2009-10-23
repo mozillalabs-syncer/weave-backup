@@ -32,7 +32,7 @@
                    onpopuphiding="gWeaveWin.onMenuPopupHiding()">
             <menuitem id="sync-loginitem"
                       label="&logInItem.label;"
-                      oncommand="gWeaveWin.openAboutWeave();"/>
+                      oncommand="gWeaveWin.openPrefs();"/>
             <menuitem id="sync-logoutitem"
                       label="&logOutItem.label;"
                       oncommand="gWeaveWin.doLogout();"/>
@@ -42,7 +42,7 @@
             <menuseparator/>
             <menuitem id="sync-openprefsitem"
                       label="&openPrefsItem.label;"
-                      oncommand="gWeaveWin.openAboutWeave();"/>
+                      oncommand="gWeaveWin.openPrefs();"/>
             <menuitem id="sync-openlogitem"
                       label="&openLogItem.label;"
                       oncommand="gWeaveWin.doOpenActivityLog(event);"/>

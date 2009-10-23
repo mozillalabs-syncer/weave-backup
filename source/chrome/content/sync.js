@@ -65,7 +65,7 @@ function WeaveWindow() {
   window.addEventListener("unload", function() addRem(false), false);
 
   if (Weave.Svc.Prefs.get("lastversion") == "firstrun") {
-    setTimeout(this.openAboutWeave, 500);
+    setTimeout(this.openPrefs, 500);
     Weave.Svc.Prefs.set("lastversion", Weave.WEAVE_VERSION);
 
   } else if (Weave.Svc.Prefs.get("lastversion") != Weave.WEAVE_VERSION) {
@@ -208,8 +208,8 @@ WeaveWindow.prototype = {
 
   shutDown: function WeaveWin_shutDown(event) {},
 
-  openAboutWeave: function openAboutWeave() {
-    window.openUILinkIn("about:weave", "tab");
+  openPrefs: function openPrefs() {
+    openPreferences("paneWeaveServices");
   },
 
   doLogout: function WeaveWin_doLogout(event) {
