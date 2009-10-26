@@ -81,6 +81,7 @@ let gWeavePane = {
     let syncEverything = this._checkDefaultValues(this._prefsForDefault);
     document.getElementById("weaveSyncMode").selectedIndex = syncEverything ? 0 : 1;
     this.updateSyncPrefs();
+    this.checkFields();
   },
 
   onServerChange: function () {
@@ -174,6 +175,7 @@ let gWeavePane = {
   
   startSignIn: function() {
     this.page = 1;
+    this.checkFields();
   },
   
   goBack: function () {
@@ -229,7 +231,7 @@ let gWeavePane = {
     return ready;
   },
 
-  checkFields: function (event) {
+  checkFields: function () {
     switch (this.page) {
       case "0":
         document.getElementById("signInButton").setAttribute("disabled", !this.isReady());
@@ -241,10 +243,11 @@ let gWeavePane = {
   },
 
   handleKeypress: function (event) {
-    this.checkFields(event);
+    this.checkFields();
     if (event.keyCode != Components.interfaces.nsIDOMKeyEvent.DOM_VK_RETURN)
       return true;
 
+    event.preventDefault();
     if (this.isReady()) {
       if (this.page == 0)
         this.startSignIn();
