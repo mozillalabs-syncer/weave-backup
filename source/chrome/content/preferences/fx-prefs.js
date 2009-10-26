@@ -1,22 +1,33 @@
 let gWeavePane = {
+  get _usingMainServers() {
+    return document.getElementById("serverType").selectedItem.value == "main";
+  },
 
   get bundle() {
     delete this.bundle; 
     return this.bundle = document.getElementById("weavePrefStrings");
   },
 
+  get page() {
+    return document.getElementById("weavePrefsDeck").selectedIndex;
+  },
+  
+  set page(val) {
+    document.getElementById("weavePrefsDeck").selectedIndex = val;
+  },
+
   onLoginError: function () {
     let errorString = Weave.Utils.getErrorString(Weave.Status.login);
     let feedback = null;
 
-    switch (document.getElementById("weavePrefsDeck").selectedIndex) {
+    switch (this.page) {
       case 0:
         break;
       case "1":
         switch (Weave.Status.login) {
           case Weave.LOGIN_FAILED_LOGIN_REJECTED:
             feedback = document.getElementById("userpassFeedbackRow");
-            document.getElementById("weavePrefsDeck").selectedIndex = 0;
+            this.page = 0;
             break;
           default:
             feedback = document.getElementById("passphraseFeedbackBox");
@@ -59,11 +70,11 @@ let gWeavePane = {
 
   updateWeavePrefs: function () {
     if (Weave.Service.username) {
-      document.getElementById("weavePrefsDeck").selectedIndex = 2;
+      this.page = 2;
       document.getElementById("currentUser").value = Weave.Service.username;
     }
     else
-      document.getElementById("weavePrefsDeck").selectedIndex = 0;
+      this.page = 0;
 
     this.updateConnectButton();
 
@@ -73,8 +84,8 @@ let gWeavePane = {
   },
 
   onServerChange: function () {
-    let usingMainServers = document.getElementById("serverType").selectedItem.value == "main";
-    document.getElementById("serverRow").hidden = usingMainServers;
+    document.getElementById("serverRow").hidden = this._usingMainServers;
+    this.checkFields();
   },
 
   updateConnectButton: function () {
@@ -162,11 +173,11 @@ let gWeavePane = {
   },
   
   startSignIn: function() {
-    document.getElementById("weavePrefsDeck").selectedIndex = 1;
+    this.page = 1;
   },
   
   goBack: function () {
-    document.getElementById("weavePrefsDeck").selectedIndex = 0;
+    this.page = 0;
   },
   
   doSignIn: function() {
@@ -191,7 +202,59 @@ let gWeavePane = {
                         "migration", "centerscreen,chrome,resizable=no");
     }
   },
-  
+
+  isReady: function () {
+    let ready = false;
+    switch (this.page) {
+      case "0":
+        let hasUser = document.getElementById("weaveUsername").value != "";
+        let hasPass = document.getElementById("weavePassword").value != "";
+        if (hasUser && hasPass) {
+          if (this._usingMainServers)
+            return true;
+
+          let uri = Weave.Utils.makeURI(document.getElementById("weaveServerURL").value);
+          if (uri &&
+              (uri.schemeIs("http") || uri.schemeIs("https")) &&
+              uri.host != "")
+            ready = true;
+        }
+        break;
+      case "1":
+        if (document.getElementById("weavePassphrase").value != "")
+          ready = true;
+        break;
+    }
+
+    return ready;
+  },
+
+  checkFields: function (event) {
+    switch (this.page) {
+      case "0":
+        document.getElementById("signInButton").setAttribute("disabled", !this.isReady());
+        break;
+      case "1":
+        document.getElementById("continueButton").setAttribute("disabled", !this.isReady());
+        break;
+    }
+  },
+
+  handleKeypress: function (event) {
+    this.checkFields(event);
+    if (event.keyCode != Components.interfaces.nsIDOMKeyEvent.DOM_VK_RETURN)
+      return true;
+
+    if (this.isReady()) {
+      if (this.page == 0)
+        this.startSignIn();
+      else
+        this.doSignIn();
+    }
+
+    return false;
+  },
+
   // sets class and string on a feedback element
   // if no property string is passed in, we clear label/style
   _setFeedbackMessage: function (element, success, string) {

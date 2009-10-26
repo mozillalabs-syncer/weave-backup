@@ -50,7 +50,10 @@
               <rows>
                 <row id="usernameRow" align="center">
                   <label value="&signIn.username.label;" control="weaveUsername"/>
-                  <textbox id="weaveUsername"/>
+                  <textbox id="weaveUsername" 
+                           onkeypress="gWeavePane.handleKeypress(event)"
+                           onkeyup="gWeavePane.checkFields(event)"
+                           onchange="gWeavePane.checkFields(event)"/>
                 </row>
                 <row id="usernameFeedbackRow" hidden="true">
                   <spacer/>
@@ -58,7 +61,11 @@
                 </row>
                 <row id="passwordRow" align="center">
                   <label value="&signIn.password.label;" control="weavePassword"/>
-                  <textbox id="weavePassword" type="password"/>
+                  <textbox id="weavePassword"
+                           type="password"
+                           onkeypress="gWeavePane.handleKeypress(event)"
+                           onkeyup="gWeavePane.checkFields(event)"
+                           onchange="gWeavePane.checkFields(event)"/>
                 </row>
                 <row id="passwordFeedbackRow" hidden="true">
                   <spacer/>
@@ -70,11 +77,17 @@
                 </row>
                 <row id="serverRow" hidden="true" align="center">
                   <label value="&signIn.serverURL.label;" control="weaveServerURL"/>
-                  <textbox id="weaveServerURL"/>
+                  <textbox id="weaveServerURL"
+                           onkeypress="gWeavePane.handleKeypress(event)"
+                           onkeyup="gWeavePane.checkFields(event)" 
+                           onchange="gWeavePane.checkFields(event)"/>
                 </row>
                 <row>
                   <spacer/>
-                  <button id="signInButton" label="&signIn.button.label;"
+                  <button id="signInButton"
+                          onkeypress="gWeavePane.handleKeypress(event)"
+                          label="&signIn.button.label;"
+                          disabled="true"
                           oncommand="gWeavePane.startSignIn()"/>
                 </row>
               </rows>
@@ -92,7 +105,10 @@
             <caption label="&passphraseGroupbox.label;"/>
             <description>&passphraseDesc.label;</description>
             <spacer/>
-            <textbox type="password" id="weavePassphrase"/>
+            <textbox type="password" id="weavePassphrase"
+                     onkeypress="gWeavePane.handleKeypress(event)"
+                     onkeyup="gWeavePane.checkFields(event)" 
+                     onchange="gWeavePane.checkFields(event)"/>
             <hbox align="center" id ="passphraseFeedbackBox">
               <spacer/>
               <label value=""/>
@@ -100,7 +116,10 @@
             <hbox align="right">
               <button label="&goBack.label;" 
                       oncommand="gWeavePane.goBack()"/>
-              <button label="&continue.label;" 
+              <button id="continueButton"
+                      onkeypress="gWeavePane.handleKeypress(event)"
+                      disabled="true"
+                      label="&continue.label;" 
                       oncommand="gWeavePane.doSignIn();"/>
             </hbox>
           </groupbox>
