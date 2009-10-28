@@ -49,7 +49,9 @@
               </columns>
               <rows>
                 <row id="usernameRow" align="center">
-                  <label value="&signIn.username.label;" control="weaveUsername"/>
+                  <label id="weaveUsernameLabel" 
+                         value="&signIn.username.label;" 
+                         control="weaveUsername"/>
                   <textbox id="weaveUsername" 
                            onkeypress="gWeavePane.handleKeypress(event)"
                            onkeyup="gWeavePane.checkFields(event)"
@@ -60,7 +62,9 @@
                   <label value=""/>
                 </row>
                 <row id="passwordRow" align="center">
-                  <label value="&signIn.password.label;" control="weavePassword"/>
+                  <label id="weavePasswordLabel"
+                         value="&signIn.password.label;" 
+                         control="weavePassword"/>
                   <textbox id="weavePassword"
                            type="password"
                            onkeypress="gWeavePane.handleKeypress(event)"
@@ -76,7 +80,9 @@
                   <label value=""/>
                 </row>
                 <row id="serverRow" hidden="true" align="center">
-                  <label value="&signIn.serverURL.label;" control="weaveServerURL"/>
+                  <label id="weaveServerURLLabel"
+                         value="&signIn.serverURL.label;"
+                         control="weaveServerURL"/>
                   <textbox id="weaveServerURL"
                            onkeypress="gWeavePane.handleKeypress(event)"
                            onkeyup="gWeavePane.checkFields(event)" 
@@ -94,7 +100,8 @@
             </grid>
           </groupbox>
           <spacer flex="1"/>
-          <button label="&createAccountButton.label;"
+          <button id="createAccountButton"
+                  label="&createAccountButton.label;"
                   accesskey="&createAccountButton.accesskey;"
                   align="center" 
                   oncommand="gWeavePane.startAccountSetup();"/>

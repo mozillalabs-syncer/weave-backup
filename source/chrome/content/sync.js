@@ -54,6 +54,7 @@ function WeaveWindow() {
     ["weave:service:login:finish", "onLoginFinish"],
     ["weave:service:login:error", "onLoginError"],
     ["weave:service:logout:finish", "onLogout"],
+    ["private-browsing", "onPrivateBrowsingChange"],
     ["weave:notification:added", "onNotificationAdded"],
     ["weave:notification:removed", "onNotificationRemoved"]];
 
@@ -78,7 +79,9 @@ function WeaveWindow() {
   // TODO: This is a fix for the general case of bug 436936.  It will
   // not support marginal cases such as when a new browser window is
   // opened in the middle of signing-in or syncing.
-  if (Weave.Service.isLoggedIn)
+  if (Weave.Svc.Private.privateBrowsingEnabled)
+    this._setStatus("privateBrowsing");
+  else if (Weave.Service.isLoggedIn)
     this.onLoginFinish();
   else
     this._setStatus("offline");
@@ -107,10 +110,16 @@ WeaveWindow.prototype = {
 
   _setStatus: function WeaveWin_setStatus(status) {
     let label;
-    if (status == "offline")
-      label = this._stringBundle.getString("status.offline");
-    else 
-      label = Weave.Service.username;
+    switch (status) {
+      case "offline":
+        label = this._stringBundle.getString("status.offline");
+        break;
+      case "privateBrowsing":
+        label = this._stringBundle.getString("status.privateBrowsing");
+        break;
+      default:
+        label = Weave.Service.username;
+    }
 
     let button = document.getElementById("sync-menu-button");
     button.setAttribute("label", label);
@@ -145,6 +154,15 @@ WeaveWindow.prototype = {
 
   onLogout: function WeaveWin_onLogout() {
     this._setStatus("offline");
+  },
+
+  onPrivateBrowsingChange: function WeaveWin_onPrivateBrowsingChange(subject, data) {
+    if (data == "enter")
+      this._setStatus("privateBrowsing");
+    else if (Weave.Service.isLoggedIn)
+      this._setStatus("idle");
+    else
+      this._setStatus("offline");
   },
 
   onSyncStart: function WeaveWin_onSyncStart() {
@@ -212,6 +230,10 @@ WeaveWindow.prototype = {
     openPreferences("paneWeaveServices");
   },
 
+  doLogin: function WeaveWin_doLogout(event) {
+    Weave.Service.login();
+  },
+
   doLogout: function WeaveWin_doLogout(event) {
     Weave.Service.logout();
   },
@@ -235,13 +257,16 @@ WeaveWindow.prototype = {
     let offline = Weave.Svc.IO.offline;
     let delayed = Weave.Status.service == Weave.STATUS_DELAYED;
     let locked = Weave.Service.locked;
-    let notReady = offline || delayed || locked;
+    let pbEnabled = Weave.Svc.Private.privateBrowsingEnabled;
+    let noUser = Weave.Service.username == "";
+    let notReady = offline || delayed || locked || pbEnabled || noUser;
     loginItem.setAttribute("disabled", notReady);
+    logoutItem.setAttribute("disabled", notReady);
 
     // Don't allow "sync now" to be selected in some cases
     let loggedIn = Weave.Service.isLoggedIn;
     let noNode = Weave.Status.sync == Weave.NO_SYNC_NODE_FOUND;
-    let disableSync = notReady || !loggedIn || noNode;
+    let disableSync = notReady || !loggedIn || noNode || pbEnabled;
     syncItem.setAttribute("disabled", disableSync);
 
     // Only show one of login/logout

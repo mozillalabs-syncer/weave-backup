@@ -67,12 +67,19 @@ let gWeavePane = {
     document.getElementById("weavePassphrase").reset();
     this.updateWeavePrefs();
   },
+  
+  onPBModeChange: function () {
+    this.updateConnectButton();
+    this.updateSetupButtons();
+    this.checkFields();
+  },
 
   initWeavePrefs: function () {
     let obs = [
       ["weave:service:login:start",   "onLoginStart"],
       ["weave:service:login:error",   "onLoginError"],
       ["weave:service:login:finish",  "onLoginFinish"],
+      ["private-browsing",            "onPBModeChange"],
       ["weave:service:logout:finish", "updateWeavePrefs"]];
 
     // Add the observers now and remove them on unload
@@ -94,6 +101,7 @@ let gWeavePane = {
       this.page = 0;
 
     this.updateConnectButton();
+    this.updateSetupButtons();
 
     let syncEverything = this._checkDefaultValues(this._prefsForDefault);
     document.getElementById("weaveSyncMode").selectedIndex = syncEverything ? 0 : 1;
@@ -105,14 +113,24 @@ let gWeavePane = {
     document.getElementById("serverRow").hidden = this._usingMainServers;
     this.checkFields();
   },
+  
+  updateSetupButtons: function () {
+    let elems = ["weaveUsername", "weaveUsernameLabel", 
+                 "weavePassword", "weavePasswordLabel",
+                 "weaveServerURL", "weaveServerURLLabel", 
+                 "signInButton", "createAccountButton", "serverType"]
+    let pbEnabled = Weave.Svc.Private.privateBrowsingEnabled;
+    for (let i = 0;i < elems.length;i++)
+      document.getElementById(elems[i]).disabled = pbEnabled;
+  },
 
   updateConnectButton: function () {
     let str = Weave.Service.isLoggedIn ? this.bundle.getString("disconnect.label")
                                        : this.bundle.getString("connect.label");
     document.getElementById("connectButton").label = str;
-    let ready = Weave.Status.service == Weave.STATUS_DELAYED ? false : true;
-
-    document.getElementById("connectButton").disabled = !ready;
+    let notReady = Weave.Status.service == Weave.STATUS_DELAYED ? true : false;
+    let pbEnabled = Weave.Svc.Private.privateBrowsingEnabled;
+    document.getElementById("connectButton").disabled = notReady || pbEnabled;
   },
 
   handleConnectCommand: function () {
