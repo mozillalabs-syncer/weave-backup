@@ -104,13 +104,15 @@
           <groupbox>
             <caption label="&passphraseGroupbox.label;"/>
             <description>&passphraseDesc.label;</description>
-            <spacer/>
             <textbox type="password" id="weavePassphrase"
                      onkeypress="gWeavePane.handleKeypress(event)"
                      onkeyup="gWeavePane.checkFields(event)" 
                      onchange="gWeavePane.checkFields(event)"/>
-            <hbox align="center" id ="passphraseFeedbackBox">
-              <spacer/>
+            <hbox align="left" id="passphraseFeedbackBox">
+              <hbox id="passphrase-throbber" hidden="true">
+                <image src="chrome://global/skin/icons/loading_16.png"/>
+                <label value="&connecting.label;"/>
+              </hbox>
               <label value=""/>
             </hbox>
             <hbox align="right">
@@ -136,6 +138,9 @@
                   </textbox>
                   <button id="connectButton" oncommand="gWeavePane.handleConnectCommand()"
                           disabled="true"/>
+                  <image id="connect-throbber" 
+                         src="chrome://global/skin/icons/loading_16.png"
+                         hidden="true"/>
                 </row>
                 <row id="loginFeedbackRow" hidden="true">
                   <spacer/>

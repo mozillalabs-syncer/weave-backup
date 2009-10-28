@@ -16,14 +16,27 @@ let gWeavePane = {
     document.getElementById("weavePrefsDeck").selectedIndex = val;
   },
 
+  onLoginStart: function () {
+    switch (this.page) {
+      case "1":
+        let box = document.getElementById("passphraseFeedbackBox");
+        this._setFeedbackMessage(box, true);
+        box.hidden = false;
+        document.getElementById("passphrase-throbber").hidden = false;
+        break;
+      case "2":
+        document.getElementById("connect-throbber").hidden = false;
+        break;
+    }
+  },
+
   onLoginError: function () {
     let errorString = Weave.Utils.getErrorString(Weave.Status.login);
     let feedback = null;
 
     switch (this.page) {
-      case 0:
-        break;
       case "1":
+        document.getElementById("passphrase-throbber").hidden = true;
         switch (Weave.Status.login) {
           case Weave.LOGIN_FAILED_LOGIN_REJECTED:
             feedback = document.getElementById("userpassFeedbackRow");
@@ -34,7 +47,8 @@ let gWeavePane = {
             break;
         }
         break;
-      case 2:
+      case "2":
+        document.getElementById("connect-throbber").hidden = true;
         feedback = document.getElementById("loginFeedbackRow");
         break;
     }
@@ -42,6 +56,8 @@ let gWeavePane = {
   },
 
   onLoginFinish: function () {
+    document.getElementById("passphrase-throbber").hidden = true;
+    document.getElementById("connect-throbber").hidden = true;
     Weave.Service.persistLogin();
     this._setFeedbackMessage(document.getElementById("loginFeedbackRow"), true);
     this._setFeedbackMessage(document.getElementById("passphraseFeedbackBox"), true);
@@ -54,6 +70,7 @@ let gWeavePane = {
 
   initWeavePrefs: function () {
     let obs = [
+      ["weave:service:login:start",   "onLoginStart"],
       ["weave:service:login:error",   "onLoginError"],
       ["weave:service:login:finish",  "onLoginFinish"],
       ["weave:service:logout:finish", "updateWeavePrefs"]];
@@ -267,7 +284,7 @@ let gWeavePane = {
     if (string) {
       classname = success ? "success" : "error";
     }
-    label.value = string;
+    label.value = string || "";
     label.className = classname;
   }
 }
