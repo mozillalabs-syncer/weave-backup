@@ -1,0 +1,14 @@
+.expander-up,
+.expander-down {
+  -moz-appearance: none;
+  padding: 0;
+  min-width: 0;
+}
+
+.expander-up {
+  list-style-image: url("chrome://browser/skin/places/expander-open.png") !important;
+}
+
+.expander-down {
+  list-style-image: url('chrome://browser/skin/places/expander-closed.png') !important
+}

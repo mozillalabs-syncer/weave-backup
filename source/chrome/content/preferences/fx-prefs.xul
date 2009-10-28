@@ -4,6 +4,7 @@
 <?xml-stylesheet href="chrome://mozapps/content/preferences/preferences.css"?>
 <?xml-stylesheet href="chrome://browser/skin/preferences/preferences.css"?>
 <?xml-stylesheet href="chrome://weave/skin/fx-prefs.css"?>
+<?xml-stylesheet href="chrome://weave-platform/skin/fx-prefs-platform.css"?>
 
 <!DOCTYPE window SYSTEM "chrome://weave/locale/fx-prefs.dtd">
 

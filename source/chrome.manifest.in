@@ -22,6 +22,11 @@ overlay chrome://messenger/content/messenger.xul chrome://weave/content/sync.xul
 @unpacked@skin weave class/1.0 chrome/skin/
 @jar@skin weave class/1.0 jar:chrome/sync.jar!/skin/
 
+@unpacked@skin weave-platform class/1.0 chrome/skin/win/ os!=Darwin
+@jar@skin weave-platform class/1.0 jar:chrome/sync.jar!/skin/win/ os!=Darwin
+@unpacked@skin weave-platform class/1.0 chrome/skin/mac/ os=Darwin
+@jar@skin weave-platform class/1.0 jar:chrome/sync.jar!/skin/mac/ os=Darwin
+
 @unpacked@locale weave en-US chrome/locale/en-US/
 @jar@locale weave en-US jar:chrome/sync.jar!/locale/en-US/
 
