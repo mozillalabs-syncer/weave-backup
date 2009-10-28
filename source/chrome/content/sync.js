@@ -50,6 +50,7 @@ function WeaveWindow() {
     ["weave:service:sync:finish", "onSyncFinish"],
     ["weave:service:sync:error", "onSyncError"],
     ["weave:service:sync:delayed", "onSyncDelay"],
+    ["weave:engine:sync:start",  "onEngineStart"],
     ["weave:service:verify-login:start", "onLoginStart"],
     ["weave:service:login:finish", "onLoginFinish"],
     ["weave:service:login:error", "onLoginError"],
@@ -224,6 +225,13 @@ WeaveWindow.prototype = {
     this._wasDelayed = true;
   },
 
+  onEngineStart: function WeaveWin_onEngineStart(subject, data) {
+    let engineName = Weave.Engines.get(subject).displayName;
+    let label = this._stringBundle.getFormattedString("syncing.label", [engineName]);
+    let button = document.getElementById("sync-menu-button");
+    button.setAttribute("label", label);
+  },
+
   shutDown: function WeaveWin_shutDown(event) {},
 
   openPrefs: function openPrefs() {
@@ -239,7 +247,7 @@ WeaveWindow.prototype = {
   },
 
   doSync: function WeaveWin_doSync(event) {
-    Weave.Utils.openStatus();
+    Weave.Service.sync();
   },
 
   doOpenActivityLog: function WeaveWin_doOpenActivityLog(event) {
