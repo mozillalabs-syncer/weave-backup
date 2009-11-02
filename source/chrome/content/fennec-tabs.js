@@ -59,11 +59,9 @@ let RemoteTabViewer = {
         }, false)
         item.setAttribute("class", "tab");
         
-        let imgDiv = document.createElement("div");
-        imgDiv.setAttribute("class", "icon");
         let img = document.createElement("img");
+        img.setAttribute("class", "icon");
         img.src = "chrome://weave/skin/tab.png";
-        imgDiv.appendChild(img);
       
         let tabDiv = document.createElement("div");
         tabDiv.setAttribute("class", "info");
@@ -76,7 +74,7 @@ let RemoteTabViewer = {
         tabDiv.appendChild(titleNode);
         tabDiv.appendChild(urlNode);
       
-        item.appendChild(imgDiv);
+        item.appendChild(img);
         item.appendChild(tabDiv);
       
         // Append the client name if we haven't yet

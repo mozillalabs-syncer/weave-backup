@@ -1,7 +1,8 @@
 body {
-    font-size: 14px;
-    color: #003663;
+    color: black;
     font-family: Tahoma, Arial, Helvetica, sans-serif;
+    margin: 0;
+    padding: 0;
 }
 
 h1 {
@@ -9,30 +10,40 @@ h1 {
     text-align: center;
 }
 h2 {
-    font-size: 24px;
+    background-color: lightgray;
+    font-size: 2.4mm;
     font-weight: bold;
-    background-color: #d3d3d3;
-    color: #000;
+    margin: 0;
+    padding-left: 1mm;
 }
 
 .tab {
-    border-bottom-style: solid;
-    border-bottom-color: #000;
-    border-bottom-width: 1px;
-    margin-bottom: 10px;
+    border-bottom: solid 0.1mm rgb(207,207,207);
+    min-height: 6mm;
+    padding: 0.2mm 0.5mm;
+    position: relative;
+}
+.tab:last-child {
+    border-bottom: 0;
 }
 .icon {
-    display: inline-block;
-    vertical-align: top;
+    height: 32px;
+    left: 1.5mm;
+    position: absolute;
+    top: 0.5mm;
+    width: 32px;
 }
 .info {
-    display: inline-block;
-    padding-left: 20px;
+    margin-left: 32px;
+    overflow: hidden;
+    padding-left: 3.5mm;
+    white-space: nowrap;
 }
 .title {
-    font-size: 18px;
+    font-size: 2.4mm;
+    padding-bottom: 0.5mm;
 }
 .url {
-    font-size: 14px;
-    color: #000;
+    color: blue;
+    font-size: 1.8mm;
 }
