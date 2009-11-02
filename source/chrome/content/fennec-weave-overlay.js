@@ -62,8 +62,9 @@ let WeaveGlue = {
 
   _addListeners: function _addListeners() {
     let topics = ["weave:service:sync:start", "weave:service:sync:finish",
-      "weave:service:sync:error", "weave:service:login:finish",
-      "weave:service:login:error", "weave:service:logout:finish"];
+      "weave:service:sync:error", "weave:service:login:start",
+      "weave:service:login:finish", "weave:service:login:error",
+      "weave:service:logout:finish"];
 
     // For each topic, add or remove _updateOptions as the observer
     let addRem = function(add) topics.forEach(function(topic) Observers[add ?
@@ -159,7 +160,18 @@ let WeaveGlue = {
 
     // Check the lock on a timeout because it's set just after notifying
     setTimeout(Weave.Utils.bind2(this, function() {
-      sync.firstChild.disabled = Weave.Service.locked;
+      // Prevent certain actions when the service is locked
+      if (Weave.Service.locked) {
+        connect.firstChild.disabled = true;
+        sync.firstChild.disabled = true;
+        connect.setAttribute("title", syncStr.get("connecting.label"));
+        sync.setAttribute("title", syncStr.get("lastSyncInProgress.label"));
+      }
+      else {
+        connect.firstChild.disabled = false;
+        sync.firstChild.disabled = false;
+        connect.setAttribute("title", syncStr.get("disconnected.label"));
+      }
     }), 0);
 
     // Move the disconnect and sync settings out to make connect the last item
