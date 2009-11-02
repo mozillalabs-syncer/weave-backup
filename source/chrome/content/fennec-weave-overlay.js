@@ -185,7 +185,7 @@ let WeaveGlue = {
     let login = Weave.Status.login;
     if (login == Weave.LOGIN_SUCCEEDED)
       connect.removeAttribute("desc");
-    else
+    else if (login != null)
       connect.setAttribute("desc", Weave.Str.errors.get(login));
 
     // Load the values for the string inputs
