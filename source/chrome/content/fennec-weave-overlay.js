@@ -139,51 +139,59 @@ let WeaveGlue = {
     if (this._settings == null)
       return;
 
-    // Make sure the options are in the right state
+    // Make some aliases
+    let user = this._settings.user;
+    let pass = this._settings.pass;
+    let secret = this._settings.secret;
+    let connect = this._settings.connect;
+    let disconnect = this._settings.disconnect;
+    let sync = this._settings.sync;
+    let syncStr = Weave.Str.sync;
     let loggedIn = Weave.Service.isLoggedIn;
-    this._settings.user.collapsed = loggedIn;
-    this._settings.pass.collapsed = loggedIn;
-    this._settings.secret.collapsed = loggedIn;
-    this._settings.connect.collapsed = loggedIn;
-    this._settings.disconnect.collapsed = !loggedIn;
-    this._settings.sync.collapsed = !loggedIn;
+
+    // Make sure the options are in the right state
+    user.collapsed = loggedIn;
+    pass.collapsed = loggedIn;
+    secret.collapsed = loggedIn;
+    connect.collapsed = loggedIn;
+    disconnect.collapsed = !loggedIn;
+    sync.collapsed = !loggedIn;
 
     // Check the lock on a timeout because it's set just after notifying
     setTimeout(Weave.Utils.bind2(this, function() {
-      this._settings.sync.firstChild.disabled = Weave.Service.locked;
+      sync.firstChild.disabled = Weave.Service.locked;
     }), 0);
 
     // Move the disconnect and sync settings out to make connect the last item
-    let parent = this._settings.connect.parentNode;
+    let parent = connect.parentNode;
     if (!loggedIn)
       parent = parent.parentNode;
-    parent.appendChild(this._settings.disconnect);
-    parent.appendChild(this._settings.sync);
+    parent.appendChild(disconnect);
+    parent.appendChild(sync);
 
     // Dynamically generate some strings
-    let syncStr = Weave.Str.sync;
     let connectedStr = syncStr.get("connected.label", [Weave.Service.username]);
-    this._settings.disconnect.setAttribute("title", connectedStr);
+    disconnect.setAttribute("title", connectedStr);
 
     // Show the day-of-week and time (HH:MM) of last sync
     let lastSync = Weave.Svc.Prefs.get("lastSync");
     if (lastSync != null) {
       let syncDate = new Date(lastSync).toLocaleFormat("%a %R");
       let dateStr = syncStr.get("lastSync.label", [syncDate]);
-      this._settings.sync.setAttribute("title", dateStr);
+      sync.setAttribute("title", dateStr);
     }
 
     // Show what went wrong with login if necessary
     let login = Weave.Status.login;
     if (login == Weave.LOGIN_SUCCEEDED)
-      this._settings.connect.removeAttribute("desc");
+      connect.removeAttribute("desc");
     else
-      this._settings.connect.setAttribute("desc", Weave.Str.errors.get(login));
+      connect.setAttribute("desc", Weave.Str.errors.get(login));
 
     // Load the values for the string inputs
-    this._settings.user.value = Weave.Service.username || "";
-    this._settings.pass.value = Weave.Service.password || "";
-    this._settings.secret.value = Weave.Service.passphrase || "";
+    user.value = Weave.Service.username || "";
+    pass.value = Weave.Service.password || "";
+    secret.value = Weave.Service.passphrase || "";
   }
 };
 
