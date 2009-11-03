@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://browser/skin/preferences/preferences.css"?>
 <?xml-stylesheet href="chrome://weave/skin/fx-prefs.css"?>
 
 <!DOCTYPE window SYSTEM "chrome://weave/locale/fx-prefs.dtd">
@@ -7,6 +8,7 @@
 <wizard id="accountSetup" title="&accountSetupTitle.label;"
         windowtype="Weave:AccountSetup"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        xmlns:html="http://www.w3.org/1999/xhtml"
         onwizardnext="return gWeaveSetup.onWizardAdvance();"
         onwizardfinish="gWeaveSetup.onWizardFinish()"
         onload="gWeaveSetup.init()">
@@ -15,6 +17,8 @@
           src="chrome://weave/content/load-weave.js"/>
   <script type="application/javascript" 
           src="chrome://weave/content/preferences/fx-setup.js"/>
+  <script type="application/javascript" 
+          src="chrome://browser/content/utilityOverlay.js"/>
   <stringbundle id="weavePrefStrings" src="chrome://weave/locale/fx-prefs.properties"/>
 
   <wizardpage label="&setup.page1Title.label;">
@@ -65,11 +69,15 @@
           <spacer/>
           <label value=""/>
         </row>
-        <row id="serverFeedbackRow" hidden="true">
+        <row id="TOSRow" align="center">
           <spacer/>
-          <hbox>
-            <checkbox id="tos"/>
-            <label value=""/>
+          <hbox align="center">
+            <checkbox id="tos" label="&setup.tosAgree1.label;"
+                      oncommand="gWeaveSetup.checkFields();"/>
+            <label class="text-link"
+                      onclick="gWeaveSetup.openToS();"
+                      value="&setup.tosLink.label;"/>
+            <label value="&setup.tosAgree2.label;" control="tos"/>
           </hbox>
         </row>
       </rows>

@@ -4,6 +4,9 @@ const Cr = Components.results;
 
 var gWeaveSetup = {
   _captchaChallenge: "",
+  get _usingMainServers() {
+    return document.getElementById("serverType").selectedItem.value == "main";
+  },
 
   status: { username: false, password: false, email: false, server: false},
 
@@ -54,6 +57,9 @@ var gWeaveSetup = {
           if (!this.status[i])
             return false;
         }
+        if (this._usingMainServers)
+          return document.getElementById("tos").checked;
+
         return true;
       case 1:
         return true;
@@ -98,10 +104,15 @@ var gWeaveSetup = {
 
   onEmailChange: function () {
     // xxxmpc email validation goes here ;)
-    this.status.email = true;
+    this.status.email = document.getElementById("weaveEmail").value != "";
     this.checkFields();
   },
-  
+
+  openToS: function () {
+    let url = Weave.Svc.Prefs.get("termsURL");
+    openUILinkIn(url, "tab");
+  },
+
   onWizardAdvance: function () {
     if (!this.wizard.currentPage)
       return true;
@@ -118,6 +129,12 @@ var gWeaveSetup = {
         let email    = document.getElementById("weaveEmail").value;
         let response = this.captchaBrowser.contentDocument
                            .getElementById("recaptcha_response_field").value;
+
+        let serverURL = document.getElementById("weaveServerURL").value;
+        if (serverURL)
+          Weave.Service.serverURL = serverURL;
+        else
+          Weave.Svc.Prefs.reset("serverURL");
 
         let error = Weave.Service.createAccount(username, password, email,
                                                 this._captchaChallenge, response);
@@ -157,11 +174,11 @@ var gWeaveSetup = {
   },
 
   onServerChange: function () {
-    let usingMainServers = document.getElementById("serverType").selectedItem.value == "main";
-    document.getElementById("serverRow").hidden = usingMainServers;
+    document.getElementById("serverRow").hidden = this._usingMainServers;
+    document.getElementById("TOSRow").hidden = !this._usingMainServers;
     let valid = false;
     let feedback = document.getElementById("serverFeedbackRow");
-    if (usingMainServers) {
+    if (this._usingMainServers) {
       valid = true;
       feedback.hidden = true;
     }

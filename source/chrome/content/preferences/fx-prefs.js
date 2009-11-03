@@ -65,6 +65,7 @@ let gWeavePane = {
     document.getElementById("weaveUsername").reset();
     document.getElementById("weavePassword").reset();
     document.getElementById("weavePassphrase").reset();
+    document.getElementById("weaveServerURL").reset();
     this.updateWeavePrefs();
   },
   
@@ -222,8 +223,10 @@ let gWeavePane = {
     Weave.Service.password = document.getElementById("weavePassword").value;
     Weave.Service.passphrase = document.getElementById("weavePassphrase").value;
     let serverURL = document.getElementById("weaveServerURL").value;
-    if (serverURL)
+    if (serverURL && this._usingMainServers)
       Weave.Service.serverURL = serverURL;
+    else
+      Weave.Svc.Prefs.reset("serverURL");
 
     Weave.Service.login();
   },
