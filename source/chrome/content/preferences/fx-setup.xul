@@ -65,6 +65,13 @@
           <spacer/>
           <label value=""/>
         </row>
+        <row id="serverFeedbackRow" hidden="true">
+          <spacer/>
+          <hbox>
+            <checkbox id="tos"/>
+            <label value=""/>
+          </hbox>
+        </row>
       </rows>
     </grid>
   </wizardpage>
