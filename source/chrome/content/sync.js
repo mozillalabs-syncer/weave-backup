@@ -310,7 +310,7 @@ WeaveWindow.prototype = {
       return;
 
     // Show the day-of-week and time (HH:MM) of last sync
-    let lastSyncDate = new Date(lastSync).toLocaleFormat("%a %R");
+    let lastSyncDate = new Date(lastSync).toLocaleFormat("%a %H:%M");
     let lastSyncLabel =
       this._stringBundle.getFormattedString("lastSync.label", [lastSyncDate]);
     lastSyncItem.setAttribute("label", lastSyncLabel);
