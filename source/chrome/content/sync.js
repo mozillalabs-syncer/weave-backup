@@ -249,7 +249,13 @@ WeaveWindow.prototype = {
   },
 
   doOpenActivityLog: function WeaveWin_doOpenActivityLog(event) {
-    Weave.Utils.openLog();
+    let logFile = Weave.Svc.Directory.get("ProfD", Ci.nsIFile);
+    logFile.append("weave");
+    logFile.append("logs");
+    logFile.append("verbose-log.txt");
+
+    let url = Weave.Svc.IO.newFileURI(logFile).spec;
+    window.openUILinkIn(url, "tab");
   },
 
   doPopup: function WeaveWin_doPopup(event) {
