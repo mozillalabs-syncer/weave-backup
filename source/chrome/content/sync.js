@@ -232,8 +232,6 @@ WeaveWindow.prototype = {
     button.setAttribute("label", label);
   },
 
-  shutDown: function WeaveWin_shutDown(event) {},
-
   openPrefs: function openPrefs() {
     openPreferences("paneWeaveServices");
   },
@@ -346,4 +344,3 @@ WeaveWindow.prototype = {
 let gWeaveWin;
 
 window.addEventListener("load", function(e) { gWeaveWin = new WeaveWindow(); }, false);
-window.addEventListener("unload", function(e) { gWeaveWin.shutDown(e); }, false);
