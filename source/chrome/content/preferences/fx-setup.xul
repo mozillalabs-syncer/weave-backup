@@ -29,7 +29,7 @@
       </columns>
       <rows>
         <row>
-          <label control="serverType" value="Connect To:"/>
+          <label control="serverType" value="&connectTo.label;"/>
           <menulist id="serverType" oncommand="gWeaveSetup.onServerChange()">
             <menupopup>
               <menuitem label="&serverType.main.label;" value="main"/>

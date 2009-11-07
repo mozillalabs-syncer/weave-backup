@@ -149,10 +149,13 @@ let gWeavePane = {
   recoverPassword: function () {
     let ok = Weave.Service.requestPasswordReset(Weave.Service.username);
     if (ok) { // xxxmpc: FIXME
-      Weave.Svc.Prompt.alert(window, "Recover Password Success!", "We've sent you an email to your address on file.  Please check it and follow the instructions to reset your password.")
+      Weave.Svc.Prompt.alert(window, 
+                             this.bundle.getString("recoverPasswordSuccess.title"),
+                             this.bundle.getString("recoverPasswordSuccess.label"));
     }
     else {
-      alert("Account name not on record, maybe it was deleted? EWTF_NO_ACCOUNT")
+      // this should never ever get hit, so shouldn't get localized
+      alert("Account name not on record, maybe it was deleted? EWTF_NO_ACCOUNT"); 
     }
   },
 

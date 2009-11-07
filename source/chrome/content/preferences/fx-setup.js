@@ -140,7 +140,11 @@ var gWeaveSetup = {
           Weave.Service.persistLogin();
           return true;
         }
-        Weave.Svc.Prompt.alert(window, "Error Creating Account", error);
+
+        // this could be nicer, but it'll do for now
+        Weave.Svc.Prompt.alert(window, 
+                               this.bundle.getString("errorCreatingAccount.title"), 
+                               Weave.Utils.getErrorString(error));
         return false;
       case 2:
         Weave.Service.passphrase = document.getElementById("weavePassphrase").value;
