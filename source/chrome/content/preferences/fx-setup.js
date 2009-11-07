@@ -84,7 +84,7 @@ var gWeaveSetup = {
     let feedback = document.getElementById("passwordFeedbackRow");
 
     let password = document.getElementById("weavePassword").value;
-    if (password.length < 4) {
+    if (password.length < 8) {
       valid = false;
       this._setFeedbackMessage(feedback, valid, "passwordTooWeak.label");
     }
@@ -103,8 +103,8 @@ var gWeaveSetup = {
   },
 
   onEmailChange: function () {
-    // xxxmpc email validation goes here ;)
-    this.status.email = document.getElementById("weaveEmail").value != "";
+    let re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    this.status.email = re.test(document.getElementById("weaveEmail").value);
     this.checkFields();
   },
 
