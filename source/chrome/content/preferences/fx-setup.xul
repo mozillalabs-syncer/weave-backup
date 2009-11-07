@@ -37,6 +37,14 @@
             </menupopup>
           </menulist>
         </row>
+        <row id="serverRow" hidden="true" align="center">
+          <label value="&signIn.serverURL.label;" control="weaveServerURL"/>
+          <textbox id="weaveServerURL" onchange="gWeaveSetup.onServerChange()"/>
+        </row>
+        <row id="serverFeedbackRow" hidden="true">
+          <spacer/>
+          <label value=""/>
+        </row>
         <row id="usernameRow" align="center">
           <label value="&signIn.username.label;" control="weaveUsername"/>
           <textbox id="weaveUsername" onchange="gWeaveSetup.onUsernameChange()"/>
@@ -60,14 +68,6 @@
         <row id="emailRow" align="center">
           <label value="&setup.emailAddress.label;" control="weaveEmail"/>
           <textbox id="weaveEmail" onchange="gWeaveSetup.onEmailChange()"/>
-        </row>
-        <row id="serverRow" hidden="true" align="center">
-          <label value="&signIn.serverURL.label;" control="weaveServerURL"/>
-          <textbox id="weaveServerURL" onchange="gWeaveSetup.onServerChange()"/>
-        </row>
-        <row id="serverFeedbackRow" hidden="true">
-          <spacer/>
-          <label value=""/>
         </row>
         <row id="TOSRow" align="center">
           <spacer/>

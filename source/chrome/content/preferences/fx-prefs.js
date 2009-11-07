@@ -39,7 +39,7 @@ let gWeavePane = {
         document.getElementById("passphrase-throbber").hidden = true;
         switch (Weave.Status.login) {
           case Weave.LOGIN_FAILED_LOGIN_REJECTED:
-            feedback = document.getElementById("userpassFeedbackRow");
+            feedback = document.getElementById("passwordFeedbackRow");
             this.page = 0;
             break;
           default:
@@ -61,7 +61,7 @@ let gWeavePane = {
     Weave.Service.persistLogin();
     this._setFeedbackMessage(document.getElementById("loginFeedbackRow"), true);
     this._setFeedbackMessage(document.getElementById("passphraseFeedbackBox"), true);
-    this._setFeedbackMessage(document.getElementById("userpassFeedbackRow"), true);
+    this._setFeedbackMessage(document.getElementById("passwordFeedbackRow"), true);
     document.getElementById("weaveUsername").reset();
     document.getElementById("weavePassword").reset();
     document.getElementById("weavePassphrase").reset();

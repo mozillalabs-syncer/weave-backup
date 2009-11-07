@@ -49,6 +49,15 @@
                 <column/>
               </columns>
               <rows>
+                <row id="serverRow" hidden="true" align="center">
+                  <label id="weaveServerURLLabel"
+                         value="&signIn.serverURL.label;"
+                         control="weaveServerURL"/>
+                  <textbox id="weaveServerURL"
+                           onkeypress="gWeavePane.handleKeypress(event)"
+                           onkeyup="gWeavePane.checkFields(event)" 
+                           onchange="gWeavePane.checkFields(event)"/>
+                </row>
                 <row id="usernameRow" align="center">
                   <label id="weaveUsernameLabel" 
                          value="&signIn.username.label;" 
@@ -75,19 +84,6 @@
                 <row id="passwordFeedbackRow" hidden="true">
                   <spacer/>
                   <label value=""/>
-                </row>
-                <row id="userpassFeedbackRow" hidden="true">
-                  <spacer/>
-                  <label value=""/>
-                </row>
-                <row id="serverRow" hidden="true" align="center">
-                  <label id="weaveServerURLLabel"
-                         value="&signIn.serverURL.label;"
-                         control="weaveServerURL"/>
-                  <textbox id="weaveServerURL"
-                           onkeypress="gWeavePane.handleKeypress(event)"
-                           onkeyup="gWeavePane.checkFields(event)" 
-                           onchange="gWeavePane.checkFields(event)"/>
                 </row>
                 <row>
                   <spacer/>

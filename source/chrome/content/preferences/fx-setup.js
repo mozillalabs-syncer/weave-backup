@@ -96,7 +96,7 @@ var gWeaveSetup = {
     }
 
     if (valid && pwconfirm)
-      this._setFeedbackMessage(feedback, valid, "passwordOK.label");
+      this._setFeedbackMessage(feedback, valid);
 
     this.status.password = valid;
     this.checkFields();
@@ -129,12 +129,6 @@ var gWeaveSetup = {
         let email    = document.getElementById("weaveEmail").value;
         let response = this.captchaBrowser.contentDocument
                            .getElementById("recaptcha_response_field").value;
-
-        let serverURL = document.getElementById("weaveServerURL").value;
-        if (serverURL)
-          Weave.Service.serverURL = serverURL;
-        else
-          Weave.Svc.Prefs.reset("serverURL");
 
         let error = Weave.Service.createAccount(username, password, email,
                                                 this._captchaChallenge, response);
@@ -170,7 +164,7 @@ var gWeaveSetup = {
   },
 
   startThrobber: function (start) {
-    // stubbed
+    // FIXME: stubbed
   },
 
   onServerChange: function () {
@@ -178,7 +172,9 @@ var gWeaveSetup = {
     document.getElementById("TOSRow").hidden = !this._usingMainServers;
     let valid = false;
     let feedback = document.getElementById("serverFeedbackRow");
+
     if (this._usingMainServers) {
+      Weave.Svc.Prefs.reset("serverURL");
       valid = true;
       feedback.hidden = true;
     }
@@ -186,13 +182,24 @@ var gWeaveSetup = {
       let urlString = document.getElementById("weaveServerURL").value;
       let str = "";
       if (urlString) {
-        if (Weave.Utils.makeURI(urlString))
+        let uri = Weave.Utils.makeURI(urlString);
+        if (uri) {
+          Weave.Service.serverURL = uri.spec;
           valid = true;
+        }
 
         str = valid ? "" : "serverInvalid.label";
+        this._setFeedbackMessage(feedback, valid);
       }
-      this._setFeedbackMessage(feedback, valid, str);
+      else
+        this._setFeedbackMessage(feedback, true);
+
     }
+
+    // belt and suspenders-ish
+    if (!valid)
+      Weave.Svc.Prefs.reset("serverURL");
+
     this.status.server = valid;
     this.checkFields();
   },
