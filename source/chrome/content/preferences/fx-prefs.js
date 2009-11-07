@@ -143,7 +143,7 @@ let gWeavePane = {
     Weave.Svc.Prefs.resetBranch("");
     this.updateWeavePrefs();
     document.getElementById("manageAccountExpander").className = "expander-down";
-    document.getElementById("manageAccountControls").collapsed = true;
+    document.getElementById("manageAccountControls").hidden = true;
   },
 
   recoverPassword: function () {
@@ -202,11 +202,23 @@ let gWeavePane = {
   },
 
 
-  handleExpanderClick: function (event) {
-    let expand = event.target.className == "expander-down";
-    event.target.className = 
+  handleExpanderClick: function () {
+    // ok, this is pretty evil, and likely fragile if the prefwindow 
+    // binding changes, but that won't happen in 3.6 *fingers crossed*
+    let prefwindow = document.getElementById("BrowserPreferences");
+    let pane = document.getElementById("paneWeaveServices");
+    if (prefwindow._shouldAnimate)
+      prefwindow._currentHeight = pane.contentHeight;
+
+    let expander = document.getElementById("manageAccountExpander");
+    let expand = expander.className == "expander-down";
+    expander.className = 
        expand ? "expander-up" : "expander-down";
-    document.getElementById("manageAccountControls").collapsed = !expand;
+    document.getElementById("manageAccountControls").hidden = !expand;
+
+    // and... shazam
+    if (prefwindow._shouldAnimate)
+      prefwindow.animate("null", pane);
   },
   
   startSignIn: function() {

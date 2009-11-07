@@ -23,7 +23,8 @@
 
     <prefpane id="paneWeaveServices" 
               label="&weavePrefPane.label;" 
-              image="chrome://weave/skin/sync-32x32.png" 
+              image="chrome://weave/skin/sync-32x32.png"
+              helpTopic="prefs-weave" 
               onpaneload="gWeavePane.initWeavePrefs()">
       <preferences>
         <preference id="engine.bookmarks" name="extensions.weave.engine.bookmarks" type="bool"/>
@@ -96,13 +97,13 @@
               </rows>
             </grid>
           </groupbox>
-          <spacer flex="1"/>
+          <spacer/>
           <button id="createAccountButton"
                   label="&createAccountButton.label;"
                   accesskey="&createAccountButton.accesskey;"
                   align="center" 
                   oncommand="gWeavePane.startAccountSetup();"/>
-          <spacer flex="3"/>
+          <spacer/>
         </vbox>
         <vbox id="passphraseEntry">
           <groupbox>
@@ -150,29 +151,21 @@
                   <spacer/>
                   <label value=""/>
                 </row>
-                <row id="manageAccountControls" collapsed="true">
+                <row id="manageAccountControls" hidden="true">
                   <spacer/>
                     <vbox class="indent">
-                      <html:a class="inline-link" href="#"
-                              onclick="gWeavePane.changePassword(); return false;"
-                              >
-                        &changePassword.label;
-                      </html:a><html:br />
-                      <html:a class="inline-link" href="#"
-                              onclick="gWeavePane.recoverPassword(); return false;"
-                              >
-                        &recoverPassword.label;
-                      </html:a><html:br />
-                      <html:a class="inline-link" href="#"
-                              onclick="gWeavePane.changePassphrase(); return false;"
-                              >
-                        &changePassphrase.label;
-                      </html:a><html:br />
-                      <html:a class="inline-link" href="#"
-                              onclick="gWeavePane.startOver(); return false;"
-                              >
-                        &startOver.label;
-                      </html:a>
+                      <label class="text-link" 
+                             onclick="gWeavePane.changePassword(); return false;"
+                             value="&changePassword.label;"/>
+                      <label class="text-link" 
+                             onclick="gWeavePane.recoverPassword(); return false;"
+                             value="&recoverPassword.label;"/>
+                      <label class="text-link" 
+                             onclick="gWeavePane.changePassphrase(); return false;"
+                             value="&changePassphrase.label;"/>
+                      <label class="text-link" 
+                            onclick="gWeavePane.startOver(); return false;"
+                            value="&startOver.label;"/>
                     </vbox>
                   <spacer/>
                 </row>
@@ -182,7 +175,7 @@
                           class="expander-down"
                           label="&manageAccount.label;"
                           align="left"
-                          onclick="gWeavePane.handleExpanderClick(event)"/>
+                          oncommand="gWeavePane.handleExpanderClick()"/>
                   <spacer/>
                 </row>
               </rows>
