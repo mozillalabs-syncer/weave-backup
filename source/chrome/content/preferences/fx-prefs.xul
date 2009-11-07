@@ -88,22 +88,24 @@
                 </row>
                 <row>
                   <spacer/>
-                  <button id="signInButton"
-                          onkeypress="gWeavePane.handleKeypress(event)"
-                          label="&signIn.button.label;"
-                          disabled="true"
-                          oncommand="gWeavePane.startSignIn()"/>
+                  <hbox pack="start">
+                    <button id="signInButton"
+                            onkeypress="gWeavePane.handleKeypress(event)"
+                            label="&signIn.button.label;"
+                            disabled="true"
+                            oncommand="gWeavePane.startSignIn()"/>
+                  </hbox>
                 </row>
               </rows>
             </grid>
           </groupbox>
-          <spacer/>
+          <spacer flex="1"/>
           <button id="createAccountButton"
                   label="&createAccountButton.label;"
                   accesskey="&createAccountButton.accesskey;"
                   align="center" 
                   oncommand="gWeavePane.startAccountSetup();"/>
-          <spacer/>
+          <spacer flex="3"/>
         </vbox>
         <vbox id="passphraseEntry">
           <groupbox>
