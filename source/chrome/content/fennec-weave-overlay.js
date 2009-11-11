@@ -125,9 +125,6 @@ let WeaveGlue = {
     let ids = ["user", "pass", "secret", "connect", "disconnect", "sync"];
     ids.forEach(function(id) {
       settings[id] = document.getElementById("weave-" + id);
-
-      // XXX Bug 523538: Prevent <setting>s from setting "" pref
-      settings[id].pref = {};
     });
 
     // Replace the getter with the collection of settings
