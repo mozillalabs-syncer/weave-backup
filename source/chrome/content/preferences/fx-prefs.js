@@ -237,9 +237,10 @@ let gWeavePane = {
     Weave.Service.username = document.getElementById("weaveUsername").value;
     Weave.Service.password = document.getElementById("weavePassword").value;
     Weave.Service.passphrase = document.getElementById("weavePassphrase").value;
-    let serverURL = document.getElementById("weaveServerURL").value;
-    if (serverURL && this._usingMainServers)
-      Weave.Service.serverURL = serverURL;
+    let serverURI = 
+      Weave.Utils.makeURI(document.getElementById("weaveServerURL").value);
+    if (serverURI && !this._usingMainServers)
+      Weave.Service.serverURL = serverURI.spec;
     else
       Weave.Svc.Prefs.reset("serverURL");
 
