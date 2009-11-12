@@ -188,6 +188,10 @@ let gWeavePane = {
     Weave.Utils.openGenericDialog("ChangePassphrase");
   },
 
+  resetPassphrase: function () {
+    Weave.Utils.openGenericDialog("ResetPassphrase");
+  },
+
   updateSyncPrefs: function () {
     let syncEverything = document.getElementById("weaveSyncMode").selectedItem.value == "syncEverything";
     document.getElementById("syncModeOptions").selectedIndex = syncEverything ? 0 : 1;

@@ -262,8 +262,11 @@
                              onclick="gWeavePane.changePassphrase(); return false;"
                              value="&changePassphrase.label;"/>
                       <label class="text-link" 
-                            onclick="gWeavePane.startOver(); return false;"
-                            value="&startOver.label;"/>
+                             onclick="gWeavePane.resetPassphrase(); return false;"
+                             value="&resetPassphrase.label;"/>
+                      <label class="text-link" 
+                             onclick="gWeavePane.startOver(); return false;"
+                             value="&startOver.label;"/>
                     </vbox>
                   <spacer/>
                 </row>
