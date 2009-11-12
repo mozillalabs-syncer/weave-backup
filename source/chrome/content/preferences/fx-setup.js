@@ -27,9 +27,17 @@ var gWeaveSetup = {
 
   init: function () {
     this.wizard.canAdvance = false;
+    if (this._checkForNoScript())
+      document.getElementById("noScriptWarning").hidden = false;
+
     this.wizard.getButton("finish").label = this.bundle.getString("startSyncing.label");
     this.onServerChange();
-    this.captchaBrowser.addProgressListener(this);
+    this.captchaBrowser.addProgressListener(this); 
+  },
+
+  _checkForNoScript: function() {
+    let ns = Application.extensions.get("{73a6fe31-595d-460b-a920-fcc0f8843232}");
+    return ns.enabled;
   },
 
   updateSyncPrefs: function () {
