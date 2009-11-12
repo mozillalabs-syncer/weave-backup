@@ -181,26 +181,7 @@ WeaveWindow.prototype = {
 
       let priority = Weave.Notifications.PRIORITY_WARNING;
       let button = null;
-      if (Weave.Status.sync == Weave.SYNCID_WIPE_REMOTE) {
-        priority = Weave.Notifications.PRIORITY_INFO;
-        description = Weave.Str.sync.get(Weave.Status.sync);
-
-        // Make the merge direction pane show up
-        Weave.Svc.Prefs.set("firstSync", "notReady");
-        let label = Weave.Str.sync.get("error.sync.wipe_remote.label");
-        let accesskey = Weave.Str.sync.get("error.sync.wipe_remote.accesskey");
-        button = new Weave.NotificationButton(label, accesskey, function() {
-          gWeaveWin.openPrefs();
-          return true;
-        });
-      }
-      else if (Weave.Status.sync == Weave.SYNCID_RESET_PASSPHRASE) {
-        priority = Weave.Notifications.PRIORITY_INFO;
-        description = Weave.Str.sync.get(Weave.Status.sync);
-        // XXX Bug 528247 need a way to enter the new passphrase
-        Weave.Service.logout();
-      }
-      else if (!Weave.Status.enforceBackoff) {
+      if (!Weave.Status.enforceBackoff) {
         priority = Weave.Notifications.PRIORITY_INFO;
         button =
           new Weave.NotificationButton(
@@ -211,7 +192,7 @@ WeaveWindow.prototype = {
       }
       
       let notification =
-        new Weave.Notification(title, description, null, priority, [button]);
+        new Weave.Notification(title, description, null, priority, button);
       Weave.Notifications.replaceTitle(notification); 
     }
     // Clear out sync failures on a successful sync
