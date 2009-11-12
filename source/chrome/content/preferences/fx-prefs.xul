@@ -133,6 +133,102 @@
             </hbox>
           </groupbox>
         </vbox>
+        <vbox id="mergeOptionsChoice">
+          <groupbox align="start" orient="horizontal">
+            <caption label="&choice.caption.label;"/>
+            <button id="doMerge" class="mergeChoiceButton" oncommand="gWeavePane.handleChoice(event)" align="top">
+              <vbox flex="1" align="start" class="mergeChoiceButtonBox">
+                <image class="mergeChoiceImage" src="chrome://weave/skin/sync-merge.png"/>
+                <description class="mainDesc">
+                  &choice.merge.main.label;
+                </description>
+                <description>
+                  &choice.merge.secondary.label;
+                </description>
+              </vbox>
+            </button>
+            <button id="wipeClient" class="mergeChoiceButton" oncommand="gWeavePane.handleChoice(event)" align="top">
+              <vbox flex="1" align="start" class="mergeChoiceButtonBox">
+                <image class="mergeChoiceImage" src="chrome://weave/skin/sync-wipeClient.png"/>
+                <description class="mainDesc">
+                  &choice.client.main.label;
+                </description>
+                <description>
+                  &choice.client.secondary.label;
+                </description>
+              </vbox>
+            </button>
+            <button id="wipeServer" class="mergeChoiceButton" oncommand="gWeavePane.handleChoice(event)" align="top">
+              <vbox flex="1" align="start" class="mergeChoiceButtonBox">
+                <image class="mergeChoiceImage" src="chrome://weave/skin/sync-wipeServer.png"/>
+                <description class="mainDesc">
+                  &choice.server.main.label;
+                </description>
+                <description>
+                  &choice.server.secondary.label;
+                </description>
+              </vbox>
+            </button>
+          </groupbox>
+        </vbox>
+        <vbox id="mergeOptionsConfirm">
+          <groupbox pack="center">
+            <caption label="&confirm.caption.label;"/>
+            <deck id="chosenActionDeck">
+              <vbox>
+                <hbox pack="start" align="baseline">
+                  <image src="chrome://weave/skin/sync-merge.png"/>
+                </hbox>
+                <separator/>
+                <description>
+                  &confirm.merge.label;
+                </description>
+                <separator/>
+                <hbox align="end" pack="end">
+                  <button label="&goBack.label;" oncommand="gWeavePane.goBack()"/>
+                  <button label="&confirm.merge.start.label;" oncommand="gWeavePane.setupInitialSync('merge')"/>
+                </hbox>
+              </vbox>
+              <vbox>
+                <hbox pack="start" align="baseline">
+                  <image src="chrome://weave/skin/sync-wipeClient.png"/>
+                </hbox>
+                <separator/>
+                <description>
+                  &confirm.client.label;
+                </description>
+                <separator/>
+                <description class="warning">
+                  &confirm.client.warning.label;
+                </description>
+                <separator/>
+                <hbox align="end" pack="end">
+                  <button label="&goBack.label;" oncommand="gWeavePane.goBack()"/>
+                  <button label="&confirm.client.start.label;" 
+                          oncommand="gWeavePane.setupInitialSync('wipeClient')"/>
+                </hbox>
+              </vbox>
+              <vbox>
+                <hbox pack="start" align="baseline">
+                  <image src="chrome://weave/skin/sync-wipeServer.png"/>
+                </hbox>
+                <separator/>
+                <description>
+                  &confirm.server.label;
+                </description>
+                <separator/>
+                <description class="warning">
+                  &confirm.server.warning.label;
+                </description>
+                <separator/>
+                <hbox align="end" pack="end">
+                  <button label="&goBack.label;" oncommand="gWeavePane.goBack()"/>
+                  <button label="&confirm.server.start.label;" oncommand="gWeavePane.setupInitialSync('wipeRemote')"/>
+                </hbox>
+              </vbox>
+            </deck>
+          </groupbox>
+        </vbox>
         <vbox id="hasAccount">
           <groupbox>
             <caption label="&accountGroupboxCaption.label;"/>

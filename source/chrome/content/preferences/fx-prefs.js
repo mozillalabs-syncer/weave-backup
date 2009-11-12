@@ -24,7 +24,7 @@ let gWeavePane = {
         box.hidden = false;
         document.getElementById("passphrase-throbber").hidden = false;
         break;
-      case "2":
+      case "4":
         document.getElementById("connect-throbber").hidden = false;
         break;
     }
@@ -47,7 +47,7 @@ let gWeavePane = {
             break;
         }
         break;
-      case "2":
+      case "4":
         document.getElementById("connect-throbber").hidden = true;
         feedback = document.getElementById("loginFeedbackRow");
         break;
@@ -94,12 +94,17 @@ let gWeavePane = {
   },
 
   updateWeavePrefs: function () {
-    if (Weave.Service.username) {
+    if (Weave.Service.username && 
+        Weave.Svc.Prefs.get("firstSync", "") == "notReady") {
       this.page = 2;
+    }
+    else if (Weave.Service.username) {
+      this.page = 4;
       document.getElementById("currentUser").value = Weave.Service.username;
     }
-    else
+    else {
       this.page = 0;
+    }
 
     this.updateConnectButton();
     this.updateSetupButtons();
@@ -123,6 +128,22 @@ let gWeavePane = {
     let pbEnabled = Weave.Svc.Private.privateBrowsingEnabled;
     for (let i = 0;i < elems.length;i++)
       document.getElementById(elems[i]).disabled = pbEnabled;
+  },
+
+  handleChoice: function (event) {
+    let desc = 0;
+    switch (event.target.id) {
+      case "wipeServer":
+        desc = 2;
+        break;
+      case "wipeClient":
+        desc = 1;
+        break;
+      case "doMerge":
+        break;
+    }
+    this.page = 3;
+    document.getElementById("chosenActionDeck").selectedIndex = desc;
   },
 
   updateConnectButton: function () {
@@ -230,10 +251,11 @@ let gWeavePane = {
   },
   
   goBack: function () {
-    this.page = 0;
+    this.page -= 1;
   },
   
-  doSignIn: function() {
+  doSignIn: function () {
+    Weave.Svc.Prefs.set("firstSync", "notReady");
     Weave.Service.username = document.getElementById("weaveUsername").value;
     Weave.Service.password = document.getElementById("weavePassword").value;
     Weave.Service.passphrase = document.getElementById("weavePassphrase").value;
@@ -246,7 +268,21 @@ let gWeavePane = {
 
     Weave.Service.login();
   },
-  
+
+  setupInitialSync: function (syncChoice) {
+    switch (syncChoice) {
+      case "wipeRemote":
+      case "wipeClient":
+        Weave.Svc.Prefs.set("firstSync", syncChoice);
+        break;
+      case "merge":
+        Weave.Svc.Prefs.reset("firstSync");
+        break;
+    }
+    Weave.Service.syncOnIdle();
+    this.updateWeavePrefs();
+  },
+
   startAccountSetup: function () {
     var wm = Components.classes["@mozilla.org/appshell/window-mediator;1"]
                        .getService(Components.interfaces.nsIWindowMediator);

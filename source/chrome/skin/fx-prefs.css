@@ -12,3 +12,37 @@
 .success {
   background-color: #00FF00 !important;
 }
+
+.warning {
+  font-weight: bold;
+}
+
+.mainDesc {
+  font-weight: bold;
+}
+
+.mergeChoiceButton {
+  height: 250px;
+  -moz-appearance: none;
+  background-color: #CCCCCC;
+  -moz-border-radius: 7px;
+}
+
+.mergeChoiceButton:focus,
+.mergeChoiceButton:hover {
+  background-color: #AAAAAA;
+}
+
+.mergeChoiceButton:hover:active {
+  background-color: #888888;
+}
+
+.mergeChoiceButtonBox {
+  width: 140px;
+}
+
+.mergeChoiceImage {
+  -moz-padding-start: 20px;
+  padding-top: 6px;
+  padding-bottom: 7px;  
+}
