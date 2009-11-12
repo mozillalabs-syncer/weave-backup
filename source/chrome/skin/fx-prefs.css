@@ -31,6 +31,7 @@
 .mergeChoiceButton:focus,
 .mergeChoiceButton:hover {
   background-color: #AAAAAA;
+  cursor: pointer;
 }
 
 .mergeChoiceButton:hover:active {
