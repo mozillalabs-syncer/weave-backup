@@ -14,6 +14,7 @@ let RemoteTabViewer = {
       this._remoteClients = tabEngine.getAllClients();
       let list = document.getElementById("tabList");
       this._populateTabs(list);
+      this._refetchTabs(tabEngine);
     } else {
       let item = document.createElement("img");
       item.setAttribute("class", "center");
@@ -23,6 +24,28 @@ let RemoteTabViewer = {
       // Reload in 3 seconds
       setTimeout('document.location.reload()', 3000);
     }
+  },
+
+  _refetchTabs: function _refetchTabs(engine) {
+    // Don't bother refetching tabs if we already did so recently
+    let lastFetch = Weave.Svc.Prefs.get("lastTabFetch", 0);
+    let now = Math.floor(Date.now() / 1000);
+    if (now - lastFetch < 30)
+      return;
+
+    // Asynchronously fetch the tabs
+    setTimeout(function() {
+      let lastSync = engine.lastSync;
+
+      // Force a sync only for the tabs engine
+      engine.lastModified = null;
+      engine.sync();
+      Weave.Svc.Prefs.set("lastTabFetch", now);
+
+      // Only reload the page if something synced
+      if (engine.lastSync != lastSync)
+        location.reload();
+    }, 0);
   },
   
   _populateTabs: function RemoteTabViewer__populateTabs(holder) {
