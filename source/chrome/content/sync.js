@@ -226,7 +226,8 @@ WeaveWindow.prototype = {
   },
 
   onEngineStart: function WeaveWin_onEngineStart(subject, data) {
-    let engineName = Weave.Engines.get(subject).displayName;
+    let engine = subject == "clients" ? Weave.Clients : Weave.Engines.get(subject);
+    let engineName = engine.displayName;
     let label = this._stringBundle.getFormattedString("syncing.label", [engineName]);
     let button = document.getElementById("sync-menu-button");
     button.setAttribute("label", label);
