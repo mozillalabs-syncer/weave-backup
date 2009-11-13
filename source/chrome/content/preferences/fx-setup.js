@@ -37,6 +37,8 @@ var gWeaveSetup = {
 
   _checkForNoScript: function() {
     let ns = Application.extensions.get("{73a6fe31-595d-460b-a920-fcc0f8843232}");
+    if (ns == null)
+      return false;
     return ns.enabled;
   },
 
