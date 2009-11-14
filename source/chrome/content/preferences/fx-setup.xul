@@ -96,7 +96,12 @@
       &passphraseDesc.label;
     </description>
     <spacer/>
-    <textbox type="password" id="weavePassphrase"/>
+    <textbox type="password" id="weavePassphrase"
+             onkeyup="gWeaveSetup.checkFields()"
+             onchange="gWeaveSetup.checkFields()"/>
+    <description class="small">
+      &passphraseDesc2.label;
+    </description>
   </wizardpage>
 
   <wizardpage label="&setup.page4Title.label;">

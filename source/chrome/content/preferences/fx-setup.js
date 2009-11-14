@@ -73,8 +73,15 @@ var gWeaveSetup = {
         return true;
       case 1:
         return true;
+      case 2:
+        let val = document.getElementById("weavePassphrase").value;
+        if (val.length >= 8 &&
+            val != document.getElementById("weavePassword").value) {
+          return true;
+        }
+        return false;
     }
-    throw "epic fail";
+    throw "epic fail, we should never get here";
   },
 
   onUsernameChange: function () {

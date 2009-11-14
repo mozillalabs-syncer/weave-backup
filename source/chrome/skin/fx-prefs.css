@@ -8,7 +8,6 @@
   color: #FFFFFF !important;
 }
 
-
 .success {
   background-color: #00FF00 !important;
 }
@@ -19,6 +18,10 @@
 
 .mainDesc {
   font-weight: bold;
+}
+
+.small {
+  font-size: 90%;
 }
 
 .mergeChoiceButton {
