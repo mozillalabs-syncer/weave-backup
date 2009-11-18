@@ -130,6 +130,15 @@ var gWeaveSetup = {
     openUILinkIn(url, "tab");
   },
 
+  onPageShow: function() {
+    switch (this.wizard.currentPage.pageIndex) {
+      case 2:
+        this.wizard.canRewind = false;
+        this.wizard.canAdvance = false;
+        break;
+    }
+  },
+
   onWizardAdvance: function () {
     if (!this.wizard.currentPage)
       return true;
