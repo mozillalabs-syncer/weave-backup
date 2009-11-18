@@ -88,12 +88,16 @@
                 </row>
                 <row>
                   <spacer/>
-                  <hbox pack="start">
+                  <hbox pack="start" align="center">
                     <button id="signInButton"
                             onkeypress="gWeavePane.handleKeypress(event)"
                             label="&signIn.button.label;"
                             disabled="true"
-                            oncommand="gWeavePane.startSignIn()"/>
+                            oncommand="gWeavePane.doSignIn()"/>
+                    <hbox align="left" id="signInFeedbackBox" hidden="true">
+                      <image src="chrome://global/skin/icons/loading_16.png"/>
+                      <label value="&connecting.label;"/>
+                    </hbox>
                   </hbox>
                 </row>
               </rows>
@@ -110,7 +114,7 @@
         <vbox id="passphraseEntry">
           <groupbox>
             <caption label="&passphraseGroupbox.label;"/>
-            <description>&passphraseDesc.label;</description>
+            <description>&passphraseDesc3.label;</description>
             <textbox type="password" id="weavePassphrase"
                      onkeypress="gWeavePane.handleKeypress(event)"
                      onkeyup="gWeavePane.checkFields(event)" 
@@ -118,7 +122,7 @@
             <hbox align="left" id="passphraseFeedbackBox">
               <hbox id="passphrase-throbber" hidden="true">
                 <image src="chrome://global/skin/icons/loading_16.png"/>
-                <label value="&connecting.label;"/>
+                <label value="&verifying.label;"/>
               </hbox>
               <label value=""/>
             </hbox>

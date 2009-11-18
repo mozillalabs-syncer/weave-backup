@@ -18,6 +18,9 @@ let gWeavePane = {
 
   onLoginStart: function () {
     switch (this.page) {
+      case "0":
+        document.getElementById("signInFeedbackBox").hidden = false;
+        break;
       case "1":
         let box = document.getElementById("passphraseFeedbackBox");
         this._setFeedbackMessage(box, true);
@@ -35,6 +38,16 @@ let gWeavePane = {
     let feedback = null;
 
     switch (this.page) {
+      case "0":
+        document.getElementById("signInFeedbackBox").hidden = true;
+        feedback = document.getElementById("passwordFeedbackRow");
+
+        // Move on to the passphrase page if that's the only failure
+        if (Weave.Status.login == Weave.LOGIN_FAILED_INVALID_PASSPHRASE) {
+          this.page = 1;
+          return;
+        }
+        break;
       case "1":
         document.getElementById("passphrase-throbber").hidden = true;
         switch (Weave.Status.login) {
@@ -58,6 +71,7 @@ let gWeavePane = {
   onLoginFinish: function () {
     document.getElementById("passphrase-throbber").hidden = true;
     document.getElementById("connect-throbber").hidden = true;
+    document.getElementById("signInFeedbackBox").hidden = true;
     Weave.Service.persistLogin();
     this._setFeedbackMessage(document.getElementById("loginFeedbackRow"), true);
     this._setFeedbackMessage(document.getElementById("passphraseFeedbackBox"), true);
@@ -249,11 +263,6 @@ let gWeavePane = {
       prefwindow.animate("null", pane);
   },
   
-  startSignIn: function() {
-    this.page = 1;
-    this.checkFields();
-  },
-  
   goBack: function () {
     this.page -= 1;
   },
@@ -343,10 +352,7 @@ let gWeavePane = {
 
     event.preventDefault();
     if (this.isReady()) {
-      if (this.page == 0)
-        this.startSignIn();
-      else
-        this.doSignIn();
+      this.doSignIn();
     }
 
     return false;

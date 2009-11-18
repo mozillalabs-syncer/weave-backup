@@ -135,6 +135,10 @@ WeaveWindow.prototype = {
   onLoginError: function WeaveWin_onLoginError() {
     this._setStatus("offline");
 
+    // Don't notify on missing passphrase errors
+    if (!Weave.Service.passphrase)
+      return;
+
     let title = this._stringBundle.getString("error.login.title");
     let reason = Weave.Utils.getErrorString(Weave.Status.login);
     let description =
