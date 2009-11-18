@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd" [
+<!ENTITY % remoteTabsDTD SYSTEM "chrome://weave/locale/fennec-tabs.dtd" >
+%remoteTabsDTD;
+]>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
+  <head>
+    <title>&remoteTabs.title;</title>
+    <link rel="icon" type="image/png" href="chrome://weave/skin/tab.png" />
+    <link rel="stylesheet" type="text/css" media="screen" href="chrome://weave/content/fennec-tabs.css" />
+    <script type="application/javascript;version=1.8" src="chrome://weave/content/load-weave.js"></script>
+    <script type="application/javascript;version=1.8" src="chrome://weave/content/fennec-tabs.js"></script>
+  </head>
+  <body onload="RemoteTabViewer.show();">
+    <div id="tabList">
+    </div>
+  </body>
+</html>

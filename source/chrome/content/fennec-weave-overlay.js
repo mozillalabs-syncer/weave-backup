@@ -44,7 +44,7 @@ let WeaveGlue = {
   },
 
   openRemoteTabs: function openRemoteTabs() {
-    this._openTab("chrome://weave/content/fennec-tabs.html");
+    this._openTab("chrome://weave/content/fennec-tabs.xhtml");
   },
 
   connect: function connect() {
