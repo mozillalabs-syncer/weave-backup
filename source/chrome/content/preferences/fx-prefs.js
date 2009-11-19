@@ -57,6 +57,7 @@ let gWeavePane = {
             break;
           default:
             feedback = document.getElementById("passphraseFeedbackBox");
+            document.getElementById("passphraseHelpBox").hidden = false;
             break;
         }
         break;
