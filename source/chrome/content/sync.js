@@ -184,19 +184,36 @@ WeaveWindow.prototype = {
                             .getFormattedString("error.sync.description", [error]);
 
       let priority = Weave.Notifications.PRIORITY_WARNING;
-      let button = null;
-      if (!Weave.Status.enforceBackoff) {
+      let buttons = [];
+      if (Weave.Status.sync == Weave.VERSION_OUT_OF_DATE) {
+        description = Weave.Str.sync.get("error.sync.needUpdate.description");
+        let label = Weave.Str.sync.get("error.sync.needUpdate.label");
+        let accesskey = Weave.Str.sync.get("error.sync.needUpdate.accesskey");
+        buttons.push(new Weave.NotificationButton(label, accesskey, function() {
+          let theEM = Weave.Svc.WinMediator.getMostRecentWindow("Extension:Manager");
+          if (theEM != null) {
+            theEM.focus();
+            theEM.showView("extensions");
+          }
+          else {
+            const EMURL = "chrome://mozapps/content/extensions/extensions.xul";
+            const EMFEATURES = "chrome,menubar,extra-chrome,toolbar,dialog=no,resizable";
+            window.openDialog(EMURL, "", EMFEATURES, "extensions");
+          }
+          return true;
+        }));
+      }
+      else if (!Weave.Status.enforceBackoff) {
         priority = Weave.Notifications.PRIORITY_INFO;
-        button =
-          new Weave.NotificationButton(
-            this._stringBundle.getString("error.sync.tryAgainButton.label"),
-            this._stringBundle.getString("error.sync.tryAgainButton.accesskey"),
-            function() { gWeaveWin.doSync(); return true; }
-          );
+        buttons.push(new Weave.NotificationButton(
+          this._stringBundle.getString("error.sync.tryAgainButton.label"),
+          this._stringBundle.getString("error.sync.tryAgainButton.accesskey"),
+          function() { gWeaveWin.doSync(); return true; }
+        ));
       }
       
       let notification =
-        new Weave.Notification(title, description, null, priority, button);
+        new Weave.Notification(title, description, null, priority, buttons);
       Weave.Notifications.replaceTitle(notification); 
     }
     // Clear out sync failures on a successful sync
