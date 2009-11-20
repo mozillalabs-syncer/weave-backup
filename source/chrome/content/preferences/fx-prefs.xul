@@ -14,17 +14,17 @@
 
   <script type="application/x-javascript"
           src="chrome://weave/content/load-weave.js"/>
-  <script type="application/javascript" 
+  <script type="application/javascript"
           src="chrome://weave/content/preferences/fx-prefs.js"/>
 
   <prefwindow id="BrowserPreferences">
     <stringbundle id="weavePrefStrings"
                   src="chrome://weave/locale/fx-prefs.properties"/>
 
-    <prefpane id="paneWeaveServices" 
-              label="&weavePrefPane.label;" 
+    <prefpane id="paneWeaveServices"
+              label="&weavePrefPane.label;"
               image="chrome://weave/skin/sync-32x32.png"
-              helpTopic="prefs-weave" 
+              helpTopic="prefs-weave"
               onpaneload="gWeavePane.initWeavePrefs()">
       <preferences>
         <preference id="engine.bookmarks" name="extensions.weave.engine.bookmarks" type="bool"/>
@@ -56,14 +56,14 @@
                          control="weaveServerURL"/>
                   <textbox id="weaveServerURL"
                            onkeypress="gWeavePane.handleKeypress(event)"
-                           onkeyup="gWeavePane.checkFields(event)" 
+                           onkeyup="gWeavePane.checkFields(event)"
                            onchange="gWeavePane.checkFields(event)"/>
                 </row>
                 <row id="usernameRow" align="center">
-                  <label id="weaveUsernameLabel" 
-                         value="&signIn.username.label;" 
+                  <label id="weaveUsernameLabel"
+                         value="&signIn.username.label;"
                          control="weaveUsername"/>
-                  <textbox id="weaveUsername" 
+                  <textbox id="weaveUsername"
                            onkeypress="gWeavePane.handleKeypress(event)"
                            onkeyup="gWeavePane.checkFields(event)"
                            onchange="gWeavePane.checkFields(event)"/>
@@ -74,7 +74,7 @@
                 </row>
                 <row id="passwordRow" align="center">
                   <label id="weavePasswordLabel"
-                         value="&signIn.password.label;" 
+                         value="&signIn.password.label;"
                          control="weavePassword"/>
                   <textbox id="weavePassword"
                            type="password"
@@ -108,7 +108,7 @@
           <button id="createAccountButton"
                   label="&createAccountButton.label;"
                   accesskey="&createAccountButton.accesskey;"
-                  align="center" 
+                  align="center"
                   oncommand="gWeavePane.startAccountSetup();"/>
           <spacer flex="3"/>
         </vbox>
@@ -118,7 +118,7 @@
             <description>&passphraseDesc3.label;</description>
             <textbox type="password" id="weavePassphrase"
                      onkeypress="gWeavePane.handleKeypress(event)"
-                     onkeyup="gWeavePane.checkFields(event)" 
+                     onkeyup="gWeavePane.checkFields(event)"
                      onchange="gWeavePane.checkFields(event)"/>
             <hbox align="left" id="passphraseFeedbackBox">
               <hbox id="passphrase-throbber" hidden="true">
@@ -133,12 +133,12 @@
                      onclick="gWeavePane.resetPassphrase(); return false;"/>
             </vbox>
             <hbox align="right">
-              <button label="&goBack.label;" 
+              <button label="&goBack.label;"
                       oncommand="gWeavePane.goBack()"/>
               <button id="continueButton"
                       onkeypress="gWeavePane.handleKeypress(event)"
                       disabled="true"
-                      label="&continue.label;" 
+                      label="&continue.label;"
                       oncommand="gWeavePane.doSignIn();"/>
             </hbox>
           </groupbox>
@@ -214,7 +214,7 @@
                 <separator/>
                 <hbox align="end" pack="end">
                   <button label="&goBack.label;" oncommand="gWeavePane.goBack()"/>
-                  <button label="&confirm.client.start.label;" 
+                  <button label="&confirm.client.start.label;"
                           oncommand="gWeavePane.setupInitialSync('wipeClient')"/>
                 </hbox>
               </vbox>
@@ -251,7 +251,7 @@
                   </textbox>
                   <button id="connectButton" oncommand="gWeavePane.handleConnectCommand()"
                           disabled="true"/>
-                  <image id="connect-throbber" 
+                  <image id="connect-throbber"
                          src="chrome://global/skin/icons/loading_16.png"
                          hidden="true"/>
                 </row>
@@ -262,13 +262,13 @@
                 <row id="manageAccountControls" hidden="true">
                   <spacer/>
                     <vbox class="indent">
-                      <label class="text-link" 
+                      <label class="text-link"
                              onclick="gWeavePane.changePassword(); return false;"
                              value="&changePassword.label;"/>
-                      <label class="text-link" 
+                      <label class="text-link"
                              onclick="gWeavePane.changePassphrase(); return false;"
                              value="&changePassphrase.label;"/>
-                      <label class="text-link" 
+                      <label class="text-link"
                              onclick="gWeavePane.startOver(); return false;"
                              value="&startOver.label;"/>
                     </vbox>

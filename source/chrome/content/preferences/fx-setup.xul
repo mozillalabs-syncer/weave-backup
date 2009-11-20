@@ -15,9 +15,9 @@
 
   <script type="application/x-javascript"
           src="chrome://weave/content/load-weave.js"/>
-  <script type="application/javascript" 
+  <script type="application/javascript"
           src="chrome://weave/content/preferences/fx-setup.js"/>
-  <script type="application/javascript" 
+  <script type="application/javascript"
           src="chrome://browser/content/utilityOverlay.js"/>
   <stringbundle id="weavePrefStrings" src="chrome://weave/locale/fx-prefs.properties"/>
 
@@ -86,7 +86,7 @@
       &noScriptWarning.label;
     </description>
   </wizardpage>
-  
+
   <wizardpage label="&setup.page2Title.label;">
     <browser height="150" width="322" id="captcha" type="content" disablehistory="true"/>
   </wizardpage>

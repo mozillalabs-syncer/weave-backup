@@ -4,14 +4,14 @@ let gWeavePane = {
   },
 
   get bundle() {
-    delete this.bundle; 
+    delete this.bundle;
     return this.bundle = document.getElementById("weavePrefStrings");
   },
 
   get page() {
     return document.getElementById("weavePrefsDeck").selectedIndex;
   },
-  
+
   set page(val) {
     document.getElementById("weavePrefsDeck").selectedIndex = val;
   },
@@ -83,7 +83,7 @@ let gWeavePane = {
     document.getElementById("weaveServerURL").reset();
     this.updateWeavePrefs();
   },
-  
+
   onPBModeChange: function () {
     this.updateConnectButton();
     this.updateSetupButtons();
@@ -109,7 +109,7 @@ let gWeavePane = {
   },
 
   updateWeavePrefs: function () {
-    if (Weave.Service.username && 
+    if (Weave.Service.username &&
         Weave.Svc.Prefs.get("firstSync", "") == "notReady") {
       this.page = 2;
     }
@@ -134,11 +134,11 @@ let gWeavePane = {
     document.getElementById("serverRow").hidden = this._usingMainServers;
     this.checkFields();
   },
-  
+
   updateSetupButtons: function () {
-    let elems = ["weaveUsername", "weaveUsernameLabel", 
+    let elems = ["weaveUsername", "weaveUsernameLabel",
                  "weavePassword", "weavePasswordLabel",
-                 "weaveServerURL", "weaveServerURLLabel", 
+                 "weaveServerURL", "weaveServerURLLabel",
                  "signInButton", "createAccountButton", "serverType"]
     let pbEnabled = Weave.Svc.Private.privateBrowsingEnabled;
     for (let i = 0;i < elems.length;i++)
@@ -173,7 +173,7 @@ let gWeavePane = {
   handleConnectCommand: function () {
     Weave.Service.isLoggedIn ? Weave.Service.logout() : Weave.Service.login();
   },
-  
+
   startOver: function () {
     Weave.Service.logout();
     Weave.Svc.Prefs.resetBranch("");
@@ -185,13 +185,13 @@ let gWeavePane = {
   recoverPassword: function () {
     let ok = Weave.Service.requestPasswordReset(Weave.Service.username);
     if (ok) { // xxxmpc: FIXME
-      Weave.Svc.Prompt.alert(window, 
+      Weave.Svc.Prompt.alert(window,
                              this.bundle.getString("recoverPasswordSuccess.title"),
                              this.bundle.getString("recoverPasswordSuccess.label"));
     }
     else {
       // this should never ever get hit, so shouldn't get localized
-      alert("Account name not on record, maybe it was deleted? EWTF_NO_ACCOUNT"); 
+      alert("Account name not on record, maybe it was deleted? EWTF_NO_ACCOUNT");
     }
   },
 
@@ -216,7 +216,7 @@ let gWeavePane = {
       document.getElementById("engine.passwords").value = true;
       document.getElementById("engine.history").value   = true;
       document.getElementById("engine.tabs").value      = true;
-      document.getElementById("engine.prefs").value     = true;    
+      document.getElementById("engine.prefs").value     = true;
     }
   },
 
@@ -246,7 +246,7 @@ let gWeavePane = {
 
 
   handleExpanderClick: function () {
-    // ok, this is pretty evil, and likely fragile if the prefwindow 
+    // ok, this is pretty evil, and likely fragile if the prefwindow
     // binding changes, but that won't happen in 3.6 *fingers crossed*
     let prefwindow = document.getElementById("BrowserPreferences");
     let pane = document.getElementById("paneWeaveServices");
@@ -255,7 +255,7 @@ let gWeavePane = {
 
     let expander = document.getElementById("manageAccountExpander");
     let expand = expander.className == "expander-down";
-    expander.className = 
+    expander.className =
        expand ? "expander-up" : "expander-down";
     document.getElementById("manageAccountControls").hidden = !expand;
 
@@ -263,17 +263,17 @@ let gWeavePane = {
     if (prefwindow._shouldAnimate)
       prefwindow.animate("null", pane);
   },
-  
+
   goBack: function () {
     this.page -= 1;
   },
-  
+
   doSignIn: function () {
     Weave.Svc.Prefs.set("firstSync", "notReady");
     Weave.Service.username = document.getElementById("weaveUsername").value;
     Weave.Service.password = document.getElementById("weavePassword").value;
     Weave.Service.passphrase = document.getElementById("weavePassphrase").value;
-    let serverURI = 
+    let serverURI =
       Weave.Utils.makeURI(document.getElementById("weaveServerURL").value);
     if (serverURI && !this._usingMainServers)
       Weave.Service.serverURL = serverURI.spec;

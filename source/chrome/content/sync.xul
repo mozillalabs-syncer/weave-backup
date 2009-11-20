@@ -14,7 +14,7 @@
                       src="chrome://weave/locale/sync.properties"/>
     </stringbundleset>
 
-    <!-- For Firefox -->    
+    <!-- For Firefox -->
     <menupopup id="menu_ToolsPopup">
         <menu id="sync-menu" insertafter="menu_openAddons"/>
     </menupopup>

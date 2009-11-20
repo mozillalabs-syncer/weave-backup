@@ -8,10 +8,10 @@
     <em:version>@weave_version@</em:version>
     <em:type>2</em:type>
 
-   
-    <!-- Target Applications this extension can install into, 
-         with minimum and maximum supported versions. --> 
-     
+
+    <!-- Target Applications this extension can install into,
+         with minimum and maximum supported versions. -->
+
     <!-- Firefox -->
     <em:targetApplication>
       <Description>
@@ -48,7 +48,7 @@
       </Description>
     </em:targetApplication>
 
-   
+
     <!-- Front End MetaData -->
     <em:name>Weave</em:name>
     <em:description>Weave is the Mozilla Labs prototype for online services.</em:description>
@@ -57,5 +57,5 @@
     @update_url_tag@
     <em:iconURL>chrome://weave/skin/sync-32x32.png</em:iconURL>
     <em:optionsURL>chrome://weave/content/options.xul</em:optionsURL>
-  </Description>      
+  </Description>
 </RDF>

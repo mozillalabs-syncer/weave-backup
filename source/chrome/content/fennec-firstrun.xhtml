@@ -18,7 +18,7 @@
     getInterface(Ci.nsIDOMWindow).QueryInterface(Ci.nsIDOMChromeWindow);
   let doc = chromeWin.document;
   let ev = chromeWin.ExtensionsView;
-  
+
   function showConnect() {
     doc.getElementById("tool-panel-open").click();
     setTimeout(function() {

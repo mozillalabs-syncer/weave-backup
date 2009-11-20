@@ -39,8 +39,8 @@ function TbWeaveGlue() {
   this._log = Log4Moz.repository.getLogger("Chrome.Window");
   this._log.info("Initializing Thunderbird Weave embedding\n");
 }
-    
-TbWeaveGlue.prototype = {   
+
+TbWeaveGlue.prototype = {
   _log: null,
 }
 

@@ -144,7 +144,7 @@ WeaveWindow.prototype = {
     let description =
       this._stringBundle.getFormattedString("error.login.description", [reason]);
 
-    let notification = new Weave.Notification(title, description, null, 
+    let notification = new Weave.Notification(title, description, null,
                                               Weave.Notifications.PRIORITY_WARNING);
     Weave.Notifications.replaceTitle(notification);
   },
@@ -176,7 +176,7 @@ WeaveWindow.prototype = {
 
   _onSyncEnd: function WeaveWin__onSyncEnd(status) {
     this._setStatus("idle");
-    
+
     let title = this._stringBundle.getString("error.sync.title");
     if (!status) {
       let error = Weave.Utils.getErrorString(Weave.Status.sync);
@@ -211,10 +211,10 @@ WeaveWindow.prototype = {
           function() { gWeaveWin.doSync(); return true; }
         ));
       }
-      
+
       let notification =
         new Weave.Notification(title, description, null, priority, buttons);
-      Weave.Notifications.replaceTitle(notification); 
+      Weave.Notifications.replaceTitle(notification);
     }
     // Clear out sync failures on a successful sync
     else
@@ -314,9 +314,9 @@ WeaveWindow.prototype = {
     let priority = 0;
     for (let i = 0;i < notifications.length;i++)
       priority = Math.max(notifications[i].priority, priority);
-      
-    let image = priority >= Weave.Notifications.PRIORITY_WARNING ? 
-                "chrome://global/skin/icons/warning-16.png" : 
+
+    let image = priority >= Weave.Notifications.PRIORITY_WARNING ?
+                "chrome://global/skin/icons/warning-16.png" :
                 "chrome://global/skin/icons/information-16.png";
     document.getElementById("sync-notifications-button").image = image;
   },

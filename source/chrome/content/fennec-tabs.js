@@ -6,7 +6,7 @@ const Ci = Components.interfaces;
 
 let RemoteTabViewer = {
   _remoteClients: null,
-  
+
   show: function RemoteTabViewer_show() {
     // Get all of the remote tabs and populate the list.
     let tabEngine = Weave.Engines.get("tabs");
@@ -20,7 +20,7 @@ let RemoteTabViewer = {
       item.setAttribute("class", "center");
       item.src = "chrome://weave/skin/sync-throbber-24x24-active.apng";
       document.getElementsByTagName('body')[0].appendChild(item);
-      
+
       // Reload in 3 seconds
       setTimeout('document.location.reload()', 3000);
     }
@@ -47,7 +47,7 @@ let RemoteTabViewer = {
         location.reload();
     }, 0);
   },
-  
+
   _populateTabs: function RemoteTabViewer__populateTabs(holder) {
     // Clear out all child elements from holder first, so we don't
     // end up adding duplicate rows.
@@ -81,11 +81,11 @@ let RemoteTabViewer = {
           window.location = pageUrl;
         }, false)
         item.setAttribute("class", "tab");
-        
+
         let img = document.createElement("img");
         img.setAttribute("class", "icon");
         img.src = "chrome://weave/skin/tab.png";
-      
+
         let tabDiv = document.createElement("div");
         tabDiv.setAttribute("class", "info");
         let titleNode = document.createElement("div");
@@ -96,10 +96,10 @@ let RemoteTabViewer = {
         urlNode.innerHTML = trim(pageUrl);
         tabDiv.appendChild(titleNode);
         tabDiv.appendChild(urlNode);
-      
+
         item.appendChild(img);
         item.appendChild(tabDiv);
-      
+
         // Append the client name if we haven't yet
         if (appendClient) {
           appendClient = false;

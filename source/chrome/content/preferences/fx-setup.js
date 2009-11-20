@@ -11,15 +11,15 @@ var gWeaveSetup = {
   status: { username: false, password: false, email: false, server: false},
 
   get captchaBrowser() {
-    delete this.captchaBrowser; 
+    delete this.captchaBrowser;
     return this.captchaBrowser =document.getElementById("captcha");
   },
 
   get bundle() {
-    delete this.bundle; 
+    delete this.bundle;
     return this.bundle = document.getElementById("weavePrefStrings");
   },
-  
+
   get wizard() {
     delete this.wizard;
     return this.wizard = document.getElementById("accountSetup");
@@ -32,7 +32,7 @@ var gWeaveSetup = {
 
     this.wizard.getButton("finish").label = this.bundle.getString("startSyncing.label");
     this.onServerChange();
-    this.captchaBrowser.addProgressListener(this); 
+    this.captchaBrowser.addProgressListener(this);
   },
 
   _checkForNoScript: function() {
@@ -51,15 +51,15 @@ var gWeaveSetup = {
       document.getElementById("engine.passwords").checked = true;
       document.getElementById("engine.history").checked   = true;
       document.getElementById("engine.tabs").checked      = true;
-      document.getElementById("engine.prefs").checked     = true;    
+      document.getElementById("engine.prefs").checked     = true;
     }
   },
-  
+
   // fun with validation!
   checkFields: function () {
     this.wizard.canAdvance = this.readyToAdvance();
   },
-  
+
   readyToAdvance: function () {
     switch (this.wizard.currentPage.pageIndex) {
       case 0: // first page
@@ -159,7 +159,7 @@ var gWeaveSetup = {
         let error = Weave.Service.createAccount(username, password, email,
                                                 this._captchaChallenge, response);
         this.startThrobber(false);
-        
+
         if (error == null) {
           Weave.Service.username = username;
           Weave.Service.password = password;
@@ -168,8 +168,8 @@ var gWeaveSetup = {
         }
 
         // this could be nicer, but it'll do for now
-        Weave.Svc.Prompt.alert(window, 
-                               this.bundle.getString("errorCreatingAccount.title"), 
+        Weave.Svc.Prompt.alert(window,
+                               this.bundle.getString("errorCreatingAccount.title"),
                                Weave.Utils.getErrorString(error));
         return false;
       case 2:
@@ -233,11 +233,11 @@ var gWeaveSetup = {
     this.status.server = valid;
     this.checkFields();
   },
-  
+
   onCaptchaLoaded: function () {
     this._captchaChallenge = this.captchaBrowser.contentDocument.getElementById("recaptcha_challenge_field").value;
   },
-  
+
   // sets class and string on a feedback element
   // if no property string is passed in, we clear label/style
   _setFeedbackMessage: function (element, success, string) {
@@ -260,7 +260,7 @@ var gWeaveSetup = {
       return this;
     throw Cr.NS_NOINTERFACE;
   },
-     
+
   onStateChange: function(webProgress, request, stateFlags, status) {
     if (stateFlags & Ci.nsIWebProgressListener.STATE_STOP)
       this.onCaptchaLoaded();

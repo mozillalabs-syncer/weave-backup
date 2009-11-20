@@ -4,12 +4,12 @@
 <?xml-stylesheet href="chrome://weave/content/login.css" type="text/css"?>
 
 <dialog xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-        id="change-dialog" 
+        id="change-dialog"
         windowtype="Weave:ChangeSomething"
         buttons="accept,cancel"
         ondialogcancel="return true;"
         defaultButton="accept">
-    
+
   <script type="application/x-javascript" src="chrome://weave/content/load-weave.js"/>
   <script type="application/x-javascript" src="chrome://weave/content/generic-change.js"/>
 

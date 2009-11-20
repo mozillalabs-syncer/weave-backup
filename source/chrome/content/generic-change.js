@@ -10,53 +10,53 @@ let Change = {
         .getService(Ci.nsIObserverService);
     return this.__os;
   },
-  
+
   get _stringBundle() {
     let stringBundle = document.getElementById("weaveStringBundle");
     this.__defineGetter__("_stringBundle", function() { return stringBundle; });
     return this._stringBundle;
   },
-  
+
   get _dialog() {
     delete this._dialog;
     return this._dialog = document.getElementById("change-dialog");
   },
-  
+
   get _title() {
     delete this._title;
     return this._title = document.getElementById("mainTitle");
   },
-  
+
   get _status() {
     delete this._status;
     return this._status = document.getElementById("mainStatus");
   },
-  
+
   get _statusIcon() {
     delete this._statusIcon;
     return this._statusIcon = document.getElementById("mainStatusIcon");
   },
-  
+
   get _oldBoxRow() {
     delete this._oldBoxRow;
     return this._oldBoxRow = document.getElementById("oldBoxRow");
   },
-  
+
   get _currentBox() {
     delete this._currentBox;
     return this._currentBox = document.getElementById("currentBoxText");
   },
-  
+
   get _firstBox() {
     delete this._firstBox;
     return this._firstBox = document.getElementById("textBox1");
   },
-  
+
   get _secondBox() {
     delete this._secondBox;
     return this._secondBox = document.getElementById("textBox2");
   },
-  
+
   onLoad: function Change_onLoad() {
     this._log = Log4Moz.repository.getLogger("Chrome.Change");
     this._log.trace("Sync login window opened");
@@ -65,7 +65,7 @@ let Change = {
     let cboxlabel = document.getElementById("currentBoxLabel");
     let box1label = document.getElementById("textBox1Label");
     let box2label = document.getElementById("textBox2Label");
-    
+
     switch (Weave.Utils._genericDialogType) {
       case "ResetPassphrase":
         this._title.value = this._stringBundle.getString(
@@ -131,7 +131,7 @@ let Change = {
     this._os.addObserver(this, "weave:service:resetpph:error", false);
     this._os.addObserver(this, "weave:service:resetpph:finish", false);
   },
-  
+
   shutDown: function Change_shutDown() {
     this._os.removeObserver(this, "weave:service:changepwd:start", false);
     this._os.removeObserver(this, "weave:service:changepwd:error", false);
@@ -142,10 +142,10 @@ let Change = {
     this._os.removeObserver(this, "weave:service:resetpph:start", false);
     this._os.removeObserver(this, "weave:service:resetpph:error", false);
     this._os.removeObserver(this, "weave:service:resetpph:finish", false);
-    
+
     this._log.trace("Change window closed");
   },
-  
+
   observe: function Change_observer(subject, topic, data) {
     switch (topic) {
       case "weave:service:resetpph:start":
@@ -175,7 +175,7 @@ let Change = {
         break;
     }
   },
-  
+
   doResetPassphrase: function Change_doResetPassphrase() {
     if (!this._firstBox.value || !this._secondBox.value) {
       alert(this._stringBundle.getString("noPassphrase.alert"));
@@ -185,7 +185,7 @@ let Change = {
       this._status.value = this._stringBundle.getString(
         "reset.passphrase.label"
       );
-      
+
       if (Weave.Service.resetPassphrase(this._firstBox.value)) {
         this._status.value = this._stringBundle.getString(
           "reset.passphrase.success"
@@ -200,7 +200,7 @@ let Change = {
 
     return false;
   },
-  
+
   doChangePassphrase: function Change_doChangePassphrase() {
     if (!this._firstBox.value || !this._secondBox.value) {
       alert(this._stringBundle.getString("noPassphrase.alert"));
@@ -226,7 +226,7 @@ let Change = {
 
     return false;
   },
-  
+
   doChangePassword: function Change_doChangePassword() {
     if (!this._firstBox.value || !this._secondBox.value) {
       alert(this._stringBundle.getString("noPassword.alert"));
@@ -246,7 +246,7 @@ let Change = {
       this._status.value = this._stringBundle.getString(
         "change.password.status.active"
       );
-      
+
       if (Weave.Service.changePassword(this._firstBox.value)) {
         this._status.value = this._stringBundle.getString(
           "change.password.status.success"
