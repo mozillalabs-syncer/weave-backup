@@ -46,6 +46,9 @@ if (typeof Cr == "undefined")
   var Cr = Components.results;
 
 function WeaveWindow() {
+  if (window.location.href != getBrowserURL())
+    return;
+
   let obs = [["weave:service:sync:start", "onSyncStart"],
     ["weave:service:sync:finish", "onSyncFinish"],
     ["weave:service:sync:error", "onSyncError"],
@@ -86,8 +89,6 @@ function WeaveWindow() {
     this.onLoginFinish();
   else
     this._setStatus("offline");
-
-  Weave.Service.onWindowOpened();
 }
 WeaveWindow.prototype = {
   get _isTopBrowserWindow() {

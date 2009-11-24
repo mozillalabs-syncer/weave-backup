@@ -108,7 +108,7 @@ FxWeaveGlue.prototype = {
 
     // Open the new tab:
     let urlHistory = tabData.urlHistory;
-    let newTab = gBrowser.addTab(urlHistory[0]);
+    let newTab = openUILinkIn(urlHistory[0], "tab");
 
     /* Turn url history into a json string that we can pass to sessionStore
      * in order to restore the tab's history. */
