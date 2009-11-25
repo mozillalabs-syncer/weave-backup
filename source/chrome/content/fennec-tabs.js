@@ -18,7 +18,7 @@ let RemoteTabViewer = {
     } else {
       let item = document.createElement("img");
       item.setAttribute("class", "center");
-      item.src = "chrome://weave/skin/sync-throbber-24x24-active.apng";
+      item.src = "chrome://weave/skin/sync-throbber-16x16-active.apng";
       document.getElementsByTagName('body')[0].appendChild(item);
 
       // Reload in 3 seconds
