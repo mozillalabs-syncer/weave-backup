@@ -144,7 +144,7 @@
             </hbox>
           </groupbox>
         </vbox>
-        <vbox id="mergeOptionsChoice">
+        <vbox id="mergeOptionsChoice" align="left">
           <groupbox align="start" orient="horizontal">
             <caption label="&choice.caption.label;"/>
             <button id="doMerge" class="mergeChoiceButton" oncommand="gWeavePane.handleChoice(event)" align="top">
@@ -181,6 +181,8 @@
               </vbox>
             </button>
           </groupbox>
+          <button label="&startOver.label;"
+                  oncommand="gWeavePane.startOver()"/>
         </vbox>
         <vbox id="mergeOptionsConfirm">
           <groupbox pack="center">
