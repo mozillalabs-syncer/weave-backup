@@ -64,9 +64,9 @@ let RemoteTabViewer = {
       // Create the client node, but don't add it in-case we don't show any tabs
       let appendClient = true;
       let nameNode = document.createElement("h2");
-      nameNode.innerHTML = client.getClientName();
+      nameNode.innerHTML = client.clientName;
 
-      client.getAllTabs().forEach(function({title, urlHistory}) {
+      client.tabs.forEach(function({title, urlHistory}) {
         let pageUrl = urlHistory[0];
 
         // Skip tabs that are already open

@@ -61,10 +61,10 @@ FxWeaveGlue.prototype = {
 
     for (clientId in remoteClients) {
       let remoteClient = remoteClients[clientId];
-      let label = "Tabs from " + remoteClient.getClientName() + ":";
+      let label = remoteClient.clientName;
       let menuitem = menu.appendItem(label);
       menuitem.setAttribute( "disabled", true );
-      let allTabs = remoteClient.getAllTabs();
+      let allTabs = remoteClient.tabs;
       for (tabId = 0; tabId < allTabs.length; tabId++) {
         let tab = allTabs[tabId];
         // Skip tabs with empty history, e.g. just-opened tabs
@@ -104,7 +104,7 @@ FxWeaveGlue.prototype = {
     let tabId = values[1];
     let clients = Weave.Engines.get("tabs").getAllClients();
     let remoteClient = clients[clientId];
-    let tabData = remoteClient.getAllTabs()[tabId];
+    let tabData = remoteClient.tabs[tabId];
 
     // Open the new tab:
     let urlHistory = tabData.urlHistory;
