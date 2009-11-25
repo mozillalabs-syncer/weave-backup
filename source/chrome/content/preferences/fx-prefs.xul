@@ -245,7 +245,7 @@
             <grid>
               <rows>
                 <row align="center">
-                  <label value="&connectedAs.label;" control="weaveUser"/>
+                  <label value="&currentUser.label;" control="weaveUser"/>
                   <textbox id="currentUser" readonly="true">
                     <image src="chrome://mozapps/skin/profile/profileicon.png"/>
                   </textbox>
