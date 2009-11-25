@@ -3,8 +3,12 @@
 <?xml-stylesheet href="chrome://browser/skin/preferences/preferences.css"?>
 <?xml-stylesheet href="chrome://weave/skin/fx-prefs.css"?>
 
-<!DOCTYPE window SYSTEM "chrome://weave/locale/fx-prefs.dtd">
-
+<!DOCTYPE window [
+<!ENTITY % brandDTD SYSTEM "chrome://branding/locale/brand.dtd">
+<!ENTITY % weaveDTD SYSTEM "chrome://weave/locale/fx-prefs.dtd">
+%brandDTD;
+%weaveDTD;
+]>
 <wizard id="accountSetup" title="&accountSetupTitle.label;"
         windowtype="Weave:AccountSetup"
         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"

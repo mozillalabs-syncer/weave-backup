@@ -6,7 +6,13 @@
 <?xml-stylesheet href="chrome://weave/skin/fx-prefs.css"?>
 <?xml-stylesheet href="chrome://weave-platform/skin/fx-prefs-platform.css"?>
 
-<!DOCTYPE window SYSTEM "chrome://weave/locale/fx-prefs.dtd">
+<!DOCTYPE window [
+<!ENTITY % brandDTD SYSTEM "chrome://branding/locale/brand.dtd">
+<!ENTITY % weaveDTD SYSTEM "chrome://weave/locale/fx-prefs.dtd">
+%brandDTD;
+%weaveDTD;
+]>
+
 
 <overlay id="weaveFxPrefsOverlay"
          xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
