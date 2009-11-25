@@ -30,6 +30,7 @@
         <preference id="engine.bookmarks" name="extensions.weave.engine.bookmarks" type="bool"/>
         <preference id="engine.history"   name="extensions.weave.engine.history"   type="bool"/>
         <preference id="engine.tabs"      name="extensions.weave.engine.tabs"      type="bool"/>
+        <preference id="tabs.backup"      name="extensions.weave.engine.tabs.backup" type="bool"/>
         <preference id="engine.prefs"     name="extensions.weave.engine.prefs"     type="bool"/>
         <preference id="engine.passwords" name="extensions.weave.engine.passwords" type="bool"/>
       </preferences>
@@ -311,7 +312,8 @@
                           preference="engine.prefs"/>
                 <checkbox label="&syncItem.history.label;"
                           preference="engine.history"/>
-                <checkbox label="&syncItem.tabs.label;"
+                <checkbox id="tabPref"
+                          label="&syncItem.tabs.label;"
                           preference="engine.tabs"/>
               </vbox>
             </deck>

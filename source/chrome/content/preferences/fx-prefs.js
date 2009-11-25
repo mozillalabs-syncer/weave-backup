@@ -16,6 +16,19 @@ let gWeavePane = {
     document.getElementById("weavePrefsDeck").selectedIndex = val;
   },
 
+  get prefArray() {
+    let prefs = ["engine.bookmarks",
+                 "engine.passwords",
+                 "engine.prefs",
+                 "engine.history"];
+    if (Weave.Service.numClients == 1)
+      prefs.push("tabs.backup");
+    else
+      prefs.push("engine.tabs");
+
+    return prefs;
+  },
+
   onLoginStart: function () {
     switch (this.page) {
       case "0":
@@ -123,11 +136,19 @@ let gWeavePane = {
 
     this.updateConnectButton();
     this.updateSetupButtons();
-
-    let syncEverything = this._checkDefaultValues(this._prefsForDefault);
+    
+    this.updateTabPref();
+    let syncEverything = this._checkDefaultValues();
     document.getElementById("weaveSyncMode").selectedIndex = syncEverything ? 0 : 1;
-    this.updateSyncPrefs();
+    document.getElementById("syncModeOptions").selectedIndex = syncEverything ? 0 : 1;
     this.checkFields();
+  },
+
+  updateTabPref: function () {
+    let singleClient = Weave.Service.numClients == 1;
+    let pref = singleClient ? "tabs.backup" : "engine.tabs";
+    document.getElementById("tabPref").setAttribute("preference", pref);
+    document.getElementById("tabPref").setAttribute("checked", document.getElementById(pref).value);
   },
 
   onServerChange: function () {
@@ -212,21 +233,11 @@ let gWeavePane = {
     document.getElementById("syncModeOptions").selectedIndex = syncEverything ? 0 : 1;
 
     if (syncEverything) {
-      document.getElementById("engine.bookmarks").value = true;
-      document.getElementById("engine.passwords").value = true;
-      document.getElementById("engine.history").value   = true;
-      document.getElementById("engine.tabs").value      = true;
-      document.getElementById("engine.prefs").value     = true;
+      let prefs = this.prefArray;
+      for (let i = 0; i < prefs.length; ++i)
+        document.getElementById(prefs[i]).value = true;
     }
   },
-
-  _prefsForDefault: [
-    "engine.bookmarks",
-    "engine.passwords",
-    "engine.tabs",
-    "engine.prefs",
-    "engine.history",
-  ],
 
   /**
    * Check whether all the preferences values are set to their default values
@@ -235,9 +246,10 @@ let gWeavePane = {
    * @returns boolean true if all of the prefs are set to their default values,
    *                  false otherwise
    */
-  _checkDefaultValues: function (aPrefs) {
-    for (let i = 0; i < aPrefs.length; ++i) {
-      let pref = document.getElementById(aPrefs[i]);
+  _checkDefaultValues: function () {
+    let prefs = this.prefArray;
+    for (let i = 0; i < prefs.length; ++i) {
+      let pref = document.getElementById(prefs[i]);
       if (pref.value != pref.defaultValue)
         return false;
     }
