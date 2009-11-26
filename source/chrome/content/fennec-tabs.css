@@ -1,6 +1,6 @@
 body {
     color: black;
-    font-family: Tahoma, Arial, Helvetica, sans-serif;
+    font-family: "Nokia Sans", Tahoma, Arial, Helvetica, sans-serif;
     margin: 0;
     padding: 0;
 }
@@ -14,7 +14,7 @@ h2 {
     font-size: 2.4mm;
     font-weight: bold;
     margin: 0;
-    padding-left: 1mm;
+    padding: 1mm;
 }
 
 .tab {
@@ -41,9 +41,10 @@ h2 {
 }
 .title {
     font-size: 2.4mm;
-    padding-bottom: 0.5mm;
+    margin-top: 0.2mm;
 }
 .url {
     color: blue;
     font-size: 1.8mm;
+    margin-top: 0.2mm;
 }

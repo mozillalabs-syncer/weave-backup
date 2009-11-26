@@ -66,7 +66,7 @@ let RemoteTabViewer = {
       let nameNode = document.createElement("h2");
       nameNode.innerHTML = client.clientName;
 
-      client.tabs.forEach(function({title, urlHistory}) {
+      client.tabs.forEach(function({title, urlHistory, icon}) {
         let pageUrl = urlHistory[0];
 
         // Skip tabs that are already open
@@ -84,7 +84,7 @@ let RemoteTabViewer = {
 
         let img = document.createElement("img");
         img.setAttribute("class", "icon");
-        img.src = "chrome://weave/skin/tab.png";
+        img.src = Weave.Utils.getIcon(icon, "chrome://weave/skin/tab.png");
 
         let tabDiv = document.createElement("div");
         tabDiv.setAttribute("class", "info");
