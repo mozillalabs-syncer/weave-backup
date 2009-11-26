@@ -18,6 +18,7 @@
 
 .mainDesc {
   font-weight: bold;
+  font-size: 110%;
 }
 
 .small {
@@ -25,28 +26,39 @@
 }
 
 .mergeChoiceButton {
-  height: 250px;
   -moz-appearance: none;
   background-color: #CCCCCC;
   -moz-border-radius: 7px;
+  border-width: 1px;
+  border-style: solid;
+  border-color: #CCCCCC;
+}
+
+.mergeChoiceButton#doMerge {
+  min-height: 8em;
 }
 
 .mergeChoiceButton:focus,
 .mergeChoiceButton:hover {
   background-color: #AAAAAA;
   cursor: pointer;
+  border-color: #222222 !important;
 }
 
-.mergeChoiceButton:hover:active {
+.mergeChoiceButton[selected="true"] {
   background-color: #888888;
+  border-color: black !important;
 }
 
 .mergeChoiceButtonBox {
-  width: 140px;
+  padding: 0.5em;
+  max-width: 425px;
+}
+
+.mergeChoiceBFBox {
+  max-width: 555px;
 }
 
 .mergeChoiceImage {
-  -moz-padding-start: 20px;
-  padding-top: 6px;
-  padding-bottom: 7px;
+  padding: 0.5em;
 }

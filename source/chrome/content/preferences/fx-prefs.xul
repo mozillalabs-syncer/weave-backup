@@ -150,45 +150,54 @@
             </hbox>
           </groupbox>
         </vbox>
-        <vbox id="mergeOptionsChoice" align="left">
-          <groupbox align="start" orient="horizontal">
+        <vbox id="mergeOptionsChoice">
+          <groupbox align="start">
             <caption label="&choice.caption.label;"/>
-            <button id="doMerge" class="mergeChoiceButton" oncommand="gWeavePane.handleChoice(event)" align="top">
-              <vbox flex="1" align="start" class="mergeChoiceButtonBox">
+            <radiogroup id="mergeChoiceRadio" pack="start" flex="0">
+              <radio id="doMerge" group="foo" class="mergeChoiceButton" align="top">
                 <image class="mergeChoiceImage" src="chrome://weave/skin/sync-merge.png"/>
-                <description class="mainDesc">
-                  &choice.merge.main.label;
-                </description>
-                <description>
-                  &choice.merge.secondary.label;
-                </description>
-              </vbox>
-            </button>
-            <button id="wipeClient" class="mergeChoiceButton" oncommand="gWeavePane.handleChoice(event)" align="top">
-              <vbox flex="1" align="start" class="mergeChoiceButtonBox">
-                <image class="mergeChoiceImage" src="chrome://weave/skin/sync-wipeClient.png"/>
-                <description class="mainDesc">
-                  &choice.client.main.label;
-                </description>
-                <description>
-                  &choice.client.secondary.label;
-                </description>
-              </vbox>
-            </button>
-            <button id="wipeServer" class="mergeChoiceButton" oncommand="gWeavePane.handleChoice(event)" align="top">
-              <vbox flex="1" align="start" class="mergeChoiceButtonBox">
-                <image class="mergeChoiceImage" src="chrome://weave/skin/sync-wipeServer.png"/>
-                <description class="mainDesc">
-                  &choice.server.main.label;
-                </description>
-                <description>
-                  &choice.server.secondary.label;
-                </description>
-              </vbox>
-            </button>
+                <vbox class="mergeChoiceButtonBox">
+                  <description class="mainDesc">
+                    &choice.merge.main.label;
+                  </description>
+                  <description>
+                    &choice.merge.secondary.label;
+                  </description>
+                  <description class="warning">
+                    &choice.merge.recommend.label;
+                  </description>
+                </vbox>
+              </radio>
+              <radio id="wipeClient" group="foo" class="mergeChoiceButton" align="top">
+                  <image class="mergeChoiceImage" src="chrome://weave/skin/sync-wipeClient.png"/>
+                  <vbox class="mergeChoiceButtonBox">
+                    <description class="mainDesc">
+                      &choice.client.main.label;
+                    </description>
+                    <description>
+                      &choice.client.secondary.label;
+                    </description>
+                  </vbox>
+              </radio>
+              <radio id="wipeServer" group="foo" class="mergeChoiceButton" align="top">
+                  <image class="mergeChoiceImage" src="chrome://weave/skin/sync-wipeServer.png"/>
+                  <vbox class="mergeChoiceButtonBox">
+                    <description class="mainDesc">
+                      &choice.server.main.label;
+                    </description>
+                    <description>
+                      &choice.server.secondary.label;
+                    </description>
+                  </vbox>
+              </radio>
+          </radiogroup>
           </groupbox>
-          <button label="&startOver.label;"
-                  oncommand="gWeavePane.startOver()"/>
+          <hbox class="mergeChoiceBFBox" align="end" pack="end">
+            <button label="&startOver.label;"
+                    oncommand="gWeavePane.startOver()"/>
+            <button label="&continue.label;"
+                    oncommand="gWeavePane.handleChoice()"/>
+          </hbox>
         </vbox>
         <vbox id="mergeOptionsConfirm">
           <groupbox pack="center">

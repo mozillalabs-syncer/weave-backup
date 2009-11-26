@@ -166,20 +166,10 @@ let gWeavePane = {
       document.getElementById(elems[i]).disabled = pbEnabled;
   },
 
-  handleChoice: function (event) {
-    let desc = 0;
-    switch (event.target.id) {
-      case "wipeServer":
-        desc = 2;
-        break;
-      case "wipeClient":
-        desc = 1;
-        break;
-      case "doMerge":
-        break;
-    }
-    this.page = 3;
+  handleChoice: function () {
+    let desc = document.getElementById("mergeChoiceRadio").selectedIndex;
     document.getElementById("chosenActionDeck").selectedIndex = desc;
+    this.page = 3;
   },
 
   updateConnectButton: function () {
