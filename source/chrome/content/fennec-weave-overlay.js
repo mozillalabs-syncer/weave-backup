@@ -90,7 +90,7 @@ let WeaveGlue = {
   },
 
   _openTab: function _openTab(url) {
-    Browser.addTab(url, true);
+    BrowserUI.newTab(url);
   },
 
   _handlePrefs: function _handlePrefs() {
