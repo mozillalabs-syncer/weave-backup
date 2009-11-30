@@ -133,6 +133,10 @@ let WeaveGlue = {
   },
 
   _updateOptions: function _updateOptions() {
+    // Make sure we're online when connecting/syncing
+    if (typeof Util.forceOnline == "function")
+      Util.forceOnline();
+
     // Can't do anything before settings are loaded
     if (this._settings == null)
       return;
