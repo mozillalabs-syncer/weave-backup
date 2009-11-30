@@ -1,9 +1,9 @@
 body {
   background: white url(chrome://browser/skin/images/aboutBackground.png) top center repeat-x;
   color: #4b4742;
-  font-size: 2.0mm;
+  font-size: 24px;
 }
 
 input[type=button] {
-  font-size: 2.4mm;
+  font-size: 24px;
 }
