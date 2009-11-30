@@ -64,7 +64,7 @@ let RemoteTabViewer = {
       // Create the client node, but don't add it in-case we don't show any tabs
       let appendClient = true;
       let nameNode = document.createElement("h2");
-      nameNode.innerHTML = client.clientName;
+      nameNode.textContent = client.clientName;
 
       client.tabs.forEach(function({title, urlHistory, icon}) {
         let pageUrl = urlHistory[0];
@@ -90,10 +90,10 @@ let RemoteTabViewer = {
         tabDiv.setAttribute("class", "info");
         let titleNode = document.createElement("div");
         titleNode.setAttribute("class", "title");
-        titleNode.innerHTML = trim(title);
+        titleNode.textContent = trim(title);
         let urlNode = document.createElement("div");
         urlNode.setAttribute("class", "url");
-        urlNode.innerHTML = trim(pageUrl);
+        urlNode.textContent = trim(pageUrl);
         tabDiv.appendChild(titleNode);
         tabDiv.appendChild(urlNode);
 
@@ -112,7 +112,7 @@ let RemoteTabViewer = {
 
     if (holder.childNodes.length == 0) {
       let item = document.createElement("h1");
-      item.innerHTML = "No remote tabs synced!";
+      item.textContent = "No remote tabs synced!";
       document.getElementsByTagName('body')[0].appendChild(item);
     }
   }
