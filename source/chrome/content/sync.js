@@ -260,15 +260,15 @@ WeaveWindow.prototype = {
   },
 
   doLogin: function WeaveWin_doLogout(event) {
-    Weave.Service.login();
+    setTimeout(function() Weave.Service.login(), 0);
   },
 
   doLogout: function WeaveWin_doLogout(event) {
-    Weave.Service.logout();
+    setTimeout(function() Weave.Service.logout(), 0);
   },
 
   doSync: function WeaveWin_doSync(event) {
-    Weave.Service.sync();
+    setTimeout(function() Weave.Service.sync(), 0);
   },
 
   doOpenActivityLog: function WeaveWin_doOpenActivityLog(event) {
