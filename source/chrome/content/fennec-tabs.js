@@ -57,8 +57,6 @@ let RemoteTabViewer = {
         holder.removeChild(holder.firstChild);
     }
 
-    let trim = function(s) s.length > 80 ? s.substr(0, 80) + "\u2026" : s;
-
     // Generate the list of tabs
     for (let [guid, client] in Iterator(this._remoteClients)) {
       // Create the client node, but don't add it in-case we don't show any tabs
@@ -90,10 +88,10 @@ let RemoteTabViewer = {
         tabDiv.setAttribute("class", "info");
         let titleNode = document.createElement("div");
         titleNode.setAttribute("class", "title");
-        titleNode.textContent = trim(title);
+        titleNode.textContent = title;
         let urlNode = document.createElement("div");
         urlNode.setAttribute("class", "url");
-        urlNode.textContent = trim(pageUrl);
+        urlNode.textContent = pageUrl;
         tabDiv.appendChild(titleNode);
         tabDiv.appendChild(urlNode);
 

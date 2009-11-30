@@ -11,16 +11,16 @@ h1 {
 }
 h2 {
     background-color: lightgray;
-    font-size: 2.4mm;
+    font-size: 24px;
     font-weight: bold;
     margin: 0;
-    padding: 1mm;
+    padding: 8px;
 }
 
 .tab {
-    border-bottom: solid 0.1mm rgb(207,207,207);
-    min-height: 6mm;
-    padding: 0.2mm 0.5mm;
+    border-bottom: solid 1px rgb(207, 207, 207);
+    min-height: 70px;
+    padding-right: 32px;
     position: relative;
 }
 .tab:last-child {
@@ -28,23 +28,23 @@ h2 {
 }
 .icon {
     height: 32px;
-    left: 1.5mm;
+    left: 16px;
     position: absolute;
-    top: 0.5mm;
+    top: 4px;
     width: 32px;
 }
 .info {
     margin-left: 32px;
     overflow: hidden;
-    padding-left: 3.5mm;
+    padding-left: 32px;
     white-space: nowrap;
 }
 .title {
-    font-size: 2.4mm;
-    margin-top: 0.2mm;
+    font-size: 24px;
+    margin-top: 4px;
 }
 .url {
     color: blue;
-    font-size: 1.8mm;
-    margin-top: 0.2mm;
+    font-size: 18px;
+    margin-top: 4px;
 }
