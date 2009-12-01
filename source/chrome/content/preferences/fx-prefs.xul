@@ -167,7 +167,8 @@
                   <description>
                     &choice.merge.secondary.label;
                   </description>
-                  <description class="warning">
+                  <separator class="thin"/>
+                  <description class="normal">
                     &choice.merge.recommend.label;
                   </description>
                 </vbox>
@@ -211,11 +212,11 @@
                 <hbox pack="start" align="baseline">
                   <image src="chrome://weave/skin/sync-merge.png"/>
                 </hbox>
-                <separator/>
-                <description>
+                <separator class="thin"/>
+                <description class="normal">
                   &confirm.merge.label;
                 </description>
-                <separator/>
+                <separator class="thin"/>
                 <hbox align="end" pack="end">
                   <button label="&goBack.label;" oncommand="gWeavePane.goBack()"/>
                   <button label="&confirm.merge.start.label;" oncommand="gWeavePane.setupInitialSync('merge')"/>
@@ -225,15 +226,21 @@
                 <hbox pack="start" align="baseline">
                   <image src="chrome://weave/skin/sync-wipeClient.png"/>
                 </hbox>
-                <separator/>
-                <description>
+                <separator class="thin"/>
+                <description class="normal">
                   &confirm.client.label;
                 </description>
-                <separator/>
+                <separator class="thin"/>
+                <vbox id="dataList">
+                  <label class="data indent" id="bookmarkCount"/>
+                  <label class="data indent" id="historyCount"/>
+                  <label class="data indent" id="passwordCount"/>
+                </vbox>
+                <separator class="thin"/>
                 <description class="warning">
                   &confirm.client.warning.label;
                 </description>
-                <separator/>
+                <separator class="thin"/>
                 <hbox align="end" pack="end">
                   <button label="&goBack.label;" oncommand="gWeavePane.goBack()"/>
                   <button label="&confirm.client.start.label;"
@@ -244,15 +251,18 @@
                 <hbox pack="start" align="baseline">
                   <image src="chrome://weave/skin/sync-wipeServer.png"/>
                 </hbox>
-                <separator/>
-                <description>
+                <separator class="thin"/>
+                <description class="normal">
                   &confirm.server.label;
                 </description>
-                <separator/>
+                <separator class="thin"/>
+                <vbox id="clientList">
+                </vbox>
+                <separator class="thin"/>
                 <description class="warning">
                   &confirm.server.warning.label;
                 </description>
-                <separator/>
+                <separator class="thin"/>
                 <hbox align="end" pack="end">
                   <button label="&goBack.label;" oncommand="gWeavePane.goBack()"/>
                   <button label="&confirm.server.start.label;" oncommand="gWeavePane.setupInitialSync('wipeRemote')"/>

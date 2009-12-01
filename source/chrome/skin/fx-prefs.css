@@ -14,6 +14,8 @@
 
 .warning {
   font-weight: bold;
+  font-size: 100%;
+  color: red;
 }
 
 .mainDesc {
@@ -21,8 +23,13 @@
   font-size: 110%;
 }
 
-.small {
+.normal {
+  font-size: 100%;
+}
+
+.data {
   font-size: 90%;
+  font-weight: bold;
 }
 
 .mergeChoiceButton {
@@ -38,7 +45,6 @@
   min-height: 8em;
 }
 
-.mergeChoiceButton:focus,
 .mergeChoiceButton:hover {
   background-color: #AAAAAA;
   cursor: pointer;
@@ -48,6 +54,10 @@
 .mergeChoiceButton[selected="true"] {
   background-color: #888888;
   border-color: black !important;
+}
+
+.mergeChoiceButton[selected="true"][focused="true"] {
+  background-color: #9A9A9A;
 }
 
 .mergeChoiceButtonBox {

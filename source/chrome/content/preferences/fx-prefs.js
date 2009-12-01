@@ -125,6 +125,7 @@ let gWeavePane = {
     if (Weave.Service.username &&
         Weave.Svc.Prefs.get("firstSync", "") == "notReady") {
       this.page = 2;
+      Weave.Clients.sync();
     }
     else if (Weave.Service.username) {
       this.page = 4;
@@ -169,6 +170,79 @@ let gWeavePane = {
   handleChoice: function () {
     let desc = document.getElementById("mergeChoiceRadio").selectedIndex;
     document.getElementById("chosenActionDeck").selectedIndex = desc;
+    switch (desc) {
+      case 1:
+        if (this._case1Setup)
+          break;
+
+        // history
+        let db = Weave.Svc.History.DBConnection;
+
+        let daysOfHistory = 0;
+        let stm = db.createStatement(
+          "SELECT ROUND(( " +
+            "strftime('%s','now','localtime','utc') - " +
+            "( " +
+              "SELECT visit_date FROM moz_historyvisits " +
+              "UNION ALL " +
+              "SELECT visit_date FROM moz_historyvisits_temp " +
+              "ORDER BY visit_date ASC LIMIT 1 " +
+              ")/1000000 " +
+            ")/86400) AS daysOfHistory ");
+
+        if (stm.step())
+          daysOfHistory = stm.getInt32(0);
+        document.getElementById("historyCount").value =
+          this.bundle.getFormattedString("historyCount.label",  [daysOfHistory]);
+          
+        // bookmarks
+        let bookmarks = 0;
+        stm = db.createStatement(
+          "SELECT count(*) AS bookmarks " + 
+          "FROM moz_bookmarks b " + 
+          "LEFT JOIN moz_bookmarks t ON " +
+          "b.parent = t.id WHERE b.type = 1 AND t.parent <> :tag");
+        stm.params.tag = Weave.Svc.Bookmark.tagsFolder;
+        if (stm.executeStep())
+          bookmarks = stm.row.bookmarks;
+        document.getElementById("bookmarkCount").value =
+          this.bundle.getFormattedString("bookmarkCount.label", [bookmarks]);
+
+        // passwords
+        let logins = Weave.Svc.Login.getAllLogins({});
+        document.getElementById("passwordCount").value =
+          this.bundle.getFormattedString("passwordCount.label",  [logins.length]);
+        this._case1Setup = true;
+        break;
+      case 2:
+        if (this._case2Setup)
+          break;
+        let count = 0;
+        function appendNode(label) {
+          let box = document.getElementById("clientList");
+          let node = document.createElement("label");
+          node.setAttribute("value", label);
+          node.setAttribute("class", "data indent");
+          box.appendChild(node);
+        }
+        let prevName = "";
+        for each (let {name} in Weave.Clients.getClients()) {
+          if (name != prevName) {
+            count++;
+            if (count < 5)
+              appendNode(name);
+          }
+          prevName = name;
+        }
+        if (count > 5) {
+          let label = 
+            this.bundle.getFormattedString("additionalClients.label", [count - 5]);
+          appendNode(label);
+        }
+        this._case2Setup = true;
+        break; 
+    }
+
     this.page = 3;
   },
 
