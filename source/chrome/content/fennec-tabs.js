@@ -5,28 +5,12 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 
 let RemoteTabViewer = {
-  _remoteClients: null,
-
   show: function RemoteTabViewer_show() {
-    // Get all of the remote tabs and populate the list.
-    let tabEngine = Weave.Engines.get("tabs");
-    if (tabEngine) {
-      this._remoteClients = tabEngine.getAllClients();
-      let list = document.getElementById("tabList");
-      this._populateTabs(list);
-      this._refetchTabs(tabEngine);
-    } else {
-      let item = document.createElement("img");
-      item.setAttribute("class", "center");
-      item.src = "chrome://weave/skin/sync-throbber-16x16-active.apng";
-      document.getElementsByTagName('body')[0].appendChild(item);
-
-      // Reload in 3 seconds
-      setTimeout('document.location.reload()', 3000);
-    }
+    this._populateTabs();
+    this._refetchTabs();
   },
 
-  _refetchTabs: function _refetchTabs(engine) {
+  _refetchTabs: function _refetchTabs() {
     // Don't bother refetching tabs if we already did so recently
     let lastFetch = Weave.Svc.Prefs.get("lastTabFetch", 0);
     let now = Math.floor(Date.now() / 1000);
@@ -35,6 +19,7 @@ let RemoteTabViewer = {
 
     // Asynchronously fetch the tabs
     setTimeout(function() {
+      let engine = Weave.Engines.get("tabs");
       let lastSync = engine.lastSync;
 
       // Force a sync only for the tabs engine
@@ -48,17 +33,18 @@ let RemoteTabViewer = {
     }, 0);
   },
 
-  _populateTabs: function RemoteTabViewer__populateTabs(holder) {
+  _populateTabs: function _populateTabs() {
     // Clear out all child elements from holder first, so we don't
     // end up adding duplicate rows.
     let engine = Weave.Engines.get("tabs");
+    let holder = document.getElementById("tabList");
     if (holder.hasChildNodes()) {
       while (holder.childNodes.length >= 1)
         holder.removeChild(holder.firstChild);
     }
 
     // Generate the list of tabs
-    for (let [guid, client] in Iterator(this._remoteClients)) {
+    for (let [guid, client] in Iterator(engine.getAllClients())) {
       // Create the client node, but don't add it in-case we don't show any tabs
       let appendClient = true;
       let nameNode = document.createElement("h2");

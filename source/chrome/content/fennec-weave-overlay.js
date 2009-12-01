@@ -36,11 +36,16 @@
 
 let WeaveGlue = {
   init: function init() {
+    this.remoteTabsDisabled = true;
     this._addListeners();
     this._handlePrefs();
 
     // Generating keypairs is expensive on mobile, so disable it
     Weave.Service.keyGenEnabled = false;
+  },
+
+  set remoteTabsDisabled(value) {
+    document.getElementById("openRemoteTabs-button").disabled = value;
   },
 
   openRemoteTabs: function openRemoteTabs() {
@@ -133,6 +138,8 @@ let WeaveGlue = {
   },
 
   _updateOptions: function _updateOptions() {
+    this.remoteTabsDisabled = false;
+
     // Make sure we're online when connecting/syncing
     if (typeof Util.forceOnline == "function")
       Util.forceOnline();

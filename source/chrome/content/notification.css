@@ -1,8 +1,11 @@
 #openRemoteTabs-button {
   list-style-image: url(chrome://weave/skin/weave-default-64.png);
 }
-#openRemoteTabs-button:hover:active {
+#openRemoteTabs-button:not([disabled]):hover:active {
   list-style-image: url(chrome://weave/skin/weave-active-64.png);
+}
+#openRemoteTabs-button[disabled] {
+  list-style-image: url(chrome://weave/skin/weave-disabled-64.png);
 }
 
 #sync-notifications-box {
