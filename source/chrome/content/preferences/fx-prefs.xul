@@ -24,14 +24,18 @@
           src="chrome://weave/content/preferences/fx-prefs.js"/>
 
   <prefwindow id="BrowserPreferences">
-    <stringbundle id="weavePrefStrings"
-                  src="chrome://weave/locale/fx-prefs.properties"/>
+    <prefpane id="paneWeaveServices"/>
+  </prefwindow>
 
     <prefpane id="paneWeaveServices"
               label="&weavePrefPane.label;"
               image="chrome://weave/skin/sync-32x32.png"
               helpTopic="prefs-weave"
               onpaneload="gWeavePane.initWeavePrefs()">
+
+      <stringbundle id="weavePrefStrings"
+                    src="chrome://weave/locale/fx-prefs.properties"/>
+
       <preferences>
         <preference id="engine.bookmarks" name="extensions.weave.engine.bookmarks" type="bool"/>
         <preference id="engine.history"   name="extensions.weave.engine.history"   type="bool"/>
@@ -339,5 +343,4 @@
         </vbox>
       </deck>
     </prefpane>
-  </prefwindow>
 </overlay>

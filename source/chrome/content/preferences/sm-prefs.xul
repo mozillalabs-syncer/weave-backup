@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<?xul-overlay href="chrome://weave/content/preferences/fx-prefs.xul"?>
+<?xml-stylesheet href="chrome://weave/content/preferences.css"
+                 type="text/css"?>
+<!DOCTYPE overlay SYSTEM "chrome://weave/locale/fx-prefs.dtd">
+
+
+<overlay id="weave_preftree_overlay"
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <script type="application/javascript"
+          src="chrome://communicator/content/utilityOverlay.js"/>
+
+  <treechildren id="prefsPanelChildren">
+    <treeitem id="weaveServicesItem"
+              label="&weavePrefPane.label;"
+              prefpane="paneWeaveServices" />
+  </treechildren>
+
+  <prefwindow id="prefDialog">
+    <prefpane id="paneWeaveServices" label="&weavePrefPane.label;"/>
+  </prefwindow>
+</overlay>

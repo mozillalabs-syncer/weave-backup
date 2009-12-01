@@ -256,7 +256,20 @@ WeaveWindow.prototype = {
   },
 
   openPrefs: function openPrefs() {
-    openPreferences("paneWeaveServices");
+    let pane = "paneWeaveServices";
+    switch (Weave.Svc.AppInfo.ID) {
+      case Weave.FIREFOX_ID:
+        openPreferences(pane);
+        break;
+
+      case Weave.SEAMONKEY_ID:
+        goPreferences(pane);
+        break;
+
+      case Weave.THUNDERBIRD_ID:
+        openOptionsDialog(pane);
+        break;
+    }
   },
 
   doLogin: function WeaveWin_doLogout(event) {

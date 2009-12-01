@@ -250,7 +250,7 @@ let gWeavePane = {
   handleExpanderClick: function () {
     // ok, this is pretty evil, and likely fragile if the prefwindow
     // binding changes, but that won't happen in 3.6 *fingers crossed*
-    let prefwindow = document.getElementById("BrowserPreferences");
+    let prefwindow = document.documentElement;
     let pane = document.getElementById("paneWeaveServices");
     if (prefwindow._shouldAnimate)
       prefwindow._currentHeight = pane.contentHeight;

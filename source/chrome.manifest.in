@@ -16,7 +16,7 @@ overlay chrome://messenger/content/messenger.xul chrome://weave/content/tb-weave
 overlay chrome://navigator/content/navigator.xul chrome://weave/content/sync.xul application={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}
 overlay chrome://navigator/content/navigator.xul chrome://weave/content/fx-weave-overlay.xul application={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}
 overlay chrome://messenger/content/messenger.xul chrome://weave/content/sync.xul application={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}
-
+overlay chrome://communicator/content/pref/preferences.xul chrome://weave/content/preferences/sm-prefs.xul application={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}
 
 @unpacked@content weave chrome/content/
 @jar@content weave jar:chrome/sync.jar!/content/
