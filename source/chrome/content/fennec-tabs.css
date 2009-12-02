@@ -23,9 +23,6 @@ h2 {
     padding-right: 32px;
     position: relative;
 }
-.tab:last-child {
-    border-bottom: 0;
-}
 .icon {
     height: 32px;
     left: 16px;
