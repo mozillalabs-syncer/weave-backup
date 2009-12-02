@@ -74,12 +74,7 @@ var gWeaveSetup = {
       case 1:
         return true;
       case 2:
-        let val = document.getElementById("weavePassphrase").value;
-        if (val.length >= 8 &&
-            val != document.getElementById("weavePassword").value) {
-          return true;
-        }
-        return false;
+        return this.onPassphraseChange();
     }
     throw "epic fail, we should never get here";
   },
@@ -123,6 +118,32 @@ var gWeaveSetup = {
     let re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     this.status.email = re.test(document.getElementById("weaveEmail").value);
     this.checkFields();
+  },
+
+  onPassphraseChange: function () {
+    // state values: 0 = valid, 1 = invalid, no warn, 2 = invalid, warn
+    let state = 0;
+    let str = null;
+    let val = document.getElementById("weavePassphrase").value;
+    let valConfirm = document.getElementById("weavePassphraseConfirm").value;
+  
+    if (val == document.getElementById("weavePassword").value) {
+      str = "cannotMatchPassword.label";
+      state = 2;
+    }
+
+    if (state == 0 && (val.length < 12 || valConfirm.length < val.length))
+      state = 1;
+
+    if (state == 0 && val != valConfirm) {
+      str = "entriesMustMatch.label";
+      state = 2;
+    }
+
+    let feedback = document.getElementById("passphraseFeedbackRow");
+    let success = state != 2;
+    this._setFeedbackMessage(feedback, success, str);
+    return state == 0;
   },
 
   openToS: function () {
