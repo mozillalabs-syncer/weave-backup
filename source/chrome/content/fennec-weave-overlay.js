@@ -133,8 +133,7 @@ let WeaveGlue = {
     this.remoteTabsDisabled = false;
 
     // Make sure we're online when connecting/syncing
-    if (typeof Util.forceOnline == "function")
-      Util.forceOnline();
+    Util.forceOnline();
 
     // Can't do anything before settings are loaded
     if (this._settings == null)
