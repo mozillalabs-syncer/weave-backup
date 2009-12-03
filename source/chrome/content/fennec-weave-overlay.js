@@ -95,7 +95,7 @@ let WeaveGlue = {
   },
 
   _openTab: function _openTab(url) {
-    BrowserUI.newTab(url);
+    setTimeout(function() BrowserUI.newTab(url), 0);
   },
 
   _handlePrefs: function _handlePrefs() {
@@ -114,7 +114,7 @@ let WeaveGlue = {
       else
         url = "https://services.mozilla.com/updated/?version=" + version;
 
-      setTimeout(this._openTab, 500, url);
+      this._openTab(url);
       Weave.Svc.Prefs.set("lastversion", version);
     }
   },
@@ -215,4 +215,7 @@ let WeaveGlue = {
   }
 };
 
-window.addEventListener("load", function() WeaveGlue.init(), false);
+addEventListener("UIReady", function ready() setTimeout(function() {
+  removeEventListener("UIReady", ready, false);
+  WeaveGlue.init();
+}, 0), false);
