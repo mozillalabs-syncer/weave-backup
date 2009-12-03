@@ -211,6 +211,7 @@ var gWeaveSetup = {
       Weave.Svc.Prefs.set(prefs[i], isChecked(prefs[i]));
     }
 
+    window.opener.close();
     Weave.Service.login();
   },
 

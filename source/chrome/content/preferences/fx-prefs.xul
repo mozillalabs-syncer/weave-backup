@@ -27,12 +27,12 @@
     <prefpane id="paneWeaveServices"/>
   </prefwindow>
 
-    <prefpane id="paneWeaveServices"
-              label="&weavePrefPane.label;"
-              image="chrome://weave/skin/sync-32x32.png"
-              helpTopic="prefs-weave"
-              onpaneload="gWeavePane.initWeavePrefs()">
-
+  <prefpane id="paneWeaveServices"
+            label="&weavePrefPane.label;"
+            image="chrome://weave/skin/sync-32x32.png"
+            helpTopic="prefs-weave"
+            onpaneload="gWeavePane.initWeavePrefs()">
+    <notificationbox id="nbox">
       <stringbundle id="weavePrefStrings"
                     src="chrome://weave/locale/fx-prefs.properties"/>
 
@@ -121,6 +121,10 @@
                   accesskey="&createAccountButton.accesskey;"
                   align="center"
                   oncommand="gWeavePane.startAccountSetup();"/>
+          <separator/>
+          <description style="padding: 0 12em">
+            &weaveDesc.label;
+          </description>
           <spacer flex="3"/>
         </vbox>
         <vbox id="passphraseEntry">
@@ -352,5 +356,6 @@
           </groupbox>
         </vbox>
       </deck>
-    </prefpane>
+    </notificationbox>
+  </prefpane>
 </overlay>

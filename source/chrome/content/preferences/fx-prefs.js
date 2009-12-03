@@ -122,14 +122,16 @@ let gWeavePane = {
   },
 
   updateWeavePrefs: function () {
+    let nbox = document.getElementById("nbox");
+    nbox.removeAllNotifications();
     if (Weave.Service.username &&
         Weave.Svc.Prefs.get("firstSync", "") == "notReady") {
       this.page = 2;
       Weave.Clients.sync();
     }
     else if (Weave.Service.username) {
-      this.page = 4;
       document.getElementById("currentUser").value = Weave.Service.username;
+      this.page = 4;
     }
     else {
       this.page = 0;
@@ -260,6 +262,7 @@ let gWeavePane = {
   },
 
   startOver: function () {
+    this.handleExpanderClick();
     Weave.Service.logout();
     Weave.Svc.Prefs.resetBranch("");
     this.updateWeavePrefs();
