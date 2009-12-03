@@ -10,6 +10,8 @@
   <title>&firstrun.title;</title>
   <link rel="icon" type="image/png" href="chrome://weave/skin/tab.png" />
   <link rel="stylesheet" type="text/css" href="chrome://weave/skin/fennec-firstrun.css" />
+  <script type="application/javascript;version=1.8"
+          src="chrome://weave/content/load-weave.js"/>
   <script type="application/javascript;version=1.8"><![CDATA[
   let Ci = Components.interfaces;
   let chromeWin = window.QueryInterface(Ci.nsIInterfaceRequestor).
@@ -24,7 +26,7 @@
     setTimeout(function() {
       doc.getElementById("tool-addons").click();
       setTimeout(function() {
-        ev.showOptions("{340c2bbc-ce74-4362-90b5-7c26312808ef}");
+        ev.showOptions(Weave.WEAVE_ID);
       }, 300);
     }, 300);
   }

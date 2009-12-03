@@ -79,19 +79,11 @@ let WeaveGlue = {
     addRem(true);
     addEventListener("unload", function() addRem(false), false);
 
-    // XXX Bug 523729: "Listen" for Weave options to be loaded
-    let origGet = ExtensionsView.getAddonsFromLocal;
-    ExtensionsView.getAddonsFromLocal = Weave.Utils.bind2(this, function() {
-      ExtensionsView.getAddonsFromLocal = origGet;
-      ExtensionsView.getAddonsFromLocal();
-      let item = ExtensionsView.getElementForAddon("{340c2bbc-ce74-4362-90b5-7c26312808ef}");
-      let origToggle = item.toggleOptions;
-      item.toggleOptions = Weave.Utils.bind2(this, function() {
-        item.toggleOptions = origToggle;
-        item.toggleOptions();
-        this._updateOptions();
-      });
-    });
+    // Wait for the options to load for Weave
+    addEventListener("AddonOptionsLoad", function(event) {
+      if (event.originalTarget.getAttribute("addonID") == Weave.WEAVE_ID)
+        WeaveGlue._updateOptions();
+    }, false);
   },
 
   _openTab: function _openTab(url) {

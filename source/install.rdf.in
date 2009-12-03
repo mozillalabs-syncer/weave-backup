@@ -4,7 +4,7 @@
      xmlns:em="http://www.mozilla.org/2004/em-rdf#">
 
   <Description about="urn:mozilla:install-manifest">
-    <em:id>{340c2bbc-ce74-4362-90b5-7c26312808ef}</em:id>
+    <em:id>@weave_id@</em:id>
     <em:version>@weave_version@</em:version>
     <em:type>2</em:type>
 

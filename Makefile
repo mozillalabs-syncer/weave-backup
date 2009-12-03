@@ -42,6 +42,7 @@ xpi_dir=$(objdir)/xpi
 
 weave_version := 1.0b3pre1
 compatible_version := 1.0b3pre1
+weave_id := {340c2bbc-ce74-4362-90b5-7c26312808ef}
 
 ifeq ($(release_build),)
   xpi_type := dev
@@ -93,6 +94,7 @@ endif
 subst_names := \
   weave_version \
   compatible_version \
+  weave_id \
   buildid \
   buildid_short \
   server_url \
