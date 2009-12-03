@@ -372,8 +372,8 @@ let gWeavePane = {
         Weave.Svc.Prefs.reset("firstSync");
         break;
     }
-    Weave.Service.syncOnIdle();
-    this.updateWeavePrefs();
+    Weave.Service.syncOnIdle(1); // shorter delay than normal
+    window.close();
   },
 
   startAccountSetup: function () {
