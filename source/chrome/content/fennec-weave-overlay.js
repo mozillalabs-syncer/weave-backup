@@ -208,5 +208,5 @@ let WeaveGlue = {
 
 addEventListener("UIReady", function ready() setTimeout(function() {
   removeEventListener("UIReady", ready, false);
-  WeaveGlue.init();
+  setTimeout(function() WeaveGlue.init(), 0);
 }, 0), false);
