@@ -43,87 +43,103 @@ function FxWeaveGlue() {
 FxWeaveGlue.prototype = {
 
   doInitTabsMenu: function FxWeaveGlue__doInitTabsMenu() {
+    // Don't do anything if the tabs engine isn't ready
+    if (!Weave.Engines.get("tabs"))
+      return;
+
+    this._populateTabs();
+    this._refetchTabs();
+  },
+
+  _refetchTabs: function _refetchTabs() {
+    // Don't bother refetching tabs if we already did so recently
+    let lastFetch = Weave.Svc.Prefs.get("lastTabFetch", 0);
+    let now = Math.floor(Date.now() / 1000);
+    if (now - lastFetch < 30)
+      return;
+
+    // Asynchronously fetch the tabs
+    setTimeout(function() {
+      let engine = Weave.Engines.get("tabs");
+      let lastSync = engine.lastSync;
+
+      // Force a sync only for the tabs engine
+      engine.lastModified = null;
+      engine.sync();
+      Weave.Svc.Prefs.set("lastTabFetch", now);
+
+      // XXX Can't seem to force the menu to redraw ? :(
+    }, 0);
+  },
+
+  _populateTabs: function _populateTabs() {
+    // Lazily add the listener to show the selected item's uri
     let menu = document.getElementById("sync-tabs-menu");
+    if (!menu.hasStatusListener) {
+      menu.hasStatusListener = true;
+
+      menu.addEventListener("DOMMenuItemActive", function(event) {
+        XULBrowserWindow.setOverLink(event.target.weaveUrls.toString());
+      }, false);
+      menu.addEventListener("DOMMenuItemInactive", function() {
+        XULBrowserWindow.setOverLink("");
+      }, false);
+    }
 
     // Clear out old menu contents
     while (menu.itemCount > 1)
       menu.removeItemAt(menu.itemCount - 1);
 
-    let faviconSvc = Cc["@mozilla.org/browser/favicon-service;1"]
-      .getService(Ci.nsIFaviconService);
     let engine = Weave.Engines.get("tabs");
-    if (!engine) {
-      // Tab sync disabled
-      return;
-    }
-    let remoteClients = engine.getAllClients();
-    let clientId, tabId;
+    let localTabs = engine._store.getAllTabs();
+    for (let [guid, client] in Iterator(engine.getAllClients())) {
+      // Remember if we need to append the client name
+      let appendClient = true;
+      let pageUrls = [];
 
-    for (clientId in remoteClients) {
-      let remoteClient = remoteClients[clientId];
-      let label = remoteClient.clientName;
-      let menuitem = menu.appendItem(label);
-      menuitem.setAttribute( "disabled", true );
-      let allTabs = remoteClient.tabs;
-      for (tabId = 0; tabId < allTabs.length; tabId++) {
-        let tab = allTabs[tabId];
-        // Skip tabs with empty history, e.g. just-opened tabs
-        if (tab.urlHistory.length == 0) {
-          continue;
+      client.tabs.forEach(function({title, urlHistory, icon}) {
+        // Skip tabs that are already open
+        let pageUrl = urlHistory[0];
+        if (localTabs.some(function(tab) tab.urlHistory[0] == pageUrl))
+          return;
+
+        // Add the client once and point it to the array of urls to open
+        if (appendClient) {
+          appendClient = false;
+          let item = menu.appendItem(client.clientName);
+          item.className = "menuitem-iconic";
+          item.style.listStyleImage = "url(chrome://weave/skin/tab.png)";
+          item.weaveUrls = pageUrls;
         }
-        let currUrl = tab.urlHistory[0];
-        // Skip tabs that match an already-open URL
-        if ( engine.locallyOpenTabMatchesURL(currUrl) ) {
-          continue;
-        }
-        menuitem = menu.appendItem("  " + (tab.title? tab.title : tab.urlHistory[0]));
-	/* Store index of client within clients list AND index of tab within
-	 * client, separated by comma, in value of menu item, so that we
-	 * can retrive the correct tab when it is chosen. */
-        menuitem.value = clientId + "," + tabId;
-        // Add site's favicon to menu:
-        menuitem.class = "menuitem-iconic";
-        menuitem.image = faviconSvc.getFaviconImageForPage(
-                           Weave.Utils.makeURI(currUrl)).spec;
-      }
+
+        let iconUrl = Weave.Utils.getIcon(icon, "chrome://weave/skin/tab.png");
+        title = title == "" ? pageUrl : title;
+
+        // Add a menuitem that knows what url to open
+        let item = menu.appendItem("   " + title);
+        item.className = "menuitem-iconic";
+        item.style.listStyleImage = "url(" + iconUrl + ")";
+        item.weaveUrls = [pageUrl];
+
+        // Add this to the list of urls to open for the client name
+        pageUrls.push(pageUrl);
+      });
     }
+
+    // Show/hide the "no tabs available" if necessary
     document.getElementById("sync-no-tabs-menu-item").hidden =
       (menu.itemCount > 1);
   },
 
   onCommandTabsMenu: function FxWeaveGlue_onCommandTabsMenu(event) {
-    let ss = Cc["@mozilla.org/browser/sessionstore;1"].
-                getService(Ci.nsISessionStore);
+    // Open each url in its own tab
+    let lastTab;
+    event.target.weaveUrls.forEach(function(url) {
+      lastTab = openUILinkIn(url, "tab")
+    });
 
-    /* The event.target.value is two items comma-separated: "clientId,tabId"
-     * as set by doInitTabMenu above.  Read this out and use it to get
-     * the tab data:
-     */
-    let values = event.target.value.split(",");
-    let clientId = values[0];
-    let tabId = values[1];
-    let clients = Weave.Engines.get("tabs").getAllClients();
-    let remoteClient = clients[clientId];
-    let tabData = remoteClient.tabs[tabId];
-
-    // Open the new tab:
-    let urlHistory = tabData.urlHistory;
-    let newTab = openUILinkIn(urlHistory[0], "tab");
-
-    /* Turn url history into a json string that we can pass to sessionStore
-     * in order to restore the tab's history. */
-    let json = {
-      entries:[]
-    };
-    for (let i = urlHistory.length-1; i > -1; i--) {
-      json.entries.push({url: urlHistory[i]});
-    }
-    ss.setTabState(newTab, JSON.stringify(json));
-
-    // Switch to the newly opened tab:
-    gBrowser.selectedTab = newTab;
-
-    // FIXME: update a notification that lists the opened tab, if any.
+    // Switch to the last opened tab
+    gBrowser.selectedTab = lastTab;
   },
 
   shutdown: function FxWeaveGlue__shutdown() {

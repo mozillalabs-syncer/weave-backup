@@ -6,6 +6,10 @@ const Ci = Components.interfaces;
 
 let RemoteTabViewer = {
   show: function RemoteTabViewer_show() {
+    // Don't do anything if the tabs engine isn't ready
+    if (!Weave.Engines.get("tabs"))
+      return;
+
     this._populateTabs();
     this._refetchTabs();
   },
