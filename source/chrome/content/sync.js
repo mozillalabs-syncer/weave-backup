@@ -54,7 +54,6 @@ function WeaveWindow() {
     ["weave:service:sync:error", "onSyncError"],
     ["weave:service:sync:delayed", "onSyncDelay"],
     ["weave:engine:sync:start",  "onEngineStart"],
-    ["weave:engine:sync:finish",  "onEngineFinish"],
     ["weave:service:verify-login:start", "onLoginStart"],
     ["weave:service:login:finish", "onLoginFinish"],
     ["weave:service:login:error", "onLoginError"],
@@ -172,11 +171,14 @@ WeaveWindow.prototype = {
       this._setStatus("offline");
   },
 
+  _allowSBUpdates: false,
   onSyncStart: function WeaveWin_onSyncStart() {
     this._setStatus("active");
+    this._allowSBUpdates = true;
   },
 
   _onSyncEnd: function WeaveWin__onSyncEnd(status) {
+    this._allowSBUpdates = false;
     this._setStatus("idle");
 
     let title = this._stringBundle.getString("error.sync.title");
@@ -249,15 +251,14 @@ WeaveWindow.prototype = {
   },
 
   onEngineStart: function WeaveWin_onEngineStart(subject, data) {
+    if (!this._allowSBUpdates)
+      return;
+
     let engine = subject == "clients" ? Weave.Clients : Weave.Engines.get(subject);
     let engineName = engine.displayName;
     let label = this._stringBundle.getFormattedString("syncing.label", [engineName]);
     let button = document.getElementById("sync-menu-button");
     button.setAttribute("label", label);
-  },
-
-  onEngineFinish: function onEngineFinish() {
-    this._setStatus("idle");
   },
 
   openPrefs: function openPrefs() {
