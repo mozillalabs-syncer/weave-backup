@@ -32,7 +32,6 @@
             image="chrome://weave/skin/sync-32x32.png"
             helpTopic="prefs-weave"
             onpaneload="gWeavePane.initWeavePrefs()">
-    <notificationbox id="nbox">
       <stringbundle id="weavePrefStrings"
                     src="chrome://weave/locale/fx-prefs.properties"/>
 
@@ -161,10 +160,10 @@
         <vbox id="mergeOptionsChoice">
           <groupbox align="start">
             <caption label="&choice.caption.label;"/>
-            <radiogroup id="mergeChoiceRadio" pack="start" flex="0">
+            <radiogroup id="mergeChoiceRadio" pack="start">
               <radio id="doMerge" group="foo" class="mergeChoiceButton" align="top">
                 <image class="mergeChoiceImage" src="chrome://weave/skin/sync-merge.png"/>
-                <vbox class="mergeChoiceButtonBox">
+                <vbox class="mergeChoiceButtonBox" flex="1">
                   <description class="mainDesc">
                     &choice.merge.main.label;
                   </description>
@@ -179,7 +178,7 @@
               </radio>
               <radio id="wipeClient" group="foo" class="mergeChoiceButton" align="top">
                   <image class="mergeChoiceImage" src="chrome://weave/skin/sync-wipeClient.png"/>
-                  <vbox class="mergeChoiceButtonBox">
+                  <vbox class="mergeChoiceButtonBox" flex="1">
                     <description class="mainDesc">
                       &choice.client.main.label;
                     </description>
@@ -190,7 +189,7 @@
               </radio>
               <radio id="wipeServer" group="foo" class="mergeChoiceButton" align="top">
                   <image class="mergeChoiceImage" src="chrome://weave/skin/sync-wipeServer.png"/>
-                  <vbox class="mergeChoiceButtonBox">
+                  <vbox class="mergeChoiceButtonBox" flex="1">
                     <description class="mainDesc">
                       &choice.server.main.label;
                     </description>
@@ -360,6 +359,5 @@
           </groupbox>
         </vbox>
       </deck>
-    </notificationbox>
   </prefpane>
 </overlay>

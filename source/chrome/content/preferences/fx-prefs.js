@@ -122,8 +122,6 @@ let gWeavePane = {
   },
 
   updateWeavePrefs: function () {
-    let nbox = document.getElementById("nbox");
-    nbox.removeAllNotifications();
     if (Weave.Service.username &&
         Weave.Svc.Prefs.get("firstSync", "") == "notReady") {
       this.page = 2;
