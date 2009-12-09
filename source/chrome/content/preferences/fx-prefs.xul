@@ -63,6 +63,7 @@
                 <row id="serverRow" hidden="true" align="center">
                   <label id="weaveServerURLLabel"
                          value="&signIn.serverURL.label;"
+                         accesskey="&signIn.serverURL.accesskey;"
                          control="weaveServerURL"/>
                   <textbox id="weaveServerURL"
                            onkeypress="gWeavePane.handleKeypress(event)"
@@ -72,6 +73,7 @@
                 <row id="usernameRow" align="center">
                   <label id="weaveUsernameLabel"
                          value="&signIn.username.label;"
+                         accesskey="&signIn.username.accesskey;"
                          control="weaveUsername"/>
                   <textbox id="weaveUsername"
                            onkeypress="gWeavePane.handleKeypress(event)"
@@ -85,6 +87,7 @@
                 <row id="passwordRow" align="center">
                   <label id="weavePasswordLabel"
                          value="&signIn.password.label;"
+                         accesskey="&signIn.password.accesskey;"
                          control="weavePassword"/>
                   <textbox id="weavePassword"
                            type="password"
@@ -103,6 +106,7 @@
                     <button id="signInButton"
                             onkeypress="gWeavePane.handleKeypress(event)"
                             label="&signIn.button.label;"
+                            accesskey="&signIn.button.accesskey;"
                             disabled="true"
                             oncommand="gWeavePane.doSignIn()"/>
                     <hbox align="left" id="signInFeedbackBox" hidden="true">
@@ -148,6 +152,7 @@
             </vbox>
             <hbox align="right">
               <button label="&goBack.label;"
+                      accesskey="&goBack.accesskey;"
                       oncommand="gWeavePane.goBack()"/>
               <button id="continueButton"
                       onkeypress="gWeavePane.handleKeypress(event)"
@@ -318,6 +323,7 @@
                   <button id="manageAccountExpander"
                           class="expander-down"
                           label="&manageAccount.label;"
+                          accesskey="&manageAccount.accesskey;"
                           align="left"
                           oncommand="gWeavePane.handleExpanderClick()"/>
                   <spacer/>
@@ -328,7 +334,9 @@
           <groupbox>
             <caption label="&syncPrefsCaption.label;"/>
             <hbox align="center">
-              <label value="&syncModeSwitchDesc.label;" control="weaveSyncMode"/>
+              <label value="&syncModeSwitchDesc.label;" 
+                     accesskey="&syncModeSwitchDesc.accesskey;"
+                     control="weaveSyncMode"/>
               <menulist id="weaveSyncMode" oncommand="gWeavePane.updateSyncPrefs()">
                 <menupopup>
                   <menuitem label="&syncEverything.label;" value="syncEverything"/>
@@ -343,14 +351,19 @@
               </description>
               <vbox>
                 <checkbox label="&syncItem.bookmarks.label;"
+                          accesskey="&syncItem.bookmarks.accesskey;"
                           preference="engine.bookmarks"/>
                 <checkbox label="&syncItem.passwords.label;"
+                          accesskey="&syncItem.passwords.accesskey;"
                           preference="engine.passwords"/>
                 <checkbox label="&syncItem.prefs.label;"
+                          accesskey="&syncItem.prefs.accesskey;"
                           preference="engine.prefs"/>
                 <checkbox label="&syncItem.history.label;"
+                          accesskey="&syncItem.history.accesskey;"
                           preference="engine.history"/>
                 <checkbox id="tabPref"
+                          accesskey="&syncItem.tabs.accesskey;"
                           label="&syncItem.tabs.label;"
                           preference="engine.tabs"/>
               </vbox>
