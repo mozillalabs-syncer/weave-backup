@@ -166,39 +166,51 @@
           <groupbox align="start">
             <caption label="&choice.caption.label;"/>
             <radiogroup id="mergeChoiceRadio" pack="start">
-              <radio id="doMerge" group="foo" class="mergeChoiceButton" align="top">
+              <radio id="doMerge" 
+                     class="mergeChoiceButton"
+                     aria-labelledby="mergeMain"
+                     aria-describedby="mergeSecondary1 mergeSecondary2"
+                     align="top">
                 <image class="mergeChoiceImage" src="chrome://weave/skin/sync-merge.png"/>
                 <vbox class="mergeChoiceButtonBox" flex="1">
-                  <description class="mainDesc">
+                  <description class="mainDesc" id="mergeMain">
                     &choice.merge.main.label;
                   </description>
-                  <description>
+                  <description id="mergeSecondary1">
                     &choice.merge.secondary.label;
                   </description>
                   <separator class="thin"/>
-                  <description class="normal">
+                  <description class="normal" id="mergeSecondary2">
                     &choice.merge.recommend.label;
                   </description>
                 </vbox>
               </radio>
-              <radio id="wipeClient" group="foo" class="mergeChoiceButton" align="top">
+              <radio id="wipeClient" 
+                     class="mergeChoiceButton"
+                     aria-labelledby="wipeClientMain"
+                     aria-describedby="wipeClientSecondary"
+                     align="top">
                   <image class="mergeChoiceImage" src="chrome://weave/skin/sync-wipeClient.png"/>
                   <vbox class="mergeChoiceButtonBox" flex="1">
-                    <description class="mainDesc">
+                    <description class="mainDesc" id="wipeClientMain">
                       &choice.client.main.label;
                     </description>
-                    <description>
+                    <description id="wipeClientSecondary">
                       &choice.client.secondary.label;
                     </description>
                   </vbox>
               </radio>
-              <radio id="wipeServer" group="foo" class="mergeChoiceButton" align="top">
+              <radio id="wipeServer" 
+                     class="mergeChoiceButton"
+                     aria-labelledby="wipeServerMain"
+                     aria-describedby="wipeServerSecondary"
+                     align="top">
                   <image class="mergeChoiceImage" src="chrome://weave/skin/sync-wipeServer.png"/>
                   <vbox class="mergeChoiceButtonBox" flex="1">
-                    <description class="mainDesc">
+                    <description class="mainDesc" id="wipeServerMain">
                       &choice.server.main.label;
                     </description>
-                    <description>
+                    <description id="wipeServerSecondary">
                       &choice.server.secondary.label;
                     </description>
                   </vbox>
