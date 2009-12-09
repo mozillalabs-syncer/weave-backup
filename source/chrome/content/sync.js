@@ -271,10 +271,6 @@ WeaveWindow.prototype = {
       case Weave.SEAMONKEY_ID:
         goPreferences(pane);
         break;
-
-      case Weave.THUNDERBIRD_ID:
-        openOptionsDialog(pane);
-        break;
     }
   },
 

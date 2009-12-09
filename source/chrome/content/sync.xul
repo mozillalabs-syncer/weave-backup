@@ -19,11 +19,6 @@
         <menu id="sync-menu" insertafter="menu_openAddons"/>
     </menupopup>
 
-    <!-- For Thunderbird -->
-    <menupopup id="taskPopup">
-        <menu id="sync-menu" insertafter="addonsManager"/>
-    </menupopup>
-
     <!-- This overlays onto the app-specific overlay point we just created -->
     <menu id="sync-menu" class="menu-iconic" label="&syncMenu.label;"
           insertafter="addonsManager" image="chrome://weave/skin/sync-16x16.png">
