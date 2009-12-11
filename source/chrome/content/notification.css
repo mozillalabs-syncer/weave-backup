@@ -1,3 +1,7 @@
+treechildren::-moz-tree-image(container, OrganizerQuery_MobileBookmarks) {
+  list-style-image: url(chrome://weave/skin/mobile-icon.png);
+}
+
 #openRemoteTabs-button {
   list-style-image: url(chrome://weave/skin/weave-default-64.png);
 }
