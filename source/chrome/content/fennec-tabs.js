@@ -48,7 +48,10 @@ let RemoteTabViewer = {
     }
 
     // Generate the list of tabs
+    let haveTabs = false;
     for (let [guid, client] in Iterator(engine.getAllClients())) {
+      haveTabs = true;
+
       // Create the client node, but don't add it in-case we don't show any tabs
       let appendClient = true;
       let nameNode = document.createElement("h2");
@@ -99,8 +102,15 @@ let RemoteTabViewer = {
     }
 
     if (holder.childNodes.length == 0) {
+      // Assume we're pending, but we might already have tabs or have synced
+      let text = Weave.Str.sync.get("remote.pending.label");
+      if (haveTabs)
+        text = Weave.Str.sync.get("remote.opened.label");
+      else if (engine.lastSync != 0)
+        text = Weave.Str.sync.get("remote.missing.label");
+
       let item = document.createElement("h1");
-      item.textContent = "No remote tabs synced!";
+      item.textContent = text;
       document.getElementsByTagName('body')[0].appendChild(item);
     }
   }
