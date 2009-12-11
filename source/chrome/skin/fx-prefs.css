@@ -20,7 +20,7 @@
 
 .mainDesc {
   font-weight: bold;
-  font-size: 110%;
+  font-size: 100%;
 }
 
 .normal {
@@ -42,7 +42,7 @@
 }
 
 .mergeChoiceButton#doMerge {
-  min-height: 8em;
+  min-height: 6.5em;
 }
 
 .mergeChoiceButton:hover {
@@ -66,8 +66,4 @@
 
 .mergeChoiceBFBox {
   max-width: 555px;
-}
-
-.mergeChoiceImage {
-  padding: 0.5em;
 }
