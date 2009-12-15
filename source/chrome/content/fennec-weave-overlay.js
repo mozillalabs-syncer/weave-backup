@@ -36,16 +36,13 @@
 
 let WeaveGlue = {
   init: function init() {
-    this.remoteTabsDisabled = true;
+    Components.utils.import("resource://weave/service.js");
+
     this._addListeners();
     this._handlePrefs();
 
     // Generating keypairs is expensive on mobile, so disable it
     Weave.Service.keyGenEnabled = false;
-  },
-
-  set remoteTabsDisabled(value) {
-    document.getElementById("openRemoteTabs-button").disabled = value;
   },
 
   openRemoteTabs: function openRemoteTabs() {
@@ -72,8 +69,8 @@ let WeaveGlue = {
       "weave:service:logout:finish"];
 
     // For each topic, add or remove _updateOptions as the observer
-    let addRem = function(add) topics.forEach(function(topic) Observers[add ?
-      "add" : "remove"](topic, WeaveGlue._updateOptions, WeaveGlue));
+    let addRem = function(add) topics.forEach(function(topic) Weave.Svc.
+      Obs[add ? "add" : "remove"](topic, WeaveGlue._updateOptions, WeaveGlue));
 
     // Add the listeners now, and remove them on unload
     addRem(true);
@@ -130,7 +127,7 @@ let WeaveGlue = {
   },
 
   _updateOptions: function _updateOptions() {
-    this.remoteTabsDisabled = false;
+    document.getElementById("openRemoteTabs-button").disabled = false;
 
     // Make sure we're online when connecting/syncing
     Util.forceOnline();
@@ -206,7 +203,8 @@ let WeaveGlue = {
   }
 };
 
+// Wait a little bit before loading a bunch of Weave files from service
 addEventListener("UIReady", function ready() setTimeout(function() {
   removeEventListener("UIReady", ready, false);
-  setTimeout(function() WeaveGlue.init(), 0);
+  setTimeout(function() WeaveGlue.init(), 5000);
 }, 0), false);

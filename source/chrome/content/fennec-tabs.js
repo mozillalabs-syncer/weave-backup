@@ -1,4 +1,5 @@
 // Make sure this is the only instance of the page
+Components.utils.import("resource://weave/service.js");
 Weave.Utils.ensureOneOpen(window);
 
 const Cc = Components.classes;

@@ -5,9 +5,6 @@
 <overlay id="fx-weave-overlay"
          xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
-  <!-- Loading and initializing Weave Service -->
-  <script type="application/x-javascript"
-          src="chrome://weave/content/load-weave.js"/>
   <script type="application/x-javascript"
           src="chrome://weave/content/fennec-weave-overlay.js"/>
 
@@ -16,7 +13,8 @@
   </commandset>
 
   <hbox id="tabs-controls">
-    <toolbarbutton id="openRemoteTabs-button" class="button-image" command="cmd_openRemoteTabs"/>
+    <toolbarbutton id="openRemoteTabs-button" class="button-image"
+      disabled="disabled" command="cmd_openRemoteTabs"/>
   </hbox>
 
 </overlay>
