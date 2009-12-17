@@ -8,10 +8,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <title>&firstrun.title;</title>
-  <link rel="icon" type="image/png" href="chrome://weave/skin/tab.png" />
+  <link rel="icon" type="image/png" href="chrome://weave/skin/sync-32x32.png" />
   <link rel="stylesheet" type="text/css" href="chrome://weave/skin/fennec-firstrun.css" />
-  <script type="application/javascript;version=1.8"
-          src="chrome://weave/content/load-weave.js"/>
   <script type="application/javascript;version=1.8"><![CDATA[
   let Ci = Components.interfaces;
   let chromeWin = window.QueryInterface(Ci.nsIInterfaceRequestor).
@@ -26,6 +24,7 @@
     setTimeout(function() {
       doc.getElementById("tool-addons").click();
       setTimeout(function() {
+        Components.utils.import("resource://weave/service.js");
         ev.showOptions(Weave.WEAVE_ID);
       }, 300);
     }, 300);
@@ -33,12 +32,18 @@
   ]]></script>
 </head>
 <body>
-  <p>&intro.description;</p>
-  <ol>
-    <li>&step1.description;</li>
-    <li>&step2.description;</li>
-    <li>&step3.description;</li>
-  </ol>
-  <input type="button" onclick="showConnect();" value="&connect.label;"/>
+  <div id="container">
+    <div class="logo"><img src="chrome://weave/skin/weave_logo.png"/></div>
+    <div class="welcome">&intro.description;</div>
+    
+    <ol>
+      <li class="step">&step1.description;</li>
+      <li class="step">&step2.description;</li>
+      <li class="step">&step3.description;</li>
+    </ol>
+      
+    <input class="button" type="button" onclick="showConnect();" value="&connect.label;"/>
+      
+  </div>
 </body>
 </html>
