@@ -17,9 +17,9 @@ let RemoteTabViewer = {
   },
 
   _maybeNotify: function _maybeNotify() {
-    // Only don't show the notification if the user has dismissed it before
+    // Don't notify if the tab engine has new tabs or the user dismissed it
     let prefs = Weave.Svc.Prefs;
-    if (prefs.get("dontNotifyTabs", false))
+    if (prefs.get("notifyTabState") == 0)
       return;
 
     let chromeWin = window.QueryInterface(Ci.nsIInterfaceRequestor).
@@ -40,7 +40,7 @@ let RemoteTabViewer = {
     let close = notification.close;
     notification.close = function() {
       // Once the user dismisses the dialog, remember that and don't show again
-      prefs.set("dontNotifyTabs", true);
+      prefs.set("notifyTabState", 0);
       close.apply(notification, arguments);
     };
   },
