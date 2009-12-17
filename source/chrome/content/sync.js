@@ -65,7 +65,7 @@ function WeaveWindow() {
   // Add the observers now and remove them on unload
   let weaveWin = this;
   let addRem = function(add) obs.forEach(function([topic, func])
-    Observers[add ? "add" : "remove"](topic, weaveWin[func], weaveWin));
+    Weave.Svc.Obs[add ? "add" : "remove"](topic, weaveWin[func], weaveWin));
   addRem(true);
   window.addEventListener("unload", function() addRem(false), false);
 

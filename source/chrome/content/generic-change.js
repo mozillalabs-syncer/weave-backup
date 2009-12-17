@@ -66,6 +66,7 @@ let Change = {
   },
 
   onLoad: function Change_onLoad() {
+    Components.utils.import("resource://weave/log4moz.js");
     this._log = Log4Moz.repository.getLogger("Chrome.Change");
     this._log.trace("Sync login window opened");
 
