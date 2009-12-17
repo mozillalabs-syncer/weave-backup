@@ -11,8 +11,38 @@ let RemoteTabViewer = {
     if (!Weave.Engines.get("tabs"))
       return;
 
+    this._maybeNotify();
     this._populateTabs();
     this._refetchTabs();
+  },
+
+  _maybeNotify: function _maybeNotify() {
+    // Only don't show the notification if the user has dismissed it before
+    let prefs = Weave.Svc.Prefs;
+    if (prefs.get("dontNotifyTabs", false))
+      return;
+
+    let chromeWin = window.QueryInterface(Ci.nsIInterfaceRequestor).
+      getInterface(Ci.nsIWebNavigation).QueryInterface(Ci.nsIDocShellTreeItem).
+      rootTreeItem.QueryInterface(Ci.nsIInterfaceRequestor).
+      getInterface(Ci.nsIDOMWindow).QueryInterface(Ci.nsIDOMChromeWindow);
+
+    // No need to reshow the notification if it's still open
+    let notifyBox = chromeWin.getNotificationBox(window);
+    if (notifyBox.getNotificationWithValue("remote-tabs") != null)
+      return;
+
+    let message = Weave.Str.sync.get("remote.notification.label");
+    let notification = notifyBox.appendNotification(message, "remote-tabs", "",
+      notifyBox.PRIORITY_INFO_LOW);
+
+    // Wrap the close function to find out if the user clicks the X
+    let close = notification.close;
+    notification.close = function() {
+      // Once the user dismisses the dialog, remember that and don't show again
+      prefs.set("dontNotifyTabs", true);
+      close.apply(notification, arguments);
+    };
   },
 
   _refetchTabs: function _refetchTabs() {

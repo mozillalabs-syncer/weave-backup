@@ -17,16 +17,8 @@ let gWeavePane = {
   },
 
   get prefArray() {
-    let prefs = ["engine.bookmarks",
-                 "engine.passwords",
-                 "engine.prefs",
-                 "engine.history"];
-    if (Weave.Service.numClients == 1)
-      prefs.push("tabs.backup");
-    else
-      prefs.push("engine.tabs");
-
-    return prefs;
+    return ["engine.bookmarks", "engine.passwords", "engine.prefs",
+      "engine.tabs", "engine.history"];
   },
 
   onLoginStart: function () {
@@ -138,18 +130,10 @@ let gWeavePane = {
     this.updateConnectButton();
     this.updateSetupButtons();
     
-    this.updateTabPref();
     let syncEverything = this._checkDefaultValues();
     document.getElementById("weaveSyncMode").selectedIndex = syncEverything ? 0 : 1;
     document.getElementById("syncModeOptions").selectedIndex = syncEverything ? 0 : 1;
     this.checkFields();
-  },
-
-  updateTabPref: function () {
-    let singleClient = Weave.Service.numClients == 1;
-    let pref = singleClient ? "tabs.backup" : "engine.tabs";
-    document.getElementById("tabPref").setAttribute("preference", pref);
-    document.getElementById("tabPref").setAttribute("checked", document.getElementById(pref).value);
   },
 
   onServerChange: function () {
