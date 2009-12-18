@@ -66,10 +66,6 @@ let Change = {
   },
 
   onLoad: function Change_onLoad() {
-    Components.utils.import("resource://weave/log4moz.js");
-    this._log = Log4Moz.repository.getLogger("Chrome.Change");
-    this._log.trace("Sync login window opened");
-
     /* Load labels */
     let cboxlabel = document.getElementById("currentBoxLabel");
     let box1label = document.getElementById("textBox1Label");
@@ -129,8 +125,6 @@ let Change = {
     this._os.removeObserver(this, "weave:service:resetpph:start", false);
     this._os.removeObserver(this, "weave:service:resetpph:error", false);
     this._os.removeObserver(this, "weave:service:resetpph:finish", false);
-
-    this._log.trace("Change window closed");
   },
 
   observe: function Change_observer(subject, topic, data) {
