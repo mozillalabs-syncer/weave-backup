@@ -253,6 +253,8 @@ let gWeavePane = {
   },
 
   recoverPassword: function () {
+    openUILinkIn(Weave.Svc.Prefs.get("pwChangeURL"), "tab");
+    return; // xxx: FIXME EWTF_PASSWORD_REQUEST_API_CHANGED
     let ok = Weave.Service.requestPasswordReset(Weave.Service.username);
     if (ok) { // xxxmpc: FIXME
       Weave.Svc.Prompt.alert(window,
