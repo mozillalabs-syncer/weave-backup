@@ -69,6 +69,7 @@ let gWeavePane = {
       case "4":
         document.getElementById("connect-throbber").hidden = true;
         feedback = document.getElementById("loginFeedbackRow");
+        this.updateWeavePrefs();
         break;
     }
     this._setFeedbackMessage(feedback, false, errorString);
@@ -114,7 +115,24 @@ let gWeavePane = {
   },
 
   updateWeavePrefs: function () {
-    if (Weave.Service.username &&
+    // The password changed or isn't saved by the app, so ask for a new one
+    if (Weave.Status.login == Weave.LOGIN_FAILED_LOGIN_REJECTED ||
+        Weave.Status.login == Weave.LOGIN_FAILED_NO_PASSWORD) {
+      this.page = 0;
+      document.getElementById("weaveUsername").value = Weave.Service.username;
+      document.getElementById("weavePassphrase").value = Weave.Service.passphrase || "";
+      document.getElementById("weaveServerURL").value = Weave.Service.serverURL;
+      this.onLoginError();
+    }
+    // The passphrase must have changed so ask for a new one
+    else if (Weave.Status.login == Weave.LOGIN_FAILED_INVALID_PASSPHRASE) {
+      this.page = 1;
+      document.getElementById("weaveUsername").value = Weave.Service.username;
+      document.getElementById("weavePassword").value = Weave.Service.password;
+      document.getElementById("weaveServerURL").value = Weave.Service.serverURL;
+      this.onLoginError();
+    }
+    else if (Weave.Service.username &&
         Weave.Svc.Prefs.get("firstSync", "") == "notReady") {
       this.page = 2;
       Weave.Clients.sync();
@@ -124,6 +142,7 @@ let gWeavePane = {
       this.page = 4;
     }
     else {
+      Weave.Svc.Prefs.set("firstSync", "notReady");
       this.page = 0;
     }
 
@@ -137,6 +156,8 @@ let gWeavePane = {
   },
 
   onServerChange: function () {
+    if (this._usingMainServers)
+      document.getElementById("weaveServerURL").value = "";
     document.getElementById("serverRow").hidden = this._usingMainServers;
     this.checkFields();
   },
@@ -332,13 +353,12 @@ let gWeavePane = {
   },
 
   doSignIn: function () {
-    Weave.Svc.Prefs.set("firstSync", "notReady");
     Weave.Service.username = document.getElementById("weaveUsername").value;
     Weave.Service.password = document.getElementById("weavePassword").value;
     Weave.Service.passphrase = document.getElementById("weavePassphrase").value;
     let serverURI =
       Weave.Utils.makeURI(document.getElementById("weaveServerURL").value);
-    if (serverURI && !this._usingMainServers)
+    if (serverURI)
       Weave.Service.serverURL = serverURI.spec;
     else
       Weave.Svc.Prefs.reset("serverURL");
