@@ -212,6 +212,7 @@ var gWeaveSetup = {
     }
 
     window.opener.close();
+    Weave.Svc.Prefs.reset("firstSync");
     Weave.Service.login();
   },
 
