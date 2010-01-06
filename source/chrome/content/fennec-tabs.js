@@ -100,6 +100,7 @@ let RemoteTabViewer = {
 
         let item = document.createElement("div");
         item.addEventListener("click", function() {
+          item.setAttribute("selected", true);
           window.location = pageUrl;
         }, false)
         item.setAttribute("class", "tab");

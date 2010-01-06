@@ -23,6 +23,9 @@ h2 {
     padding-right: 32px;
     position: relative;
 }
+.tab[selected] {
+    background-color: #8db8d8;
+}
 .icon {
     height: 32px;
     left: 16px;
