@@ -41,10 +41,10 @@
 
 
     <!-- Front End MetaData -->
-    <em:name>Weave</em:name>
-    <em:description>Weave is the Mozilla Labs prototype for online services.</em:description>
+    <em:name>Weave Sync</em:name>
+    <em:description>Synchronize your bookmarks, history, tabs and passwords wherever you go. Whether you use Firefox on your phone, laptop, or desktop, securely access all your data.</em:description>
     <em:creator>Mozilla Labs Team</em:creator>
-    <em:homepageURL>http://labs.mozilla.com/projects/weave/</em:homepageURL>
+    <em:homepageURL>https://mozillalabs.com/weave/</em:homepageURL>
     @update_url_tag@
     <em:iconURL>chrome://weave/skin/sync-32x32.png</em:iconURL>
     <em:optionsURL>chrome://weave/content/options.xul</em:optionsURL>
