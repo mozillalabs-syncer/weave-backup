@@ -40,7 +40,7 @@ objdir=dist
 stage_dir=$(objdir)/stage
 xpi_dir=$(objdir)/xpi
 
-weave_version := 1.0rc4
+weave_version := 1.0
 compatible_version := 1.0rc4
 weave_id := {340c2bbc-ce74-4362-90b5-7c26312808ef}
 
