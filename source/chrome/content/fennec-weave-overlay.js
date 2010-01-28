@@ -102,7 +102,7 @@ let WeaveGlue = {
       if (lastVersion == "firstrun")
         Weave.Service.nextSync = Date.now();
       else
-        url = "https://services.mozilla.com/updated/?version=" + version;
+        url = "https://services.mozilla.com/sync/updated/?version=" + version;
 
       this._openTab(url);
       Weave.Svc.Prefs.set("lastversion", version);
