@@ -1,3 +1,17 @@
+@media (min-width: 500px) {
+  #weave-user textbox, #weave-pass textbox, #weave-secret textbox,
+  #weave-connect button, #weave-disconnect button, #weave-sync button {
+    width: 300px;
+  }
+}
+
+@media (max-width: 500px) {
+  #weave-user textbox, #weave-pass textbox, #weave-secret textbox,
+  #weave-connect button, #weave-disconnect button, #weave-sync button {
+    width: 180px;
+  }
+}
+
 treechildren::-moz-tree-image(container, OrganizerQuery_MobileBookmarks) {
   list-style-image: url(chrome://weave/skin/mobile-icon.png);
 }
