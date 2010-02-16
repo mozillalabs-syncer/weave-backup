@@ -50,6 +50,7 @@ let gWeavePane = {
         // Move on to the passphrase page if that's the only failure
         if (Weave.Status.login == Weave.LOGIN_FAILED_INVALID_PASSPHRASE) {
           this.page = 1;
+          document.getElementById("weavePassphrase").focus();
           return;
         }
         break;
@@ -63,6 +64,7 @@ let gWeavePane = {
           default:
             feedback = document.getElementById("passphraseFeedbackBox");
             document.getElementById("passphraseHelpBox").hidden = false;
+            document.getElementById("weavePassphrase").select();
             break;
         }
         break;
