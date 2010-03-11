@@ -257,7 +257,7 @@ let gWeavePane = {
     let str = Weave.Service.isLoggedIn ? this.bundle.getString("disconnect.label")
                                        : this.bundle.getString("connect.label");
     document.getElementById("connectButton").label = str;
-    let notReady = Weave.Status.service == Weave.STATUS_DELAYED ? true : false;
+    let notReady = Weave.Status.service == Weave.STATUS_DELAYED;
     let pbEnabled = Weave.Svc.Private.privateBrowsingEnabled;
     document.getElementById("connectButton").disabled = notReady || pbEnabled;
   },
