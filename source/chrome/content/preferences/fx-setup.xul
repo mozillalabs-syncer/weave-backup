@@ -14,6 +14,7 @@
         xmlns:html="http://www.w3.org/1999/xhtml"
         onwizardnext="return gWeaveSetup.onWizardAdvance();"
         onwizardfinish="gWeaveSetup.onWizardFinish()"
+        onwizardcancel="gWeaveSetup.onWizardCancel()"
         onload="gWeaveSetup.init()">
 
   <script type="application/x-javascript"
@@ -103,9 +104,6 @@
         </row>
       </rows>
     </grid>
-    <description id="noScriptWarning" class="warning" hidden="true">
-      &noScriptWarning.label;
-    </description>
   </wizardpage>
 
   <wizardpage label="&setup.page2Title.label;">

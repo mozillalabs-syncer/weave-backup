@@ -27,19 +27,9 @@ var gWeaveSetup = {
 
   init: function () {
     this.wizard.canAdvance = false;
-    if (this._checkForNoScript())
-      document.getElementById("noScriptWarning").hidden = false;
-
     this.wizard.getButton("finish").label = this.bundle.getString("startSyncing.label");
     this.onServerChange();
     this.captchaBrowser.addProgressListener(this);
-  },
-
-  _checkForNoScript: function() {
-    let ns = Application.extensions.get("{73a6fe31-595d-460b-a920-fcc0f8843232}");
-    if (ns == null)
-      return false;
-    return ns.enabled;
   },
 
   updateSyncPrefs: function () {
@@ -167,6 +157,8 @@ var gWeaveSetup = {
     switch (this.wizard.currentPage.pageIndex) {
       case 0:
         // time to load the captcha
+        // first check for NoScript and whitelist the right sites
+        this._handleNoScript(true);
         this.captchaBrowser.loadURI(Weave.Service.miscAPI + "captcha_html");
         break;
       case 1:
@@ -185,6 +177,7 @@ var gWeaveSetup = {
           Weave.Service.username = username;
           Weave.Service.password = password;
           Weave.Service.persistLogin();
+          this._handleNoScript(false);
           return true;
         }
 
@@ -214,6 +207,39 @@ var gWeaveSetup = {
     window.opener.close();
     Weave.Svc.Prefs.reset("firstSync");
     Weave.Service.login();
+  },
+
+  onWizardCancel: function () {
+    this._handleNoScript(false);
+  },
+
+  _disabledSites: [],
+  get _remoteSites() {
+    return [Weave.Service.serverURL, "https://api-secure.recaptcha.net"];
+  },
+
+  _handleNoScript: function (addExceptions) {
+    // if NoScript isn't installed, or is disabled, bail out.
+    let nsExt = Application.extensions.get("{73a6fe31-595d-460b-a920-fcc0f8843232}");
+    if (!nsExt || !nsExt.enabled)
+      return;
+
+    let ns = Cc["@maone.net/noscript-service;1"].getService().wrappedJSObject;
+    if (addExceptions) {
+      this._remoteSites.forEach(function(site) {
+        site = ns.getSite(site);
+        if (!ns.isJSEnabled(site)) {
+          this._disabledSites.push(site); // save status
+          ns.setJSEnabled(site, true); // allow site
+        }
+      }, this);
+    }
+    else {
+      this._disabledSites.forEach(function(site) {
+        ns.setJSEnabled(site, false);
+      });
+      this._disabledSites = [];
+    }
   },
 
   startThrobber: function (start) {
