@@ -37,107 +37,105 @@
  * ***** END LICENSE BLOCK ***** */
 
 function FxWeaveGlue() {
+  setTimeout(this.init, 0);
 }
 FxWeaveGlue.prototype = {
+  WEAVE_TABS_URL: "about:weave-tabs",
 
-  doInitTabsMenu: function FxWeaveGlue__doInitTabsMenu() {
-    // Don't do anything if the tabs engine isn't ready
-    if (!Weave.Engines.get("tabs"))
+  init: function () {
+    let popup = document.getElementById("goPopup");
+    popup.addEventListener("popupshowing", gFxWeaveGlue, true);
+
+    if (!gBrowser)
       return;
 
-    this._populateTabs();
-    this._refetchTabs();
+    popup = document.getAnonymousElementByAttribute(gBrowser.mTabContainer, "anonid", "alltabs-popup");
+    popup.addEventListener("popupshowing", gFxWeaveGlue, true);
+    popup.addEventListener("popuphiding",  gFxWeaveGlue, true);
   },
 
-  _refetchTabs: function _refetchTabs() {
-    // Don't bother refetching tabs if we already did so recently
-    let lastFetch = Weave.Svc.Prefs.get("lastTabFetch", 0);
-    let now = Math.floor(Date.now() / 1000);
-    if (now - lastFetch < 30)
+  getStr: function (str, args) {
+    return Weave.Str.sync.get(str, args);
+  },
+
+  insertTabsUI: function () {
+    if (!Weave.Service.isLoggedIn || !Weave.Engines.get("tabs").enabled)
       return;
 
-    // Asynchronously fetch the tabs
-    setTimeout(function() {
-      let engine = Weave.Engines.get("tabs");
-      let lastSync = engine.lastSync;
+    let popup = document.getAnonymousElementByAttribute(gBrowser.mTabContainer, "anonid", "alltabs-popup");
+    let menuitem = document.createElement("menuitem");
+    menuitem.setAttribute("anonid", "sync-tabs-menuitem");
+    menuitem.setAttribute("label", this.getStr("tabs.fromOtherComputers.label"));
+    menuitem.setAttribute("class", "menuitem-iconic alltabs-item");
+    menuitem.setAttribute("image", "chrome://weave/skin/sync-16x16.png");
+    menuitem.setAttribute("oncommand", "gFxWeaveGlue.openTabsPage();");
 
-      // Force a sync only for the tabs engine
-      engine.lastModified = null;
-      engine.sync();
-      Weave.Svc.Prefs.set("lastTabFetch", now);
-
-      // XXX Can't seem to force the menu to redraw ? :(
-    }, 0);
+    let sep = document.createElement("menuseparator");
+    sep.setAttribute("anonid", "sync-tabs-sep");
+    popup.insertBefore(sep, popup.firstChild);
+    popup.insertBefore(menuitem, sep);
   },
 
-  _populateTabs: function _populateTabs() {
-    // Lazily add the listener to show the selected item's uri
-    let menu = document.getElementById("sync-tabs-menu");
-    if (!menu.hasStatusListener) {
-      menu.hasStatusListener = true;
+  removeTabsUI: function () {
+    // we need to do this manually because the tabbrowser cleanup chokes here
+    let popup = document.getAnonymousElementByAttribute(gBrowser.mTabContainer, "anonid", "alltabs-popup");
+    let sep = document.getAnonymousElementByAttribute(gBrowser.mTabContainer, "anonid", "sync-tabs-sep");
+    if (sep)
+      popup.removeChild(sep);
 
-      menu.addEventListener("DOMMenuItemActive", function(event) {
-        XULBrowserWindow.setOverLink(event.target.weaveUrls.toString());
-      }, false);
-      menu.addEventListener("DOMMenuItemInactive", function() {
-        XULBrowserWindow.setOverLink("");
-      }, false);
-    }
+    let menuitem = document.getAnonymousElementByAttribute(gBrowser.mTabContainer, "anonid", "sync-tabs-menuitem");
+    if (menuitem)
+      popup.removeChild(menuitem);
+  },
 
-    // Clear out old menu contents
-    while (menu.itemCount > 1)
-      menu.removeItemAt(menu.itemCount - 1);
-
-    let engine = Weave.Engines.get("tabs");
-    let localTabs = engine._store.getAllTabs();
-    for (let [guid, client] in Iterator(engine.getAllClients())) {
-      // Remember if we need to append the client name
-      let appendClient = true;
-      let pageUrls = [];
-
-      client.tabs.forEach(function({title, urlHistory, icon}) {
-        // Skip tabs that are already open
-        let pageUrl = urlHistory[0];
-        if (localTabs.some(function(tab) tab.urlHistory[0] == pageUrl))
-          return;
-
-        // Add the client once and point it to the array of urls to open
-        if (appendClient) {
-          appendClient = false;
-          let item = menu.appendItem(client.clientName);
-          item.className = "menuitem-iconic";
-          item.style.listStyleImage = "url(chrome://weave/skin/tab.png)";
-          item.weaveUrls = pageUrls;
+  handleEvent: function (event) {
+    switch (event.type) {
+      case "popupshowing":
+        if (event.target.id == "goPopup") {
+          let enabled = Weave.Service.isLoggedIn && 
+                        Weave.Engines.get("tabs").enabled;
+          document.getElementById("sync-tabs-menuitem").hidden = !enabled;
         }
-
-        let iconUrl = Weave.Utils.getIcon(icon, "chrome://weave/skin/tab.png");
-        title = title == "" ? pageUrl : title;
-
-        // Add a menuitem that knows what url to open
-        let item = menu.appendItem("   " + title);
-        item.className = "menuitem-iconic";
-        item.style.listStyleImage = "url(" + iconUrl + ")";
-        item.weaveUrls = [pageUrl];
-
-        // Add this to the list of urls to open for the client name
-        pageUrls.push(pageUrl);
-      });
+        else if (this.getPageIndex() == -1)
+          this.insertTabsUI();
+        break;
+      case "popuphiding":
+        this.removeTabsUI();
+        break;
     }
-
-    // Show/hide the "no tabs available" if necessary
-    document.getElementById("sync-no-tabs-menu-item").hidden =
-      (menu.itemCount > 1);
   },
 
-  onCommandTabsMenu: function FxWeaveGlue_onCommandTabsMenu(event) {
-    // Open each url in its own tab
-    let lastTab;
-    event.target.weaveUrls.forEach(function(url) {
-      lastTab = openUILinkIn(url, "tab")
-    });
+  getPageIndex: function () {
+    let tabs = gBrowser.mTabs;
+    let uri = Weave.Utils.makeURI(this.WEAVE_TABS_URL);
+    for (let i = 0;i < tabs.length;i++) {
+      if (gBrowser.getBrowserForTab(tabs[i]).currentURI.equals(uri))
+        return i;
+    }
+    return -1;
+  },
 
-    // Switch to the last opened tab
-    gBrowser.selectedTab = lastTab;
+  openTabsPage: function () {
+    if (gBrowser) {
+      let i = this.getPageIndex();
+      if (i != -1) {
+        gBrowser.selectTabAtIndex(i);
+        return;
+      }
+      gBrowser.loadOneTab(this.WEAVE_TABS_URL, null, null, null, false);
+    }
+    else { // not in a browser window
+      let win = getTopWin();
+      if (win) {
+        win.gFxWeaveGlue.openTabsPage();
+        win.focus();
+      }
+      else {
+        window.openDialog("chrome://browser/content/", "_blank",
+                          "chrome,all,dialog=no", this.WEAVE_TABS_URL);
+        
+      }
+    }
   },
 
   shutdown: function FxWeaveGlue__shutdown() {

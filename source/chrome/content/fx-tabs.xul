@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="chrome://browser/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://weave/content/fx-tabs.css" type="text/css"?>
+
+<!DOCTYPE overlay SYSTEM "chrome://weave/locale/fx-tabs.dtd">
+
+<window id="tabs-display" 
+        onload="RemoteTabViewer.init()"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        title="&tabs.otherComputers.label;">
+  <script type="application/javascript;version=1.8"
+          src="chrome://weave/content/fx-tabs.js"/>
+  <script type="application/javascript" src="chrome://browser/content/utilityOverlay.js"/>
+  <script type="application/javascript" src="chrome://browser/content/places/utils.js"/>
+  <script type="application/javascript" src="chrome://global/content/globalOverlay.js"/>
+
+  <popupset id="contextmenus">
+    <popup id="tabListContext">
+      <menuitem label="&tabs.context.openTab.label;" 
+                oncommand="RemoteTabViewer.openSelected()"
+                showFor="single"/>
+      <menuitem label="&tabs.context.bookmarkSingleTab.label;"
+                oncommand="RemoteTabViewer.bookmarkSingleTab(event)"
+                showFor="single"/>
+      <menuitem label="&tabs.context.openMultipleTabs.label;"
+                oncommand="RemoteTabViewer.openSelected()"
+                showFor="multiple"/>
+      <menuitem label="&tabs.context.bookmarkMultipleTabs.label;"
+                oncommand="RemoteTabViewer.bookmarkSelectedTabs()"
+                showFor="multiple"/>
+      <menuseparator/>
+      <menuitem label="&tabs.context.refreshList.label;" 
+                oncommand="RemoteTabViewer.buildList()" 
+                showFor="all"/>
+    </popup>
+  </popupset>
+  <richlistbox context="tabListContext" id="tabsList" seltype="multiple" align="center" flex="1"
+               onclick="RemoteTabViewer.handleClick(event)"
+               oncontextmenu="RemoteTabViewer.adjustContextMenu(event)">
+    <hbox align="center" style="background-color: transparent;">
+      <hbox id="headers" align="center">
+      <image src="chrome://weave/skin/sync-32x32.png" height="32" width="32"/>
+      <label id="tabsListHeading"
+             value="&tabs.otherComputers.label;"/>
+      <spacer flex="1"/>
+      <textbox type="search" 
+               emptytext="&tabs.searchText.label;" 
+               oncommand="RemoteTabViewer.filterTabs(event)"/>
+      </hbox>   
+
+    </hbox>
+  </richlistbox>
+</window>

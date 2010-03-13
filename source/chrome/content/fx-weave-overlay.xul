@@ -16,17 +16,10 @@
   </stringbundleset>
 
   <menupopup id="goPopup">
-    <menu id="sync-tabs-menu" class="menu-iconic"
-          insertafter="endHistorySeparator" label="&syncTabsMenu.label;"
-          image="chrome://weave/skin/sync-16x16.png"
-          oncommand="gFxWeaveGlue.onCommandTabsMenu(event);"
-          onclick="checkForMiddleClick(this, event);">
-      <menupopup id="sync-tabs-menu-popup"
-                 onpopupshowing="gFxWeaveGlue.doInitTabsMenu(event);">
-        <menuitem id="sync-no-tabs-menu-item" label="&syncNoTabsMenuItem.label;"
-                  disabled="true"/>
-      </menupopup>
-    </menu>
+    <menuitem id="sync-tabs-menuitem"
+              label="&syncTabsMenu.label;"
+              insertafter="endHistorySeparator"
+              image="chrome://weave/skin/sync-16x16.png"
+              oncommand="gFxWeaveGlue.openTabsPage();"/>
   </menupopup>
-
 </overlay>

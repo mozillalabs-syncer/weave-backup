@@ -56,3 +56,10 @@ treechildren::-moz-tree-image(container, OrganizerQuery_MobileBookmarks) {
 #sync-notifications-box notification[type="critical"] .messageImage {
   list-style-image: url("chrome://global/skin/icons/error-24.png");
 }
+
+.weave-tab, .weave-tab:hover, .weave-tab:hover:active {
+  list-style-image: url("chrome://weave/skin/sync-16x16.png");
+  -moz-image-region: auto;
+  visibility: visible !important;
+}
+
