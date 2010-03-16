@@ -41,7 +41,7 @@ stage_dir=$(objdir)/stage
 xpi_dir=$(objdir)/xpi
 
 weave_version := 1.2b1
-compatible_version := 1.0rc4
+storage_version := 2
 weave_id := {340c2bbc-ce74-4362-90b5-7c26312808ef}
 
 ifeq ($(release_build),)
@@ -93,7 +93,7 @@ endif
 
 subst_names := \
   weave_version \
-  compatible_version \
+  storage_version \
   weave_id \
   buildid \
   buildid_short \
