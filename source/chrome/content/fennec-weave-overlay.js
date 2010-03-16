@@ -89,10 +89,6 @@ let WeaveGlue = {
   },
 
   _handlePrefs: function _handlePrefs() {
-    // Some prefs have different defaults on mobile than desktop, so set them
-    if (!Weave.Svc.Prefs.isSet("client.type"))
-      Weave.Svc.Prefs.set("client.type", "mobile");
-
     // Open a tab if we're running for the first time or upgrading versions
     let version = Weave.WEAVE_VERSION;
     let lastVersion = Weave.Svc.Prefs.get("lastversion");

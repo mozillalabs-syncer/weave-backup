@@ -232,14 +232,15 @@ let gWeavePane = {
           node.setAttribute("class", "data indent");
           box.appendChild(node);
         }
-        let prevName = "";
-        for each (let {name} in Weave.Clients.getClients()) {
-          if (name != prevName) {
-            count++;
-            if (count < 5)
-              appendNode(name);
-          }
-          prevName = name;
+
+        for each (let name in Weave.Clients.stats.names) {
+          // Don't list the current client
+          if (name == Weave.Clients.localName)
+            continue;
+
+          // Only show the first several client names
+          if (++count <= 5)
+            appendNode(name);
         }
         if (count > 5) {
           let label = 
