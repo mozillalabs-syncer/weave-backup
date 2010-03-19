@@ -257,7 +257,7 @@
                 </vbox>
                 <separator class="thin"/>
                 <description class="normal">
-                  Firefox will then copy your Weave data to this computer.
+                  &confirm.client.moreinfo.label;
                 </description>
                 <separator class="thin"/>
                 <description class="warning">
