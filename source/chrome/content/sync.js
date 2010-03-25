@@ -189,7 +189,13 @@ WeaveWindow.prototype = {
 
       let priority = Weave.Notifications.PRIORITY_WARNING;
       let buttons = [];
-      if (Weave.Status.sync == Weave.VERSION_OUT_OF_DATE) {
+
+      // Check if the client is outdated in some way
+      let outdated = Weave.Status.sync == Weave.VERSION_OUT_OF_DATE;
+      for (let [engine, reason] in Iterator(Weave.Status.engines))
+        outdated = outdated || reason == Weave.VERSION_OUT_OF_DATE;
+
+      if (outdated) {
         description = Weave.Str.sync.get("error.sync.needUpdate.description");
         let label = Weave.Str.sync.get("error.sync.needUpdate.label");
         let accesskey = Weave.Str.sync.get("error.sync.needUpdate.accesskey");
