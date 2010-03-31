@@ -48,7 +48,7 @@
                       oncommand="gWeaveWin.doOpenActivityLog(event);"/>
             <menuseparator/>
             <menuitem id="sync-lastsyncitem"
-                      disabled="false" hidden="true"/>
+                      disabled="true" hidden="true"/>
         </menupopup>
     </menu>
 
