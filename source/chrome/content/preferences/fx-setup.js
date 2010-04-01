@@ -107,6 +107,11 @@ var gWeaveSetup = {
   onEmailChange: function () {
     let re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     this.status.email = re.test(document.getElementById("weaveEmail").value);
+
+    this._setFeedbackMessage(document.getElementById("emailFeedbackRow"),
+                             this.status.email,
+                             "invalidEmail.label");
+
     this.checkFields();
   },
 

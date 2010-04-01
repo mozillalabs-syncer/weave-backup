@@ -87,6 +87,10 @@
                  control="weaveEmail"/>
           <textbox id="weaveEmail" onchange="gWeaveSetup.onEmailChange()"/>
         </row>
+        <row id="emailFeedbackRow" hidden="true">
+          <spacer/>
+          <label value=""/>
+        </row>
         <row id="TOSRow" align="center">
           <spacer/>
           <hbox align="center">
