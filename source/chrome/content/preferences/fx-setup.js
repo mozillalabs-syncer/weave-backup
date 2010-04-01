@@ -85,7 +85,7 @@ var gWeaveSetup = {
     let feedback = document.getElementById("passwordFeedbackRow");
 
     let password = document.getElementById("weavePassword").value;
-    if (password.length < 8) {
+    if (password.length < Weave.MIN_PASS_LENGTH) {
       valid = false;
       this._setFeedbackMessage(feedback, valid, "passwordTooWeak.label");
     }
@@ -126,7 +126,7 @@ var gWeaveSetup = {
       state = 2;
     }
 
-    if (state == 0 && (val.length < 12 || valConfirm.length < val.length))
+    if (state == 0 && (val.length < Weave.MIN_PASS_LENGTH || valConfirm.length < val.length))
       state = 1;
 
     if (state == 0 && val != valConfirm) {

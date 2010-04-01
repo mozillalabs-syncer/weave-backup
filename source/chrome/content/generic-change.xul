@@ -1,12 +1,18 @@
 <?xml version="1.0"?>
 
 <?xml-stylesheet href="chrome://global/skin/global.css" type="text/css"?>
-<?xml-stylesheet href="chrome://weave/content/login.css" type="text/css"?>
+<?xml-stylesheet href="chrome://weave/skin/fx-prefs.css"?>
+<?xml-stylesheet href="chrome://weave-platform/skin/fx-prefs-platform.css"?>
 
 <dialog xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        xmlns:html="http://www.w3.org/1999/xhtml"
         id="change-dialog"
         windowtype="Weave:ChangeSomething"
         buttons="accept,cancel"
+        style="height: 20em;width: 40em"
+        onload="Change.onLoad()"
+        onunload="Change.shutDown(event);"
+        buttondisabledaccept="true"
         ondialogcancel="return true;"
         defaultButton="accept">
 
@@ -17,42 +23,40 @@
     <stringbundle id="weaveStringBundle" src="chrome://weave/locale/generic-change.properties"/>
   </stringbundleset>
 
-  <hbox align="center">
-    <label class="title" id="mainTitle"/>
+  <hbox align="top">
+    <image src="chrome://weave/skin/sync-32x32.png"/>
+    <spacer style="width: 1em"/>
+    <description flex="1">
+      <html:p style="margin-top: 2px" id="introText"/>
+      <html:p id="introText2"/>
+    </description>
   </hbox>
-
+  <separator class="thin"/>
   <vbox>
     <grid>
       <columns>
-        <column pack="left" align="right"/>
+        <column align="right"/>
         <column/>
       </columns>
       <rows>
-        <row id="oldBoxRow" align="center" hidden="true">
-          <hbox flex="1" align="right">
-            <label id="currentBoxLabel"/>
-          </hbox>
-          <textbox id="currentBoxText" type="password"/>
+        <row>
+          <label id="textBox1Label" control="textBox1"/>
+          <textbox id="textBox1" type="password" oninput="Change.validate(event)"/>
         </row>
-        <row align="center">
-          <hbox flex="1" align="right">
-            <label id="textBox1Label"/>
-          </hbox>
-          <textbox id="textBox1" type="password"/>
+        <row>
+          <label id="textBox2Label" control="textBox2"/>
+          <textbox id="textBox2" type="password" oninput="Change.validate(event)"/>
         </row>
-        <row align="center">
-          <hbox flex="1" align="right">
-            <label id="textBox2Label"/>
-          </hbox>
-          <textbox id="textBox2" type="password"/>
-        </row>
-        <row><label value=""/></row>
       </rows>
     </grid>
 
+    <description>
+      <html:p class="data" id="warningText"/>
+    </description>
+
     <hbox align="center">
-      <image id="mainStatusIcon" class="statusIcon"/>
-      <label id="mainStatus" class="status"/>
+      <image id="statusIcon" class="statusIcon"/>
+      <label id="status" class="status"/>
     </hbox>
   </vbox>
 </dialog>

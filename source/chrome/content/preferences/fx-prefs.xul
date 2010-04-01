@@ -146,8 +146,8 @@
             </hbox>
             <vbox class="small" id="passphraseHelpBox" hidden="true">
               <description class="small">&passphraseHelp.label;</description>
-              <label class="text-link small" value="&resetPassphrase.label;"
-                     onclick="gWeavePane.resetPassphrase(); return false;"/>
+              <label class="text-link small" value="&changePassphrase.label;"
+                     onclick="gWeavePane.changePassphrase(); return false;"/>
             </vbox>
             <hbox align="right">
               <button label="&goBack.label;"

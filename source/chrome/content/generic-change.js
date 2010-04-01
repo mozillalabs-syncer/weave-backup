@@ -22,29 +22,27 @@ let Change = {
     return this._dialog = document.getElementById("change-dialog");
   },
 
+  get _dialogType() {
+    delete this._dialogType;
+    return this._dialogType = Weave.Utils._genericDialogType;
+  },
+
   get _title() {
-    delete this._title;
-    return this._title = document.getElementById("mainTitle");
+    return document.getElementById("change-dialog").getAttribute("title");
+  },
+
+  set _title(val) {
+    document.getElementById("change-dialog").setAttribute("title", val);
   },
 
   get _status() {
     delete this._status;
-    return this._status = document.getElementById("mainStatus");
+    return this._status = document.getElementById("status");
   },
 
   get _statusIcon() {
     delete this._statusIcon;
-    return this._statusIcon = document.getElementById("mainStatusIcon");
-  },
-
-  get _oldBoxRow() {
-    delete this._oldBoxRow;
-    return this._oldBoxRow = document.getElementById("oldBoxRow");
-  },
-
-  get _currentBox() {
-    delete this._currentBox;
-    return this._currentBox = document.getElementById("currentBoxText");
+    return this._statusIcon = document.getElementById("statusIcon");
   },
 
   get _firstBox() {
@@ -61,181 +59,117 @@ let Change = {
     return Weave.Status.login == Weave.LOGIN_FAILED_LOGIN_REJECTED;
   },
 
-  get _currentPassphraseInvalid() {
-    return Weave.Status.login == Weave.LOGIN_FAILED_INVALID_PASSPHRASE;
-  },
-
   onLoad: function Change_onLoad() {
     /* Load labels */
-    let cboxlabel = document.getElementById("currentBoxLabel");
     let box1label = document.getElementById("textBox1Label");
     let box2label = document.getElementById("textBox2Label");
+    let introText = document.getElementById("introText");
+    let introText2 = document.getElementById("introText2");
+    let warningText = document.getElementById("warningText");
 
-    switch (Weave.Utils._genericDialogType) {
-      case "ResetPassphrase":
-        this._title.value = this._str("reset.passphrase.title");
-        box1label.value = this._str("new.passphrase.label");
-        box2label.value = this._str("new.passphrase.confirm");
-        this._dialog.setAttribute(
-          "ondialogaccept",
-          "return Change.doResetPassphrase();"
-        );
-        break;
+    switch (this._dialogType) {
       case "ChangePassphrase":
-        this._title.value = this._str("change.passphrase.title");
-        cboxlabel.value = this._str("new.passphrase.old");
+        this._title = this._str("change.passphrase.title");
         box1label.value = this._str("new.passphrase.label");
         box2label.value = this._str("new.passphrase.confirm");
+        introText.innerHTML = this._str("change.passphrase.introText");
+        introText2.innerHTML = this._str("change.passphrase.introText2");
+        warningText.innerHTML = this._str("change.passphrase.warningText");
+        this._dialog.getButton("accept")
+            .setAttribute("label", this._str("change.passphrase.acceptButton"));
         this._dialog.setAttribute(
           "ondialogaccept",
           "return Change.doChangePassphrase();"
         );
-        this._oldBoxRow.setAttribute("hidden", this._currentPassphraseInvalid);
         break;
       case "ChangePassword":
-        this._title.value = this._str("change.password.title");
-        cboxlabel.value = this._str("new.password.old");
+        this._title = this._str("change.password.title");
         box1label.value = this._str("new.password.label");
         box2label.value = this._str("new.password.confirm");
+        introText.innerHTML = this._str("change.password.introText");
+        warningText.innerHTML = this._str("change.password.warningText");
+        this._dialog.getButton("accept")
+            .setAttribute("label", this._str("change.password.acceptButton"));
         this._dialog.setAttribute(
           "ondialogaccept",
           "return Change.doChangePassword();"
         );
-        this._oldBoxRow.setAttribute("hidden", this._currentPasswordInvalid);
-        break;
-    }
-    this._os.addObserver(this, "weave:service:changepwd:start", false);
-    this._os.addObserver(this, "weave:service:changepwd:error", false);
-    this._os.addObserver(this, "weave:service:changepwd:finish", false);
-    this._os.addObserver(this, "weave:service:changepph:start", false);
-    this._os.addObserver(this, "weave:service:changepph:error", false);
-    this._os.addObserver(this, "weave:service:changepph:finish", false);
-    this._os.addObserver(this, "weave:service:resetpph:start", false);
-    this._os.addObserver(this, "weave:service:resetpph:error", false);
-    this._os.addObserver(this, "weave:service:resetpph:finish", false);
-  },
-
-  shutDown: function Change_shutDown() {
-    this._os.removeObserver(this, "weave:service:changepwd:start", false);
-    this._os.removeObserver(this, "weave:service:changepwd:error", false);
-    this._os.removeObserver(this, "weave:service:changepwd:finish", false);
-    this._os.removeObserver(this, "weave:service:changepph:start", false);
-    this._os.removeObserver(this, "weave:service:changepph:error", false);
-    this._os.removeObserver(this, "weave:service:changepph:finish", false);
-    this._os.removeObserver(this, "weave:service:resetpph:start", false);
-    this._os.removeObserver(this, "weave:service:resetpph:error", false);
-    this._os.removeObserver(this, "weave:service:resetpph:finish", false);
-  },
-
-  observe: function Change_observer(subject, topic, data) {
-    switch (topic) {
-      case "weave:service:resetpph:start":
-      case "weave:service:changepwd:start":
-      case "weave:service:changepph:start":
-        this._statusIcon.setAttribute("status", "active");
-        this._status.style.color = "-moz-dialogtext";
-        this._dialog.getButton("cancel").setAttribute("disabled", "true");
-        this._dialog.getButton("accept").setAttribute("disabled", "true");
-        break;
-      case "weave:service:resetpph:error":
-      case "weave:service:changepwd:error":
-      case "weave:service:changepph:error":
-        this._statusIcon.setAttribute("status", "error");
-        this._status.style.color = "-moz-dialogtext";
-        this._dialog.getButton("cancel").setAttribute("disabled", "false");
-        this._dialog.getButton("accept").setAttribute("disabled", "false");
-        break;
-      case "weave:service:resetpph:finish":
-      case "weave:service:changepwd:finish":
-      case "weave:service:changepph:finish":
-        this._statusIcon.setAttribute("status", "success");
-        this._status.style.color = "-moz-dialogtext";
-        this._dialog.getButton("cancel").setAttribute("disabled", "true");
-        this._dialog.getButton("accept").setAttribute("disabled", "true");
-        window.setTimeout(window.close, 1500);
         break;
     }
   },
 
-  doResetPassphrase: function Change_doResetPassphrase() {
-    if (!this._firstBox.value || !this._secondBox.value)
-      alert(this._str("noPassphrase.alert"));
-    else if (this._firstBox.value != this._secondBox.value)
-      alert(this._str("passphraseNoMatch.alert"));
-    else {
-      this._status.value = this._str("reset.passphrase.label");
+  _updateStatus: function Change__updateStatus(str, state) {
+    this._status.value = this._str(str);
+    this._statusIcon.setAttribute("status", state);
 
-      if (Weave.Service.resetPassphrase(this._firstBox.value)) {
-        this._status.value = this._str("reset.passphrase.success");
-        this._loginDialog.cancelDialog();
-      }
-      else
-        this._status.value = this._str("reset.passphrase.error");
-    }
+    let error = state == "error";
+    this._dialog.getButton("cancel").setAttribute("disabled", !error);
+    this._dialog.getButton("accept").setAttribute("disabled", !error);
 
-    return false;
-  },
-
-  doChangePassphrase: function Change_doChangePassphrase() {
-    if (!this._firstBox.value || !this._secondBox.value)
-      alert(this._str("noPassphrase.alert"));
-    else if (this._firstBox.value != this._secondBox.value)
-      alert(this._str("passphraseNoMatch.alert"));
-    else if (this._currentPassphraseInvalid) {
-      Weave.Service.passphrase = this._firstBox.value;
-      Weave.Service.persistLogin();
-      Weave.Service.login();
+    if (state == "success")
       window.setTimeout(window.close, 1500);
-      this._status.value = this._str("change.passphrase.success");
-    }
-    else if (this._currentBox.value != Weave.Service.passphrase)
-      alert(this._str("incorrectPassphrase.alert"));
-    else {
-      this._status.value = this._str("change.passphrase.label");
+  },
+  
+  doChangePassphrase: function Change_doChangePassphrase() {
+    this._updateStatus("change.passphrase.label", "active");
 
-      if (Weave.Service.changePassphrase(this._firstBox.value))
-        this._status.value = this._str("change.passphrase.success");
-      else
-        this._status.value = this._str("change.passphrase.error");
-    }
+    if (Weave.Service.changePassphrase(this._firstBox.value))
+      this._updateStatus("change.passphrase.success", "success");
+    else
+      this._updateStatus("change.passphrase.error", "error");
 
     return false;
   },
 
   doChangePassword: function Change_doChangePassword() {
-    if (!this._firstBox.value || !this._secondBox.value)
-      alert(this._str("noPassword.alert"));
-    else if (this._firstBox.value != this._secondBox.value)
-      alert(this._str("passwordNoMatch.alert"));
-    else if (this._firstBox.value == Weave.Service.username)
-      alert(this._str("change.password.status.passwordSameAsUsername" ));
-    else if (this._firstBox.value == Weave.Service.passphrase)
-      alert(this._str("change.password.status.passwordSameAsPassphrase"));
-    else if (this._currentPasswordInvalid) {
+    if (this._currentPasswordInvalid) {
       Weave.Service.password = this._firstBox.value;
       Weave.Service.persistLogin();
       Weave.Service.login();
-      window.setTimeout(window.close, 1500);
-      this._status.value = this._str("change.password.status.success");
+      this._updateStatus("change.password.status.success", "success");
     }
-    else if (this._currentBox.value != Weave.Service.password)
-      alert(this._str("incorrectPassword.alert"));
     else {
-      this._status.value = this._str("change.password.status.active");
+      this._updateStatus("change.password.status.active", "active");
 
       if (Weave.Service.changePassword(this._firstBox.value))
-        this._status.value = this._str("change.password.status.success");
+        this._updateStatus("change.password.status.success", "success");
       else
-        this._status.value = this._str("change.password.status.error");
+        this._updateStatus("change.password.status.error", "error");
     }
 
     return false;
   },
   
+  validate: function (event) {
+    let valid = false;
+    let val1 = this._firstBox.value;
+    let val2 = this._secondBox.value;
+
+    if (this._dialogType == "ChangePassword") { 
+      if (val1 == Weave.Service.username)
+        this._updateStatus("change.password.status.pwSameAsUsername", "error");
+      else if (val1 == Weave.Service.passphrase)
+        this._updateStatus("change.password.status.pwSameAsPassphrase", "error");
+      else if (val1 && val2 && val1 == val2 &&
+               val1.length >= Weave.MIN_PASS_LENGTH)
+        valid = true;
+    }
+    else {
+      if (val1 == Weave.Service.username)
+        this._updateStatus("change.passphrase.status.ppSameAsUsername", "error");
+      else if (val1 == Weave.Service.password)
+        this._updateStatus("change.passphrase.status.ppSameAsPassword", "error");
+      else if (val1 && val2 && val1 == val2 &&
+               val1.length >= Weave.MIN_PP_LENGTH)
+        valid = true;
+    }
+
+    this._dialog.getButton("accept").disabled = !valid;
+  },
+
+  
+
   _str: function Change__string(str) {
     return this._stringBundle.getString(str);
   }
 };
-
-window.addEventListener("load", function(e) { Change.onLoad(); }, false);
-window.addEventListener("unload", function(e) { Change.shutDown(e); }, false);

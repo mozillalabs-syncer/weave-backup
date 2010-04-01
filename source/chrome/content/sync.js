@@ -136,17 +136,22 @@ WeaveWindow.prototype = {
   onLoginError: function WeaveWin_onLoginError() {
     this._setStatus("offline");
 
-    // Don't notify on missing passphrase errors
-    if (!Weave.Service.passphrase)
-      return;
+    // if login fails, any other notifications are essentially moot
+    Weave.Notifications.removeAll();
 
     let title = this._stringBundle.getString("error.login.title");
     let reason = Weave.Utils.getErrorString(Weave.Status.login);
     let description =
       this._stringBundle.getFormattedString("error.login.description", [reason]);
+    let buttons = [];
+    buttons.push(new Weave.NotificationButton(
+      this._stringBundle.getString("error.login.prefs.label"),
+      this._stringBundle.getString("error.login.prefs.accesskey"),
+      function() { gWeaveWin.openPrefs(); return true; }
+    ));
 
     let notification = new Weave.Notification(title, description, null,
-                                              Weave.Notifications.PRIORITY_WARNING);
+                                              Weave.Notifications.PRIORITY_WARNING, buttons);
     Weave.Notifications.replaceTitle(notification);
   },
 
