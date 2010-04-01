@@ -3,7 +3,6 @@ const Cc = Components.classes;
 const Cr = Components.results;
 
 var gWeaveSetup = {
-  _captchaChallenge: "",
   get _usingMainServers() {
     return document.getElementById("serverType").selectedItem.value == "main";
   },
@@ -167,15 +166,21 @@ var gWeaveSetup = {
         this.captchaBrowser.loadURI(Weave.Service.miscAPI + "captcha_html");
         break;
       case 1:
+        let doc = this.captchaBrowser.contentDocument;
+        let getField = function getField(field) {
+          let node = doc.getElementById("recaptcha_" + field + "_field");
+          return node && node.value;
+        };
+
         this.startThrobber(true);
         let username = document.getElementById("weaveUsername").value;
         let password = document.getElementById("weavePassword").value;
         let email    = document.getElementById("weaveEmail").value;
-        let response = this.captchaBrowser.contentDocument
-                           .getElementById("recaptcha_response_field").value;
+        let challenge = getField("challenge");
+        let response = getField("response");
 
         let error = Weave.Service.createAccount(username, password, email,
-                                                this._captchaChallenge, response);
+                                                challenge, response);
         this.startThrobber(false);
 
         if (error == null) {
@@ -288,10 +293,6 @@ var gWeaveSetup = {
     this.checkFields();
   },
 
-  onCaptchaLoaded: function () {
-    this._captchaChallenge = this.captchaBrowser.contentDocument.getElementById("recaptcha_challenge_field").value;
-  },
-
   // sets class and string on a feedback element
   // if no property string is passed in, we clear label/style
   _setFeedbackMessage: function (element, success, string) {
@@ -316,8 +317,17 @@ var gWeaveSetup = {
   },
 
   onStateChange: function(webProgress, request, stateFlags, status) {
-    if (stateFlags & Ci.nsIWebProgressListener.STATE_STOP)
-      this.onCaptchaLoaded();
+    // We're only looking for the end of the frame load
+    if ((stateFlags & Ci.nsIWebProgressListener.STATE_STOP) == 0)
+      return;
+    if ((stateFlags & Ci.nsIWebProgressListener.STATE_IS_NETWORK) == 0)
+      return;
+    if ((stateFlags & Ci.nsIWebProgressListener.STATE_IS_WINDOW) == 0)
+      return;
+
+    // If we didn't find the captcha, assume it's not needed and move on
+    if (request.QueryInterface(Ci.nsIHttpChannel).responseStatus == 404)
+      this.onWizardAdvance();
   },
   onProgressChange: function() {},
   onStatusChange: function() {},
