@@ -311,11 +311,10 @@ WeaveWindow.prototype = {
 
     // Don't allow "login" to be selected in some cases
     let offline = Weave.Svc.IO.offline;
-    let delayed = Weave.Status.service == Weave.STATUS_DELAYED;
     let locked = Weave.Service.locked;
     let pbEnabled = Weave.Svc.Private.privateBrowsingEnabled;
     let noUser = Weave.Service.username == "";
-    let notReady = offline || delayed || locked || pbEnabled || noUser;
+    let notReady = offline || locked || pbEnabled || noUser;
     loginItem.setAttribute("disabled", notReady);
     logoutItem.setAttribute("disabled", notReady);
 
