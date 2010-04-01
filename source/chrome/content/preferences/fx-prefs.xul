@@ -217,7 +217,8 @@
           </radiogroup>
           </groupbox>
           <hbox class="mergeChoiceBFBox" align="end" pack="end">
-            <button label="&startOver.label;"
+            <button id="startOver"
+                    label="&startOver.label;"
                     oncommand="gWeavePane.startOver()"/>
             <button label="&continue.label;"
                     oncommand="gWeavePane.handleChoice()"/>
@@ -324,8 +325,11 @@
                              onclick="gWeavePane.changePassphrase(); return false;"
                              value="&changePassphrase.label;"/>
                       <label class="text-link"
-                             onclick="gWeavePane.startOver(); return false;"
-                             value="&startOver.label;"/>
+                             onclick="gWeavePane.resetSync(); return false;"
+                             value="&resetSync.label;"/>
+                      <label class="text-link"
+                             onclick="gWeavePane.startOver(true); return false;"
+                             value="&differentAccount.label;"/>
                     </vbox>
                   <spacer/>
                 </row>

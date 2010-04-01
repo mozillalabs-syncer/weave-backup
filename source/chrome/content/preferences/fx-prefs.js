@@ -267,13 +267,37 @@ let gWeavePane = {
     Weave.Service.isLoggedIn ? Weave.Service.logout() : Weave.Service.login();
   },
 
-  startOver: function () {
+  startOver: function (showDialog) {
+    if (showDialog) {
+      let flags = Weave.Svc.Prompt.BUTTON_POS_0 * Weave.Svc.Prompt.BUTTON_TITLE_IS_STRING +
+                  Weave.Svc.Prompt.BUTTON_POS_1 * Weave.Svc.Prompt.BUTTON_TITLE_CANCEL;
+      let buttonChoice =
+        Weave.Svc.Prompt.confirmEx(window,
+                                   this.bundle.getString("differentAccount.title"),
+                                   this.bundle.getString("differentAccount.label"),
+                                   flags,
+                                   this.bundle.getString("differentAccountConfirm.label"),
+                                   null, null, null, {});
+
+      // If the user selects cancel, just bail
+      if (buttonChoice == 1)
+        return;
+    }
+
     this.handleExpanderClick();
-    Weave.Service.logout();
-    Weave.Svc.Prefs.resetBranch("");
+    Weave.Service.startOver();
     this.updateWeavePrefs();
     document.getElementById("manageAccountExpander").className = "expander-down";
     document.getElementById("manageAccountControls").hidden = true;
+  },
+
+  resetSync: function() {
+    this.handleExpanderClick();
+    // Trigger the move to page 2
+    Weave.Svc.Prefs.set("firstSync", "notReady");
+    // Hide the "start over" button
+    document.getElementById("startOver").hidden = true;
+    this.updateWeavePrefs();
   },
 
   recoverPassword: function () {
@@ -380,6 +404,8 @@ let gWeavePane = {
         break;
     }
     Weave.Service.syncOnIdle(1); // shorter delay than normal
+    // Make sure the "start over" button is shown again
+    document.getElementById("startOver").hidden = false;
     window.close();
   },
 
