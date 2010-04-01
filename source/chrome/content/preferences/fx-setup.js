@@ -268,7 +268,7 @@ var gWeaveSetup = {
         }
 
         str = valid ? "" : "serverInvalid.label";
-        this._setFeedbackMessage(feedback, valid);
+        this._setFeedbackMessage(feedback, valid, str);
       }
       else
         this._setFeedbackMessage(feedback, true);
