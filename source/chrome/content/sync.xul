@@ -56,6 +56,7 @@
         <statusbarpanel id="sync-menu-button"
                         class="statusbarpanel-iconic-text"
                         insertbefore="security-button"
+                        oncommand="gWeaveWin.onMenuButtonCommand();"
                         onmousedown="event.preventDefault(); gWeaveWin.onMenuButtonMouseDown()">
         </statusbarpanel>
         <statusbarpanel id="sync-notifications-button"

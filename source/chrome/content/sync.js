@@ -87,6 +87,8 @@ function WeaveWindow() {
     this._setStatus("privateBrowsing");
   else if (Weave.Service.isLoggedIn)
     this.onLoginFinish();
+  else if (this._needsSetup())
+    this._setStatus("needsSetup");
   else
     this._setStatus("offline");
 }
@@ -110,6 +112,15 @@ WeaveWindow.prototype = {
     return this._stringBundle;
   },
 
+  _needsSetup: function() {
+    // We determine if Weave has been setup by looking for login errors, which
+    // can be set before login is attempted.
+    let errors = [Weave.LOGIN_FAILED_NO_USERNAME, Weave.LOGIN_FAILED_NO_PASSWORD,
+                  Weave.LOGIN_FAILED_NO_PASSPHRASE, Weave.LOGIN_FAILED_LOGIN_REJECTED,
+                  Weave.LOGIN_FAILED_INVALID_PASSPHRASE];
+    return errors.indexOf(Weave.Status.login) != -1
+  },
+
   _setStatus: function WeaveWin_setStatus(status) {
     let label;
     switch (status) {
@@ -118,6 +129,9 @@ WeaveWindow.prototype = {
         break;
       case "privateBrowsing":
         label = this._stringBundle.getString("status.privateBrowsing");
+        break;
+      case "needsSetup":
+        label = this._stringBundle.getString("status.needsSetup");
         break;
       default:
         label = Weave.Service.username;
@@ -134,7 +148,10 @@ WeaveWindow.prototype = {
   },
 
   onLoginError: function WeaveWin_onLoginError() {
-    this._setStatus("offline");
+    if (this._needsSetup())
+      this._setStatus("needsSetup");
+    else
+      this._setStatus("offline");
 
     // if login fails, any other notifications are essentially moot
     Weave.Notifications.removeAll();
@@ -164,7 +181,10 @@ WeaveWindow.prototype = {
   },
 
   onLogout: function WeaveWin_onLogout() {
-    this._setStatus("offline");
+    if (this._needsSetup())
+      this._setStatus("needsSetup");
+    else
+      this._setStatus("offline");
   },
 
   onPrivateBrowsingChange: function WeaveWin_onPrivateBrowsingChange(subject, data) {
@@ -172,6 +192,8 @@ WeaveWindow.prototype = {
       this._setStatus("privateBrowsing");
     else if (Weave.Service.isLoggedIn)
       this._setStatus("idle");
+    else if (this._needsSetup())
+      this._setStatus("needsSetup");
     else
       this._setStatus("offline");
   },
@@ -382,6 +404,11 @@ WeaveWindow.prototype = {
   },
 
   onMenuButtonMouseDown: function WeaveWin_onMenuButtonMouseDown() {
+    // Don't show the menu here if we need to setup. We want the click action to
+    // just open the pref pane. The menu will still be accesible in the Tools menu.
+    if (this._needsSetup())
+      return;
+
     var menuPopup = document.getElementById('sync-menu-popup');
     var menuButton = document.getElementById("sync-menu-button");
 
@@ -392,6 +419,11 @@ WeaveWindow.prototype = {
       menuButton.appendChild(menuPopup);
 
     menuPopup.openPopup(menuButton, "before_start", 0, 0, true);
+  },
+
+  onMenuButtonCommand: function WeaveWin_onMenuButtonCommand(event) {
+    if (this._needsSetup())
+      this.openPrefs();
   }
 };
 

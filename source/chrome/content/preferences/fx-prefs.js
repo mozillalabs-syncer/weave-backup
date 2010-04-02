@@ -48,7 +48,8 @@ let gWeavePane = {
         feedback = document.getElementById("passwordFeedbackRow");
 
         // Move on to the passphrase page if that's the only failure
-        if (Weave.Status.login == Weave.LOGIN_FAILED_INVALID_PASSPHRASE) {
+        if (Weave.Status.login == Weave.LOGIN_FAILED_INVALID_PASSPHRASE ||
+            Weave.Status.login == Weave.LOGIN_FAILED_NO_PASSPHRASE) {
           this.page = 1;
           document.getElementById("weavePassphrase").focus();
           return;
@@ -117,21 +118,29 @@ let gWeavePane = {
   },
 
   updateWeavePrefs: function () {
+    let self = this;
+    function setupForm() {
+      document.getElementById("weaveUsername").value = Weave.Service.username;
+      document.getElementById("weaveServerURL").value = Weave.Service.serverURL;
+      // Show the custom url field if we need to.
+      document.getElementById("serverType").selectedIndex =
+        Weave.Service.serverURL == Weave.DEFAULT_SERVER ? 0 : 1;
+      self.onServerChange();
+    }
     // The password changed or isn't saved by the app, so ask for a new one
     if (Weave.Status.login == Weave.LOGIN_FAILED_LOGIN_REJECTED ||
         Weave.Status.login == Weave.LOGIN_FAILED_NO_PASSWORD) {
       this.page = 0;
-      document.getElementById("weaveUsername").value = Weave.Service.username;
+      setupForm();
       document.getElementById("weavePassphrase").value = Weave.Service.passphrase || "";
-      document.getElementById("weaveServerURL").value = Weave.Service.serverURL;
       this.onLoginError();
     }
     // The passphrase must have changed so ask for a new one
-    else if (Weave.Status.login == Weave.LOGIN_FAILED_INVALID_PASSPHRASE) {
+    else if (Weave.Status.login == Weave.LOGIN_FAILED_INVALID_PASSPHRASE ||
+             Weave.Status.login == Weave.LOGIN_FAILED_NO_PASSPHRASE) {
       this.page = 1;
-      document.getElementById("weaveUsername").value = Weave.Service.username;
+      setupForm();
       document.getElementById("weavePassword").value = Weave.Service.password;
-      document.getElementById("weaveServerURL").value = Weave.Service.serverURL;
       this.onLoginError();
     }
     else if (Weave.Service.username &&
