@@ -92,7 +92,7 @@ FxWeaveGlue.prototype = {
     switch (event.type) {
       case "popupshowing":
         if (event.target.id == "goPopup") {
-          let enabled = Weave.Service.isLoggedIn && 
+          let enabled = Weave.Service.isLoggedIn &&
                         Weave.Engines.get("tabs").enabled;
           document.getElementById("sync-tabs-menuitem").hidden = !enabled;
         }
@@ -133,7 +133,7 @@ FxWeaveGlue.prototype = {
       else {
         window.openDialog("chrome://browser/content/", "_blank",
                           "chrome,all,dialog=no", this.WEAVE_TABS_URL);
-        
+
       }
     }
   },

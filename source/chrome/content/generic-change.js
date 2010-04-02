@@ -54,7 +54,7 @@ let Change = {
     delete this._secondBox;
     return this._secondBox = document.getElementById("textBox2");
   },
-  
+
   get _currentPasswordInvalid() {
     return Weave.Status.login == Weave.LOGIN_FAILED_LOGIN_REJECTED;
   },
@@ -109,7 +109,7 @@ let Change = {
     if (state == "success")
       window.setTimeout(window.close, 1500);
   },
-  
+
   doChangePassphrase: function Change_doChangePassphrase() {
     this._updateStatus("change.passphrase.label", "active");
 
@@ -139,13 +139,13 @@ let Change = {
 
     return false;
   },
-  
+
   validate: function (event) {
     let valid = false;
     let val1 = this._firstBox.value;
     let val2 = this._secondBox.value;
 
-    if (this._dialogType == "ChangePassword") { 
+    if (this._dialogType == "ChangePassword") {
       if (val1 == Weave.Service.username)
         this._updateStatus("change.password.status.pwSameAsUsername", "error");
       else if (val1 == Weave.Service.passphrase)
@@ -166,8 +166,6 @@ let Change = {
 
     this._dialog.getButton("accept").disabled = !valid;
   },
-
-  
 
   _str: function Change__string(str) {
     return this._stringBundle.getString(str);

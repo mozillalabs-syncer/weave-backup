@@ -29,7 +29,7 @@
       </handler>
     </handlers>
   </binding>
-  
+
   <binding id="client-listing" extends="chrome://global/content/bindings/richlistbox.xml#richlistitem">
     <content>
       <xul:hbox pack="start" align="center" onfocus="event.target.blur()" onselect="return false;">

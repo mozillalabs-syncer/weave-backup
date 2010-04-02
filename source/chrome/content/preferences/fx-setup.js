@@ -120,7 +120,7 @@ var gWeaveSetup = {
     let str = null;
     let val = document.getElementById("weavePassphrase").value;
     let valConfirm = document.getElementById("weavePassphraseConfirm").value;
-  
+
     if (val == document.getElementById("weavePassword").value) {
       str = "cannotMatchPassword.label";
       state = 2;

@@ -165,7 +165,7 @@
           <groupbox align="start">
             <caption label="&choice.caption.label;"/>
             <radiogroup id="mergeChoiceRadio" pack="start">
-              <radio id="doMerge" 
+              <radio id="doMerge"
                      class="mergeChoiceButton"
                      aria-labelledby="mergeMain"
                      aria-describedby="mergeSecondary1 mergeSecondary2"
@@ -184,7 +184,7 @@
                   </description>
                 </vbox>
               </radio>
-              <radio id="wipeClient" 
+              <radio id="wipeClient"
                      class="mergeChoiceButton"
                      aria-labelledby="wipeClientMain"
                      aria-describedby="wipeClientSecondary"
@@ -199,7 +199,7 @@
                     </description>
                   </vbox>
               </radio>
-              <radio id="wipeServer" 
+              <radio id="wipeServer"
                      class="mergeChoiceButton"
                      aria-labelledby="wipeServerMain"
                      aria-describedby="wipeServerSecondary"
@@ -349,7 +349,7 @@
           <groupbox>
             <caption label="&syncPrefsCaption.label;"/>
             <hbox align="center">
-              <label value="&syncModeSwitchDesc.label;" 
+              <label value="&syncModeSwitchDesc.label;"
                      accesskey="&syncModeSwitchDesc.accesskey;"
                      control="weaveSyncMode"/>
               <menulist id="weaveSyncMode" oncommand="gWeavePane.updateSyncPrefs()">

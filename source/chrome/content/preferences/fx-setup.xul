@@ -33,7 +33,7 @@
       </columns>
       <rows>
         <row>
-          <label control="serverType" 
+          <label control="serverType"
                  value="&connectTo.label;"/>
           <menulist id="serverType" oncommand="gWeaveSetup.onServerChange()">
             <menupopup>
@@ -45,8 +45,8 @@
           </menulist>
         </row>
         <row id="serverRow" hidden="true" align="center">
-          <label value="&signIn.serverURL.label;" 
-                 accesskey="&signIn.serverURL.accesskey;" 
+          <label value="&signIn.serverURL.label;"
+                 accesskey="&signIn.serverURL.accesskey;"
                  control="weaveServerURL"/>
           <textbox id="weaveServerURL" onchange="gWeaveSetup.onServerChange()"/>
         </row>
@@ -55,10 +55,10 @@
           <label value=""/>
         </row>
         <row id="usernameRow" align="center">
-          <label value="&signIn.username.label;" 
-                 accesskey="&signIn.username.accesskey;" 
+          <label value="&signIn.username.label;"
+                 accesskey="&signIn.username.accesskey;"
                  control="weaveUsername"/>
-          <textbox id="weaveUsername" 
+          <textbox id="weaveUsername"
                    onchange="gWeaveSetup.onUsernameChange()"/>
         </row>
         <row id="usernameFeedbackRow" hidden="true">
@@ -66,13 +66,13 @@
           <label value=""/>
         </row>
         <row id="passwordRow" align="center">
-          <label value="&signIn.password.label;" 
-                 accesskey="&signIn.password.accesskey;" 
+          <label value="&signIn.password.label;"
+                 accesskey="&signIn.password.accesskey;"
                  control="weavePassword"/>
           <textbox id="weavePassword" type="password" onchange="gWeaveSetup.onPasswordChange()"/>
         </row>
         <row id="confirmRow" align="center">
-          <label value="&setup.confirmPassword.label;" 
+          <label value="&setup.confirmPassword.label;"
                  accesskey="&setup.confirmPassword.accesskey;"
                  control="weavePasswordConfirm"/>
           <textbox id="weavePasswordConfirm" type="password" onchange="gWeaveSetup.onPasswordChange()"/>
@@ -94,14 +94,14 @@
         <row id="TOSRow" align="center">
           <spacer/>
           <hbox align="center">
-            <checkbox id="tos" 
+            <checkbox id="tos"
                       label="&setup.tosAgree1.label;"
                       accesskey="&setup.tosAgree1.accesskey;"
                       oncommand="gWeaveSetup.checkFields();"/>
             <label class="text-link"
                       onclick="gWeaveSetup.openToS();"
                       value="&setup.tosLink.label;"/>
-            <label value="&setup.tosAgree2.label;" 
+            <label value="&setup.tosAgree2.label;"
                    accesskey="&setup.tosAgree2.accesskey;"
                    control="tos"/>
           </hbox>

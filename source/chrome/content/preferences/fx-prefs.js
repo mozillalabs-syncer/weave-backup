@@ -159,7 +159,7 @@ let gWeavePane = {
 
     this.updateConnectButton();
     this.updateSetupButtons();
-    
+
     let syncEverything = this._checkDefaultValues();
     document.getElementById("weaveSyncMode").selectedIndex = syncEverything ? 0 : 1;
     document.getElementById("syncModeOptions").selectedIndex = syncEverything ? 0 : 1;
@@ -210,12 +210,12 @@ let gWeavePane = {
           daysOfHistory = stm.getInt32(0);
         document.getElementById("historyCount").value =
           this.bundle.getFormattedString("historyCount.label",  [daysOfHistory]);
-          
+
         // bookmarks
         let bookmarks = 0;
         stm = db.createStatement(
-          "SELECT count(*) AS bookmarks " + 
-          "FROM moz_bookmarks b " + 
+          "SELECT count(*) AS bookmarks " +
+          "FROM moz_bookmarks b " +
           "LEFT JOIN moz_bookmarks t ON " +
           "b.parent = t.id WHERE b.type = 1 AND t.parent <> :tag");
         stm.params.tag = Weave.Svc.Bookmark.tagsFolder;
@@ -252,12 +252,12 @@ let gWeavePane = {
             appendNode(name);
         }
         if (count > 5) {
-          let label = 
+          let label =
             this.bundle.getFormattedString("additionalClients.label", [count - 5]);
           appendNode(label);
         }
         this._case2Setup = true;
-        break; 
+        break;
     }
 
     this.page = 3;

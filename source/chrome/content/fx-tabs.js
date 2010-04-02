@@ -7,19 +7,19 @@ let RemoteTabViewer = {
   init: function () {
     Weave.Svc.Obs.add("weave:service:login:finish", this);
     Weave.Svc.Obs.add("weave:engine:sync:finish",   this);
-    
+
     this.buildList(true);
 
     let win = getTopWin();
     let i = win.gFxWeaveGlue.getPageIndex();
     win.gBrowser.setIcon(win.gBrowser.mTabs[i], "chrome://weave/skin/sync-16x16.png");
   },
-  
+
   buildList: function(force) {
-    if (!Weave.Service.isLoggedIn || 
+    if (!Weave.Service.isLoggedIn ||
         this._refetchTabs(force))
       return;
-      
+
     this._generateTabList();
   },
 
@@ -179,7 +179,7 @@ let RemoteTabViewer = {
       let lastFetch = Weave.Svc.Prefs.get("lastTabFetch", 0);
       let now = Math.floor(Date.now() / 1000);
       if (now - lastFetch < 30)
-        return false;      
+        return false;
     }
 
     // if Clients hasn't synced yet this session, need to sync it as well
@@ -213,7 +213,7 @@ let RemoteTabViewer = {
   handleClick: function(event) {
     if (event.target.getAttribute("type") != "tab")
       return;
-    
+
     if (event.button == 1) {
       let url = event.target.getAttribute("url");
       openUILink(url, event);
