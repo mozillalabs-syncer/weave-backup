@@ -126,7 +126,7 @@ var gWeaveSetup = {
       state = 2;
     }
 
-    if (state == 0 && (val.length < Weave.MIN_PASS_LENGTH || valConfirm.length < val.length))
+    if (state == 0 && (val.length < Weave.MIN_PP_LENGTH || valConfirm.length < val.length))
       state = 1;
 
     if (state == 0 && val != valConfirm) {
