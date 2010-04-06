@@ -118,7 +118,8 @@ WeaveWindow.prototype = {
     let errors = [Weave.LOGIN_FAILED_NO_USERNAME, Weave.LOGIN_FAILED_NO_PASSWORD,
                   Weave.LOGIN_FAILED_NO_PASSPHRASE, Weave.LOGIN_FAILED_LOGIN_REJECTED,
                   Weave.LOGIN_FAILED_INVALID_PASSPHRASE];
-    return errors.indexOf(Weave.Status.login) != -1
+    let loginError = errors.indexOf(Weave.Status.login) != -1;
+    return loginError || Weave.Svc.Prefs.get("firstSync", "") == "notReady";
   },
 
   _setStatus: function WeaveWin_setStatus(status) {
@@ -173,7 +174,10 @@ WeaveWindow.prototype = {
   },
 
   onLoginFinish: function WeaveWin_onLoginFinish() {
-    this._setStatus("idle");
+    if (this._needsSetup())
+      this._setStatus("needsSetup");
+    else
+      this._setStatus("idle");
 
     // Clear out any login failure notifications
     let title = this._stringBundle.getString("error.login.title");
