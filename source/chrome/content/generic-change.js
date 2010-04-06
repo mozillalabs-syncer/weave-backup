@@ -162,7 +162,7 @@ let Change = {
       else if (val1 == Weave.Service.password)
         this._updateStatus("change.passphrase.status.ppSameAsPassword", "error");
       else if (val1 == Weave.Service.passphrase)
-        this._updateStatus("change.password.status.ppSameAsPassphrase", "error");
+        this._updateStatus("change.passphrase.status.ppSameAsPassphrase", "error");
       else if (val1 && val2 && val1 == val2 &&
                val1.length >= Weave.MIN_PP_LENGTH)
         valid = true;
