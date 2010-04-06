@@ -148,6 +148,8 @@ let Change = {
     if (this._dialogType == "ChangePassword") {
       if (val1 == Weave.Service.username)
         this._updateStatus("change.password.status.pwSameAsUsername", "error");
+      else if (val1 == Weave.Service.password)
+        this._updateStatus("change.password.status.pwSameAsPassword", "error");
       else if (val1 == Weave.Service.passphrase)
         this._updateStatus("change.password.status.pwSameAsPassphrase", "error");
       else if (val1 && val2 && val1 == val2 &&
@@ -159,6 +161,8 @@ let Change = {
         this._updateStatus("change.passphrase.status.ppSameAsUsername", "error");
       else if (val1 == Weave.Service.password)
         this._updateStatus("change.passphrase.status.ppSameAsPassword", "error");
+      else if (val1 == Weave.Service.passphrase)
+        this._updateStatus("change.password.status.ppSameAsPassphrase", "error");
       else if (val1 && val2 && val1 == val2 &&
                val1.length >= Weave.MIN_PP_LENGTH)
         valid = true;
