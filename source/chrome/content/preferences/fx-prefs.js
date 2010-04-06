@@ -21,6 +21,8 @@ let gWeavePane = {
       "engine.tabs", "engine.history"];
   },
 
+  _resettingSync: false,
+
   onLoginStart: function () {
     switch (this.page) {
       case "0":
@@ -144,7 +146,8 @@ let gWeavePane = {
       this.onLoginError();
     }
     else if (Weave.Service.username &&
-        Weave.Svc.Prefs.get("firstSync", "") == "notReady") {
+             Weave.Svc.Prefs.get("firstSync", "") == "notReady" ||
+             this._resettingSync) {
       this.page = 2;
       Weave.Clients.sync();
     }
@@ -302,9 +305,17 @@ let gWeavePane = {
   resetSync: function() {
     this.handleExpanderClick();
     // Trigger the move to page 2
-    Weave.Svc.Prefs.set("firstSync", "notReady");
+    this._resettingSync = true;
     // Hide the "start over" button
     document.getElementById("startOver").hidden = true;
+    document.getElementById("cancelResetSync").hidden = false;
+    this.updateWeavePrefs();
+  },
+
+  cancelResetSync: function() {
+    this._resettingSync = false;
+    document.getElementById("startOver").hidden = false;
+    document.getElementById("cancelResetSync").hidden = true;
     this.updateWeavePrefs();
   },
 
@@ -410,6 +421,8 @@ let gWeavePane = {
     Weave.Service.syncOnIdle(1); // shorter delay than normal
     // Make sure the "start over" button is shown again
     document.getElementById("startOver").hidden = false;
+    document.getElementById("cancelResetSync").hidden = true;
+    this._resettingSync = false;
     window.close();
   },
 

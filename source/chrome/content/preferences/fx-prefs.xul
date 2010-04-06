@@ -220,6 +220,10 @@
             <button id="startOver"
                     label="&startOver.label;"
                     oncommand="gWeavePane.startOver()"/>
+            <button id="cancelResetSync"
+                    label="&cancelResetSync.label;"
+                    oncommand="gWeavePane.cancelResetSync()"
+                    hidden="true"/>
             <button label="&continue.label;"
                     oncommand="gWeavePane.handleChoice()"/>
           </hbox>
