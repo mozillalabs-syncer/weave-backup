@@ -98,6 +98,11 @@ let Change = {
     }
   },
 
+  _clearStatus: function _clearStatus() {
+    this._status.value = "";
+    this._statusIcon.removeAttribute("status");
+  },
+
   _updateStatus: function Change__updateStatus(str, state) {
     this._status.value = this._str(str);
     this._statusIcon.setAttribute("status", state);
@@ -144,30 +149,35 @@ let Change = {
     let valid = false;
     let val1 = this._firstBox.value;
     let val2 = this._secondBox.value;
+    let errorStatus = "";
 
     if (this._dialogType == "ChangePassword") {
       if (val1 == Weave.Service.username)
-        this._updateStatus("change.password.status.pwSameAsUsername", "error");
+        errorStatus = "change.password.status.pwSameAsUsername";
       else if (val1 == Weave.Service.password)
-        this._updateStatus("change.password.status.pwSameAsPassword", "error");
+        errorStatus = "change.password.status.pwSameAsPassword";
       else if (val1 == Weave.Service.passphrase)
-        this._updateStatus("change.password.status.pwSameAsPassphrase", "error");
+        errorStatus = "change.password.status.pwSameAsPassphrase";
       else if (val1 && val2 && val1 == val2 &&
                val1.length >= Weave.MIN_PASS_LENGTH)
         valid = true;
     }
     else {
       if (val1 == Weave.Service.username)
-        this._updateStatus("change.passphrase.status.ppSameAsUsername", "error");
+        errorStatus = "change.passphrase.status.ppSameAsUsername";
       else if (val1 == Weave.Service.password)
-        this._updateStatus("change.passphrase.status.ppSameAsPassword", "error");
+        errorStatus = "change.passphrase.status.ppSameAsPassword";
       else if (val1 == Weave.Service.passphrase)
-        this._updateStatus("change.passphrase.status.ppSameAsPassphrase", "error");
+        errorStatus = "change.passphrase.status.ppSameAsPassphrase";
       else if (val1 && val2 && val1 == val2 &&
                val1.length >= Weave.MIN_PP_LENGTH)
         valid = true;
     }
 
+    if (errorStatus == "")
+      this._clearStatus();
+    else
+      this._updateStatus(errorStatus, "error");
     this._dialog.getButton("accept").disabled = !valid;
   },
 
