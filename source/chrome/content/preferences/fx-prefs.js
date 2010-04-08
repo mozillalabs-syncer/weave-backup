@@ -47,7 +47,6 @@ let gWeavePane = {
     switch (this.page) {
       case "0":
         document.getElementById("signInFeedbackBox").hidden = true;
-        feedback = document.getElementById("passwordFeedbackRow");
 
         // Move on to the passphrase page if that's the only failure
         if (Weave.Status.login == Weave.LOGIN_FAILED_INVALID_PASSPHRASE ||
@@ -56,6 +55,8 @@ let gWeavePane = {
           document.getElementById("weavePassphrase").focus();
           return;
         }
+
+        feedback = document.getElementById("passwordFeedbackRow");
         break;
       case "1":
         document.getElementById("passphrase-throbber").hidden = true;
@@ -328,19 +329,8 @@ let gWeavePane = {
     this.updateWeavePrefs();
   },
 
-  recoverPassword: function () {
-    openUILinkIn(Weave.Svc.Prefs.get("pwChangeURL"), "tab");
-    return; // xxx: FIXME EWTF_PASSWORD_REQUEST_API_CHANGED
-    let ok = Weave.Service.requestPasswordReset(Weave.Service.username);
-    if (ok) { // xxxmpc: FIXME
-      Weave.Svc.Prompt.alert(window,
-                             this.bundle.getString("recoverPasswordSuccess.title"),
-                             this.bundle.getString("recoverPasswordSuccess.label"));
-    }
-    else {
-      // this should never ever get hit, so shouldn't get localized
-      alert("Account name not on record, maybe it was deleted? EWTF_NO_ACCOUNT");
-    }
+  resetPassword: function () {
+    openUILinkIn(Weave.Service.pwResetURL, "tab");
   },
 
   changePassword: function () {

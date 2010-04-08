@@ -95,8 +95,8 @@
                            onchange="gWeavePane.checkFields(event)"/>
                 </row>
                 <row id="passwordFeedbackRow" hidden="true">
-                  <label class="text-link small" value="&recoverPassword.label;"
-                         onclick="gWeavePane.recoverPassword(); return false;"/>
+                  <label class="text-link small" value="&resetPassword.label;"
+                         onclick="gWeavePane.resetPassword(); return false;"/>
                   <label value=""/>
                 </row>
                 <row>
