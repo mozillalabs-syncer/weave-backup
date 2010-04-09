@@ -99,6 +99,10 @@ let gWeavePane = {
     this.updateConnectButton();
     this.updateSetupButtons();
     this.checkFields();
+    if (this._resettingSync) {
+      this._resettingSync = false;
+      this.updateWeavePrefs();
+    }
   },
 
   initWeavePrefs: function () {
@@ -180,10 +184,15 @@ let gWeavePane = {
     let elems = ["weaveUsername", "weaveUsernameLabel",
                  "weavePassword", "weavePasswordLabel",
                  "weaveServerURL", "weaveServerURLLabel",
-                 "signInButton", "createAccountButton", "serverType"]
+                 "signInButton", "createAccountButton", 
+                 "serverType", "manageAccountExpander"];
     let pbEnabled = Weave.Svc.Private.privateBrowsingEnabled;
     for (let i = 0;i < elems.length;i++)
       document.getElementById(elems[i]).disabled = pbEnabled;
+
+    if (document.getElementById("manageAccountExpander")
+                .className == "expander-up" && pbEnabled)
+      this.handleExpanderClick();
   },
 
   handleChoice: function () {
