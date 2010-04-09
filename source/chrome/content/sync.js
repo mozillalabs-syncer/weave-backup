@@ -111,13 +111,8 @@ WeaveWindow.prototype = {
   },
 
   _needsSetup: function() {
-    // We determine if Weave has been setup by looking for login errors, which
-    // can be set before login is attempted.
-    let errors = [Weave.LOGIN_FAILED_NO_USERNAME, Weave.LOGIN_FAILED_NO_PASSWORD,
-                  Weave.LOGIN_FAILED_NO_PASSPHRASE, Weave.LOGIN_FAILED_LOGIN_REJECTED,
-                  Weave.LOGIN_FAILED_INVALID_PASSPHRASE];
-    let loginError = errors.indexOf(Weave.Status.login) != -1;
-    return loginError || Weave.Svc.Prefs.get("firstSync", "") == "notReady";
+    return Weave.Status.service == Weave.CLIENT_NOT_CONFIGURED ||
+           Weave.Svc.Prefs.get("firstSync", "") == "notReady";
   },
 
   _setStatus: function WeaveWin_setStatus(status) {
@@ -147,13 +142,16 @@ WeaveWindow.prototype = {
   },
 
   onLoginError: function WeaveWin_onLoginError() {
-    if (this._needsSetup())
-      this._setStatus("needsSetup");
-    else
-      this._setStatus("offline");
-
     // if login fails, any other notifications are essentially moot
     Weave.Notifications.removeAll();
+
+    // if we haven't set up the client, don't show errors
+    if (this._needsSetup()) {
+      this._setStatus("needsSetup");
+      return;
+    }
+
+    this._setStatus("offline");
 
     let title = this._stringBundle.getString("error.login.title");
     let reason = Weave.Utils.getErrorString(Weave.Status.login);
