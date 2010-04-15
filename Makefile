@@ -92,6 +92,7 @@ else
 endif
 
 subst_names := \
+  xpi_type \
   weave_version \
   storage_version \
   weave_id \
