@@ -153,6 +153,7 @@ $(tests:.js=): $(tests)
 	@if [ ! -e "$(profiledir)" ]; then \
 	  mkdir $(profiledir); \
 	  $(xulrunner) 2> /dev/null 1>&2; \
+	  sleep 5; \
 	  $(configure_profile) \
 	  $(xulrunner) 2> /dev/null 1>&2; \
 	  sleep 5; \
