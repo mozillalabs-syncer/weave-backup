@@ -3,14 +3,6 @@ var Cc = Components.classes;
 var Cr = Components.results;
 
 let Change = {
-  __os: null,
-  get _os() {
-    if (!this.__os)
-      this.__os = Cc["@mozilla.org/observer-service;1"]
-        .getService(Ci.nsIObserverService);
-    return this.__os;
-  },
-
   get _stringBundle() {
     let stringBundle = document.getElementById("weaveStringBundle");
     this.__defineGetter__("_stringBundle", function() { return stringBundle; });
