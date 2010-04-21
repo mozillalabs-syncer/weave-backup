@@ -72,12 +72,13 @@ let RemoteTabViewer = {
       if (items[i].getAttribute("type") == "tab") {
         urls.push(items[i].getAttribute("url"));
         let index = this._tabsList.getIndexOfItem(items[i]);
-        this._tabsList.removeItemFromSelection(items[i]);
         this._tabsList.removeItemAt(index);
       }
     }
-    if (urls.length)
+    if (urls.length) {
       getTopWin().gBrowser.loadTabs(urls);
+      this._tabsList.clearSelection();
+    }
   },
 
   bookmarkSingleTab: function() {
@@ -113,7 +114,6 @@ let RemoteTabViewer = {
       for (i = count - 1;i >= 0;i--)
         list.removeItemAt(i);
     }
-
 
     for (let [guid, client] in Iterator(engine.getAllClients())) {
       // Create the client node, but don't add it in-case we don't show any tabs
