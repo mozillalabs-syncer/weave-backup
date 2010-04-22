@@ -14,14 +14,14 @@
 #
 # The Original Code is Weave code.
 #
-# The Initial Developer of the Original Code is
-# Mozilla Corporation
+# The Initial Developer of the Original Code is Mozilla Foundation.
 # Portions created by the Initial Developer are Copyright (C) 2008
 # the Initial Developer. All Rights Reserved.
 #
 # Contributor(s):
 #   Dan Mills <thunder@mozilla.com> (original author)
 #   Godwin Chan <godwinchan@hotmail.com> (Darwin Universal Binary)
+#   Justin Dolske <dolske@mozilla.com>
 #
 # Alternatively, the contents of this file may be used under the terms of
 # either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -37,18 +37,15 @@
 #
 # ***** END LICENSE BLOCK *****
 
+
+
 # OS detection
-
-xpidl = $(sdkdir)/bin/xpidl
-link = link
-
 sys := $(shell uname -s)
 wince = $(WINCE)
-
+link = link
 ifeq ($(wince), 1)
   os = WINNT
   cxx = $(sdkdir)/sdk/bin/arm-wince-gcc
-  xpidl = $(sdkdir)/host/bin/host_xpidl
   link = $(sdkdir)/sdk/bin/arm-wince-link
   so = dll
 else
@@ -158,14 +155,14 @@ else
 endif
 
 # source and path configurations
-idl = IWeaveCrypto.idl
 cpp_sources = WeaveCrypto.cpp WeaveCryptoModule.cpp
+# This gets built/copied from $topsrcdir/crypto
+idl_header = IWeaveCrypto.h
 
 sdkdir ?= ${MOZSDKDIR}
 destdir = ..
 platformdir = $(destdir)/platform/$(platform)
 
-# FIXME: we don't actually require this for e.g. clean
 ifeq ($(sdkdir),)
   $(warning No 'sdkdir' variable given)
   $(warning It should point to the location of the Gecko SDK)
@@ -174,8 +171,6 @@ ifeq ($(sdkdir),)
   $(error )
 endif
 
-idl_headers = $(idl:.idl=.h)
-idl_typelib = $(idl:.idl=.xpt)
 cpp_objects = $(cpp_sources:.cpp=.o)
 so_target = $(target:=.$(so))
 
@@ -306,32 +301,21 @@ endif
 
 ######################################################################
 
-.PHONY: all build install clean subst
+.PHONY: all build clean subst
 
-all: build # default target
+all: build
 
-build: subst $(so_target) $(idl_typelib)
-
-install: build
-	mkdir -p $(destdir)/components
+build: subst $(so_target) $(idl_header)
 	mkdir -p $(platformdir)/components
-	cp $(idl_typelib) $(destdir)/components
-	cp $(so_target) $(platformdir)/components
+	cp -v $(so_target) $(platformdir)/components
 
 clean: 
 	rm -f $(so_target) $(so_target_i386) $(so_target_ppc) \
           $(cpp_objects) $(cpp_objects_i386) $(cpp_objects_ppc) \
-          $(idl_typelib) $(idl_headers) $(target:=.res) fake.lib fake.exp WeaveCrypto.rc
+          $(target:=.res) fake.lib fake.exp WeaveCrypto.rc
 
 subst:
 	$(substitute) WeaveCrypto.rc.in > WeaveCrypto.rc
-
-# rules to build the c headers and .xpt from idl
-$(idl_headers): $(idl)
-	$(xpidl) -m header -I$(sdkdir)/idl $(@:.h=.idl)
-
-$(idl_typelib): $(idl)
-	$(xpidl) -m typelib -I$(sdkdir)/idl $(@:.xpt=.idl)
 
 # build and link rules
 ifeq ($(os), Darwin)
@@ -344,7 +328,7 @@ ifeq ($(os), Darwin)
   $(cpp_objects_i386): $(cpp_sources)
 	$(cxx) -o $@ $(cppflags_i386) $(@:.oi386=.cpp)
 
-  $(so_target_i386): $(idl_headers) $(cpp_objects_i386)
+  $(so_target_i386): $(idl_header) $(cpp_objects_i386)
 	$(cxx) -o $@ $(ldflags_i386) $(cpp_objects_i386)
 	chmod +x $(so_target_i386)
 
@@ -352,17 +336,17 @@ ifeq ($(os), Darwin)
   $(cpp_objects_ppc): $(cpp_sources)
 	$(cxx) -o $@ $(cppflags_ppc) $(@:.oppc=.cpp)
 
-  $(so_target_ppc): $(idl_headers) $(cpp_objects_ppc)
+  $(so_target_ppc): $(idl_header) $(cpp_objects_ppc)
 	$(cxx) -o $@ $(ldflags_ppc) $(cpp_objects_ppc)
 	chmod +x $(so_target_ppc)
 else
 ifeq ($(os), Linux)
-  $(so_target): $(idl_headers)
+  $(so_target): $(idl_header)
 	$(cxx) $(cppflags) -o $@ $(cpp_sources) $(ldflags)
 	chmod +x $@
 else
 ifeq ($(os), SunOS)
-  $(so_target): $(idl_headers)
+  $(so_target): $(idl_header)
 	$(cxx) $(cppflags) -o $@ $(cpp_sources) $(ldflags)
 	chmod +x $@
 else
@@ -373,7 +357,7 @@ ifeq ($(os), WINNT)
   $(cpp_objects): $(cpp_sources)
 	$(cxx) -Fo$@ -Fd$(@:.o=.pdb) $(cppflags) $(@:.o=.cpp)
 
-  $(so_target): $(idl_headers) $(cpp_objects) $(target:=.res)
+  $(so_target): $(idl_header) $(cpp_objects) $(target:=.res)
 	$(link) -OUT:$@ -PDB:$(@:.dll=.pdb) $(cpp_objects) $(target:=.res) $(ldflags)
 	chmod +x $@
 endif
