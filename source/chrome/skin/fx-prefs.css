@@ -56,7 +56,7 @@
   border-color: black !important;
 }
 
-.mergeChoiceButton[selected="true"][focused="true"] {
+.mergeChoiceButton[focused="true"] {
   background-color: #9A9A9A;
 }
 

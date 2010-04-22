@@ -51,6 +51,10 @@ let Change = {
     return Weave.Status.login == Weave.LOGIN_FAILED_LOGIN_REJECTED;
   },
 
+  get _currentPassphraseInvalid() {
+    return Weave.Status.login == Weave.LOGIN_FAILED_INVALID_PASSPHRASE;
+  },
+
   onLoad: function Change_onLoad() {
     /* Load labels */
     let box1label = document.getElementById("textBox1Label");
@@ -61,31 +65,51 @@ let Change = {
 
     switch (this._dialogType) {
       case "ChangePassphrase":
-        this._title = this._str("change.passphrase.title");
         box1label.value = this._str("new.passphrase.label");
-        box2label.value = this._str("new.passphrase.confirm");
-        introText.innerHTML = this._str("change.passphrase.introText");
-        introText2.innerHTML = this._str("change.passphrase.introText2");
-        warningText.innerHTML = this._str("change.passphrase.warningText");
-        this._dialog.getButton("accept")
-            .setAttribute("label", this._str("change.passphrase.acceptButton"));
         this._dialog.setAttribute(
           "ondialogaccept",
           "return Change.doChangePassphrase();"
         );
+
+        if (this._currentPassphraseInvalid) {
+          this._title = this._str("new.passphrase.title");
+          introText.innerHTML = this._str("new.passphrase.introText");
+          this._dialog.getButton("accept")
+              .setAttribute("label", this._str("new.passphrase.acceptButton"));
+          document.getElementById("textBox2Row").hidden = true;
+        }
+        else {
+          this._title = this._str("change.passphrase.title");
+          box2label.value = this._str("new.passphrase.confirm");
+          introText.innerHTML = this._str("change.passphrase.introText");
+          introText2.innerHTML = this._str("change.passphrase.introText2");
+          warningText.innerHTML = this._str("change.passphrase.warningText");
+          this._dialog.getButton("accept")
+              .setAttribute("label", this._str("change.passphrase.acceptButton"));
+        }
         break;
       case "ChangePassword":
-        this._title = this._str("change.password.title");
         box1label.value = this._str("new.password.label");
-        box2label.value = this._str("new.password.confirm");
-        introText.innerHTML = this._str("change.password.introText");
-        warningText.innerHTML = this._str("change.password.warningText");
-        this._dialog.getButton("accept")
-            .setAttribute("label", this._str("change.password.acceptButton"));
         this._dialog.setAttribute(
           "ondialogaccept",
           "return Change.doChangePassword();"
         );
+
+        if (this._currentPasswordInvalid) {
+          this._title = this._str("new.password.title");
+          introText.innerHTML = this._str("new.password.introText");
+          this._dialog.getButton("accept")
+              .setAttribute("label", this._str("new.password.acceptButton"));
+          document.getElementById("textBox2Row").hidden = true;
+        }
+        else {
+          this._title = this._str("change.password.title");
+          box2label.value = this._str("new.password.confirm");
+          introText.innerHTML = this._str("change.password.introText");
+          warningText.innerHTML = this._str("change.password.warningText");
+          this._dialog.getButton("accept")
+              .setAttribute("label", this._str("change.password.acceptButton"));
+        }
         break;
     }
   },
@@ -108,12 +132,23 @@ let Change = {
   },
 
   doChangePassphrase: function Change_doChangePassphrase() {
-    this._updateStatus("change.passphrase.label", "active");
+    if (this._currentPassphraseInvalid) {
+      Weave.Service.passphrase = this._firstBox.value;
+      if (Weave.Service.login()) {
+        this._updateStatus("change.passphrase.success", "success");
+        Weave.Service.persistLogin();
+      }
+      else
+        this._updateStatus("new.passphrase.status.incorrect", "error");
+    }
+    else {
+      this._updateStatus("change.passphrase.label", "active");
 
-    if (Weave.Service.changePassphrase(this._firstBox.value))
-      this._updateStatus("change.passphrase.success", "success");
-    else
-      this._updateStatus("change.passphrase.error", "error");
+      if (Weave.Service.changePassphrase(this._firstBox.value))
+        this._updateStatus("change.passphrase.success", "success");
+      else
+        this._updateStatus("change.passphrase.error", "error");
+    }
 
     return false;
   },
@@ -121,9 +156,12 @@ let Change = {
   doChangePassword: function Change_doChangePassword() {
     if (this._currentPasswordInvalid) {
       Weave.Service.password = this._firstBox.value;
-      Weave.Service.persistLogin();
-      Weave.Service.login();
-      this._updateStatus("change.password.status.success", "success");
+      if (Weave.Service.login()) {
+        this._updateStatus("change.password.status.success", "success");
+        Weave.Service.persistLogin();
+      }
+      else
+        this._updateStatus("new.password.status.incorrect", "error");
     }
     else {
       this._updateStatus("change.password.status.active", "active");
@@ -144,7 +182,9 @@ let Change = {
     let errorStatus = "";
 
     if (this._dialogType == "ChangePassword") {
-      if (val1 == Weave.Service.username)
+      if (this._currentPasswordInvalid)
+        valid = val1.length >= Weave.MIN_PASS_LENGTH;
+      else if (val1 == Weave.Service.username)
         errorStatus = "change.password.status.pwSameAsUsername";
       else if (val1 == Weave.Service.password)
         errorStatus = "change.password.status.pwSameAsPassword";
@@ -155,7 +195,9 @@ let Change = {
         valid = true;
     }
     else {
-      if (val1 == Weave.Service.username)
+      if (this._currentPassphraseInvalid)
+        valid = val1.length >= Weave.MIN_PP_LENGTH;
+      else if (val1 == Weave.Service.username)
         errorStatus = "change.passphrase.status.ppSameAsUsername";
       else if (val1 == Weave.Service.password)
         errorStatus = "change.passphrase.status.ppSameAsPassword";

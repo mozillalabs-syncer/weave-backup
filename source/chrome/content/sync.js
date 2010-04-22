@@ -307,6 +307,18 @@ WeaveWindow.prototype = {
     }
   },
 
+  openSetup: function openSetup() {
+    var wm = Components.classes["@mozilla.org/appshell/window-mediator;1"]
+                       .getService(Components.interfaces.nsIWindowMediator);
+    var win = wm.getMostRecentWindow("Weave:AccountSetup");
+    if (win)
+      win.focus();
+    else {
+      window.openDialog("chrome://weave/content/preferences/fx-setup.xul",
+                        "weaveSetup", "centerscreen,chrome,resizable=no");
+    }
+  },
+
   doLogin: function WeaveWin_doLogout(event) {
     setTimeout(function() Weave.Service.login(), 0);
   },
@@ -423,7 +435,7 @@ WeaveWindow.prototype = {
 
   onMenuButtonCommand: function WeaveWin_onMenuButtonCommand(event) {
     if (this._needsSetup())
-      this.openPrefs();
+      this.openSetup();
   }
 };
 

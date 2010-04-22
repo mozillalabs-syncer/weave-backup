@@ -11,7 +11,6 @@
         buttons="accept,cancel"
         style="height: 20em;width: 40em"
         onload="Change.onLoad()"
-        onunload="Change.shutDown(event);"
         buttondisabledaccept="true"
         ondialogcancel="return true;"
         defaultButton="accept">
@@ -43,7 +42,7 @@
           <label id="textBox1Label" control="textBox1"/>
           <textbox id="textBox1" type="password" oninput="Change.validate(event)"/>
         </row>
-        <row>
+        <row id="textBox2Row">
           <label id="textBox2Label" control="textBox2"/>
           <textbox id="textBox2" type="password" oninput="Change.validate(event)"/>
         </row>

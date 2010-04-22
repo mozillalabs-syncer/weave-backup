@@ -2,9 +2,25 @@ const Ci = Components.interfaces;
 const Cc = Components.classes;
 const Cr = Components.results;
 
+// page consts
+
+const INTRO_PAGE                    = 0;
+const NEW_ACCOUNT_START_PAGE        = 1;
+const NEW_ACCOUNT_PP_PAGE           = 2;
+const NEW_ACCOUNT_PREFS_PAGE        = 3;
+const NEW_ACCOUNT_CAPTCHA_PAGE      = 4;
+const EXISTING_ACCOUNT_LOGIN_PAGE   = 5;
+const EXISTING_ACCOUNT_PP_PAGE      = 6;
+const EXISTING_ACCOUNT_MERGE_PAGE   = 7;
+const EXISTING_ACCOUNT_CONFIRM_PAGE = 8;
+const SETUP_SUCCESS_PAGE            = 9;
+
 var gWeaveSetup = {
   get _usingMainServers() {
-    return document.getElementById("serverType").selectedItem.value == "main";
+    if (this._settingUpNew)
+      return document.getElementById("serverType").selectedItem.value == "main";
+
+    return document.getElementById("existingServerType").selectedItem.value == "main";
   },
 
   status: { username: false, password: false, email: false, server: false},
@@ -25,10 +41,29 @@ var gWeaveSetup = {
   },
 
   init: function () {
-    this.wizard.canAdvance = false;
-    this.wizard.getButton("finish").label = this.bundle.getString("startSyncing.label");
-    this.onServerChange();
-    this.captchaBrowser.addProgressListener(this);
+    let obs = [
+      ["weave:service:login:start",   "onLoginStart"],
+      ["weave:service:login:error",   "onLoginEnd"],
+      ["weave:service:login:finish",  "onLoginEnd"]];
+
+    // Add the observers now and remove them on unload
+    let weavePrefs = this;
+    let addRem = function(add) obs.forEach(function([topic, func])
+      Weave.Svc.Obs[add ? "add" : "remove"](topic, weavePrefs[func], weavePrefs));
+    addRem(true);
+    window.addEventListener("unload", function() addRem(false), false);
+    
+    if (window.arguments[0] && window.arguments[0] == true) {
+      // we're resetting sync
+      this._resettingSync = true;
+      this.wizard.pageIndex = EXISTING_ACCOUNT_MERGE_PAGE;
+    }
+    else {
+      this.wizard.canAdvance = false;
+      this.onServerChange();
+      this.captchaBrowser.addProgressListener(this);
+      Weave.Svc.Prefs.set("firstSync", "notReady");
+    }
   },
 
   updateSyncPrefs: function () {
@@ -43,6 +78,78 @@ var gWeaveSetup = {
       document.getElementById("engine.prefs").checked     = true;
     }
   },
+  
+  startNewAccountSetup: function () {
+    this._settingUpNew = true;
+    this.wizard.pageIndex = NEW_ACCOUNT_START_PAGE;
+    this.wizard.getButton("cancel").label = this.bundle.getString("cancelSetup.label");
+  },
+
+  useExistingAccount: function () {
+    this._settingUpNew = false;
+    this.wizard.pageIndex = EXISTING_ACCOUNT_LOGIN_PAGE;
+    this.wizard.getButton("cancel").label = this.bundle.getString("cancelSetup.label");
+  },
+
+  resetPassword: function () {
+    openUILinkIn(Weave.Service.pwResetURL, "tab");
+  },
+
+  changePassphrase: function () {
+    Weave.Utils.openGenericDialog("ChangePassphrase");
+  },
+
+  onLoginStart: function () {
+    this.toggleLoginFeedback(false);
+  },
+
+  onLoginEnd: function () {
+    this.toggleLoginFeedback(true);
+  },
+
+  toggleLoginFeedback: function (stop) {
+    switch (this.wizard.pageIndex) {
+      case EXISTING_ACCOUNT_LOGIN_PAGE:
+        document.getElementById("connect-throbber").hidden = stop;
+        break;
+      case EXISTING_ACCOUNT_PP_PAGE:
+        document.getElementById("passphrase-throbber").hidden = stop;
+        let feedback = document.getElementById("existingPassphraseFeedbackBox");
+        if (stop) {
+          let success = Weave.Status.login == Weave.LOGIN_SUCCEEDED;
+          this._setFeedbackMessage(feedback, success, Weave.Status.login);
+          document.getElementById("passphraseHelpBox").hidden = success;
+        }
+        else
+          this._setFeedbackMessage(feedback, true);
+
+        break;
+    }
+  },
+
+  handleExpanderClick: function (event) {
+    let expander = document.getElementById("setupAccountExpander");
+    let expand = expander.className == "expander-down";
+    expander.className =
+       expand ? "expander-up" : "expander-down";
+    document.getElementById("signInBox").hidden = !expand;
+  },
+
+  setupInitialSync: function () {
+    let action = document.getElementById("mergeChoiceRadio").selectedItem.id;
+    switch (action) {
+      case "resetClient":
+        // if we're not resetting sync, we don't need to explicitly
+        // call resetClient
+        if (!this._resettingSync)
+          return;
+        // otherwise, fall through
+      case "wipeClient":
+      case "wipeServer":
+        Weave.Svc.Prefs.set("firstSync", action);
+        break;
+    }
+  },
 
   // fun with validation!
   checkFields: function () {
@@ -50,8 +157,10 @@ var gWeaveSetup = {
   },
 
   readyToAdvance: function () {
-    switch (this.wizard.currentPage.pageIndex) {
-      case 0: // first page
+    switch (this.wizard.pageIndex) {
+      case INTRO_PAGE:
+        return false;
+      case NEW_ACCOUNT_START_PAGE:
         for (i in this.status) {
           if (!this.status[i])
             return false;
@@ -60,19 +169,34 @@ var gWeaveSetup = {
           return document.getElementById("tos").checked;
 
         return true;
-      case 1:
-        return true;
-      case 2:
+      case NEW_ACCOUNT_PP_PAGE:
         return this.onPassphraseChange();
+      case EXISTING_ACCOUNT_LOGIN_PAGE:
+        let ready = false;
+        let hasUser = document.getElementById("existingUsername").value != "";
+        let hasPass = document.getElementById("existingPassword").value != "";
+        if (hasUser && hasPass) {
+          if (this._usingMainServers)
+            return true;
+
+          let uri = Weave.Utils.makeURI(document.getElementById("existingServerURL").value);
+          if (uri &&
+              (uri.schemeIs("http") || uri.schemeIs("https")) &&
+              uri.host != "")
+            ready = true;
+        }
+        return ready;
+      case EXISTING_ACCOUNT_PP_PAGE:
+        return document.getElementById("existingPassphrase").value != "";
     }
-    throw "epic fail, we should never get here";
+    // we probably shouldn't get here
+    return true;
   },
 
   onUsernameChange: function () {
     let feedback = document.getElementById("usernameFeedbackRow");
     let val = document.getElementById("weaveUsername").value
     let available = val == "" || Weave.Service.checkUsername(val) == "available";
-
     let str = available ? "" : "usernameNotAvailable.label";
     this._setFeedbackMessage(feedback, available, str);
 
@@ -146,26 +270,39 @@ var gWeaveSetup = {
   },
 
   onPageShow: function() {
-    switch (this.wizard.currentPage.pageIndex) {
-      case 2:
+    switch (this.wizard.pageIndex) {
+      case INTRO_PAGE:
+        this.wizard.getButton("next").hidden = true;
+        this.wizard.getButton("back").hidden = true;
+        this.wizard.getButton("cancel").label = this.bundle.getString("later.label");
+        break;
+      case NEW_ACCOUNT_START_PAGE: // new account
+      case EXISTING_ACCOUNT_LOGIN_PAGE: // existing account
+      case EXISTING_ACCOUNT_MERGE_PAGE: // reset sync
+        this.wizard.getButton("next").hidden = false;
+        this.wizard.getButton("back").hidden = false;
+        this.wizard.canRewind = !this._resettingSync;
+        break;
+      case 9:
         this.wizard.canRewind = false;
-        this.wizard.canAdvance = false;
+        this.wizard.getButton("back").hidden = true;
+        this.wizard.getButton("cancel").hidden = true;
         break;
     }
   },
 
   onWizardAdvance: function () {
-    if (!this.wizard.currentPage)
+    if (!this.wizard.pageIndex)
       return true;
 
-    switch (this.wizard.currentPage.pageIndex) {
-      case 0:
+    switch (this.wizard.pageIndex) {
+      case NEW_ACCOUNT_PREFS_PAGE:
         // time to load the captcha
         // first check for NoScript and whitelist the right sites
         this._handleNoScript(true);
         this.captchaBrowser.loadURI(Weave.Service.miscAPI + "captcha_html");
         break;
-      case 1:
+      case NEW_ACCOUNT_CAPTCHA_PAGE:
         let doc = this.captchaBrowser.contentDocument;
         let getField = function getField(field) {
           let node = doc.getElementById("recaptcha_" + field + "_field");
@@ -186,8 +323,8 @@ var gWeaveSetup = {
         if (error == null) {
           Weave.Service.username = username;
           Weave.Service.password = password;
-          Weave.Service.persistLogin();
           this._handleNoScript(false);
+          this.wizard.pageIndex = SETUP_SUCCESS_PAGE;
           return true;
         }
 
@@ -196,10 +333,56 @@ var gWeaveSetup = {
                                this.bundle.getString("errorCreatingAccount.title"),
                                Weave.Utils.getErrorString(error));
         return false;
-      case 2:
+      case NEW_ACCOUNT_PP_PAGE:
         Weave.Service.passphrase = document.getElementById("weavePassphrase").value;
-        Weave.Service.persistLogin();
         break;
+      case EXISTING_ACCOUNT_LOGIN_PAGE:
+        Weave.Service.username = document.getElementById("existingUsername").value;
+        Weave.Service.password = document.getElementById("existingPassword").value;
+        Weave.Service.passphrase = document.getElementById("existingPassphrase").value || "foo"; // random string to bypass checksetup
+        if (Weave.Service.login()) {
+          // jump to merge screen
+          this.wizard.pageIndex = EXISTING_ACCOUNT_MERGE_PAGE;
+          return false;
+        }
+        else {
+          if (Weave.Status.login == Weave.LOGIN_FAILED_INVALID_PASSPHRASE ||
+              Weave.Status.login == Weave.LOGIN_FAILED_NO_PASSPHRASE) {
+          }
+          else {
+            let feedback = document.getElementById("existingPasswordFeedbackRow");
+            this._setFeedbackMessage(feedback, false, Weave.Status.login);
+            return false;
+          }
+        }
+        break;
+      case EXISTING_ACCOUNT_PP_PAGE:
+        Weave.Service.passphrase = document.getElementById("existingPassphrase").value;
+        if (Weave.Service.login())
+          return true;
+
+        return false;
+      case EXISTING_ACCOUNT_MERGE_PAGE:
+        return this._handleChoice();
+      case EXISTING_ACCOUNT_CONFIRM_PAGE:
+        this.setupInitialSync();
+        if (this._resettingSync) {
+          this.onWizardFinish();
+          window.close();
+        }
+    }
+    return true;
+  },
+
+  onWizardBack: function () {
+    switch (this.wizard.pageIndex) {
+      case NEW_ACCOUNT_START_PAGE:
+      case EXISTING_ACCOUNT_LOGIN_PAGE:
+        this.wizard.pageIndex = INTRO_PAGE;
+        return false;
+      case EXISTING_ACCOUNT_PP_PAGE: // no idea wtf is up here, but meh!
+      this.wizard.pageIndex = EXISTING_ACCOUNT_LOGIN_PAGE;
+        return false;
     }
     return true;
   },
@@ -214,13 +397,29 @@ var gWeaveSetup = {
       Weave.Svc.Prefs.set(prefs[i], isChecked(prefs[i]));
     }
 
-    window.opener.close();
-    Weave.Svc.Prefs.reset("firstSync");
-    Weave.Service.login();
+    this._handleNoScript(false);
+    Weave.Status.service == Weave.STATUS_OK;
+    if (Weave.Svc.Prefs.get("firstSync", "") == "notReady")
+      Weave.Svc.Prefs.reset("firstSync");
+
+    if (!Weave.Service.isLoggedIn)
+      Weave.Service.login();
+
+    Weave.Service.persistLogin();
+    Weave.Svc.Obs.notify("weave:service:setup-complete");
+    Weave.Service.syncOnIdle(1);
   },
 
   onWizardCancel: function () {
+    if (this._resettingSync)
+      return;
+
+    if (this.wizard.pageIndex == 9) {
+      this.onWizardFinish();
+      return;
+    }
     this._handleNoScript(false);
+    Weave.Service.startOver();
   },
 
   _disabledSites: [],
@@ -257,6 +456,14 @@ var gWeaveSetup = {
   },
 
   onServerChange: function () {
+    if (this.wizard.pageIndex == EXISTING_ACCOUNT_LOGIN_PAGE) {
+      if (this._usingMainServers)
+        document.getElementById("existingServerURL").value = "";
+      document.getElementById("existingServerRow").hidden = this._usingMainServers;
+      this.checkFields();
+      return;
+    }
+
     document.getElementById("serverRow").hidden = this._usingMainServers;
     document.getElementById("TOSRow").hidden = !this._usingMainServers;
     let valid = false;
@@ -293,6 +500,87 @@ var gWeaveSetup = {
     this.checkFields();
   },
 
+  _handleChoice: function () {
+    let desc = document.getElementById("mergeChoiceRadio").selectedIndex;
+    document.getElementById("chosenActionDeck").selectedIndex = desc;
+    switch (desc) {
+      case 1:
+        if (this._case1Setup)
+          break;
+
+        // history
+        let db = Weave.Svc.History.DBConnection;
+
+        let daysOfHistory = 0;
+        let stm = db.createStatement(
+          "SELECT ROUND(( " +
+            "strftime('%s','now','localtime','utc') - " +
+            "( " +
+              "SELECT visit_date FROM moz_historyvisits " +
+              "UNION ALL " +
+              "SELECT visit_date FROM moz_historyvisits_temp " +
+              "ORDER BY visit_date ASC LIMIT 1 " +
+              ")/1000000 " +
+            ")/86400) AS daysOfHistory ");
+
+        if (stm.step())
+          daysOfHistory = stm.getInt32(0);
+        document.getElementById("historyCount").value =
+          this.bundle.getFormattedString("historyCount.label",  [daysOfHistory]);
+
+        // bookmarks
+        let bookmarks = 0;
+        stm = db.createStatement(
+          "SELECT count(*) AS bookmarks " +
+          "FROM moz_bookmarks b " +
+          "LEFT JOIN moz_bookmarks t ON " +
+          "b.parent = t.id WHERE b.type = 1 AND t.parent <> :tag");
+        stm.params.tag = Weave.Svc.Bookmark.tagsFolder;
+        if (stm.executeStep())
+          bookmarks = stm.row.bookmarks;
+        document.getElementById("bookmarkCount").value =
+          this.bundle.getFormattedString("bookmarkCount.label", [bookmarks]);
+
+        // passwords
+        let logins = Weave.Svc.Login.getAllLogins({});
+        document.getElementById("passwordCount").value =
+          this.bundle.getFormattedString("passwordCount.label",  [logins.length]);
+        this._case1Setup = true;
+        break;
+      case 2:
+        if (this._case2Setup)
+          break;
+        let count = 0;
+        function appendNode(label) {
+          let box = document.getElementById("clientList");
+          let node = document.createElement("label");
+          node.setAttribute("value", label);
+          node.setAttribute("class", "data indent");
+          box.appendChild(node);
+        }
+
+        for each (let name in Weave.Clients.stats.names) {
+          // Don't list the current client
+          if (name == Weave.Clients.localName)
+            continue;
+
+          // Only show the first several client names
+          if (++count <= 5)
+            appendNode(name);
+        }
+        if (count > 5) {
+          let label =
+            this.bundle.getFormattedString("additionalClients.label", [count - 5]);
+          appendNode(label);
+        }
+        this._case2Setup = true;
+        break;
+    }
+
+    return true;
+  },
+  
+
   // sets class and string on a feedback element
   // if no property string is passed in, we clear label/style
   _setFeedbackMessage: function (element, success, string) {
@@ -301,7 +589,11 @@ var gWeaveSetup = {
     label.className = success ? "success" : "error";
     let str = "", classname = "";
     if (string) {
-      str = this.bundle.getString(string);
+      try {
+        str = this.bundle.getString(string);
+      } catch(e) {}
+      if (!str)
+        str = Weave.Utils.getErrorString(string);
       classname = success ? "success" : "error";
     }
     label.value = str;

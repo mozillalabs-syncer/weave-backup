@@ -13,7 +13,6 @@
 %weaveDTD;
 ]>
 
-
 <overlay id="weaveFxPrefsOverlay"
          xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
          xmlns:html="http://www.w3.org/1999/xhtml">
@@ -44,260 +43,16 @@
       </preferences>
       <deck id="weavePrefsDeck">
         <vbox id="noAccount" align="center">
-          <groupbox>
-            <caption>
-              <menulist id="serverType" oncommand="gWeavePane.onServerChange()">
-                <menupopup>
-                  <menuitem label="&serverType.main.label;" value="main"/>
-                  <menuitem label="&serverType.custom.label;" value="custom"/>
-                </menupopup>
-              </menulist>
-            </caption>
-            <grid>
-              <columns>
-                <column/>
-                <column/>
-              </columns>
-              <rows>
-                <row id="serverRow" hidden="true" align="center">
-                  <label id="weaveServerURLLabel"
-                         value="&signIn.serverURL.label;"
-                         accesskey="&signIn.serverURL.accesskey;"
-                         control="weaveServerURL"/>
-                  <textbox id="weaveServerURL"
-                           onkeypress="gWeavePane.handleKeypress(event)"
-                           onkeyup="gWeavePane.checkFields(event)"
-                           onchange="gWeavePane.checkFields(event)"/>
-                </row>
-                <row id="usernameRow" align="center">
-                  <label id="weaveUsernameLabel"
-                         value="&signIn.username.label;"
-                         accesskey="&signIn.username.accesskey;"
-                         control="weaveUsername"/>
-                  <textbox id="weaveUsername"
-                           onkeypress="gWeavePane.handleKeypress(event)"
-                           onkeyup="gWeavePane.checkFields(event)"
-                           onchange="gWeavePane.checkFields(event)"/>
-                </row>
-                <row id="usernameFeedbackRow" hidden="true">
-                  <spacer/>
-                  <label value=""/>
-                </row>
-                <row id="passwordRow" align="center">
-                  <label id="weavePasswordLabel"
-                         value="&signIn.password.label;"
-                         accesskey="&signIn.password.accesskey;"
-                         control="weavePassword"/>
-                  <textbox id="weavePassword"
-                           type="password"
-                           onkeypress="gWeavePane.handleKeypress(event)"
-                           onkeyup="gWeavePane.checkFields(event)"
-                           onchange="gWeavePane.checkFields(event)"/>
-                </row>
-                <row id="passwordFeedbackRow" hidden="true">
-                  <label class="text-link small" value="&resetPassword.label;"
-                         onclick="gWeavePane.resetPassword(); return false;"/>
-                  <label value=""/>
-                </row>
-                <row>
-                  <spacer/>
-                  <hbox pack="start" align="center">
-                    <button id="signInButton"
-                            onkeypress="gWeavePane.handleKeypress(event)"
-                            label="&signIn.button.label;"
-                            accesskey="&signIn.button.accesskey;"
-                            disabled="true"
-                            oncommand="gWeavePane.doSignIn()"/>
-                    <hbox align="left" id="signInFeedbackBox" hidden="true">
-                      <image src="chrome://global/skin/icons/loading_16.png"/>
-                      <label value="&connecting.label;"/>
-                    </hbox>
-                  </hbox>
-                </row>
-              </rows>
-            </grid>
-          </groupbox>
           <spacer flex="1"/>
-          <button id="createAccountButton"
-                  label="&createAccountButton.label;"
-                  accesskey="&createAccountButton.accesskey;"
-                  align="center"
-                  oncommand="gWeavePane.startAccountSetup();"/>
+          <button id="setupButton"
+                  label="&setupButton.label;"
+                  accesskey="&setupButton.accesskey;"
+                  oncommand="gWeavePane.openSetup();"/>
           <separator/>
           <description style="padding: 0 12em">
             &weaveDesc.label;
           </description>
           <spacer flex="3"/>
-        </vbox>
-        <vbox id="passphraseEntry">
-          <groupbox>
-            <caption label="&passphraseGroupbox.label;"/>
-            <description>&passphraseDesc3.label;</description>
-            <textbox type="password" id="weavePassphrase"
-                     onkeypress="gWeavePane.handleKeypress(event)"
-                     onkeyup="gWeavePane.checkFields(event)"
-                     onchange="gWeavePane.checkFields(event)"/>
-            <hbox align="left" id="passphraseFeedbackBox">
-              <hbox id="passphrase-throbber" hidden="true">
-                <image src="chrome://global/skin/icons/loading_16.png"/>
-                <label value="&verifying.label;"/>
-              </hbox>
-              <label value=""/>
-            </hbox>
-            <vbox class="small" id="passphraseHelpBox" hidden="true">
-              <description class="small">&passphraseHelp.label;</description>
-              <label class="text-link small" value="&changePassphrase.label;"
-                     onclick="gWeavePane.changePassphrase(); return false;"/>
-            </vbox>
-            <hbox align="right">
-              <button label="&goBack.label;"
-                      accesskey="&goBack.accesskey;"
-                      oncommand="gWeavePane.goBack()"/>
-              <button id="continueButton"
-                      onkeypress="gWeavePane.handleKeypress(event)"
-                      disabled="true"
-                      label="&continue.label;"
-                      oncommand="gWeavePane.doSignIn();"/>
-            </hbox>
-          </groupbox>
-        </vbox>
-        <vbox id="mergeOptionsChoice">
-          <groupbox align="start">
-            <caption label="&choice.caption.label;"/>
-            <radiogroup id="mergeChoiceRadio" pack="start">
-              <radio id="doMerge"
-                     class="mergeChoiceButton"
-                     aria-labelledby="mergeMain"
-                     aria-describedby="mergeSecondary1 mergeSecondary2"
-                     align="top">
-                <image class="mergeChoiceImage" src="chrome://weave/skin/sync-merge.png"/>
-                <vbox class="mergeChoiceButtonBox" flex="1">
-                  <description class="mainDesc" id="mergeMain">
-                    &choice.merge.main.label;
-                  </description>
-                  <description id="mergeSecondary1">
-                    &choice.merge.secondary.label;
-                  </description>
-                  <separator class="thin"/>
-                  <description class="normal" id="mergeSecondary2">
-                    &choice.merge.recommend.label;
-                  </description>
-                </vbox>
-              </radio>
-              <radio id="wipeClient"
-                     class="mergeChoiceButton"
-                     aria-labelledby="wipeClientMain"
-                     aria-describedby="wipeClientSecondary"
-                     align="top">
-                  <image class="mergeChoiceImage" src="chrome://weave/skin/sync-wipeClient.png"/>
-                  <vbox class="mergeChoiceButtonBox" flex="1">
-                    <description class="mainDesc" id="wipeClientMain">
-                      &choice.client.main.label;
-                    </description>
-                    <description id="wipeClientSecondary">
-                      &choice.client.secondary.label;
-                    </description>
-                  </vbox>
-              </radio>
-              <radio id="wipeServer"
-                     class="mergeChoiceButton"
-                     aria-labelledby="wipeServerMain"
-                     aria-describedby="wipeServerSecondary"
-                     align="top">
-                  <image class="mergeChoiceImage" src="chrome://weave/skin/sync-wipeServer.png"/>
-                  <vbox class="mergeChoiceButtonBox" flex="1">
-                    <description class="mainDesc" id="wipeServerMain">
-                      &choice.server.main.label;
-                    </description>
-                    <description id="wipeServerSecondary">
-                      &choice.server.secondary.label;
-                    </description>
-                  </vbox>
-              </radio>
-          </radiogroup>
-          </groupbox>
-          <hbox class="mergeChoiceBFBox" align="end" pack="end">
-            <button id="startOver"
-                    label="&startOver.label;"
-                    oncommand="gWeavePane.startOver()"/>
-            <button id="cancelResetSync"
-                    label="&cancelResetSync.label;"
-                    oncommand="gWeavePane.cancelResetSync()"
-                    hidden="true"/>
-            <button label="&continue.label;"
-                    oncommand="gWeavePane.handleChoice()"/>
-          </hbox>
-        </vbox>
-        <vbox id="mergeOptionsConfirm">
-          <groupbox pack="center">
-            <caption label="&confirm.caption.label;"/>
-            <deck id="chosenActionDeck">
-              <vbox>
-                <hbox pack="start" align="baseline">
-                  <image src="chrome://weave/skin/sync-merge.png"/>
-                </hbox>
-                <separator class="thin"/>
-                <description class="normal">
-                  &confirm.merge.label;
-                </description>
-                <separator class="thin"/>
-                <hbox align="end" pack="end">
-                  <button label="&goBack.label;" oncommand="gWeavePane.goBack()"/>
-                  <button label="&confirm.merge.start.label;" oncommand="gWeavePane.setupInitialSync('merge')"/>
-                </hbox>
-              </vbox>
-              <vbox>
-                <hbox pack="start" align="baseline">
-                  <image src="chrome://weave/skin/sync-wipeClient.png"/>
-                </hbox>
-                <separator class="thin"/>
-                <description class="normal">
-                  &confirm.client.label;
-                </description>
-                <separator class="thin"/>
-                <vbox id="dataList">
-                  <label class="data indent" id="bookmarkCount"/>
-                  <label class="data indent" id="historyCount"/>
-                  <label class="data indent" id="passwordCount"/>
-                </vbox>
-                <separator class="thin"/>
-                <description class="normal">
-                  &confirm.client.moreinfo.label;
-                </description>
-                <separator class="thin"/>
-                <description class="warning">
-                  &confirm.client.warning.label;
-                </description>
-                <separator class="thin"/>
-                <hbox align="end" pack="end">
-                  <button label="&goBack.label;" oncommand="gWeavePane.goBack()"/>
-                  <button label="&confirm.client.start.label;"
-                          oncommand="gWeavePane.setupInitialSync('wipeClient')"/>
-                </hbox>
-              </vbox>
-              <vbox>
-                <hbox pack="start" align="baseline">
-                  <image src="chrome://weave/skin/sync-wipeServer.png"/>
-                </hbox>
-                <separator class="thin"/>
-                <description class="normal">
-                  &confirm.server.label;
-                </description>
-                <separator class="thin"/>
-                <vbox id="clientList">
-                </vbox>
-                <separator class="thin"/>
-                <description class="warning">
-                  &confirm.server.warning.label;
-                </description>
-                <separator class="thin"/>
-                <hbox align="end" pack="end">
-                  <button label="&goBack.label;" oncommand="gWeavePane.goBack()"/>
-                  <button label="&confirm.server.start.label;" oncommand="gWeavePane.setupInitialSync('wipeRemote')"/>
-                </hbox>
-              </vbox>
-            </deck>
-          </groupbox>
         </vbox>
         <vbox id="hasAccount">
           <groupbox>
@@ -309,15 +64,25 @@
                   <textbox id="currentUser" readonly="true">
                     <image src="chrome://mozapps/skin/profile/profileicon.png"/>
                   </textbox>
-                  <button id="connectButton" oncommand="gWeavePane.handleConnectCommand()"
-                          disabled="true"/>
-                  <image id="connect-throbber"
-                         src="chrome://global/skin/icons/loading_16.png"
-                         hidden="true"/>
+                  <hbox align="center">
+                    <button id="connectButton" oncommand="gWeavePane.handleConnectCommand()"
+                            disabled="true"/>
+                    <image id="connect-throbber"
+                           src="chrome://global/skin/icons/loading_16.png"
+                           hidden="true"/>
+                  </hbox>
                 </row>
                 <row id="loginFeedbackRow" hidden="true">
                   <spacer/>
-                  <label value=""/>
+                  <label id="loginError" value=""/>
+                  <hbox>
+                    <label class="text-link"
+                           onclick="gWeavePane.updatePass(); return false;"
+                           value="&updatePass.label;"/>
+                    <label class="text-link"
+                           onclick="gWeavePane.resetPass(); return false;"
+                           value="&resetPass.label;"/>
+                  </hbox>
                 </row>
                 <row id="manageAccountControls" hidden="true">
                   <spacer/>
