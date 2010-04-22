@@ -14,13 +14,13 @@
 #
 # The Original Code is Weave code.
 #
-# The Initial Developer of the Original Code is
-# Mozilla Corporation
+# The Initial Developer of the Original Code is Mozilla Foundation.
 # Portions created by the Initial Developer are Copyright (C) 2008
 # the Initial Developer. All Rights Reserved.
 #
 # Contributor(s):
 #   Dan Mills <thunder@mozilla.com> (original author)
+#   Justin Dolske <dolske@mozilla.com>
 #
 # Alternatively, the contents of this file may be used under the terms of
 # either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -85,12 +85,6 @@ else
   chrometarget=
 endif
 
-ifeq ($(rebuild_crypto),)
-  crypto_build_target =
-else
-  crypto_build_target = rebuild_all
-endif
-
 subst_names := \
   weave_version \
   storage_version \
@@ -122,12 +116,20 @@ setup:
 	mkdir -p $(xpi_dir)
 
 crypto: setup
-	$(MAKE) -C crypto $(crypto_build_target)
+	$(MAKE) -C crypto stage
+
+# stage precompiled binaries
+crypto-obsolete-binaries: setup
+	$(MAKE) -C crypto-obsolete stage
+
+# build from source
+crypto-obsolete-build: setup
+	$(MAKE) -C crypto-obsolete build
 
 chrome: setup
 	$(MAKE) -C source $(chrometarget)
 
-build: crypto chrome
+build: crypto crypto-obsolete-binaries chrome
 
 xpi_name := weave-$(weave_version)-$(xpi_type).xpi
 xpi_files := chrome/sync.jar defaults components modules platform \
@@ -141,12 +143,14 @@ xpi: build
 clean:
 	rm -rf $(objdir)
 	$(MAKE) -C tests/unit clean
-	$(MAKE) -C crypto/src clean
+	$(MAKE) -C crypto clean
 
 help:
 	@echo Targets:
 	@echo build
-	@echo "crypto (only updates the crypto directory)"
+	@echo "crypto (stage the js-ctypes component)"
+	@echo "crypto-obsolete-binaries (stage the precompiled binary components)"
+	@echo "crypto-obsolete-build (recompile the binary component)"
 	@echo "chrome (only updates the source directory)"
 	@echo "test (runs tests, runs a build first)"
 	@echo "xpi (sets manifest to use jars, make build to undo)"
@@ -155,7 +159,6 @@ help:
 	@echo Variables:
 	@echo sdkdir
 	@echo "release_build (set to 1 when not building a snapshot)"
-	@echo "rebuild_crypto (set to 1 when building a new crypto binary)"
 	@echo "platform_target (takes a space-separated list of platforms to package):"
 	@echo "    make xpi platform_target='Linux_x86-gcc3'"
 	@echo "  this also supports * as a wildcard:"
