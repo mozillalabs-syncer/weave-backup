@@ -84,6 +84,9 @@ let gWeavePane = {
         this.onLoginError();
       this.updateConnectButton();
       this.updateSetupButtons();
+      let syncEverything = this._checkDefaultValues();
+      document.getElementById("weaveSyncMode").selectedIndex = syncEverything ? 0 : 1;
+      document.getElementById("syncModeOptions").selectedIndex = syncEverything ? 0 : 1;
     }
   },
 
