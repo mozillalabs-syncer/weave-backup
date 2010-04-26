@@ -60,7 +60,6 @@ var gWeaveSetup = {
     }
     else {
       this.wizard.canAdvance = false;
-      this.onServerChange();
       this.captchaBrowser.addProgressListener(this);
       Weave.Svc.Prefs.set("firstSync", "notReady");
     }
@@ -200,28 +199,26 @@ var gWeaveSetup = {
     let str = available ? "" : "usernameNotAvailable.label";
     this._setFeedbackMessage(feedback, available, str);
 
-    this.status.username = available;
+    this.status.username = val && available;
     this.checkFields();
   },
 
   onPasswordChange: function () {
-    let valid = true;
+    let valid = false;
     let feedback = document.getElementById("passwordFeedbackRow");
-
     let password = document.getElementById("weavePassword").value;
+    let pwconfirm = document.getElementById("weavePasswordConfirm").value;
+
     if (password.length < Weave.MIN_PASS_LENGTH) {
-      valid = false;
       this._setFeedbackMessage(feedback, valid, "passwordTooWeak.label");
     }
-
-    let pwconfirm = document.getElementById("weavePasswordConfirm").value;
-    if (valid && pwconfirm && password != pwconfirm) {
-      valid = false;
+    else if (pwconfirm && password != pwconfirm) {
       this._setFeedbackMessage(feedback, valid, "passwordMismatch.label");
     }
-
-    if (valid && pwconfirm)
+    else if (password == pwconfirm) {
+      valid = true;
       this._setFeedbackMessage(feedback, valid);
+    }
 
     this.status.password = valid;
     this.checkFields();
@@ -276,9 +273,11 @@ var gWeaveSetup = {
         this.wizard.getButton("back").hidden = true;
         this.wizard.getButton("cancel").label = this.bundle.getString("later.label");
         break;
-      case NEW_ACCOUNT_START_PAGE: // new account
-      case EXISTING_ACCOUNT_LOGIN_PAGE: // existing account
-      case EXISTING_ACCOUNT_MERGE_PAGE: // reset sync
+      case NEW_ACCOUNT_START_PAGE:
+        this.onServerChange();
+        this.checkFields(); // fall through
+      case EXISTING_ACCOUNT_LOGIN_PAGE:
+      case EXISTING_ACCOUNT_MERGE_PAGE:
         this.wizard.getButton("next").hidden = false;
         this.wizard.getButton("back").hidden = false;
         this.wizard.canRewind = !this._resettingSync;
