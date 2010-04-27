@@ -51,8 +51,8 @@ let Change = {
     return Weave.Status.login == Weave.LOGIN_FAILED_LOGIN_REJECTED;
   },
 
-  get _currentPassphraseInvalid() {
-    return Weave.Status.login == Weave.LOGIN_FAILED_INVALID_PASSPHRASE;
+  get _updatingPassphrase() {
+    return this._dialogType == "UpdatePassphrase";
   },
 
   onLoad: function Change_onLoad() {
@@ -64,14 +64,15 @@ let Change = {
     let warningText = document.getElementById("warningText");
 
     switch (this._dialogType) {
-      case "ChangePassphrase":
+      case "UpdatePassphrase":
+      case "ResetPassphrase":
         box1label.value = this._str("new.passphrase.label");
         this._dialog.setAttribute(
           "ondialogaccept",
           "return Change.doChangePassphrase();"
         );
 
-        if (this._currentPassphraseInvalid) {
+        if (this._updatingPassphrase) {
           this._title = this._str("new.passphrase.title");
           introText.innerHTML = this._str("new.passphrase.introText");
           this._dialog.getButton("accept")
@@ -132,7 +133,7 @@ let Change = {
   },
 
   doChangePassphrase: function Change_doChangePassphrase() {
-    if (this._currentPassphraseInvalid) {
+    if (this._updatingPassphrase) {
       Weave.Service.passphrase = this._firstBox.value;
       if (Weave.Service.login()) {
         this._updateStatus("change.passphrase.success", "success");
@@ -195,7 +196,7 @@ let Change = {
         valid = true;
     }
     else {
-      if (this._currentPassphraseInvalid)
+      if (this._updatingPassphrase)
         valid = val1.length >= Weave.MIN_PP_LENGTH;
       else if (val1 == Weave.Service.username)
         errorStatus = "change.passphrase.status.ppSameAsUsername";

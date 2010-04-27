@@ -91,7 +91,7 @@
                              onclick="gWeavePane.changePassword(); return false;"
                              value="&changePassword.label;"/>
                       <label class="text-link"
-                             onclick="gWeavePane.changePassphrase(); return false;"
+                             onclick="gWeavePane.resetPassphrase(); return false;"
                              value="&changePassphrase.label;"/>
                       <label class="text-link"
                              onclick="gWeavePane.resetSync(); return false;"

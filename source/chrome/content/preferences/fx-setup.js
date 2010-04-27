@@ -42,6 +42,7 @@ var gWeaveSetup = {
 
   init: function () {
     let obs = [
+      ["weave:service:changepph:finish", "onResetPP"],
       ["weave:service:login:start",   "onLoginStart"],
       ["weave:service:login:error",   "onLoginEnd"],
       ["weave:service:login:finish",  "onLoginEnd"]];
@@ -95,7 +96,12 @@ var gWeaveSetup = {
   },
 
   changePassphrase: function () {
-    Weave.Utils.openGenericDialog("ChangePassphrase");
+    Weave.Utils.openGenericDialog("ResetPassphrase");
+  },
+  
+  onResetPP: function () {
+    document.getElementById("existingPassphrase").value = Weave.Service.passphrase;
+    this.wizard.advance();
   },
 
   onLoginStart: function () {
@@ -338,7 +344,7 @@ var gWeaveSetup = {
       case EXISTING_ACCOUNT_LOGIN_PAGE:
         Weave.Service.username = document.getElementById("existingUsername").value;
         Weave.Service.password = document.getElementById("existingPassword").value;
-        Weave.Service.passphrase = document.getElementById("existingPassphrase").value || "foo"; // random string to bypass checksetup
+        Weave.Service.passphrase = document.getElementById("existingPassphrase").value;
         if (Weave.Service.login()) {
           // jump to merge screen
           this.wizard.pageIndex = EXISTING_ACCOUNT_MERGE_PAGE;

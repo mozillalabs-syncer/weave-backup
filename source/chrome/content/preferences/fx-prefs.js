@@ -142,22 +142,26 @@ let gWeavePane = {
     if (Weave.Status.login == Weave.LOGIN_FAILED_LOGIN_REJECTED)
       this.changePassword();
     else
-      this.changePassphrase();
+      this.updatePassphrase();
   },
 
   resetPass: function () {
     if (Weave.Status.login == Weave.LOGIN_FAILED_LOGIN_REJECTED)
       this.resetPassword();
     else
-      this.changePassphrase();
+      this.resetPassphrase();
   },
 
   changePassword: function () {
     Weave.Utils.openGenericDialog("ChangePassword");
   },
 
-  changePassphrase: function () {
-    Weave.Utils.openGenericDialog("ChangePassphrase");
+  resetPassphrase: function () {
+    Weave.Utils.openGenericDialog("ResetPassphrase");
+  },
+
+  updatePassphrase: function () {
+    Weave.Utils.openGenericDialog("UpdatePassphrase");
   },
 
   resetPassword: function () {
