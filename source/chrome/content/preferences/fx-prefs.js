@@ -165,7 +165,7 @@ let gWeavePane = {
   },
 
   resetPassword: function () {
-    openUILinkIn(Weave.Service.pwResetURL, "tab");
+    openUILinkIn(Weave.Service.pwResetURL, document.documentElement.instantApply ? "tab" : "window");
   },
 
   updateSyncPrefs: function () {

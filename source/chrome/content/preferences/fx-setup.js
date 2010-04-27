@@ -92,7 +92,7 @@ var gWeaveSetup = {
   },
 
   resetPassword: function () {
-    openUILinkIn(Weave.Service.pwResetURL, "tab");
+    this._openLink(Weave.Service.pwResetURL);
   },
 
   changePassphrase: function () {
@@ -268,8 +268,7 @@ var gWeaveSetup = {
   },
 
   openToS: function () {
-    let url = Weave.Svc.Prefs.get("termsURL");
-    openUILinkIn(url, "tab");
+    this._openLink(Weave.Svc.Prefs.get("termsURL"));
   },
 
   onPageShow: function() {
@@ -503,6 +502,11 @@ var gWeaveSetup = {
 
     this.status.server = valid;
     this.checkFields();
+  },
+
+  // opens in a new window if we're in a modal prefwindow world, in a new tab otherwise
+  _openLink: function (url) {
+    openUILinkIn(url, window.opener.document.documentElement.instantApply ? "tab" : "window");
   },
 
   _handleChoice: function () {
