@@ -9,7 +9,7 @@
         id="change-dialog"
         windowtype="Weave:ChangeSomething"
         buttons="accept,cancel"
-        style="height: 20em;width: 40em"
+        style="width: 40em"
         onload="Change.onLoad()"
         buttondisabledaccept="true"
         ondialogcancel="return true;"
@@ -55,7 +55,7 @@
 
     <hbox align="center">
       <image id="statusIcon" class="statusIcon"/>
-      <label id="status" class="status"/>
+      <label id="status" class="status" value=" "/>
     </hbox>
   </vbox>
 </dialog>
