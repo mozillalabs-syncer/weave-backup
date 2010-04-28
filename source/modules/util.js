@@ -846,13 +846,8 @@ let FakeSvc = {
 let cryptoContractID = "@labs.mozilla.com/Weave/Crypto";
 
 {
-  let versSvc = Cc["@mozilla.org/xpcom/version-comparator;1"].
-                getService(Ci.nsIVersionComparator);
-  let appinfo = Cc["@mozilla.org/xre/app-info;1"].
-                getService(Ci.nsIXULAppInfo);
-  let platVers = appinfo.platformVersion;
-
-  if (versSvc.compare(platVers, "1.9.3a3") < 0) {
+  let appinfo = Cc["@mozilla.org/xre/app-info;1"].getService(Ci.nsIXULRuntime);
+  if (appinfo.OS != "Android") {
     // use old binary component
     cryptoContractID += ";1";
   } else {

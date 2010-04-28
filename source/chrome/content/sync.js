@@ -74,9 +74,6 @@ function WeaveWindow() {
     Weave.Svc.Prefs.set("lastversion", Weave.WEAVE_VERSION);
 
   } else if (Weave.Svc.Prefs.get("lastversion") != Weave.WEAVE_VERSION) {
-    let url = "https://services.mozilla.com/sync/updated/?version=" +
-      Weave.WEAVE_VERSION;
-    setTimeout(function() { window.openUILinkIn(url, "tab"); }, 500);
     Weave.Svc.Prefs.set("lastversion", Weave.WEAVE_VERSION);
   }
 
