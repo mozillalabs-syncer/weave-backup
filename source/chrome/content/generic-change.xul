@@ -17,6 +17,7 @@
 
   <script type="application/x-javascript" src="chrome://weave/content/load-weave.js"/>
   <script type="application/x-javascript" src="chrome://weave/content/generic-change.js"/>
+  <script type="application/x-javascript" src="chrome://weave/content/preferences/fx-prefs-common.js"/>
 
   <stringbundleset id="stringbundleset">
     <stringbundle id="weaveStringBundle" src="chrome://weave/locale/generic-change.properties"/>

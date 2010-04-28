@@ -17,3 +17,4 @@ src/fake\.exp$
 src/fake\.lib$
 .*\.pyc
 nose-.*
+.DS_Store

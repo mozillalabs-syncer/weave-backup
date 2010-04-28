@@ -121,7 +121,11 @@ let Change = {
   },
 
   _updateStatus: function Change__updateStatus(str, state) {
-    this._status.value = this._str(str);
+     this._updateStatusWithString(this._str(str), state);
+  },
+  
+  _updateStatusWithString: function Change__updateStatusWithString(string, state) {
+    this._status.value = string;
     this._statusIcon.setAttribute("status", state);
 
     let error = state == "error";
@@ -178,41 +182,26 @@ let Change = {
 
   validate: function (event) {
     let valid = false;
-    let val1 = this._firstBox.value;
-    let val2 = this._secondBox.value;
-    let errorStatus = "";
+    let errorString = "";
 
     if (this._dialogType == "ChangePassword") {
       if (this._currentPasswordInvalid)
-        valid = val1.length >= Weave.MIN_PASS_LENGTH;
-      else if (val1 == Weave.Service.username)
-        errorStatus = "change.password.status.pwSameAsUsername";
-      else if (val1 == Weave.Service.password)
-        errorStatus = "change.password.status.pwSameAsPassword";
-      else if (val1 == Weave.Service.passphrase)
-        errorStatus = "change.password.status.pwSameAsPassphrase";
-      else if (val1 && val2 && val1 == val2 &&
-               val1.length >= Weave.MIN_PASS_LENGTH)
-        valid = true;
+        [valid, errorString] = gWeaveCommon.validatePassword(this._firstBox);
+      else
+        [valid, errorString] = gWeaveCommon.validatePassword(this._firstBox, this._secondBox);
     }
     else {
       if (this._updatingPassphrase)
-        valid = val1.length >= Weave.MIN_PP_LENGTH;
-      else if (val1 == Weave.Service.username)
-        errorStatus = "change.passphrase.status.ppSameAsUsername";
-      else if (val1 == Weave.Service.password)
-        errorStatus = "change.passphrase.status.ppSameAsPassword";
-      else if (val1 == Weave.Service.passphrase)
-        errorStatus = "change.passphrase.status.ppSameAsPassphrase";
-      else if (val1 && val2 && val1 == val2 &&
-               val1.length >= Weave.MIN_PP_LENGTH)
-        valid = true;
+        [valid, errorString] = gWeaveCommon.validatePassphrase(this._firstBox);
+      else
+        [valid, errorString] = gWeaveCommon.validatePassphrase(this._firstBox, this._secondBox);
     }
 
-    if (errorStatus == "")
+    if (errorString == "")
       this._clearStatus();
     else
-      this._updateStatus(errorStatus, "error");
+      this._updateStatusWithString(errorString, "error");
+
     this._dialog.getButton("accept").disabled = !valid;
   },
 

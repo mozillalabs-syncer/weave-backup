@@ -24,6 +24,8 @@
   <script type="application/javascript"
           src="chrome://weave/content/preferences/fx-setup.js"/>
   <script type="application/javascript"
+          src="chrome://weave/content/preferences/fx-prefs-common.js"/>
+  <script type="application/javascript"
           src="chrome://browser/content/utilityOverlay.js"/>
   <stringbundle id="weavePrefStrings" src="chrome://weave/locale/fx-prefs.properties"/>
 

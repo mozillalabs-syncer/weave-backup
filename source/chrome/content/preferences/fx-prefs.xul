@@ -21,6 +21,8 @@
           src="chrome://weave/content/load-weave.js"/>
   <script type="application/javascript"
           src="chrome://weave/content/preferences/fx-prefs.js"/>
+          <script type="application/javascript"
+                  src="chrome://weave/content/preferences/fx-prefs-common.js"/>
 
   <prefwindow id="BrowserPreferences">
     <prefpane id="paneWeaveServices"/>
@@ -88,10 +90,10 @@
                   <spacer/>
                     <vbox class="indent">
                       <label class="text-link"
-                             onclick="gWeavePane.changePassword(); return false;"
+                             onclick="gWeaveCommon.changePassword(); return false;"
                              value="&changePassword.label;"/>
                       <label class="text-link"
-                             onclick="gWeavePane.resetPassphrase(); return false;"
+                             onclick="gWeaveCommon.resetPassphrase(); return false;"
                              value="&changePassphrase.label;"/>
                       <label class="text-link"
                              onclick="gWeavePane.resetSync(); return false;"

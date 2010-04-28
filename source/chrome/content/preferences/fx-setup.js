@@ -54,7 +54,7 @@ var gWeaveSetup = {
     addRem(true);
     window.addEventListener("unload", function() addRem(false), false);
     
-    if (window.arguments[0] && window.arguments[0] == true) {
+    if (window.arguments && window.arguments[0] == true) {
       // we're resetting sync
       this._resettingSync = true;
       this.wizard.pageIndex = EXISTING_ACCOUNT_MERGE_PAGE;
@@ -91,14 +91,6 @@ var gWeaveSetup = {
     this.wizard.getButton("cancel").label = this.bundle.getString("cancelSetup.label");
   },
 
-  resetPassword: function () {
-    this._openLink(Weave.Service.pwResetURL);
-  },
-
-  changePassphrase: function () {
-    Weave.Utils.openGenericDialog("ResetPassphrase");
-  },
-  
   onResetPP: function () {
     document.getElementById("existingPassphrase").value = Weave.Service.passphrase;
     this.wizard.advance();
@@ -206,25 +198,19 @@ var gWeaveSetup = {
     this._setFeedbackMessage(feedback, available, str);
 
     this.status.username = val && available;
+    if (available)
+      Weave.Service.username = val;
+
     this.checkFields();
   },
 
   onPasswordChange: function () {
-    let valid = false;
     let feedback = document.getElementById("passwordFeedbackRow");
-    let password = document.getElementById("weavePassword").value;
-    let pwconfirm = document.getElementById("weavePasswordConfirm").value;
+    let password = document.getElementById("weavePassword");
+    let pwconfirm = document.getElementById("weavePasswordConfirm");
 
-    if (password.length < Weave.MIN_PASS_LENGTH) {
-      this._setFeedbackMessage(feedback, valid, "passwordTooWeak.label");
-    }
-    else if (pwconfirm && password != pwconfirm) {
-      this._setFeedbackMessage(feedback, valid, "passwordMismatch.label");
-    }
-    else if (password == pwconfirm) {
-      valid = true;
-      this._setFeedbackMessage(feedback, valid);
-    }
+    let [valid, errorString] = gWeaveCommon.validatePassword(password, pwconfirm);
+    this._setFeedback(feedback, valid, errorString);
 
     this.status.password = valid;
     this.checkFields();
@@ -265,10 +251,6 @@ var gWeaveSetup = {
     let success = state != 2;
     this._setFeedbackMessage(feedback, success, str);
     return state == 0;
-  },
-
-  openToS: function () {
-    this._openLink(Weave.Svc.Prefs.get("termsURL"));
   },
 
   onPageShow: function() {
@@ -343,7 +325,7 @@ var gWeaveSetup = {
       case EXISTING_ACCOUNT_LOGIN_PAGE:
         Weave.Service.username = document.getElementById("existingUsername").value;
         Weave.Service.password = document.getElementById("existingPassword").value;
-        Weave.Service.passphrase = document.getElementById("existingPassphrase").value;
+        Weave.Service.passphrase = document.getElementById("existingPassphrase").value || "foo";
         if (Weave.Service.login()) {
           // jump to merge screen
           this.wizard.pageIndex = EXISTING_ACCOUNT_MERGE_PAGE;
@@ -352,6 +334,7 @@ var gWeaveSetup = {
         else {
           if (Weave.Status.login == Weave.LOGIN_FAILED_INVALID_PASSPHRASE ||
               Weave.Status.login == Weave.LOGIN_FAILED_NO_PASSPHRASE) {
+            Weave.Service.passphrase = "";
           }
           else {
             let feedback = document.getElementById("existingPasswordFeedbackRow");
@@ -504,11 +487,6 @@ var gWeaveSetup = {
     this.checkFields();
   },
 
-  // opens in a new window if we're in a modal prefwindow world, in a new tab otherwise
-  _openLink: function (url) {
-    openUILinkIn(url, window.opener.document.documentElement.instantApply ? "tab" : "window");
-  },
-
   _handleChoice: function () {
     let desc = document.getElementById("mergeChoiceRadio").selectedIndex;
     document.getElementById("chosenActionDeck").selectedIndex = desc;
@@ -588,25 +566,28 @@ var gWeaveSetup = {
 
     return true;
   },
-  
 
   // sets class and string on a feedback element
   // if no property string is passed in, we clear label/style
-  _setFeedbackMessage: function (element, success, string) {
-    element.hidden = success;
+  _setFeedback: function (element, success, string) {
+    element.hidden = success || !string;
     let label = element.firstChild.nextSibling;
     label.className = success ? "success" : "error";
-    let str = "", classname = "";
+    label.value = string;
+  },
+
+  // shim
+  _setFeedbackMessage: function (element, success, string) {
+    let str = "";
     if (string) {
       try {
         str = this.bundle.getString(string);
       } catch(e) {}
+  
       if (!str)
         str = Weave.Utils.getErrorString(string);
-      classname = success ? "success" : "error";
     }
-    label.value = str;
-    label.className = classname;
+    this._setFeedback(element, success, str);
   },
 
   QueryInterface: function (aIID) {

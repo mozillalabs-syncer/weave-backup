@@ -152,22 +152,6 @@ let gWeavePane = {
       this.resetPassphrase();
   },
 
-  changePassword: function () {
-    Weave.Utils.openGenericDialog("ChangePassword");
-  },
-
-  resetPassphrase: function () {
-    Weave.Utils.openGenericDialog("ResetPassphrase");
-  },
-
-  updatePassphrase: function () {
-    Weave.Utils.openGenericDialog("UpdatePassphrase");
-  },
-
-  resetPassword: function () {
-    openUILinkIn(Weave.Service.pwResetURL, document.documentElement.instantApply ? "tab" : "window");
-  },
-
   updateSyncPrefs: function () {
     let syncEverything = document.getElementById("weaveSyncMode").selectedItem.value == "syncEverything";
     document.getElementById("syncModeOptions").selectedIndex = syncEverything ? 0 : 1;
