@@ -139,16 +139,16 @@ let gWeavePane = {
 
   updatePass: function () {
     if (Weave.Status.login == Weave.LOGIN_FAILED_LOGIN_REJECTED)
-      this.changePassword();
+      gWeaveCommon.changePassword();
     else
-      this.updatePassphrase();
+      gWeaveCommon.updatePassphrase();
   },
 
   resetPass: function () {
     if (Weave.Status.login == Weave.LOGIN_FAILED_LOGIN_REJECTED)
-      this.resetPassword();
+      gWeaveCommon.resetPassword();
     else
-      this.resetPassphrase();
+      gWeaveCommon.resetPassphrase();
   },
 
   updateSyncPrefs: function () {
