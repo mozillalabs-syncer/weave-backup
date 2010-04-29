@@ -1,7 +1,16 @@
 let gWeaveCommon = {
   // opens in a new window if we're in a modal prefwindow world, in a new tab otherwise
   _openLink: function (url) {
-    openUILinkIn(url, window.opener.document.documentElement.instantApply ? "tab" : "window");
+    if (document.documentElement.id == "accountSetup" &&
+        window.opener &&
+        window.opener.document.documentElement.id == "BrowserPreferences" &&
+        !window.opener.document.documentElement.instantApply)
+      openUILinkIn(url, "window");
+    else if (document.documentElement.id == "BrowserPreferences" &&
+             !document.documentElement.instantApply)
+      openUILinkIn(url, "window");
+    else
+      openUILinkIn(url, "tab");
   },
 
   changePassword: function () {
@@ -22,6 +31,10 @@ let gWeaveCommon = {
 
   openToS: function () {
     this._openLink(Weave.Svc.Prefs.get("termsURL"));
+  },
+
+  openPP: function () {
+    this._openLink(Weave.Svc.Prefs.get("privacyURL"));
   },
 
   /**

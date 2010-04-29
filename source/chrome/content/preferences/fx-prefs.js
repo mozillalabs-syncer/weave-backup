@@ -16,8 +16,10 @@ let gWeavePane = {
     return ["engine.bookmarks", "engine.passwords", "engine.prefs",
       "engine.tabs", "engine.history"];
   },
-
-  _resettingSync: false,
+  
+  get _usingCustomServer() {
+    return Weave.Svc.Prefs.isSet("serverURL");
+  },
 
   onLoginStart: function () {
     if (this.page == 0)
@@ -47,10 +49,6 @@ let gWeavePane = {
     this.updateConnectButton();
     this.updateSetupButtons();
     this.checkFields();
-    if (this._resettingSync) {
-      this._resettingSync = false;
-      this.updateWeavePrefs();
-    }
   },
 
   initWeavePrefs: function () {
@@ -87,6 +85,7 @@ let gWeavePane = {
       let syncEverything = this._checkDefaultValues();
       document.getElementById("weaveSyncMode").selectedIndex = syncEverything ? 0 : 1;
       document.getElementById("syncModeOptions").selectedIndex = syncEverything ? 0 : 1;
+      document.getElementById("tosPP").hidden = this._usingCustomServer;
     }
   },
 

@@ -68,7 +68,7 @@
     <grid>
       <columns>
         <column/>
-        <column/>
+        <column flex="1" style="-moz-margin-end: 2px"/>
       </columns>
       <rows>
         <row align="center">
@@ -137,17 +137,21 @@
         </row>
         <row id="TOSRow" align="center">
           <spacer/>
-          <hbox align="center">
+          <hbox align="top">
             <checkbox id="tos"
-                      label="&setup.tosAgree1.label;"
                       accesskey="&setup.tosAgree1.accesskey;"
                       oncommand="gWeaveSetup.checkFields();"/>
-            <label class="text-link"
-                      onclick="gWeaveSetup.openToS();"
-                      value="&setup.tosLink.label;"/>
-            <label value="&setup.tosAgree2.label;"
-                   accesskey="&setup.tosAgree2.accesskey;"
-                   control="tos"/>
+            <description onclick="document.getElementById('tos').click()" style="width: 16em">
+              &setup.tosAgree1.label;
+              <label class="text-link inline-link"
+                     onclick="event.stopPropagation();gWeaveCommon.openToS();"
+                     value="&setup.tosLink.label;"/>
+              &setup.tosAgree2.label;
+              <label class="text-link inline-link"
+                     onclick="event.stopPropagation();gWeaveCommon.openPP();"
+                     value="&setup.ppLink.label;"/>
+              &setup.tosAgree3.label;
+            </description>
           </hbox>
         </row>
       </rows>

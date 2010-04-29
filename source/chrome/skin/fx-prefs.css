@@ -84,3 +84,6 @@
   list-style-image: url("chrome://global/skin/icons/information-16.png");
 }
 
+.inline-link {
+  margin: 0;
+}
