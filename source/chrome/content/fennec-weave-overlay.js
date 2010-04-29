@@ -124,7 +124,8 @@ let WeaveGlue = {
   },
 
   _updateOptions: function _updateOptions() {
-    document.getElementById("openRemoteTabs-button").disabled = false;
+    let loggedIn = Weave.Service.isLoggedIn;
+    document.getElementById("openRemoteTabs-button").disabled = !loggedIn;
 
     // Make sure we're online when connecting/syncing
     Util.forceOnline();
@@ -141,7 +142,6 @@ let WeaveGlue = {
     let disconnect = this._settings.disconnect;
     let sync = this._settings.sync;
     let syncStr = Weave.Str.sync;
-    let loggedIn = Weave.Service.isLoggedIn;
 
     // Make sure the options are in the right state
     user.collapsed = loggedIn;

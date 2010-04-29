@@ -14,7 +14,7 @@
 
   <hbox id="tabs-controls">
     <toolbarbutton id="openRemoteTabs-button" class="button-image"
-      disabled="disabled" command="cmd_openRemoteTabs"/>
+      disabled="true" command="cmd_openRemoteTabs"/>
   </hbox>
 
 </overlay>
