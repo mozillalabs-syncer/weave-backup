@@ -269,7 +269,7 @@ var gWeaveSetup = {
         this.wizard.getButton("back").hidden = false;
         this.wizard.canRewind = !this._resettingSync;
         break;
-      case 9:
+      case SETUP_SUCCESS_PAGE:
         this.wizard.canRewind = false;
         this.wizard.getButton("back").hidden = true;
         this.wizard.getButton("cancel").hidden = true;
@@ -283,11 +283,16 @@ var gWeaveSetup = {
 
     switch (this.wizard.pageIndex) {
       case NEW_ACCOUNT_PREFS_PAGE:
-        // time to load the captcha
-        // first check for NoScript and whitelist the right sites
-        this._handleNoScript(true);
-        this.captchaBrowser.loadURI(Weave.Service.miscAPI + "captcha_html");
-        break;
+        if (this._settingUpNew) {
+          // time to load the captcha
+          // first check for NoScript and whitelist the right sites
+          this._handleNoScript(true);
+          this.captchaBrowser.loadURI(Weave.Service.miscAPI + "captcha_html");
+          return true;
+        }
+
+        this.wizard.pageIndex = SETUP_SUCCESS_PAGE;
+        return false;
       case NEW_ACCOUNT_CAPTCHA_PAGE:
         let doc = this.captchaBrowser.contentDocument;
         let getField = function getField(field) {
@@ -356,7 +361,11 @@ var gWeaveSetup = {
         if (this._resettingSync) {
           this.onWizardFinish();
           window.close();
+          return false;
         }
+        
+        this.wizard.pageIndex = NEW_ACCOUNT_PREFS_PAGE;
+        return false;
     }
     return true;
   },
@@ -368,7 +377,13 @@ var gWeaveSetup = {
         this.wizard.pageIndex = INTRO_PAGE;
         return false;
       case EXISTING_ACCOUNT_PP_PAGE: // no idea wtf is up here, but meh!
-      this.wizard.pageIndex = EXISTING_ACCOUNT_LOGIN_PAGE;
+        this.wizard.pageIndex = EXISTING_ACCOUNT_LOGIN_PAGE;
+        return false;
+      case NEW_ACCOUNT_PREFS_PAGE:
+        if (this._settingUpNew)
+          return true;
+
+        this.wizard.pageIndex = EXISTING_ACCOUNT_CONFIRM_PAGE;
         return false;
     }
     return true;
