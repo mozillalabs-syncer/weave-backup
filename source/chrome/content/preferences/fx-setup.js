@@ -416,11 +416,11 @@ var gWeaveSetup = {
 
   _handleNoScript: function (addExceptions) {
     // if NoScript isn't installed, or is disabled, bail out.
-    let nsExt = Application.extensions.get("{73a6fe31-595d-460b-a920-fcc0f8843232}");
-    if (!nsExt || !nsExt.enabled)
+    let ns = Cc["@maone.net/noscript-service;1"];
+    if (ns == null)
       return;
 
-    let ns = Cc["@maone.net/noscript-service;1"].getService().wrappedJSObject;
+    ns = ns.getService().wrappedJSObject;
     if (addExceptions) {
       this._remoteSites.forEach(function(site) {
         site = ns.getSite(site);
