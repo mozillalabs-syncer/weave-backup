@@ -53,6 +53,7 @@ function WeaveWindow() {
     ["weave:service:sync:finish", "onSyncFinish"],
     ["weave:service:sync:error", "onSyncError"],
     ["weave:service:sync:delayed", "onSyncDelay"],
+    ["weave:service:setup-complete", "onLoginFinish"],
     ["weave:engine:sync:start",  "onEngineStart"],
     ["weave:service:verify-login:start", "onLoginStart"],
     ["weave:service:login:finish", "onLoginFinish"],
