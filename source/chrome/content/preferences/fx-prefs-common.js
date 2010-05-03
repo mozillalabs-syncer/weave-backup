@@ -57,7 +57,7 @@ let gWeaveCommon = {
   _validate: function (el1, el2, isPassword) {
     let valid = false;
     let val1 = el1.value;
-    let val2 = el2.value;
+    let val2 = el2 ? el2.value : "";
     let error = "";
 
     if (isPassword) {
