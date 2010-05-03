@@ -142,7 +142,7 @@ var gWeaveSetup = {
           return;
         // otherwise, fall through
       case "wipeClient":
-      case "wipeServer":
+      case "wipeRemote":
         Weave.Svc.Prefs.set("firstSync", action);
         break;
     }

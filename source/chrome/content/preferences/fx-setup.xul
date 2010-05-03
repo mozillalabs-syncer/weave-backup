@@ -359,7 +359,6 @@
         <radio id="wipeClient"
                class="mergeChoiceButton"
                aria-labelledby="wipeClientMain"
-               aria-describedby="wipeClientSecondary"
                align="top">
             <image class="mergeChoiceImage" src="chrome://weave/skin/sync-wipeClient.png"/>
             <vbox class="mergeChoiceButtonBox" flex="1">
@@ -368,10 +367,9 @@
               </description>
             </vbox>
         </radio>
-        <radio id="wipeServer"
+        <radio id="wipeRemote"
                class="mergeChoiceButton"
                aria-labelledby="wipeServerMain"
-               aria-describedby="wipeServerSecondary"
                align="top">
             <image class="mergeChoiceImage" src="chrome://weave/skin/sync-wipeServer.png"/>
             <vbox class="mergeChoiceButtonBox" flex="1">
