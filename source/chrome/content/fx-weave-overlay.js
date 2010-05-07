@@ -40,7 +40,7 @@ function FxWeaveGlue() {
   setTimeout(this.init, 0);
 }
 FxWeaveGlue.prototype = {
-  WEAVE_TABS_URL: "about:weave-tabs",
+  WEAVE_TABS_URL: "about:sync-tabs",
 
   init: function () {
     let popup = document.getElementById("goPopup");

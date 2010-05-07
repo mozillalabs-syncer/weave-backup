@@ -337,7 +337,7 @@ WeaveWindow.prototype = {
   },
 
   doOpenActivityLog: function WeaveWin_doOpenActivityLog(event) {
-    window.openUILinkIn("about:weave-log", "tab");
+    window.openUILinkIn("about:sync-log", "tab");
   },
 
   doPopup: function WeaveWin_doPopup(event) {
