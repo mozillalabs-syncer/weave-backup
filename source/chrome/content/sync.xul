@@ -44,9 +44,10 @@
                       label="&openPrefsItem.label;"
                       oncommand="gWeaveWin.openPrefs();"/>
             <menuitem id="sync-openlogitem"
+                      hidden="true"
                       label="&openLogItem.label;"
                       oncommand="gWeaveWin.doOpenActivityLog(event);"/>
-            <menuseparator/>
+            <menuseparator id="sync-lastsyncsep" hidden="true"/>
             <menuitem id="sync-lastsyncitem"
                       disabled="true" hidden="true"/>
         </menupopup>

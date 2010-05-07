@@ -90,6 +90,10 @@ function WeaveWindow() {
     this._setStatus("needsSetup");
   else
     this._setStatus("offline");
+
+  // Only show the activity log for dev-channel releases
+  if (Weave.WEAVE_CHANNEL == "dev")
+    document.getElementById("sync-openlogitem").hidden = false;
 }
 WeaveWindow.prototype = {
   get _isTopBrowserWindow() {
@@ -333,13 +337,7 @@ WeaveWindow.prototype = {
   },
 
   doOpenActivityLog: function WeaveWin_doOpenActivityLog(event) {
-    let logFile = Weave.Svc.Directory.get("ProfD", Ci.nsIFile);
-    logFile.append("weave");
-    logFile.append("logs");
-    logFile.append("verbose-log.txt");
-
-    let url = Weave.Svc.IO.newFileURI(logFile).spec;
-    window.openUILinkIn(url, "tab");
+    window.openUILinkIn("about:weave-log", "tab");
   },
 
   doPopup: function WeaveWin_doPopup(event) {
@@ -402,6 +400,7 @@ WeaveWindow.prototype = {
       this._stringBundle.getFormattedString("lastSync.label", [lastSyncDate]);
     lastSyncItem.setAttribute("label", lastSyncLabel);
     lastSyncItem.setAttribute("hidden", "false");
+    document.getElementById("sync-lastsyncsep").hidden = false;
   },
 
   onMenuPopupHiding: function WeaveWin_onMenuPopupHiding() {
