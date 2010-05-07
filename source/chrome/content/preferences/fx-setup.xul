@@ -40,7 +40,7 @@
             oncommand="gWeaveSetup.startNewAccountSetup()"
             align="center">
       <image class="mergeChoiceImage" 
-             src="chrome://weave/skin/sync-32x32.png"/>
+             src="chrome://weave/skin/used-never.png"/>
       <vbox class="mergeChoiceButtonBox" flex="1">
         <description class="mainDesc" id="createNewDesc">
           &setup.choicePage.new.label;
@@ -54,7 +54,7 @@
             oncommand="gWeaveSetup.useExistingAccount()"
             align="center">
       <image class="mergeChoiceImage" 
-             src="chrome://weave/skin/sync-32x32.png"/>
+             src="chrome://weave/skin/used-before.png"/>
       <vbox class="mergeChoiceButtonBox" flex="1">
         <description class="mainDesc" id="useExistingDesc">
           &setup.choicePage.existing.label;

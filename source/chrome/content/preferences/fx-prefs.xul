@@ -30,7 +30,7 @@
 
   <prefpane id="paneWeaveServices"
             label="&weavePrefPane.label;"
-            image="chrome://weave/skin/sync-32x32.png"
+            image="chrome://weave/skin/sync-32x32-prefs.png"
             helpTopic="prefs-weave"
             onpaneload="gWeavePane.initWeavePrefs()">
       <stringbundle id="weavePrefStrings"
@@ -51,7 +51,7 @@
                   accesskey="&setupButton.accesskey;"
                   oncommand="gWeavePane.openSetup();"/>
           <separator/>
-          <description style="padding: 0 12em">
+          <description flex="1" style="padding: 0 12em">
             &weaveDesc.label;
           </description>
           <spacer flex="3"/>

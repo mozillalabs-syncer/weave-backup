@@ -110,7 +110,8 @@ var gWeaveSetup = {
         document.getElementById("connect-throbber").hidden = stop;
         let feedback = document.getElementById("existingPasswordFeedbackRow");
         if (stop) {
-          let success = Weave.Status.login == Weave.LOGIN_SUCCEEDED || Weave.Status.login == Weave.LOGIN_FAILED_INVALID_PASSPHRASE;
+          let success = Weave.Status.login == Weave.LOGIN_SUCCEEDED || 
+                        Weave.Status.login == Weave.LOGIN_FAILED_INVALID_PASSPHRASE;
           this._setFeedbackMessage(feedback, success, Weave.Status.login);
         }
         else
