@@ -31,9 +31,10 @@
 
   <wizardpage id="pickSetupType"
               label="&setup.choicePage.title.label;"
+              description="&setup.choicePage.description;"
               onpageshow="gWeaveSetup.onPageShow()">
     <button id="newAccount"
-            class="mergeChoiceButton"
+            class="accountChoiceButton"
             aria-labelledby="createNewDesc"
             style="min-height: 5em"
             oncommand="gWeaveSetup.startNewAccountSetup()"
@@ -47,7 +48,7 @@
       </vbox>
     </button>
     <button id="existingAccount"
-            class="mergeChoiceButton"
+            class="accountChoiceButton"
             aria-labelledby="useExistingButton"
             style="min-height: 5em"
             oncommand="gWeaveSetup.useExistingAccount()"
@@ -62,7 +63,7 @@
     </button>
   </wizardpage>
 
-  <wizardpage label="&setup.newAccountPage.title.label;" 
+  <wizardpage label="&setup.newAccountPage.title.label;" description="bah"
               id="newAccountStart"
               onpageshow="gWeaveSetup.onPageShow();">
     <grid>
@@ -89,9 +90,12 @@
                  control="weaveServerURL"/>
           <textbox id="weaveServerURL" onchange="gWeaveSetup.onServerChange()"/>
         </row>
-        <row id="serverFeedbackRow" hidden="true">
+        <row id="serverFeedbackRow" align="center" hidden="true">
           <spacer/>
-          <label value=""/>
+          <hbox>
+            <image class="statusIcon"/>
+            <label class="status" value=" "/>
+          </hbox>
         </row>
         <row id="usernameRow" align="center">
           <label value="&signIn.username.label;"
@@ -100,9 +104,14 @@
           <textbox id="weaveUsername"
                    onchange="gWeaveSetup.onUsernameChange()"/>
         </row>
-        <row id="usernameFeedbackRow" hidden="true">
+        <row id="usernameFeedbackRow" 
+              align="center" 
+              hidden="true">
           <spacer/>
-          <label value=""/>
+          <hbox>
+            <image class="statusIcon"/>
+            <label class="status" value=" "/>
+          </hbox>
         </row>
         <row id="passwordRow" align="center">
           <label value="&signIn.password.label;"
@@ -120,9 +129,12 @@
                    type="password"
                    onchange="gWeaveSetup.onPasswordChange()"/>
         </row>
-        <row id="passwordFeedbackRow" hidden="true">
+        <row id="passwordFeedbackRow" align="center" hidden="true">
           <spacer/>
-          <label value=""/>
+          <hbox>
+            <image class="statusIcon"/>
+            <label class="status" value=" "/>
+          </hbox>
         </row>
         <row id="emailRow" align="center">
           <label value="&setup.emailAddress.label;"
@@ -131,9 +143,12 @@
           <textbox id="weaveEmail" 
                    onchange="gWeaveSetup.onEmailChange()"/>
         </row>
-        <row id="emailFeedbackRow" hidden="true">
+        <row id="emailFeedbackRow" align="center" hidden="true">
           <spacer/>
-          <label value=""/>
+          <hbox>
+            <image class="statusIcon"/>
+            <label class="status" value=" "/>
+          </hbox>
         </row>
         <row id="TOSRow" align="center">
           <spacer/>
@@ -186,9 +201,12 @@
                    onkeyup="gWeaveSetup.checkFields()"
                    onchange="gWeaveSetup.checkFields()"/>
         </row>
-        <row id="passphraseFeedbackRow" hidden="true">
+        <row id="passphraseFeedbackRow" align="center" hidden="true">
           <spacer/>
-          <label value=""/>
+          <hbox>
+            <image class="statusIcon"/>
+            <label class="status" value=" "/>
+          </hbox>
         </row>
       </rows>
     </grid>
@@ -288,9 +306,12 @@
                      oninput="gWeaveSetup.checkFields(event)"
                      onchange="gWeaveSetup.checkFields(event)"/>
           </row>
-          <row id="existingUsernameFeedbackRow" hidden="true">
+          <row id="existingUsernameFeedbackRow" align="center" hidden="true">
             <spacer/>
-            <label value=""/>
+            <hbox>
+              <image class="statusIcon"/>
+              <label class="status" value=" "/>
+            </hbox>
           </row>
           <row id="existingPasswordRow" align="center">
             <label id="existingPasswordLabel"
@@ -302,10 +323,13 @@
                      onkeyup="gWeaveSetup.checkFields(event)"
                      onchange="gWeaveSetup.checkFields(event)"/>
           </row>
-          <row id="existingPasswordFeedbackRow" hidden="true">
+          <row id="existingPasswordFeedbackRow"  align="center" hidden="true">
             <label class="text-link small" value="&resetPassword.label;"
-                   onclick="gWeaveSetup.resetPassword(); return false;"/>
-            <label value=""/>
+                   onclick="gWeaveCommon.resetPassword(); return false;"/>
+            <hbox>
+              <image class="statusIcon"/>
+              <label class="status" value=" "/>
+            </hbox>
           </row>
           <row id="existingLoginFeedbackRow">
             <spacer/>
@@ -328,7 +352,10 @@
     </hbox>
     <hbox align="left" id="existingPassphraseFeedbackBox">
       <spacer/>
-      <label value=""/>
+      <hbox>
+        <image class="statusIcon"/>
+        <label class="status" value=" "/>
+      </hbox>
     </hbox>
     <vbox class="small" id="passphraseHelpBox" hidden="true">
       <description class="small">&passphraseHelp.label;</description>

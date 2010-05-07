@@ -108,10 +108,17 @@ var gWeaveSetup = {
     switch (this.wizard.pageIndex) {
       case EXISTING_ACCOUNT_LOGIN_PAGE:
         document.getElementById("connect-throbber").hidden = stop;
+        let feedback = document.getElementById("existingPasswordFeedbackRow");
+        if (stop) {
+          let success = Weave.Status.login == Weave.LOGIN_SUCCEEDED || Weave.Status.login == Weave.LOGIN_FAILED_INVALID_PASSPHRASE;
+          this._setFeedbackMessage(feedback, success, Weave.Status.login);
+        }
+        else
+          this._setFeedbackMessage(feedback, true);
         break;
       case EXISTING_ACCOUNT_PP_PAGE:
         document.getElementById("passphrase-throbber").hidden = stop;
-        let feedback = document.getElementById("existingPassphraseFeedbackBox");
+        feedback = document.getElementById("existingPassphraseFeedbackBox");
         if (stop) {
           let success = Weave.Status.login == Weave.LOGIN_SUCCEEDED;
           this._setFeedbackMessage(feedback, success, Weave.Status.login);
@@ -237,28 +244,13 @@ var gWeaveSetup = {
 
   onPassphraseChange: function () {
     // state values: 0 = valid, 1 = invalid, no warn, 2 = invalid, warn
-    let state = 0;
-    let str = null;
-    let val = document.getElementById("weavePassphrase").value;
-    let valConfirm = document.getElementById("weavePassphraseConfirm").value;
-
-    if (val == document.getElementById("weavePassword").value) {
-      str = "cannotMatchPassword.label";
-      state = 2;
-    }
-
-    if (state == 0 && (val.length < Weave.MIN_PP_LENGTH || valConfirm.length < val.length))
-      state = 1;
-
-    if (state == 0 && val != valConfirm) {
-      str = "entriesMustMatch.label";
-      state = 2;
-    }
+    let el1 = document.getElementById("weavePassphrase");
+    let el2 = document.getElementById("weavePassphraseConfirm");
+    let [valid, str] = gWeaveCommon.validatePassphrase(el1, el2);
 
     let feedback = document.getElementById("passphraseFeedbackRow");
-    let success = state != 2;
-    this._setFeedbackMessage(feedback, success, str);
-    return state == 0;
+    this._setFeedback(feedback, valid, str);
+    return valid;
   },
 
   onPageShow: function() {
@@ -626,8 +618,10 @@ var gWeaveSetup = {
   // if no property string is passed in, we clear label/style
   _setFeedback: function (element, success, string) {
     element.hidden = success || !string;
-    let label = element.firstChild.nextSibling;
-    label.className = success ? "success" : "error";
+    let class = success ? "success" : "error";
+    let image = element.firstChild.nextSibling.firstChild;
+    image.setAttribute("status", class);
+    let label = image.nextSibling;
     label.value = string;
   },
 

@@ -32,44 +32,46 @@
   font-weight: bold;
 }
 
+.accountChoiceButton,
 .mergeChoiceButton {
   -moz-appearance: none;
-  background-color: #CCCCCC;
-  -moz-border-radius: 7px;
-  border-width: 1px;
-  border-style: solid;
-  border-color: #CCCCCC;
+  border: #999999 1px solid !important;
+  padding: 2px 3px;
+  -moz-border-radius: 6px;
+  background-color: menu;
+  -moz-box-shadow:
+    inset rgba(255, 255, 255, 0.5) 0 1px 0px,
+    inset rgba(0, 0, 0, 0.1) 0 -2px 0px,
+    rgba(0, 0, 0, 0.1) 0px 1px 0px;
 }
 
-.mergeChoiceButton#doMerge {
-  min-height: 6.5em;
-}
-
-.mergeChoiceButton:hover {
-  background-color: #AAAAAA;
-  cursor: pointer;
-  border-color: #222222 !important;
-}
-
+.accountChoiceButton:hover,
 .mergeChoiceButton[selected="true"] {
-  background-color: #888888;
-  border-color: black !important;
+  background-color: -moz-MenuHover;
+  color: -moz-MenuHoverText;
 }
 
-.mergeChoiceButton[focused="true"] {
-  background-color: #9A9A9A;
+.wizard-page-box {
+  margin-left: -5px;
+  margin-right: -5px;
 }
 
 .mergeChoiceButtonBox {
-  padding: 0.5em;
-}
-
-.mergeChoiceBFBox {
-  max-width: 555px;
+  padding: 0.2em;
 }
 
 .status {
   color: -moz-dialogtext;
+}
+
+.feedbackRow {
+  -moz-margin-start: 10em;
+}
+
+.statusIcon {
+  -moz-margin-start: 4px;
+  max-height: 16px;
+  max-width: 16px;
 }
 
 .statusIcon[status="active"] {
@@ -86,4 +88,17 @@
 
 .inline-link {
   margin: 0;
+}
+
+.wizard-header-icon {
+  list-style-image: url("chrome://weave/skin/sync-32x32.png");
+}
+
+wizard, .wizard-page-box, .wizard-header {
+  -moz-appearance: none !important;
+}
+
+wizard {
+  background-color: #FFF;
+  background: url(chrome://weave/skin/bg.png) #FFF top center repeat-x;
 }
