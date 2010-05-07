@@ -169,20 +169,16 @@ var gWeaveSetup = {
       case NEW_ACCOUNT_PP_PAGE:
         return this.onPassphraseChange();
       case EXISTING_ACCOUNT_LOGIN_PAGE:
-        let ready = false;
         let hasUser = document.getElementById("existingUsername").value != "";
         let hasPass = document.getElementById("existingPassword").value != "";
         if (hasUser && hasPass) {
           if (this._usingMainServers)
             return true;
 
-          let uri = Weave.Utils.makeURI(document.getElementById("existingServerURL").value);
-          if (uri &&
-              (uri.schemeIs("http") || uri.schemeIs("https")) &&
-              uri.host != "")
-            ready = true;
+          if (this._validateServer(document.getElementById("existingServerURL"), false))
+            return true;
         }
-        return ready;
+        return false;
       case EXISTING_ACCOUNT_PP_PAGE:
         return document.getElementById("existingPassphrase").value != "";
     }
@@ -192,9 +188,21 @@ var gWeaveSetup = {
 
   onUsernameChange: function () {
     let feedback = document.getElementById("usernameFeedbackRow");
-    let val = document.getElementById("weaveUsername").value
-    let available = val == "" || Weave.Service.checkUsername(val) == "available";
-    let str = available ? "" : "usernameNotAvailable.label";
+    let val = document.getElementById("weaveUsername").value;
+    let availCheck = "", str = "";
+    let available = true;
+    if (val) {
+      availCheck = Weave.Service.checkUsername(val);
+      available = availCheck == "available"; 
+    }      
+
+    if (!available) {
+      if (availCheck == "notAvailable")
+        str = "usernameNotAvailable.label";
+      else
+        str = availCheck;
+    }
+
     this._setFeedbackMessage(feedback, available, str);
 
     this.status.username = val && available;
@@ -460,7 +468,7 @@ var gWeaveSetup = {
   onServerChange: function () {
     if (this.wizard.pageIndex == EXISTING_ACCOUNT_LOGIN_PAGE) {
       if (this._usingMainServers)
-        document.getElementById("existingServerURL").value = "";
+        Weave.Svc.Prefs.reset("serverURL");
       document.getElementById("existingServerRow").hidden = this._usingMainServers;
       this.checkFields();
       return;
@@ -477,29 +485,61 @@ var gWeaveSetup = {
       feedback.hidden = true;
     }
     else {
-      let urlString = document.getElementById("weaveServerURL").value;
+      let el = document.getElementById("weaveServerURL");
       let str = "";
-      if (urlString) {
-        let uri = Weave.Utils.makeURI(urlString);
-        if (uri) {
-          Weave.Service.serverURL = uri.spec;
-          valid = true;
-        }
-
-        str = valid ? "" : "serverInvalid.label";
+      if (el.value) {
+        valid = this._validateServer(el, true);
+        let str = valid ? "" : "serverInvalid.label";
         this._setFeedbackMessage(feedback, valid, str);
       }
       else
         this._setFeedbackMessage(feedback, true);
-
     }
 
-    // belt and suspenders-ish
-    if (!valid)
-      Weave.Svc.Prefs.reset("serverURL");
+    // recheck username against the new server
+    if (valid) 
+      this.onUsernameChange();
 
     this.status.server = valid;
     this.checkFields();
+  },
+
+  // xxxmpc - checkRemote is a hack, we can't verify a minimal server is live
+  // without auth, so we won't validate in the existing-server case.
+  _validateServer: function (element, checkRemote) {
+    let valid = false;
+    let uri = Weave.Utils.makeURI(element.value);
+    
+    if (!uri)
+      uri = Weave.Utils.makeURI("https://" + element.value);
+
+    if (uri && checkRemote) {
+      function isValid(uri) {
+        Weave.Service.serverURL = uri.spec;
+        let check = Weave.Service.checkUsername("a");
+        return (check == "available" || check == "notAvailable");
+      }
+
+      if (uri.schemeIs("http")) {
+        let uri2 = uri;
+        uri2.scheme = "https";
+        if (isValid(uri2))
+          valid = true;
+      }
+      if (!valid)
+        valid = isValid(uri);
+    }
+    else if (uri) {
+      valid = true;
+      Weave.Service.serverURL = uri.spec;
+    }
+
+    if (valid)
+      element.value = Weave.Service.serverURL;
+    else
+      Weave.Svc.Prefs.reset("serverURL");
+
+    return valid;
   },
 
   _handleChoice: function () {
