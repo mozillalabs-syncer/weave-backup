@@ -82,13 +82,11 @@ var gWeaveSetup = {
   startNewAccountSetup: function () {
     this._settingUpNew = true;
     this.wizard.pageIndex = NEW_ACCOUNT_START_PAGE;
-    this.wizard.getButton("cancel").label = this.bundle.getString("cancelSetup.label");
   },
 
   useExistingAccount: function () {
     this._settingUpNew = false;
     this.wizard.pageIndex = EXISTING_ACCOUNT_LOGIN_PAGE;
-    this.wizard.getButton("cancel").label = this.bundle.getString("cancelSetup.label");
   },
 
   onResetPP: function () {
@@ -274,7 +272,7 @@ var gWeaveSetup = {
       case INTRO_PAGE:
         this.wizard.getButton("next").hidden = true;
         this.wizard.getButton("back").hidden = true;
-        this.wizard.getButton("cancel").label = this.bundle.getString("later.label");
+        this.wizard.getButton("cancel").label = this.bundle.getString("cancelSetup.label");
         break;
       case NEW_ACCOUNT_START_PAGE:
         this.onServerChange();

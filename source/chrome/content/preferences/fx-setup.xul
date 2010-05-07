@@ -141,7 +141,7 @@
                  accesskey="&setup.emailAddress.accesskey;"
                  control="weaveEmail"/>
           <textbox id="weaveEmail" 
-                   onchange="gWeaveSetup.onEmailChange()"/>
+                   oninput="gWeaveSetup.onEmailChange()"/>
         </row>
         <row id="emailFeedbackRow" align="center" hidden="true">
           <spacer/>
