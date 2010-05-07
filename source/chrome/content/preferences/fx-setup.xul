@@ -201,15 +201,16 @@
                    onkeyup="gWeaveSetup.checkFields()"
                    onchange="gWeaveSetup.checkFields()"/>
         </row>
-        <row id="passphraseFeedbackRow" align="center" hidden="true">
-          <spacer/>
-          <hbox>
-            <image class="statusIcon"/>
-            <label class="status" value=" "/>
-          </hbox>
-        </row>
       </rows>
     </grid>
+    <hbox id="passphraseFeedbackRow" align="center" hidden="true">
+      <spacer/>
+      <hbox>
+        <image class="statusIcon"/>
+        <label class="status" value=" "/>
+      </hbox>
+    </hbox>
+    <separator/>
     <description class="small">
       &passphraseDesc2.label;
     </description>

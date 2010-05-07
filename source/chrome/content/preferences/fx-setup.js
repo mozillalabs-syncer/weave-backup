@@ -221,11 +221,19 @@ var gWeaveSetup = {
   },
 
   onPasswordChange: function () {
-    let feedback = document.getElementById("passwordFeedbackRow");
     let password = document.getElementById("weavePassword");
-    let pwconfirm = document.getElementById("weavePasswordConfirm");
+    let valid, str;
+    if (password.value == document.getElementById("weavePassphrase").value) {
+      // xxxmpc - hack, sigh
+      valid = false;
+      errorString = Weave.Utils.getErrorString("change.password.pwSameAsPassphrase");
+    }
+    else {
+      let pwconfirm = document.getElementById("weavePasswordConfirm");
+      [valid, errorString] = gWeaveCommon.validatePassword(password, pwconfirm);
+    }
 
-    let [valid, errorString] = gWeaveCommon.validatePassword(password, pwconfirm);
+    let feedback = document.getElementById("passwordFeedbackRow");
     this._setFeedback(feedback, valid, errorString);
 
     this.status.password = valid;
@@ -244,10 +252,17 @@ var gWeaveSetup = {
   },
 
   onPassphraseChange: function () {
-    // state values: 0 = valid, 1 = invalid, no warn, 2 = invalid, warn
     let el1 = document.getElementById("weavePassphrase");
-    let el2 = document.getElementById("weavePassphraseConfirm");
-    let [valid, str] = gWeaveCommon.validatePassphrase(el1, el2);
+    let valid, str;
+    // xxxmpc - hack, sigh
+    if (el1.value == document.getElementById("weavePassword").value) {
+      valid = false;
+      str = Weave.Utils.getErrorString("change.passphrase.ppSameAsPassword");
+    }
+    else {
+      let el2 = document.getElementById("weavePassphraseConfirm");
+      [valid, str] = gWeaveCommon.validatePassphrase(el1, el2);
+    }
 
     let feedback = document.getElementById("passphraseFeedbackRow");
     this._setFeedback(feedback, valid, str);
