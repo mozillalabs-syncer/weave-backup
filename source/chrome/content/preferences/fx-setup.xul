@@ -31,7 +31,6 @@
 
   <wizardpage id="pickSetupType"
               label="&setup.choicePage.title.label;"
-              description="&setup.choicePage.description;"
               onpageshow="gWeaveSetup.onPageShow()">
     <button id="newAccount"
             class="accountChoiceButton"
@@ -63,7 +62,7 @@
     </button>
   </wizardpage>
 
-  <wizardpage label="&setup.newAccountPage.title.label;" description="bah"
+  <wizardpage label="&setup.newAccountPage.title.label;"
               id="newAccountStart"
               onpageshow="gWeaveSetup.onPageShow();">
     <grid>
