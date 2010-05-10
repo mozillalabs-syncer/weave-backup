@@ -158,10 +158,10 @@
           <hbox id="tosPP" pack="center">
             <label class="text-link"
                    onclick="event.stopPropagation();gWeaveCommon.openToS();"
-                   value="&setup.tosLink.label;"/>
+                   value="&prefs.tosLink.label;"/>
             <label class="text-link"
                    onclick="event.stopPropagation();gWeaveCommon.openPP();"
-                   value="&setup.ppLink.label;"/>
+                   value="&prefs.ppLink.label;"/>
           </hbox>
         </vbox>
       </deck>
