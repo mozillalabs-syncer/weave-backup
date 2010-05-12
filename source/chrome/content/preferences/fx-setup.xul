@@ -294,7 +294,6 @@
                    accesskey="&signIn.serverURL.accesskey;"
                    control="existingServerURL"/>
             <textbox id="existingServerURL"
-                     oninput="gWeaveSetup.checkFields(event)"
                      onchange="gWeaveSetup.checkFields(event)"/>
           </row>
           <row id="existingUsernameRow" align="center">

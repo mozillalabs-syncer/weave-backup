@@ -514,10 +514,14 @@ var gWeaveSetup = {
   // without auth, so we won't validate in the existing-server case.
   _validateServer: function (element, checkRemote) {
     let valid = false;
-    let uri = Weave.Utils.makeURI(element.value);
+    let val = element.value;
+    if (!val)
+      return false;
+
+    let uri = Weave.Utils.makeURI(val);
     
     if (!uri)
-      uri = Weave.Utils.makeURI("https://" + element.value);
+      uri = Weave.Utils.makeURI("https://" + val);
 
     if (uri && checkRemote) {
       function isValid(uri) {
