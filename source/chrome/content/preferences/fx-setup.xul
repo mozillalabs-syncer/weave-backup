@@ -359,7 +359,7 @@
     <vbox class="small" id="passphraseHelpBox" hidden="true">
       <description class="small">&passphraseHelp.label;</description>
       <label class="text-link small" value="&changePassphrase.label;"
-             onclick="gWeaveSetup.changePassphrase(); return false;"/>
+             onclick="gWeaveCommon.resetPassphrase(); return false;"/>
     </vbox>
   </wizardpage>
   <wizardpage id="mergeOptionsChoice"
