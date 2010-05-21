@@ -404,27 +404,32 @@ var gWeaveSetup = {
   },
 
   onWizardFinish: function () {
-    function isChecked(element) {
-      return document.getElementById(element).hasAttribute("checked");
-    }
+    Weave.Status.service == Weave.STATUS_OK;
 
     if (!this._resettingSync) {
+      function isChecked(element) {
+        return document.getElementById(element).hasAttribute("checked");
+      }
+
       let prefs = ["engine.bookmarks", "engine.passwords", "engine.history", "engine.tabs", "engine.prefs"];
       for (let i = 0;i < prefs.length;i++) {
         Weave.Svc.Prefs.set(prefs[i], isChecked(prefs[i]));
       }
-    }
+      this._handleNoScript(false);
+      if (Weave.Svc.Prefs.get("firstSync", "") == "notReady")
+        Weave.Svc.Prefs.reset("firstSync");
 
-    this._handleNoScript(false);
-    Weave.Status.service == Weave.STATUS_OK;
-    if (Weave.Svc.Prefs.get("firstSync", "") == "notReady")
-      Weave.Svc.Prefs.reset("firstSync");
+      Weave.Service.persistLogin();
+      Weave.Svc.Obs.notify("weave:service:setup-complete");
+      if (this._settingUpNew)
+        gWeaveCommon.openFirstClientFirstrun();
+      else
+        gWeaveCommon.openAddedClientFirstrun();
+    }
 
     if (!Weave.Service.isLoggedIn)
       Weave.Service.login();
 
-    Weave.Service.persistLogin();
-    Weave.Svc.Obs.notify("weave:service:setup-complete");
     Weave.Service.syncOnIdle(1);
   },
 

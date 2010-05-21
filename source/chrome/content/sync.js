@@ -75,7 +75,7 @@ function WeaveWindow() {
     Weave.Svc.Prefs.set("lastversion", Weave.WEAVE_VERSION);
 
   } else if (Weave.Svc.Prefs.get("lastversion") != Weave.WEAVE_VERSION) {
-    setTimeout(function() window.openUILinkIn(Weave.UPDATED_URL, "tab"), 500);
+    setTimeout(function() window.openUILinkIn(Weave.Service.updatedURL, "tab"), 500);
     Weave.Svc.Prefs.set("lastversion", Weave.WEAVE_VERSION);
   }
 

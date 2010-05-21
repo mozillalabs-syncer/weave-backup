@@ -9,7 +9,7 @@
 }
 
 #tabs-display {
-  background: #fff url(chrome://weave/skin/bg.png) repeat-x top;
+  background: #fff url(chrome://weave/skin/bg.png) repeat-x center -80px;
 }
 
 #headers {

@@ -37,6 +37,19 @@ let gWeaveCommon = {
     this._openLink(Weave.Svc.Prefs.get("privacyURL"));
   },
 
+  // xxxmpc - fix domain before 1.3 final
+  _baseURL: "http://www-trunk.stage.mozilla.com/firefox/sync/",
+
+  openFirstClientFirstrun: function () {
+    let url = this._baseURL + "firstrun.html";
+    this._openLink(url);
+  },
+
+  openAddedClientFirstrun: function () {
+    let url = this._baseURL + "secondrun.html";
+    this._openLink(url);
+  },
+
   /**
    * validatePassword / validatePassphrase
    *

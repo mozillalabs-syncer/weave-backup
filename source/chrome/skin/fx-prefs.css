@@ -100,5 +100,5 @@ wizard, .wizard-page-box, .wizard-header {
 
 wizard {
   background-color: #FFF;
-  background: url(chrome://weave/skin/bg.png) #FFF top center repeat-x;
+  background: url(chrome://weave/skin/bg.png) #FFF repeat-x center -80px;
 }
