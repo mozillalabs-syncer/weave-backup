@@ -38,7 +38,7 @@ let gWeaveCommon = {
   },
 
   // xxxmpc - fix domain before 1.3 final
-  _baseURL: "http://www-trunk.stage.mozilla.com/firefox/sync/",
+  _baseURL: "http://www.mozilla.com/firefox/sync/",
 
   openFirstClientFirstrun: function () {
     let url = this._baseURL + "firstrun.html";
